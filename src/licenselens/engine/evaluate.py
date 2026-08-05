@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from licenselens.collectors import conditional_access as ca
-from licenselens.models import CheckDefinition, FindingStatus
+from licenselens.models import CheckDefinition, Confidence, FindingStatus
 
 
 @dataclass
@@ -15,8 +15,10 @@ class Evaluation:
     status: FindingStatus
     summary: str
     evidence: dict[str, Any] = field(default_factory=dict)
-    # Optional overrides for customer-facing copy when status is nuanced
     customer_summary: str | None = None
+    confidence: Confidence = Confidence.MEDIUM
+    data_sources: list[str] = field(default_factory=list)
+    limitations: list[str] = field(default_factory=list)
 
 
 Evaluator = Callable[[CheckDefinition, dict[str, Any]], Evaluation]
@@ -495,6 +497,7 @@ def evaluate_mdo_p2_policies(
 
     evidence_out = {
         "source": "secureScore.controlScores",
+        "proxy": True,
         "matched_controls": matched,
         "score_ratio": ratio,
         "controls": summary.get("controls") or [],
@@ -504,6 +507,13 @@ def evaluate_mdo_p2_policies(
             "APIs are unavailable."
         ),
     }
+    proxy_meta = dict(
+        confidence=Confidence.LOW,
+        data_sources=["secureScore.controlScores (proxy)"],
+        limitations=[
+            "Secure Score is a proxy — verify Safe Links/Attachments in the portal."
+        ],
+    )
 
     if matched == 0:
         return Evaluation(
@@ -518,22 +528,27 @@ def evaluate_mdo_p2_policies(
                 "protections are turned on. Ask IT to verify Safe Links and "
                 "Safe Attachments for all users."
             ),
+            **proxy_meta,
         )
 
+    # Proxy checks never emit OK (strict demotion also enforced in quality policy)
     status = _score_status(float(ratio) if ratio is not None else None, matched=matched)
-    pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
     if status == FindingStatus.OK:
+        status = FindingStatus.PARTIAL
+    pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
+    if status == FindingStatus.PARTIAL and ratio is not None and float(ratio) >= 0.85:
         return Evaluation(
             status=status,
             summary=(
                 f"Secure Score shows strong MDO-related control completion "
-                f"({matched} controls, ~{pct} of matched max score)."
+                f"({matched} controls, ~{pct}) — treat as provisional until portal verify."
             ),
             evidence=evidence_out,
             customer_summary=(
-                "Extra email protections look largely enabled based on Microsoft's "
-                "security score signals."
+                "Score signals suggest stronger email protections are largely on, "
+                "but this is not a direct policy read — confirm in the admin portal."
             ),
+            **proxy_meta,
         )
     if status == FindingStatus.PARTIAL:
         return Evaluation(
@@ -547,8 +562,9 @@ def evaluate_mdo_p2_policies(
             customer_summary=(
                 "Some stronger email protections appear configured, but not fully. "
                 "Safe Links and Safe Attachments may still miss people or stay in "
-                "test mode."
+                "test mode. Verify in the portal."
             ),
+            **proxy_meta,
         )
     return Evaluation(
         status=status,
@@ -559,8 +575,9 @@ def evaluate_mdo_p2_policies(
         evidence=evidence_out,
         customer_summary=(
             "You appear to pay for stronger email protection, but Microsoft's "
-            "score signals suggest much of it is not turned on yet."
+            "score signals suggest much of it is not turned on yet. Confirm in portal."
         ),
+        **proxy_meta,
     )
 
 
@@ -593,6 +610,11 @@ def evaluate_mde_onboard_gap(
             (onboarded_i / int(licensed)) if licensed and int(licensed) > 0 else None
         ),
     }
+    sources = ["mde.api.machines", "graph.subscribedSkus"]
+    conf = Confidence.MEDIUM if truncated else Confidence.HIGH
+    limits: list[str] = []
+    if truncated:
+        limits.append("MDE machine inventory pagination was truncated.")
 
     if licensed is None or int(licensed) <= 0:
         return Evaluation(
@@ -606,6 +628,9 @@ def evaluate_mde_onboard_gap(
                 "Devices are enrolled in advanced protection, but we could not "
                 "compare that number to purchased seats automatically."
             ),
+            confidence=Confidence.MEDIUM,
+            data_sources=sources,
+            limitations=limits,
         )
 
     licensed_i = int(licensed)
@@ -624,6 +649,9 @@ def evaluate_mde_onboard_gap(
             customer_summary=(
                 "Most paid device-protection seats appear matched by enrolled devices."
             ),
+            confidence=conf,
+            data_sources=sources,
+            limitations=limits,
         )
 
     if ratio >= 0.5:
@@ -639,6 +667,9 @@ def evaluate_mde_onboard_gap(
                 "Some PCs are enrolled in advanced protection, but a noticeable "
                 "share of paid seats still look unused."
             ),
+            confidence=conf,
+            data_sources=sources,
+            limitations=limits,
         )
 
     return Evaluation(
@@ -653,6 +684,9 @@ def evaluate_mde_onboard_gap(
             "You appear to pay for advanced device protection on many seats, but "
             "relatively few devices are enrolled."
         ),
+        confidence=conf,
+        data_sources=sources,
+        limitations=limits,
     )
 
 
@@ -670,6 +704,7 @@ def evaluate_mdi_sensors(
     matched = int(summary.get("matched_count") or 0)
     evidence_out = {
         "source": "secureScore.controlScores",
+        "proxy": True,
         "matched_controls": matched,
         "score_ratio": ratio,
         "controls": summary.get("controls") or [],
@@ -678,6 +713,11 @@ def evaluate_mdi_sensors(
             "controls when the MDI API is not configured."
         ),
     }
+    proxy_meta = dict(
+        confidence=Confidence.LOW,
+        data_sources=["secureScore.controlScores (proxy)"],
+        limitations=["Secure Score proxy — verify MDI sensors in the Defender portal."],
+    )
 
     if matched == 0:
         return Evaluation(
@@ -691,33 +731,37 @@ def evaluate_mdi_sensors(
                 "We could not confirm whether on-site directory attack sensors are "
                 "installed. If you still run office domain controllers, ask IT to verify."
             ),
+            **proxy_meta,
         )
 
     status = _score_status(float(ratio) if ratio is not None else None, matched=matched)
-    pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
     if status == FindingStatus.OK:
+        status = FindingStatus.PARTIAL
+    pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
+    if ratio is not None and float(ratio) >= 0.85:
         cust = (
-            "On-site directory protection signals look healthy based on "
-            "Microsoft's security score."
+            "Score signals suggest on-site directory protection is largely healthy — "
+            "confirm sensors in the Defender portal."
         )
     elif status == FindingStatus.PARTIAL:
         cust = (
             "Some Defender for Identity protections appear configured, but "
-            "coverage may be incomplete."
+            "coverage may be incomplete. Verify sensors in the portal."
         )
     else:
         cust = (
             "You may be paying for directory attack sensors that are missing or "
-            "unhealthy."
+            "unhealthy. Verify in the portal."
         )
     return Evaluation(
         status=status,
         summary=(
             f"Defender for Identity–related Secure Score completion ~{pct} "
-            f"across {matched} control(s)."
+            f"across {matched} control(s) (proxy — not a direct sensor inventory)."
         ),
         evidence=evidence_out,
         customer_summary=cust,
+        **proxy_meta,
     )
 
 
@@ -885,11 +929,17 @@ def evaluate_purview_dlp(
     weak = int(score.get("weak_control_count") or 0)
     evidence_out = {
         **bundle,
+        "proxy": True,
         "note": (
             "Uses Microsoft Secure Score DLP/information-protection controls as a "
             "proxy when direct Purview policy APIs are unavailable to the app."
         ),
     }
+    proxy_meta = dict(
+        confidence=Confidence.LOW,
+        data_sources=["secureScore.controlScores (proxy)"],
+        limitations=["Secure Score proxy — verify DLP enforce mode in Purview portal."],
+    )
 
     if matched == 0:
         return Evaluation(
@@ -903,22 +953,24 @@ def evaluate_purview_dlp(
                 "We could not automatically confirm data-leak guardrails. Ask IT "
                 "whether DLP policies are enforced for email and files."
             ),
+            **proxy_meta,
         )
 
     r = float(ratio) if ratio is not None else 0.0
-    # Never claim confident OK on weak proxy alone unless score is very high
+    # Never emit OK for proxy DLP (strict policy)
     if r >= 0.85 and weak == 0:
         return Evaluation(
-            status=FindingStatus.OK,
+            status=FindingStatus.PARTIAL,
             summary=(
                 f"Secure Score DLP-related controls look strong "
-                f"({matched} controls, ~{r * 100:.0f}% of matched max)."
+                f"({matched} controls, ~{r * 100:.0f}%) — provisional until portal verify."
             ),
             evidence=evidence_out,
             customer_summary=(
-                "Data-leak guardrails appear largely enabled based on Microsoft's "
-                "security score signals."
+                "Score signals suggest data-leak guardrails are largely on — confirm "
+                "enforce mode in the Purview portal."
             ),
+            **proxy_meta,
         )
 
     if r >= 0.4:
@@ -931,8 +983,9 @@ def evaluate_purview_dlp(
             evidence=evidence_out,
             customer_summary=(
                 "Some data-protection rules may exist, but enforcement still looks "
-                "incomplete or stuck in testing."
+                "incomplete or stuck in testing. Verify in the portal."
             ),
+            **proxy_meta,
         )
 
     return Evaluation(
@@ -944,8 +997,9 @@ def evaluate_purview_dlp(
         evidence=evidence_out,
         customer_summary=(
             "You appear to pay for data-leak protection that is not meaningfully "
-            "enforced yet."
+            "enforced yet. Confirm in the Purview portal."
         ),
+        **proxy_meta,
     )
 
 

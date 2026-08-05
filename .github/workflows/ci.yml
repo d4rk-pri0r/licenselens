@@ -38,3 +38,37 @@ jobs:
           licenselens scan -o reports
           code=$?
           if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then exit "$code"; fi
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build wheel + sdist
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
+          python -m build
+          ls -la dist/
+
+      - name: Smoke-test installed wheel
+        run: |
+          python -m venv /tmp/wheel-venv
+          /tmp/wheel-venv/bin/pip install dist/*.whl
+          /tmp/wheel-venv/bin/licenselens version
+          /tmp/wheel-venv/bin/licenselens checks
+          /tmp/wheel-venv/bin/licenselens diff --help
+          /tmp/wheel-venv/bin/licenselens batch --help
+          /tmp/wheel-venv/bin/licenselens discover-workspace --help
+          set +e
+          /tmp/wheel-venv/bin/licenselens scan -o /tmp/wheel-reports
+          code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then exit "$code"; fi
+          # HTML rendered means templates + catalog were packaged via licenselens/data
+          test -f /tmp/wheel-reports/security-license-lens-report.html

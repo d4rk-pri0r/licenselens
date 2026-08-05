@@ -3,11 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import StrEnum
 
 from licenselens.auth import GRAPH_SCOPE, AuthContext, AuthMode
 from licenselens.collectors.skus import collect_subscribed_skus_live
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
+
+
+class DoctorProfile(StrEnum):
+    BASIC = "basic"
+    FULL = "full"
 
 
 @dataclass
@@ -20,6 +26,7 @@ class DoctorCheck:
 @dataclass
 class DoctorReport:
     mode: AuthMode
+    profile: DoctorProfile = DoctorProfile.BASIC
     checks: list[DoctorCheck] = field(default_factory=list)
     tenant_id: str | None = None
     tenant_display_name: str | None = None
@@ -34,16 +41,30 @@ def run_doctor(
     auth: AuthContext,
     *,
     workspace_resource_id: str | None = None,
+    profile: str | DoctorProfile = DoctorProfile.BASIC,
 ) -> DoctorReport:
-    """Validate credentials and core Graph / optional Sentinel reads."""
-    report = DoctorReport(mode=auth.mode)
+    """Validate credentials and core Graph / optional Sentinel reads.
+
+    profile="basic" runs core Graph checks; profile="full" also probes the
+    Defender for Endpoint API and the optional Sentinel workspace.
+    """
+    try:
+        profile_value = DoctorProfile(profile)
+    except ValueError as exc:
+        raise ValueError(
+            f"Unknown doctor profile: {profile!r} (expected basic or full)."
+        ) from exc
+    report = DoctorReport(mode=auth.mode, profile=profile_value)
 
     if auth.mode == AuthMode.DRY_RUN:
         report.checks.append(
             DoctorCheck(
                 name="mode",
                 ok=True,
-                detail="Dry-run mode — no live tenant calls. Use --live for production checks.",
+                detail=(
+                    "Dry-run mode — no live tenant calls. "
+                    f"Use --live --profile {profile_value.value} for production checks."
+                ),
             )
         )
         return report
@@ -188,8 +209,12 @@ def run_doctor(
             DoctorCheck(name="graph", ok=False, detail=str(exc))
         )
 
-    # Optional Defender for Endpoint API (separate resource)
-    if auth.mode != AuthMode.DRY_RUN and auth.credential is not None:
+    # Optional Defender for Endpoint API (separate resource) — full profile only
+    if (
+        profile_value == DoctorProfile.FULL
+        and auth.mode != AuthMode.DRY_RUN
+        and auth.credential is not None
+    ):
         try:
             from licenselens.collectors.mde import collect_mde_machine_summary
 

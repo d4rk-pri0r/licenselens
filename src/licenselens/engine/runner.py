@@ -45,11 +45,13 @@ from licenselens.collectors.signins import (
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
 from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
+from licenselens.engine.quality import apply_quality_policy, scan_level_limitations
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
 from licenselens.models import (
     STATUS_PLAIN_LABELS,
     CheckDefinition,
+    Confidence,
     Finding,
     FindingStatus,
     ScanResult,
@@ -90,9 +92,13 @@ def _base_finding(
     evidence: dict[str, Any] | None = None,
     customer_summary: str | None = None,
     customer_next_step: str | None = None,
+    confidence: Confidence = Confidence.MEDIUM,
+    data_sources: list[str] | None = None,
+    limitations: list[str] | None = None,
+    strict_proxy: bool = True,
 ) -> Finding:
     customer = _customer_fields(check)
-    return Finding(
+    finding = Finding(
         check_id=check.id,
         title=check.title,
         workload=check.workload,
@@ -108,10 +114,20 @@ def _base_finding(
         entitlements_used=[c for c in check.required_capabilities if c in owned],
         remediation=check.remediation,
         references=check.references,
+        confidence=confidence,
+        data_sources=list(data_sources or []),
+        limitations=list(limitations or []),
     )
+    finding = apply_quality_policy(finding, strict_proxy=strict_proxy)
+    finding.status_label = STATUS_PLAIN_LABELS.get(
+        finding.status.value, finding.status.value
+    )
+    return finding
 
 
-def _not_licensed_finding(check: CheckDefinition, owned: set[str]) -> Finding:
+def _not_licensed_finding(
+    check: CheckDefinition, owned: set[str], *, strict_proxy: bool = True
+) -> Finding:
     return _base_finding(
         check,
         status=FindingStatus.NOT_LICENSED,
@@ -128,13 +144,17 @@ def _not_licensed_finding(check: CheckDefinition, owned: set[str]) -> Finding:
             "plan is assigned, or talk to your licensing partner."
         ),
         evidence={},
+        confidence=Confidence.HIGH,
+        data_sources=["graph.subscribedSkus"],
+        strict_proxy=strict_proxy,
     )
 
 
-def _skipped_finding(check: CheckDefinition, owned: set[str]) -> Finding:
+def _skipped_finding(
+    check: CheckDefinition, owned: set[str], *, strict_proxy: bool = True
+) -> Finding:
     source = check.source_path
     if source:
-        # Avoid leaking absolute developer paths into portable reports
         source = source.replace("\\", "/").split("/checks/")[-1]
         if not source.startswith("checks/"):
             source = f"checks/{source}" if "checks/" not in source else source
@@ -146,10 +166,18 @@ def _skipped_finding(check: CheckDefinition, owned: set[str]) -> Finding:
         ),
         owned=owned,
         evidence={"collector": check.collector, "source": source},
+        confidence=Confidence.LOW,
+        strict_proxy=strict_proxy,
     )
 
 
-def _error_finding(check: CheckDefinition, owned: set[str], message: str) -> Finding:
+def _error_finding(
+    check: CheckDefinition,
+    owned: set[str],
+    message: str,
+    *,
+    strict_proxy: bool = True,
+) -> Finding:
     return _base_finding(
         check,
         status=FindingStatus.ERROR,
@@ -160,10 +188,12 @@ def _error_finding(check: CheckDefinition, owned: set[str], message: str) -> Fin
             "permissions issue — see the technical summary and app registration guide."
         ),
         customer_next_step=(
-            "Ask IT to confirm Policy.Read.All (application) is granted with admin "
-            "consent, then re-run the scan."
+            "Ask IT to confirm required permissions with admin consent "
+            "(docs/permissions.md), then re-run doctor and scan."
         ),
         evidence={"error": message},
+        confidence=Confidence.LOW,
+        strict_proxy=strict_proxy,
     )
 
 
@@ -171,6 +201,8 @@ def _from_evaluation(
     check: CheckDefinition,
     owned: set[str],
     evaluation: Evaluation,
+    *,
+    strict_proxy: bool = True,
 ) -> Finding:
     return _base_finding(
         check,
@@ -179,6 +211,10 @@ def _from_evaluation(
         owned=owned,
         evidence=evaluation.evidence,
         customer_summary=evaluation.customer_summary,
+        confidence=evaluation.confidence,
+        data_sources=evaluation.data_sources,
+        limitations=evaluation.limitations,
+        strict_proxy=strict_proxy,
     )
 
 
@@ -357,47 +393,71 @@ def _evaluate_check(
     check: CheckDefinition,
     owned: set[str],
     evidence: dict[str, Any],
+    *,
+    strict_proxy: bool = True,
 ) -> Finding:
     if not _eligible(check, owned):
-        return _not_licensed_finding(check, owned)
+        return _not_licensed_finding(check, owned, strict_proxy=strict_proxy)
 
     evaluator = EVALUATORS.get(check.id)
     if evaluator is None:
-        return _skipped_finding(check, owned)
+        return _skipped_finding(check, owned, strict_proxy=strict_proxy)
 
     required_keys = _CHECK_EVIDENCE_KEYS.get(check.id, [])
     for key in required_keys:
         err_key = f"{key}_error"
-        # Map composite keys to error names used above
         if key == "ca_policies" and evidence.get("ca_policies_error"):
-            return _error_finding(check, owned, str(evidence["ca_policies_error"]))
+            return _error_finding(
+                check, owned, str(evidence["ca_policies_error"]), strict_proxy=strict_proxy
+            )
         if key == "role_assignments" and evidence.get("role_assignments_error"):
-            return _error_finding(check, owned, str(evidence["role_assignments_error"]))
+            return _error_finding(
+                check,
+                owned,
+                str(evidence["role_assignments_error"]),
+                strict_proxy=strict_proxy,
+            )
         if key == "recent_signin_user_ids" and evidence.get("recent_signin_error"):
-            return _error_finding(check, owned, str(evidence["recent_signin_error"]))
+            return _error_finding(
+                check, owned, str(evidence["recent_signin_error"]), strict_proxy=strict_proxy
+            )
         if key == "principal_directory" and evidence.get("principal_directory_error"):
             return _error_finding(
-                check, owned, str(evidence["principal_directory_error"])
+                check,
+                owned,
+                str(evidence["principal_directory_error"]),
+                strict_proxy=strict_proxy,
             )
         if key == "secure_score_controls" and evidence.get("secure_score_controls_error"):
             return _error_finding(
-                check, owned, str(evidence["secure_score_controls_error"])
+                check,
+                owned,
+                str(evidence["secure_score_controls_error"]),
+                strict_proxy=strict_proxy,
             )
         if key == "mde_summary" and evidence.get("mde_summary_error"):
-            return _error_finding(check, owned, str(evidence["mde_summary_error"]))
+            return _error_finding(
+                check, owned, str(evidence["mde_summary_error"]), strict_proxy=strict_proxy
+            )
         if key == "sentinel_rules" and evidence.get("sentinel_rules_error"):
-            return _error_finding(check, owned, str(evidence["sentinel_rules_error"]))
+            return _error_finding(
+                check, owned, str(evidence["sentinel_rules_error"]), strict_proxy=strict_proxy
+            )
         if key == "sentinel_ueba" and evidence.get("sentinel_ueba_error"):
-            # Allow evaluator to handle partial settings failures when summary exists
             if "sentinel_ueba" not in evidence:
-                return _error_finding(check, owned, str(evidence["sentinel_ueba_error"]))
+                return _error_finding(
+                    check,
+                    owned,
+                    str(evidence["sentinel_ueba_error"]),
+                    strict_proxy=strict_proxy,
+                )
         if key == "purview_dlp" and evidence.get("purview_dlp_error"):
-            return _error_finding(check, owned, str(evidence["purview_dlp_error"]))
+            return _error_finding(
+                check, owned, str(evidence["purview_dlp_error"]), strict_proxy=strict_proxy
+            )
         if key not in evidence and err_key not in evidence:
-            # role_eligibilities may be missing only on hard failure before set
             if key == "role_eligibilities":
                 continue
-            # Sentinel workspace missing is handled inside evaluators
             if key in {"sentinel_rules", "sentinel_ueba"} and evidence.get(
                 "sentinel_workspace_missing"
             ):
@@ -406,13 +466,14 @@ def _evaluate_check(
                 check,
                 owned,
                 f"Required evidence '{key}' was not collected.",
+                strict_proxy=strict_proxy,
             )
 
     try:
         result = evaluator(check, evidence)
     except Exception as exc:  # noqa: BLE001
-        return _error_finding(check, owned, str(exc))
-    return _from_evaluation(check, owned, result)
+        return _error_finding(check, owned, str(exc), strict_proxy=strict_proxy)
+    return _from_evaluation(check, owned, result, strict_proxy=strict_proxy)
 
 
 def run_scan(
@@ -421,6 +482,9 @@ def run_scan(
     workloads: list[Workload] | None = None,
     dry_run: bool = True,
     workspace_resource_id: str | None = None,
+    strict_proxy: bool = True,
+    tenant_slug: str | None = None,
+    discover_workspaces: bool = False,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
@@ -471,7 +535,40 @@ def run_scan(
         wanted = set(workloads)
         checks = [c for c in checks if c.workload in wanted]
 
-    findings = [_evaluate_check(c, owned_set, evidence) for c in checks]
+    # Optional workspace auto-discover when Sentinel owned and no workspace given
+    if (
+        scan_mode == "live"
+        and discover_workspaces
+        and not workspace_resource_id
+        and "microsoft_sentinel" in owned_set
+    ):
+        try:
+            from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
+
+            discovered = discover_sentinel_workspaces(auth)
+            if len(discovered) == 1:
+                workspace_resource_id = discovered[0]
+                warnings.append(f"Auto-discovered Sentinel workspace: {workspace_resource_id}")
+                # Re-collect sentinel evidence only
+                from licenselens.collectors.sentinel import collect_sentinel_bundle
+
+                bundle = collect_sentinel_bundle(auth, workspace_resource_id)
+                evidence["sentinel_rules"] = bundle.get("sentinel_rules") or {}
+                evidence["sentinel_ueba"] = bundle.get("sentinel_ueba") or {}
+                evidence.pop("sentinel_workspace_missing", None)
+            elif len(discovered) > 1:
+                warnings.append(
+                    f"Found {len(discovered)} possible Sentinel workspaces; "
+                    "pass --workspace-resource-id explicitly (refusing to guess)."
+                )
+            else:
+                warnings.append("Workspace auto-discover found no Sentinel workspaces.")
+        except Exception as exc:  # noqa: BLE001
+            warnings.append(f"Workspace auto-discover failed: {exc}")
+
+    findings = [
+        _evaluate_check(c, owned_set, evidence, strict_proxy=strict_proxy) for c in checks
+    ]
     findings.sort(
         key=lambda f: (
             _STATUS_PRIORITY.get(f.status, 99),
@@ -489,10 +586,18 @@ def run_scan(
             f"pending: {', '.join(sorted(live_pending))}."
         )
 
+    data_sources_used: list[str] = []
+    for f in findings:
+        data_sources_used.extend(f.data_sources)
+    data_sources_used = sorted(set(data_sources_used))
+
+    limitations = scan_level_limitations(findings, strict_proxy=strict_proxy)
+
     return ScanResult(
         version=__version__,
         tenant_id=tenant_id,
         tenant_display_name=tenant_display_name,
+        tenant_slug=tenant_slug,
         scan_mode=scan_mode,
         auth_mode=auth.mode.value,
         scanned_at=datetime.now(UTC).isoformat(),
@@ -502,4 +607,9 @@ def run_scan(
         findings=findings,
         recommended_next_steps=_recommended_next_steps(findings),
         warnings=warnings,
+        limitations=limitations,
+        data_sources_used=data_sources_used,
+        workspace_resource_id=workspace_resource_id
+        or evidence.get("workspace_resource_id"),
+        strict_proxy=strict_proxy,
     )
