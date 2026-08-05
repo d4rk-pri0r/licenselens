@@ -1,0 +1,13 @@
+{
+  "tool": "security-license-lens",
+  "version": "0.2.0",
+  "tenant_id": "00000000-0000-0000-0000-000000000000",
+  "tenant_display_name": "Contoso Demo (dry-run)",
+  "scan_mode": "dry_run",
+  "scanned_at": "2026-08-06T00:00:00+00:00",
+  "findings": [
+    {"check_id": "id-ca-priv-gaps", "status": "ok", "confidence": "high"},
+    {"check_id": "id-idprotect-off", "status": "gap", "confidence": "high"},
+    {"check_id": "pur-dlp-not-enforced", "status": "gap", "confidence": "low"}
+  ]
+}

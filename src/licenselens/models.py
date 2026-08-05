@@ -17,6 +17,12 @@ class FindingStatus(StrEnum):
     SKIPPED = "skipped"
 
 
+class Confidence(StrEnum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
 class Severity(StrEnum):
     CRITICAL = "critical"
     HIGH = "high"
@@ -42,7 +48,6 @@ class Workload(StrEnum):
     GENERAL = "general"
 
 
-# Customer-facing labels for status tiles / badges
 STATUS_PLAIN_LABELS: dict[str, str] = {
     "gap": "Needs attention",
     "partial": "Partly set up",
@@ -51,6 +56,25 @@ STATUS_PLAIN_LABELS: dict[str, str] = {
     "skipped": "Check pending",
     "error": "Could not verify",
 }
+
+CONFIDENCE_PLAIN_LABELS: dict[str, str] = {
+    "high": "High confidence",
+    "medium": "Medium confidence",
+    "low": "Low confidence — verify in portal",
+}
+
+PROXY_CHECK_IDS: frozenset[str] = frozenset(
+    {
+        "mdo-p2-policies-default",
+        "mdi-sensors-missing",
+        "pur-dlp-not-enforced",
+    }
+)
+
+PROXY_VERIFY_NOTE = (
+    "Based on Microsoft Secure Score signals — confirm the real setting in the "
+    "Microsoft 365 / security admin portal before treating this as definitive."
+)
 
 
 class ServicePlan(BaseModel):
@@ -72,7 +96,6 @@ class Capability(BaseModel):
     id: str
     name: str
     description: str = ""
-    # Customer-facing plain language (outcomes, not product jargon)
     plain_name: str = ""
     outcome: str = ""
     why_it_matters: str = ""
@@ -99,11 +122,9 @@ class CheckDefinition(BaseModel):
     references: list[str] = Field(default_factory=list)
     collector: str = "noop"
     enabled: bool = True
-    # Customer-facing plain language
     customer_title: str = ""
     customer_summary: str = ""
     customer_next_step: str = ""
-    # Path to the YAML file this was loaded from (set at load time)
     source_path: str | None = None
 
     @property
@@ -123,11 +144,14 @@ class Finding(BaseModel):
     entitlements_used: list[str] = Field(default_factory=list)
     remediation: str = ""
     references: list[str] = Field(default_factory=list)
-    # Customer-facing plain language
     customer_title: str = ""
     customer_summary: str = ""
     customer_next_step: str = ""
     status_label: str = ""
+    confidence: Confidence = Confidence.MEDIUM
+    confidence_label: str = ""
+    data_sources: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
 
     @property
     def display_customer_title(self) -> str:
@@ -135,8 +159,6 @@ class Finding(BaseModel):
 
 
 class CapabilitySummary(BaseModel):
-    """Owned capability presented in plain language for the report."""
-
     id: str
     name: str
     plain_name: str
@@ -152,7 +174,8 @@ class ScanResult(BaseModel):
     version: str
     tenant_id: str | None = None
     tenant_display_name: str | None = None
-    scan_mode: str = "dry_run"  # dry_run | live
+    tenant_slug: str | None = None
+    scan_mode: str = "dry_run"
     auth_mode: str | None = None
     scanned_at: str
     owned_capabilities: list[str] = Field(default_factory=list)
@@ -161,12 +184,24 @@ class ScanResult(BaseModel):
     findings: list[Finding] = Field(default_factory=list)
     recommended_next_steps: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+    data_sources_used: list[str] = Field(default_factory=list)
+    workspace_resource_id: str | None = None
+    strict_proxy: bool = True
 
     @property
     def counts_by_status(self) -> dict[str, int]:
         counts: dict[str, int] = {}
         for f in self.findings:
             counts[f.status.value] = counts.get(f.status.value, 0) + 1
+        return counts
+
+    @property
+    def counts_by_confidence(self) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for f in self.findings:
+            key = f.confidence.value if f.confidence else "medium"
+            counts[key] = counts.get(key, 0) + 1
         return counts
 
     @property

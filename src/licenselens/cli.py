@@ -12,7 +12,10 @@ from rich.table import Table
 
 from licenselens import __cli_name__, __product_name__, __version__
 from licenselens.auth import AuthMode, build_auth_context
+from licenselens.batch import run_batch
 from licenselens.collectors.arm import build_workspace_resource_id
+from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
+from licenselens.diff_report import write_diff_report
 from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
 from licenselens.engine.runner import run_scan
@@ -122,6 +125,11 @@ def doctor_cmd(
         "--auth",
         help="Live auth mode: device | client_secret | azure_cli.",
     ),
+    profile: str = typer.Option(
+        "basic",
+        "--profile",
+        help="Probe depth: basic (core Graph) | full (also MDE API + Sentinel).",
+    ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
     client_secret: str | None = typer.Option(
@@ -163,7 +171,10 @@ def doctor_cmd(
             client_id=client_id,
             client_secret=client_secret,
         )
-        report = run_doctor(ctx, workspace_resource_id=workspace)
+        report = run_doctor(ctx, workspace_resource_id=workspace, profile=profile)
+    except ValueError as exc:
+        console.print(f"[red]Doctor configuration error:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
     except LicenseLensError as exc:
         console.print(f"[red]Doctor failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
@@ -212,7 +223,7 @@ def scan_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli (default: device).",
+        help="Live auth mode: device | client_secret | azure_cli.",
     ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
@@ -307,6 +318,144 @@ def scan_cmd(
     console.print(f"  MD    {md_path}")
 
     _exit_for_scan(result.has_actionable_gaps)
+
+
+@app.command("diff")
+def diff_cmd(
+    old_json: Path = typer.Argument(..., help="Baseline scan JSON report."),
+    new_json: Path = typer.Argument(..., help="Newer scan JSON report."),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Output path (.md or .json). Defaults to <new>-diff.md.",
+    ),
+) -> None:
+    """Compare two scan JSON artifacts by check_id."""
+    if not old_json.is_file():
+        console.print(f"[red]Baseline report not found:[/red] {old_json}")
+        raise typer.Exit(code=2)
+    if not new_json.is_file():
+        console.print(f"[red]New report not found:[/red] {new_json}")
+        raise typer.Exit(code=2)
+
+    out = output or new_json.with_name(f"{new_json.stem}-diff.md")
+    try:
+        write_diff_report(old_json, new_json, out)
+    except (OSError, ValueError) as exc:
+        console.print(f"[red]Diff failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+    console.print(f"  Diff  {out}")
+    raise typer.Exit(code=0)
+
+
+@app.command("batch")
+def batch_cmd(
+    config: Path = typer.Argument(..., help="Path to tenants.yaml."),
+    output_dir: Path = typer.Option(
+        Path("reports"),
+        "--output-dir",
+        "-o",
+        help="Root directory for per-tenant reports and index.md.",
+    ),
+    live: bool = typer.Option(
+        False,
+        "--live/--dry-run",
+        help="Run live scans (default: dry-run demo data per tenant).",
+    ),
+) -> None:
+    """Run scans for every tenant listed in a tenants.yaml config."""
+    if not config.is_file():
+        console.print(f"[red]Config not found:[/red] {config}")
+        raise typer.Exit(code=2)
+
+    console.print(f"[cyan]Running batch scan from {config}…[/cyan]")
+    try:
+        rows = run_batch(config, output_dir=output_dir, dry_run=not live)
+    except (LicenseLensError, OSError, ValueError) as exc:
+        console.print(f"[red]Batch failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+
+    table = Table(title="Batch results")
+    table.add_column("Tenant")
+    table.add_column("Tenant ID")
+    table.add_column("Status")
+    table.add_column("Gaps")
+    table.add_column("Report")
+    for row in rows:
+        table.add_row(
+            row["slug"],
+            row.get("tenant_id") or "—",
+            "ok" if row.get("status") == "ok" else "error",
+            str(row.get("gaps") or "—"),
+            row.get("report_dir") or row.get("error") or "—",
+        )
+    console.print(table)
+
+    errors = [r for r in rows if r.get("status") != "ok"]
+    raise typer.Exit(code=2 if errors else 0)
+
+
+@app.command("discover-workspace")
+def discover_workspace_cmd(
+    auth: AuthModeOption | None = typer.Option(
+        None,
+        "--auth",
+        help="Live auth mode: device | client_secret | azure_cli.",
+    ),
+    tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
+    client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
+    client_secret: str | None = typer.Option(
+        None,
+        "--client-secret",
+        envvar="AZURE_CLIENT_SECRET",
+        help="Client secret (prefer env AZURE_CLIENT_SECRET).",
+    ),
+    subscription_id: str | None = typer.Option(
+        None,
+        "--subscription-id",
+        envvar="AZURE_SUBSCRIPTION_ID",
+        help="Restrict discovery to one subscription.",
+    ),
+    max_subscriptions: int = typer.Option(
+        10,
+        "--max-subscriptions",
+        help="Cap on subscriptions scanned during discovery.",
+    ),
+) -> None:
+    """Discover Sentinel-capable Log Analytics workspaces in a tenant."""
+    mode = _to_auth_mode(auth, live=True)
+    try:
+        ctx = build_auth_context(
+            mode=mode,
+            tenant_id=tenant_id,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+    except AuthError as exc:
+        console.print(f"[red]Auth configuration error:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+
+    for warning in ctx.warnings:
+        console.print(f"[yellow]Warning:[/yellow] {warning}")
+
+    console.print("[cyan]Discovering Sentinel workspaces…[/cyan]")
+    try:
+        found = discover_sentinel_workspaces(
+            ctx,
+            subscription_id=subscription_id,
+            max_subscriptions=max_subscriptions,
+        )
+    except (AuthError, GraphError) as exc:
+        console.print(f"[red]Discovery failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+
+    if not found:
+        console.print("[yellow]No Sentinel-capable workspaces discovered.[/yellow]")
+        raise typer.Exit(code=1)
+    for rid in found:
+        console.print(rid)
+    raise typer.Exit(code=0)
 
 
 def main() -> None:

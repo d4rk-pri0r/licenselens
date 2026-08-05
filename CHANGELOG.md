@@ -5,6 +5,33 @@ All notable changes to Security License Lens are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] — Unreleased
+
+### Added
+- **Scan diff (`licenselens diff`)** — compare two scan JSON artifacts by
+  `check_id`; groups new gaps, resolved, improved, worsened, unchanged, and
+  confidence changes; Markdown or JSON output
+- **Batch scans (`licenselens batch`)** — run one `tenants.yaml` across many
+  tenants; per-tenant `reports/<slug>/<timestamp>/` output plus `index.md`;
+  one failing tenant no longer aborts the batch
+- **Workspace discovery (`licenselens discover-workspace`)** — enumerate
+  subscriptions and Log Analytics workspaces, probe each for
+  `Microsoft.SecurityInsights/alertRules`, and print Sentinel-capable ARM IDs
+- **Doctor profiles (`licenselens doctor --profile`)** — `basic` (core Graph)
+  is the default; `full` also probes the Defender for Endpoint API and the
+  Sentinel workspace when `--workspace-resource-id` is provided
+- **Auto-discovery in scans** — `run_scan(..., discover_workspaces=True)`
+  selects a workspace only when exactly one Sentinel-capable workspace exists
+  (otherwise warns and refuses to guess)
+- **Structured output layout** — `output.build_report_dir` slug/timestamp
+  nesting with a `flat=True` legacy mode
+
+### Notes
+- `diff` rank ordering mirrors engine finding priority (gap < partial <
+  skipped < error < ok < not_licensed)
+- Batch entries support `auth_mode` aliases (`device`, `client_secret`,
+  `azure_cli`, `dry_run`)
+
 ## [0.2.0] — 2026-08-05
 
 ### Added

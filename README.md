@@ -51,6 +51,19 @@ licenselens scan --live --auth client_secret \
 
 Sample dry-run output: [examples/sample-report/](examples/sample-report/).
 
+### Diff, discovery, and batch
+
+```bash
+# Compare two scan JSON artifacts by check_id
+licenselens diff reports/before.json reports/after.json -o reports/diff.md
+
+# Discover Sentinel-capable workspaces (prints ARM resource IDs)
+licenselens discover-workspace --auth client_secret
+
+# Multi-tenant scans from tenants.yaml (per-tenant reports + index.md)
+licenselens batch tenants.yaml -o reports
+```
+
 ## Full check pack (v0.2.0)
 
 | Check ID | Workload | Live evaluation |

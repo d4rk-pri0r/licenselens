@@ -10,7 +10,31 @@ Auth → Collectors → Entitlement resolution → Check selection → Findings 
 2. **Collectors** — Graph subscribed SKUs, then workload-specific config APIs
 3. **Catalog** — maps service plans / SKU part numbers → capability IDs
 4. **Engine** — loads YAML checks; marks `not_licensed` when capabilities missing
-5. **Reports** — static HTML dashboard, JSON, Markdown
+5. **Reports** — static HTML dashboard, JSON, Markdown, scan diff, batch index
+
+## Output layout
+
+```
+reports/
+  <tenant-slug>/<timestamp UTC>/
+    security-license-lens-report.{html,json,md}
+  index.md              # batch run summary
+```
+
+`scan` writes the three report formats next to each other. `batch` uses the
+slug/timestamp layout per tenant and writes a top-level `index.md`. The
+`diff` command compares two `*.json` artifacts by `check_id` and emits
+Markdown or JSON.
+
+## Workspace discovery
+
+- `collectors/workspace_discover.py` enumerates subscriptions (ARM), lists
+  Log Analytics workspaces, and probes each for a
+  `Microsoft.SecurityInsights/alertRules` response to decide whether it hosts
+  Sentinel.
+- `run_scan(..., discover_workspaces=True)` auto-selects a workspace only when
+  exactly one Sentinel-capable workspace is found; otherwise it warns and
+  refuses to guess.
 
 ## Key types
 
