@@ -1,5 +1,13 @@
 id: id-ca-priv-gaps
 title: Privileged sign-ins not strongly gated by Conditional Access
+customer_title: Powerful accounts may sign in without strong extra checks
+customer_summary: >
+  You can require multi-factor authentication and block outdated sign-in methods.
+  Gaps here mean admin or other high-value accounts might get in with weaker proof
+  than your license already allows.
+customer_next_step: >
+  Require multi-factor authentication for admins and block legacy email sign-in
+  methods that skip modern security prompts.
 description: >
   Tenants with Conditional Access still often leave privileged accounts
   without enforced MFA/device controls, or still allow legacy authentication.

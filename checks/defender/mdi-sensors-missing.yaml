@@ -1,5 +1,13 @@
 id: mdi-sensors-missing
 title: Defender for Identity licensed but sensors missing or unhealthy
+customer_title: On-site directory servers may lack attack sensors
+customer_summary: >
+  If you still run traditional office directory servers, special sensors
+  watch for attackers moving through them. Without healthy sensors, that
+  part of your environment can stay invisible.
+customer_next_step: >
+  Confirm whether you still use on-site directory servers; if yes, install
+  and health-check the identity sensors on each one.
 description: >
   MDI requires sensors on domain controllers (and often AD FS). Licensing
   without healthy sensor coverage leaves identity threat detection dark.

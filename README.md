@@ -6,6 +6,8 @@ LicenseLens detects **Microsoft security configuration debt**: high-value capabi
 
 It is **not** another generic CIS/baseline scanner. It starts from **owned entitlements** (SKUs / service plans), maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
+Reports lead with **plain-language outcomes** for owners and SMBs (“stronger email protection”, “smarter sign-in rules”), then tuck product names and SKU codes into a technical section for consultants.
+
 > Status: **v0.1.0a1 scaffold** — dry-run engine, catalog, check registry, and static HTML report. Live Graph collectors land next.
 
 ## Why LicenseLens?

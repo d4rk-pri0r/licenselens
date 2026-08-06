@@ -24,13 +24,22 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
       background: radial-gradient(1200px 600px at 10% -10%, #1a2744 0%, var(--bg) 55%);
       color: var(--text);
-      line-height: 1.5;
+      line-height: 1.55;
     }
     header, main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
     header h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
-    header p { margin: 0; color: var(--muted); }
+    header .tagline { margin: 0; color: var(--muted); font-size: 1.05rem; }
     .meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: 0.95rem; }
-    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+    .intro {
+      background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0 0.5rem;
+      color: var(--text);
+    }
+    .intro strong { color: #fff; }
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1.25rem 0; }
     .tile {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -38,7 +47,8 @@
       padding: 1rem;
     }
     .tile .n { font-size: 1.6rem; font-weight: 700; }
-    .tile .l { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tile .l { color: var(--muted); font-size: 0.85rem; margin-top: 0.15rem; }
+    .tile .l small { display: block; opacity: 0.7; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
     section {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -46,73 +56,152 @@
       padding: 1rem 1.25rem;
       margin-bottom: 1rem;
     }
-    h2 { margin: 0 0 0.75rem; font-size: 1.1rem; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
+    .section-help { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      background: color-mix(in srgb, var(--bg) 45%, var(--panel));
+    }
+    .card h3 { margin: 0 0 0.35rem; font-size: 1.02rem; }
+    .card .msft { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.65rem; }
+    .card p { margin: 0.4rem 0; font-size: 0.92rem; }
+    .card p span { color: var(--muted); font-weight: 600; }
+    .finding {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      background: color-mix(in srgb, var(--bg) 40%, var(--panel));
+    }
+    .finding:last-child { margin-bottom: 0; }
+    .finding-head { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: center; margin-bottom: 0.5rem; }
+    .finding-head h3 { margin: 0; font-size: 1.02rem; flex: 1 1 220px; }
+    .steps { margin: 0; padding-left: 1.2rem; }
+    .steps li { margin: 0.45rem 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
     th, td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
     .badge {
       display: inline-block;
-      padding: 0.15rem 0.5rem;
+      padding: 0.18rem 0.55rem;
       border-radius: 999px;
       font-size: 0.75rem;
       font-weight: 700;
-      text-transform: uppercase;
     }
     .badge.gap { background: color-mix(in srgb, var(--gap) 25%, transparent); color: var(--gap); }
     .badge.partial { background: color-mix(in srgb, var(--partial) 25%, transparent); color: var(--partial); }
     .badge.ok { background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
     .badge.not_licensed { background: color-mix(in srgb, var(--notlic) 25%, transparent); color: var(--notlic); }
     .badge.skipped, .badge.error { background: color-mix(in srgb, var(--skipped) 25%, transparent); color: var(--skipped); }
-    .caps { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .cap {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.25rem 0.55rem;
-      font-size: 0.85rem;
-      color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    details.tech {
+      margin-top: 0.25rem;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      background: var(--panel);
     }
+    details.tech > summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 600;
+      list-style: none;
+    }
+    details.tech > summary::-webkit-details-marker { display: none; }
+    details.tech[open] > summary { margin-bottom: 0.75rem; color: var(--text); }
     footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--muted); font-size: 0.85rem; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; }
   </style>
 </head>
 <body>
   <header>
     <h1>LicenseLens</h1>
-    <p>Paid Microsoft security capabilities vs. realized configuration</p>
+    <p class="tagline">Security you already pay for — explained in plain English</p>
     <div class="meta">
       <div>Version <code>{{ result.version }}</code></div>
       <div>Scanned <code>{{ result.scanned_at }}</code></div>
-      <div>Tenant <code>{{ result.tenant_id or "dry-run / demo" }}</code></div>
-      <div>Findings <code>{{ findings|length }}</code></div>
+      <div>Organization <code>{{ result.tenant_id or "demo / dry-run" }}</code></div>
+    </div>
+    <div class="intro">
+      <strong>How to read this report:</strong>
+      Microsoft licenses often include powerful protections with confusing product names.
+      Below we translate those into everyday outcomes, then show where setup still looks incomplete.
+      Product names and technical IDs are available in the technical section at the bottom.
     </div>
   </header>
 
   <main>
     <div class="tiles">
-      {% for status in ["gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
+      {% for status in status_order %}
       <div class="tile">
         <div class="n">{{ counts.get(status, 0) }}</div>
-        <div class="l">{{ status }}</div>
+        <div class="l">
+          {{ status_labels.get(status, status) }}
+          <small>{{ status }}</small>
+        </div>
       </div>
       {% endfor %}
     </div>
 
     <section>
-      <h2>Owned capabilities</h2>
-      {% if result.owned_capabilities %}
-      <div class="caps">
-        {% for cap in result.owned_capabilities %}
-        <span class="cap">{{ cap }}</span>
+      <h2>What you already pay for</h2>
+      <p class="section-help">
+        These are protections included in the licenses we detected — described by what they do for your business, not by SKU codes.
+      </p>
+      {% if result.capability_summaries %}
+      <div class="cards">
+        {% for cap in result.capability_summaries %}
+        <article class="card">
+          <h3>{{ cap.plain_name }}</h3>
+          <div class="msft">Microsoft name: {{ cap.name }}</div>
+          {% if cap.outcome %}<p><span>What it does.</span> {{ cap.outcome }}</p>{% endif %}
+          {% if cap.why_it_matters %}<p><span>Why it matters.</span> {{ cap.why_it_matters }}</p>{% endif %}
+          {% if cap.if_unused %}<p><span>If it is not set up.</span> {{ cap.if_unused }}</p>{% endif %}
+        </article>
         {% endfor %}
       </div>
       {% else %}
-      <p style="color: var(--muted); margin: 0;">No capabilities resolved from entitlements.</p>
+      <p style="color: var(--muted); margin: 0;">No licensed capabilities were resolved from entitlements.</p>
       {% endif %}
     </section>
 
     <section>
-      <h2>Subscribed SKUs (sample / collected)</h2>
+      <h2>Where you may not be getting the full benefit</h2>
+      <p class="section-help">
+        Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
+      </p>
+      {% for f in findings %}
+      <article class="finding">
+        <div class="finding-head">
+          <span class="badge {{ f.status.value }}">{{ f.status_label or status_labels.get(f.status.value, f.status.value) }}</span>
+          <h3>{{ f.display_customer_title }}</h3>
+        </div>
+        {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
+        {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}
+      </article>
+      {% else %}
+      <p style="color: var(--muted); margin: 0;">No findings.</p>
+      {% endfor %}
+    </section>
+
+    {% if result.recommended_next_steps %}
+    <section>
+      <h2>Recommended first steps</h2>
+      <p class="section-help">A short list you can hand to IT or your Microsoft partner.</p>
+      <ol class="steps">
+        {% for step in result.recommended_next_steps %}
+        <li>{{ step }}</li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+
+    <details class="tech">
+      <summary>Technical details (product names, SKUs, check IDs)</summary>
+
+      <h2 style="margin-top: 0.5rem;">Subscribed SKUs</h2>
       <table>
         <thead>
           <tr>
@@ -135,37 +224,31 @@
           {% endfor %}
         </tbody>
       </table>
-    </section>
 
-    <section>
-      <h2>Findings</h2>
+      <h2 style="margin-top: 1.25rem;">Finding reference table</h2>
       <table>
         <thead>
           <tr>
             <th>Status</th>
-            <th>Check</th>
+            <th>Check ID</th>
+            <th>Technical title</th>
             <th>Workload</th>
             <th>Severity</th>
-            <th>Value</th>
-            <th>Summary</th>
           </tr>
         </thead>
         <tbody>
           {% for f in findings %}
           <tr>
             <td><span class="badge {{ f.status.value }}">{{ f.status.value }}</span></td>
-            <td><code>{{ f.check_id }}</code><br />{{ f.title }}</td>
+            <td><code>{{ f.check_id }}</code></td>
+            <td>{{ f.title }}</td>
             <td>{{ f.workload.value }}</td>
             <td>{{ f.severity.value }}</td>
-            <td>{{ f.value_impact.value }}</td>
-            <td>{{ f.summary }}</td>
           </tr>
-          {% else %}
-          <tr><td colspan="6" style="color: var(--muted);">No findings.</td></tr>
           {% endfor %}
         </tbody>
       </table>
-    </section>
+    </details>
   </main>
 
   <footer>

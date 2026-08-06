@@ -18,3 +18,7 @@ def test_loads_ten_v01_checks():
     }
     assert expected.issubset(ids)
     assert len(checks) >= 10
+    for check in checks:
+        assert check.customer_title, check.id
+        assert check.customer_summary, check.id
+        assert check.customer_next_step, check.id

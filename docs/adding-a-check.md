@@ -10,7 +10,13 @@ Path: `checks/<workload>/<id>.yaml`
 
 ```yaml
 id: id-example
-title: Short human title
+title: Short technical title
+# Required: plain language for SMB owners / novice admins
+customer_title: Everyday wording without product jargon
+customer_summary: >
+  What this means for the business, in one or two sentences.
+customer_next_step: >
+  A concrete action they can ask IT to take.
 description: >
   What paid capability should be realized, and what gap looks like.
 workload: identity   # identity | defender | sentinel | purview | endpoint
@@ -25,6 +31,9 @@ references:
   - https://learn.microsoft.com/...
 enabled: true
 ```
+
+Customer-facing fields appear first in the HTML/Markdown report. Technical
+titles and product names stay available in the collapsible technical section.
 
 ## 3. Collector (optional in early PRs)
 

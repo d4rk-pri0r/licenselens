@@ -1,5 +1,13 @@
 id: pur-dlp-not-enforced
 title: Purview DLP licensed but not enforced in production
+customer_title: Guardrails against accidental data leaks may not be active
+customer_summary: >
+  Your plan can warn or stop people from sharing sensitive information
+  (like payment cards or personal data) in the wrong place. If rules are
+  missing or still in test mode, everyday mistakes can still walk out the door.
+customer_next_step: >
+  Start with a simple policy for email and cloud files that detects obvious
+  sensitive data, then move from "test" to "enforce" after a short tuning period.
 description: >
   E5/Purview DLP often remains unconfigured or stuck in test/simulation
   mode, so paid data-protection controls never block or alert in production.

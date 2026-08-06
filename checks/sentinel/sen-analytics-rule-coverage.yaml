@@ -1,5 +1,13 @@
 id: sen-analytics-rule-coverage
 title: Sentinel workspace with thin analytics rule coverage
+customer_title: Your security command center may have few alarms turned on
+customer_summary: >
+  A central security workspace only helps if detection rules are enabled.
+  An empty or near-default setup means you pay for the building but leave
+  most of the alarm system off.
+customer_next_step: >
+  Enable a starter set of detection rules for sign-ins, email, and devices,
+  then expand coverage with your IT or security partner.
 description: >
   A Sentinel workspace with few enabled scheduled analytics rules leaves
   SIEM spend without detection yield.

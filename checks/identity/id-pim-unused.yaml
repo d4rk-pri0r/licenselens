@@ -1,5 +1,13 @@
 id: id-pim-unused
 title: PIM licensed but privileged access not operationalized
+customer_title: Admin accounts still have "always on" superpowers
+customer_summary: >
+  Your plan includes tools to give admins access only when they need it.
+  If those tools are unused, high-power accounts stay permanently powerful —
+  which is riskier if a password is stolen.
+customer_next_step: >
+  Ask IT to turn on time-limited admin access for your top admins first
+  (Global Administrator and similar roles).
 description: >
   Entra ID P2 enables Privileged Identity Management. Standing permanent
   privileged roles with little or no eligible/activated PIM usage indicates

@@ -1,5 +1,13 @@
 id: mde-onboard-gap
 title: Defender for Endpoint licensed seats vs onboarded devices gap
+customer_title: Some PCs may not be enrolled in advanced device protection
+customer_summary: >
+  Paying for advanced device security only helps machines that are actually
+  enrolled and healthy. A large gap means laptops or servers may be missing
+  the deeper monitoring you already fund.
+customer_next_step: >
+  Compare licensed seats to enrolled devices and enroll the missing ones
+  (often through your device management tools).
 description: >
   Large gaps between MDE P2 licensing and onboarded devices mean EDR
   coverage (and license value) is not realized.

@@ -6,8 +6,14 @@ from pathlib import Path
 
 import yaml
 
-from licenselens.models import Capability, SubscribedSku, Workload
+from licenselens.models import Capability, CapabilitySummary, SubscribedSku, Workload
 from licenselens.paths import catalog_dir
+
+
+def _clean(text: str | None) -> str:
+    if not text:
+        return ""
+    return " ".join(str(text).split())
 
 
 def load_capabilities(path: Path | None = None) -> list[Capability]:
@@ -21,7 +27,11 @@ def load_capabilities(path: Path | None = None) -> list[Capability]:
             Capability(
                 id=item["id"],
                 name=item["name"],
-                description=item.get("description", ""),
+                description=_clean(item.get("description")),
+                plain_name=_clean(item.get("plain_name")) or item["name"],
+                outcome=_clean(item.get("outcome")),
+                why_it_matters=_clean(item.get("why_it_matters")),
+                if_unused=_clean(item.get("if_unused")),
                 workloads=workloads,
                 service_plan_names=list(item.get("service_plan_names") or []),
                 sku_part_numbers=list(item.get("sku_part_numbers") or []),
@@ -51,3 +61,28 @@ def resolve_owned_capabilities(
         if plan_hit or sku_hit:
             owned.append(cap.id)
     return sorted(set(owned))
+
+
+def capability_summaries_for(
+    capabilities: list[Capability],
+    owned_ids: list[str],
+) -> list[CapabilitySummary]:
+    """Build plain-language cards for capabilities the tenant owns."""
+    by_id = {c.id: c for c in capabilities}
+    summaries: list[CapabilitySummary] = []
+    for cap_id in owned_ids:
+        cap = by_id.get(cap_id)
+        if cap is None:
+            continue
+        summaries.append(
+            CapabilitySummary(
+                id=cap.id,
+                name=cap.name,
+                plain_name=cap.display_plain_name,
+                outcome=cap.outcome,
+                why_it_matters=cap.why_it_matters,
+                if_unused=cap.if_unused,
+                docs_url=cap.docs_url,
+            )
+        )
+    return summaries
