@@ -1,12 +1,12 @@
 {
   "tool": "security-license-lens",
   "tool_display_name": "Security License Lens",
-  "version": "0.1.0",
+  "version": "0.2.0b1",
   "tenant_id": "00000000-0000-0000-0000-000000000000",
   "tenant_display_name": "Contoso Demo (dry-run)",
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
-  "scanned_at": "2026-08-05T15:40:19.133751+00:00",
+  "scanned_at": "2026-08-05T15:46:50.829231+00:00",
   "owned_capabilities": [
     "conditional_access",
     "defender_endpoint_p2",
@@ -217,6 +217,34 @@
       "status_label": "Needs attention"
     },
     {
+      "check_id": "mde-onboard-gap",
+      "title": "Defender for Endpoint licensed seats vs onboarded devices gap",
+      "workload": "endpoint",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Large Defender for Endpoint onboarding gap: 40 onboarded vs ~100 licensed units (40%).",
+      "evidence": {
+        "onboarded_machines": 40,
+        "sample_size": 40,
+        "count_method": "demo",
+        "truncated": false,
+        "licensed_units": 100,
+        "coverage_ratio": 0.4
+      },
+      "entitlements_used": [
+        "defender_endpoint_p2"
+      ],
+      "remediation": "Onboard missing devices via Intune, GPO, or scripts; investigate unhealthy sensors; align license assignment with actual endpoints.",
+      "references": [
+        "https://learn.microsoft.com/defender-endpoint/onboarding"
+      ],
+      "customer_title": "Some PCs may not be enrolled in advanced device protection",
+      "customer_summary": "You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.",
+      "customer_next_step": "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
+      "status_label": "Needs attention"
+    },
+    {
       "check_id": "id-dormant-privileged",
       "title": "Dormant privileged identities still enabled",
       "workload": "identity",
@@ -290,40 +318,38 @@
       "status_label": "Partly set up"
     },
     {
-      "check_id": "mde-onboard-gap",
-      "title": "Defender for Endpoint licensed seats vs onboarded devices gap",
-      "workload": "endpoint",
-      "status": "skipped",
-      "severity": "high",
-      "value_impact": "high",
-      "summary": "Entitlements resolved, but this control check is not implemented yet.",
-      "evidence": {
-        "collector": "mde_onboarding",
-        "source": "checks/defender/mde-onboard-gap.yaml"
-      },
-      "entitlements_used": [
-        "defender_endpoint_p2"
-      ],
-      "remediation": "Onboard missing devices via Intune, GPO, or scripts; investigate unhealthy sensors; align license assignment with actual endpoints.",
-      "references": [
-        "https://learn.microsoft.com/defender-endpoint/onboarding"
-      ],
-      "customer_title": "Some PCs may not be enrolled in advanced device protection",
-      "customer_summary": "Paying for advanced device security only helps machines that are actually enrolled and healthy. A large gap means laptops or servers may be missing the deeper monitoring you already fund.",
-      "customer_next_step": "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
-      "status_label": "Check pending"
-    },
-    {
       "check_id": "mdo-p2-policies-default",
       "title": "Defender for Office 365 P2 policies not broadly enforced",
       "workload": "defender",
-      "status": "skipped",
+      "status": "partial",
       "severity": "high",
       "value_impact": "high",
-      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "summary": "Secure Score shows partial MDO-related control completion (3 controls, ~45%). Safe Links/Attachments may be incomplete or not fully enforced.",
       "evidence": {
-        "collector": "graph_mdo",
-        "source": "checks/defender/mdo-p2-policies-default.yaml"
+        "source": "secureScore.controlScores",
+        "matched_controls": 3,
+        "score_ratio": 0.45,
+        "controls": [
+          {
+            "controlName": "SafeLinks_Enabled",
+            "description": "Safe Links is enabled for email",
+            "score": 1.0,
+            "maxScore": 1.0
+          },
+          {
+            "controlName": "SafeAttachments_Enabled",
+            "description": "Safe Attachments not fully rolled out",
+            "score": 0.0,
+            "maxScore": 1.0
+          },
+          {
+            "controlName": "AntiPhish_Policy",
+            "description": "Anti-phishing policy in audit mode",
+            "score": 0.35,
+            "maxScore": 1.0
+          }
+        ],
+        "note": "Uses Microsoft Secure Score control signals as a proxy for Defender for Office 365 policy enforcement when direct policy APIs are unavailable."
       },
       "entitlements_used": [
         "defender_office_p2"
@@ -333,9 +359,36 @@
         "https://learn.microsoft.com/defender-office-365/preset-security-policies"
       ],
       "customer_title": "Extra email protections may not cover everyone yet",
-      "customer_summary": "Your license can open suspicious attachments and links safely and stop many phishing attacks. If those features are off, in test mode, or only applied to a pilot group, most people still lack the stronger shield.",
+      "customer_summary": "Some stronger email protections appear configured, but not fully. Safe Links and Safe Attachments may still miss people or stay in test mode.",
       "customer_next_step": "Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.",
-      "status_label": "Check pending"
+      "status_label": "Partly set up"
+    },
+    {
+      "check_id": "mdi-sensors-missing",
+      "title": "Defender for Identity licensed but sensors missing or unhealthy",
+      "workload": "defender",
+      "status": "partial",
+      "severity": "medium",
+      "value_impact": "high",
+      "summary": "No Defender for Identity\u2013related Secure Score controls were found. Cannot confirm sensor deployment from this signal alone.",
+      "evidence": {
+        "source": "secureScore.controlScores",
+        "matched_controls": 0,
+        "score_ratio": null,
+        "controls": [],
+        "note": "Defender for Identity sensor health is approximated from Secure Score controls when the MDI API is not configured."
+      },
+      "entitlements_used": [
+        "defender_identity"
+      ],
+      "remediation": "Deploy and health-check MDI sensors on all DCs; fix connectivity and directory service account configuration issues.",
+      "references": [
+        "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity"
+      ],
+      "customer_title": "On-site directory servers may lack attack sensors",
+      "customer_summary": "We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.",
+      "customer_next_step": "Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.",
+      "status_label": "Partly set up"
     },
     {
       "check_id": "sen-analytics-rule-coverage",
@@ -359,30 +412,6 @@
       "customer_title": "Your security command center may have few alarms turned on",
       "customer_summary": "A central security workspace only helps if detection rules are enabled. An empty or near-default setup means you pay for the building but leave most of the alarm system off.",
       "customer_next_step": "Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.",
-      "status_label": "Check pending"
-    },
-    {
-      "check_id": "mdi-sensors-missing",
-      "title": "Defender for Identity licensed but sensors missing or unhealthy",
-      "workload": "defender",
-      "status": "skipped",
-      "severity": "medium",
-      "value_impact": "high",
-      "summary": "Entitlements resolved, but this control check is not implemented yet.",
-      "evidence": {
-        "collector": "mdi_sensors",
-        "source": "checks/defender/mdi-sensors-missing.yaml"
-      },
-      "entitlements_used": [
-        "defender_identity"
-      ],
-      "remediation": "Deploy and health-check MDI sensors on all DCs; fix connectivity and directory service account configuration issues.",
-      "references": [
-        "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity"
-      ],
-      "customer_title": "On-site directory servers may lack attack sensors",
-      "customer_summary": "If you still run traditional office directory servers, special sensors watch for attackers moving through them. Without healthy sensors, that part of your environment can stay invisible.",
-      "customer_next_step": "Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.",
       "status_label": "Check pending"
     },
     {
@@ -437,9 +466,9 @@
   "recommended_next_steps": [
     "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky.",
     "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).",
+    "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
     "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
-    "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.",
-    "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools)."
+    "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts."
   ],
   "warnings": []
 }

@@ -13,6 +13,11 @@ from licenselens.catalog.loader import (
     resolve_owned_capabilities,
 )
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
+from licenselens.collectors.mde import (
+    DEMO_MDE_SUMMARY,
+    collect_mde_machine_summary,
+    mde_licensed_units,
+)
 from licenselens.collectors.privileged_roles import (
     DEMO_PRINCIPAL_DIRECTORY,
     DEMO_RECENT_SIGNIN_USER_IDS,
@@ -22,6 +27,11 @@ from licenselens.collectors.privileged_roles import (
     collect_role_eligibility_schedules,
     privileged_principal_ids,
 )
+from licenselens.collectors.secure_score import (
+    DEMO_SECURE_SCORE,
+    collect_latest_secure_score,
+    extract_control_scores,
+)
 from licenselens.collectors.signins import (
     collect_directory_objects_by_ids,
     collect_recent_success_signin_user_ids,
@@ -29,7 +39,7 @@ from licenselens.collectors.signins import (
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
 from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
-from licenselens.errors import GraphError
+from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
 from licenselens.models import (
     STATUS_PLAIN_LABELS,
@@ -37,6 +47,7 @@ from licenselens.models import (
     Finding,
     FindingStatus,
     ScanResult,
+    SubscribedSku,
     Workload,
 )
 
@@ -203,6 +214,9 @@ _CHECK_EVIDENCE_KEYS: dict[str, list[str]] = {
         "recent_signin_user_ids",
         "principal_directory",
     ],
+    "mdo-p2-policies-default": ["secure_score_controls"],
+    "mde-onboard-gap": ["mde_summary"],
+    "mdi-sensors-missing": ["secure_score_controls"],
 }
 
 
@@ -210,6 +224,8 @@ def _gather_evidence(
     *,
     scan_mode: str,
     client: GraphClient | None,
+    auth: AuthContext,
+    skus: list[SubscribedSku],
     warnings: list[str],
 ) -> dict[str, Any]:
     """Collect shared evidence blobs for evaluators."""
@@ -224,6 +240,8 @@ def _gather_evidence(
         evidence["role_eligibilities"] = list(DEMO_ROLE_ELIGIBILITIES)
         evidence["recent_signin_user_ids"] = set(DEMO_RECENT_SIGNIN_USER_IDS)
         evidence["principal_directory"] = dict(DEMO_PRINCIPAL_DIRECTORY)
+        evidence["secure_score_controls"] = extract_control_scores(DEMO_SECURE_SCORE)
+        evidence["mde_summary"] = dict(DEMO_MDE_SUMMARY)
         return evidence
 
     assert client is not None
@@ -275,6 +293,24 @@ def _gather_evidence(
             evidence["principal_directory_error"] = str(exc)
             evidence["principal_directory"] = {}
 
+    # Defender pack signals
+    try:
+        score = collect_latest_secure_score(client)
+        evidence["secure_score"] = score
+        evidence["secure_score_controls"] = extract_control_scores(score)
+    except GraphError as exc:
+        warnings.append(f"Secure Score could not be read: {exc}")
+        evidence["secure_score_controls_error"] = str(exc)
+
+    licensed = mde_licensed_units(skus)
+    try:
+        mde = collect_mde_machine_summary(auth)
+        mde["licensed_units"] = licensed
+        evidence["mde_summary"] = mde
+    except (AuthError, GraphError) as exc:
+        warnings.append(f"Defender for Endpoint inventory could not be read: {exc}")
+        evidence["mde_summary_error"] = str(exc)
+
     return evidence
 
 
@@ -304,6 +340,12 @@ def _evaluate_check(
             return _error_finding(
                 check, owned, str(evidence["principal_directory_error"])
             )
+        if key == "secure_score_controls" and evidence.get("secure_score_controls_error"):
+            return _error_finding(
+                check, owned, str(evidence["secure_score_controls_error"])
+            )
+        if key == "mde_summary" and evidence.get("mde_summary_error"):
+            return _error_finding(check, owned, str(evidence["mde_summary_error"]))
         if key not in evidence and err_key not in evidence:
             # role_eligibilities may be missing only on hard failure before set
             if key == "role_eligibilities":
@@ -336,7 +378,13 @@ def run_scan(
 
     if scan_mode == "dry_run":
         skus = collect_subscribed_skus(auth, dry_run=True)
-        evidence = _gather_evidence(scan_mode=scan_mode, client=None, warnings=warnings)
+        evidence = _gather_evidence(
+            scan_mode=scan_mode,
+            client=None,
+            auth=auth,
+            skus=skus,
+            warnings=warnings,
+        )
         tenant_id = tenant_id or "00000000-0000-0000-0000-000000000000"
         tenant_display_name = tenant_display_name or "Contoso Demo (dry-run)"
     else:
@@ -352,7 +400,11 @@ def run_scan(
             except GraphError:
                 raise
             evidence = _gather_evidence(
-                scan_mode=scan_mode, client=client, warnings=warnings
+                scan_mode=scan_mode,
+                client=client,
+                auth=auth,
+                skus=skus,
+                warnings=warnings,
             )
 
     owned = resolve_owned_capabilities(capabilities, skus)

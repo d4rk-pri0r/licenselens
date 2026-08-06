@@ -12,10 +12,23 @@ Security License Lens is designed for **read-only** access.
 | `Policy.Read.All` | Conditional Access (`id-ca-priv-gaps`, `id-idprotect-off`) |
 | `AuditLog.Read.All` | Sign-in logs (`id-dormant-privileged`) |
 | `User.Read.All` | Optional user detail (often covered by Directory.Read.All) |
+| `SecurityEvents.Read.All` | Secure Score (MDO / MDI proxy signals) |
 
 Grant **application** permissions and **admin consent**.
 
-Workload-specific APIs (MDE, MDI, Sentinel, Purview) will document additional roles as collectors land.
+## Defender for Endpoint API (separate resource)
+
+| Permission | Application | Purpose |
+|------------|-------------|---------|
+| `Machine.Read.All` | WindowsDefenderATP / Microsoft Defender for Endpoint | Onboarded device inventory (`mde-onboard-gap`) |
+
+In Entra app registration → **API permissions** → **APIs my organization uses** → search **WindowsDefenderATP** or **Microsoft Defender for Endpoint** → Application permission `Machine.Read.All` → admin consent.
+
+Token audience: `https://api.securitycenter.microsoft.com`.
+
+## Still upcoming
+
+Sentinel (Azure RBAC) and Purview DLP collectors document additional roles when they ship.
 
 ## Azure RBAC (Sentinel checks — future)
 

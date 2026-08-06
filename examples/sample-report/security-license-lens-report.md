@@ -2,16 +2,16 @@
 
 A plain-language view of security capabilities you already pay for — and whether they are set up to help your organization.
 
-- **Version:** 0.1.0
-- **Scanned at:** 2026-08-05T15:40:19.133751+00:00
+- **Version:** 0.2.0b1
+- **Scanned at:** 2026-08-05T15:46:50.829231+00:00
 - **Mode:** dry_run / dry_run
 - **Organization:** Contoso Demo (dry-run)
 
 ## At a glance
 
-- **Needs attention** (`gap`): 3
-- **Partly set up** (`partial`): 1
-- **Check pending** (`skipped`): 6
+- **Needs attention** (`gap`): 4
+- **Partly set up** (`partial`): 3
+- **Check pending** (`skipped`): 3
 
 ## What you already pay for
 
@@ -96,6 +96,13 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).
 - **Technical id:** `id-pim-unused`
 
+### Some PCs may not be enrolled in advanced device protection
+
+- **Status:** Needs attention
+- **In plain English:** You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.
+- **Suggested next step:** Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
+- **Technical id:** `mde-onboard-gap`
+
 ### Powerful accounts that nobody uses are still switched on
 
 - **Status:** Needs attention
@@ -110,19 +117,19 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
 - **Technical id:** `id-ca-priv-gaps`
 
-### Some PCs may not be enrolled in advanced device protection
-
-- **Status:** Check pending
-- **In plain English:** Paying for advanced device security only helps machines that are actually enrolled and healthy. A large gap means laptops or servers may be missing the deeper monitoring you already fund.
-- **Suggested next step:** Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
-- **Technical id:** `mde-onboard-gap`
-
 ### Extra email protections may not cover everyone yet
 
-- **Status:** Check pending
-- **In plain English:** Your license can open suspicious attachments and links safely and stop many phishing attacks. If those features are off, in test mode, or only applied to a pilot group, most people still lack the stronger shield.
+- **Status:** Partly set up
+- **In plain English:** Some stronger email protections appear configured, but not fully. Safe Links and Safe Attachments may still miss people or stay in test mode.
 - **Suggested next step:** Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.
 - **Technical id:** `mdo-p2-policies-default`
+
+### On-site directory servers may lack attack sensors
+
+- **Status:** Partly set up
+- **In plain English:** We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.
+- **Suggested next step:** Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.
+- **Technical id:** `mdi-sensors-missing`
 
 ### Your security command center may have few alarms turned on
 
@@ -130,13 +137,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **In plain English:** A central security workspace only helps if detection rules are enabled. An empty or near-default setup means you pay for the building but leave most of the alarm system off.
 - **Suggested next step:** Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.
 - **Technical id:** `sen-analytics-rule-coverage`
-
-### On-site directory servers may lack attack sensors
-
-- **Status:** Check pending
-- **In plain English:** If you still run traditional office directory servers, special sensors watch for attackers moving through them. Without healthy sensors, that part of your environment can stay invisible.
-- **Suggested next step:** Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.
-- **Technical id:** `mdi-sensors-missing`
 
 ### Guardrails against accidental data leaks may not be active
 
@@ -156,9 +156,9 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 1. Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.
 2. Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).
-3. Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.
-4. Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
-5. Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
+3. Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
+4. Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.
+5. Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
 
 ## Technical details
 
