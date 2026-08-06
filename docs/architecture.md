@@ -29,4 +29,16 @@ Auth → Collectors → Entitlement resolution → Check selection → Findings 
 - Add capabilities in `catalog/capabilities.yaml`
 - Add checks as YAML under `checks/<workload>/`
 - Implement collectors named in check `collector` fields
+- Register pure evaluators in `engine/evaluate.py` (`EVALUATORS`)
 - Keep reporting format stable so MSPs can archive JSON over time
+
+## v0.1 identity data plane
+
+| Evidence | Graph |
+|----------|--------|
+| SKUs | `GET /subscribedSkus` |
+| CA policies | `GET /identity/conditionalAccess/policies` |
+| Role assignments | `GET /roleManagement/directory/roleAssignments` |
+| PIM eligibility | `GET /roleManagement/directory/roleEligibilitySchedules` |
+| Sign-ins (bounded) | `GET /auditLogs/signIns` (success, lookback, page cap) |
+| Principals | `POST /directoryObjects/getByIds` |

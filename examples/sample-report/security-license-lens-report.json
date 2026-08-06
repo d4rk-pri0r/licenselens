@@ -1,0 +1,445 @@
+{
+  "tool": "security-license-lens",
+  "tool_display_name": "Security License Lens",
+  "version": "0.1.0",
+  "tenant_id": "00000000-0000-0000-0000-000000000000",
+  "tenant_display_name": "Contoso Demo (dry-run)",
+  "scan_mode": "dry_run",
+  "auth_mode": "dry_run",
+  "scanned_at": "2026-08-05T15:40:19.133751+00:00",
+  "owned_capabilities": [
+    "conditional_access",
+    "defender_endpoint_p2",
+    "defender_identity",
+    "defender_office_p2",
+    "entra_id_p2",
+    "identity_protection",
+    "microsoft_sentinel",
+    "purview_dlp"
+  ],
+  "capability_summaries": [
+    {
+      "id": "conditional_access",
+      "name": "Conditional Access",
+      "plain_name": "Smarter sign-in rules",
+      "outcome": "Decide who can sign in, from where, on which devices, and whether they must prove it is really them (for example with multi-factor authentication).",
+      "why_it_matters": "Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.",
+      "if_unused": "Your licenses include advanced sign-in rules, but they may still be loose or incomplete.",
+      "docs_url": "https://learn.microsoft.com/entra/identity/conditional-access/overview"
+    },
+    {
+      "id": "defender_endpoint_p2",
+      "name": "Microsoft Defender for Endpoint P2",
+      "plain_name": "Deep protection and visibility on PCs and devices",
+      "outcome": "See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.",
+      "why_it_matters": "Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.",
+      "if_unused": "You may be paying for advanced device protection on seats that are not fully enrolled.",
+      "docs_url": "https://learn.microsoft.com/defender-endpoint/onboarding"
+    },
+    {
+      "id": "defender_identity",
+      "name": "Microsoft Defender for Identity",
+      "plain_name": "Watchdogs on your on-site directory (if you still have one)",
+      "outcome": "Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.",
+      "why_it_matters": "Many organizations still rely on on-site domain controllers. Cloud-only tools cannot see every attack path there.",
+      "if_unused": "Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.",
+      "docs_url": "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity"
+    },
+    {
+      "id": "defender_office_p2",
+      "name": "Microsoft Defender for Office 365 P2",
+      "plain_name": "Stronger email and file threat protection",
+      "outcome": "Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.",
+      "why_it_matters": "Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.",
+      "if_unused": "Extra email protections in your license may still be off, in test mode, or only covering a few people.",
+      "docs_url": "https://learn.microsoft.com/defender-office-365/preset-security-policies"
+    },
+    {
+      "id": "entra_id_p2",
+      "name": "Microsoft Entra ID P2",
+      "plain_name": "Stronger control over admin accounts",
+      "outcome": "Give people powerful admin rights only when they need them, and get better tools to catch risky sign-ins on high-value accounts.",
+      "why_it_matters": "Admin accounts are the keys to your email, files, and business apps. If one is stolen, an attacker can look like a trusted employee.",
+      "if_unused": "You are paying for stronger admin protections that are not fully turned on yet.",
+      "docs_url": "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure"
+    },
+    {
+      "id": "identity_protection",
+      "name": "Microsoft Entra ID Protection",
+      "plain_name": "Alerts when a sign-in looks suspicious",
+      "outcome": "Automatically spot odd sign-in behavior (impossible travel, leaked passwords, unfamiliar locations) and require extra proof or block access.",
+      "why_it_matters": "Attackers often use valid passwords. Risk detection helps catch the session even when the password was correct.",
+      "if_unused": "Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.",
+      "docs_url": "https://learn.microsoft.com/entra/id-protection/overview-identity-protection"
+    },
+    {
+      "id": "microsoft_sentinel",
+      "name": "Microsoft Sentinel",
+      "plain_name": "A central security command center in the cloud",
+      "outcome": "Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.",
+      "why_it_matters": "Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.",
+      "if_unused": "A security workspace may exist, but few detections or smart analytics are turned on.",
+      "docs_url": "https://learn.microsoft.com/azure/sentinel/overview"
+    },
+    {
+      "id": "purview_dlp",
+      "name": "Microsoft Purview Data Loss Prevention",
+      "plain_name": "Guardrails so sensitive data is harder to leak",
+      "outcome": "Warn or block people when they try to share credit cards, health data, or other sensitive information in the wrong place.",
+      "why_it_matters": "Accidental oversharing is common. Guardrails protect customers and reduce regulatory and reputational harm.",
+      "if_unused": "Data-protection rules may be missing or still in \"test only\" mode, so nothing is enforced yet.",
+      "docs_url": "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
+    }
+  ],
+  "subscribed_skus": [
+    {
+      "sku_id": "demo-e5",
+      "sku_part_number": "SPE_E5",
+      "capability_status": "Enabled",
+      "prepaid_units": 100,
+      "consumed_units": 87,
+      "service_plans": [
+        {
+          "service_plan_id": null,
+          "service_plan_name": "AAD_PREMIUM_P2",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "MFA_PREMIUM",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "ADALLOM_S_O365",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "EQUIVIO_ANALYTICS",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "LOCKBOX_ENTERPRISE",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "MIP_S_CLP2",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "THREAT_INTELLIGENCE",
+          "provisioning_status": "Success"
+        },
+        {
+          "service_plan_id": null,
+          "service_plan_name": "DEFENDER_ENDPOINT_P2",
+          "provisioning_status": "Success"
+        }
+      ]
+    },
+    {
+      "sku_id": "demo-sentinel",
+      "sku_part_number": "MICROSOFT_SENTINEL",
+      "capability_status": "Enabled",
+      "prepaid_units": 1,
+      "consumed_units": 1,
+      "service_plans": [
+        {
+          "service_plan_id": null,
+          "service_plan_name": "MICROSOFT_SENTINEL",
+          "provisioning_status": "Success"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "check_id": "id-idprotect-off",
+      "title": "Identity Protection policies off or report-only",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "No Conditional Access policies with user-risk or sign-in-risk conditions were found (Identity Protection not operationalized via CA).",
+      "evidence": {
+        "risk_policy_count": 0,
+        "sign_in_risk_enforced": [],
+        "user_risk_enforced": [],
+        "sign_in_risk_report_only": [],
+        "user_risk_report_only": []
+      },
+      "entitlements_used": [
+        "identity_protection"
+      ],
+      "remediation": "Enable user-risk and sign-in-risk policies in staged rollout, then enforce for privileged and high-value users.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-protection/overview-identity-protection"
+      ],
+      "customer_title": "Suspicious sign-ins may not be blocked automatically",
+      "customer_summary": "We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.",
+      "customer_next_step": "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky.",
+      "status_label": "Needs attention"
+    },
+    {
+      "check_id": "id-pim-unused",
+      "title": "PIM licensed but privileged access not operationalized",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Found 4 standing privileged role assignment(s) and 0 PIM eligible schedules \u2014 just-in-time admin access is not in use.",
+      "evidence": {
+        "privileged_permanent_assignments": 4,
+        "privileged_eligible_schedules": 0,
+        "privileged_permanent_principals": 4,
+        "privileged_eligible_principals": 0,
+        "global_admin_standing_assignments": 2,
+        "sample_standing_roles": [
+          "Global Administrator",
+          "Helpdesk Administrator",
+          "Security Administrator"
+        ]
+      },
+      "entitlements_used": [
+        "entra_id_p2"
+      ],
+      "remediation": "Convert standing admin roles to PIM-eligible where possible, require activation with MFA/justification, and review permanent role assignments.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure"
+      ],
+      "customer_title": "Admin accounts still have \"always on\" superpowers",
+      "customer_summary": "Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.",
+      "customer_next_step": "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).",
+      "status_label": "Needs attention"
+    },
+    {
+      "check_id": "id-dormant-privileged",
+      "title": "Dormant privileged identities still enabled",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "medium",
+      "value_impact": "medium",
+      "summary": "Found 2 enabled privileged user(s) with no successful sign-in in the last 90 days (of 4 privileged principal(s)).",
+      "evidence": {
+        "privileged_principal_count": 4,
+        "active_privileged_users": 2,
+        "dormant_privileged_users": 2,
+        "non_user_privileged_principals": 0,
+        "disabled_or_unresolved": 0,
+        "lookback_days": 90,
+        "signin_sample_truncated": false,
+        "dormant_sample": [
+          {
+            "id": "user-admin-2",
+            "userPrincipalName": "a***@contoso.com"
+          },
+          {
+            "id": "user-help-dormant",
+            "userPrincipalName": "o***@contoso.com"
+          }
+        ]
+      },
+      "entitlements_used": [
+        "entra_id_p2"
+      ],
+      "remediation": "Disable or archive unused privileged accounts, remove unneeded role assignments, and prefer just-in-time access via PIM.",
+      "references": [
+        "https://attack.mitre.org/techniques/T1078/004/"
+      ],
+      "customer_title": "Powerful accounts that nobody uses are still switched on",
+      "customer_summary": "Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.",
+      "customer_next_step": "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
+      "status_label": "Needs attention"
+    },
+    {
+      "check_id": "id-ca-priv-gaps",
+      "title": "Privileged sign-ins not strongly gated by Conditional Access",
+      "workload": "identity",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Conditional Access is partially configured: missing enforced legacy authentication block (report-only legacy block exists).",
+      "evidence": {
+        "policy_count": 2,
+        "enabled_count": 1,
+        "report_only_count": 1,
+        "mfa_enforced_policies": [
+          "Demo: MFA for all users"
+        ],
+        "mfa_report_only_policies": [],
+        "legacy_block_enforced": [],
+        "legacy_block_report_only": [
+          "Demo: Block legacy auth (report-only)"
+        ]
+      },
+      "entitlements_used": [
+        "conditional_access"
+      ],
+      "remediation": "Create CA policies that require phishing-resistant MFA for privileged roles and block legacy authentication tenant-wide where possible.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/conditional-access/overview",
+        "https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication"
+      ],
+      "customer_title": "Powerful accounts may sign in without strong extra checks",
+      "customer_summary": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).",
+      "customer_next_step": "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.",
+      "status_label": "Partly set up"
+    },
+    {
+      "check_id": "mde-onboard-gap",
+      "title": "Defender for Endpoint licensed seats vs onboarded devices gap",
+      "workload": "endpoint",
+      "status": "skipped",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "evidence": {
+        "collector": "mde_onboarding",
+        "source": "checks/defender/mde-onboard-gap.yaml"
+      },
+      "entitlements_used": [
+        "defender_endpoint_p2"
+      ],
+      "remediation": "Onboard missing devices via Intune, GPO, or scripts; investigate unhealthy sensors; align license assignment with actual endpoints.",
+      "references": [
+        "https://learn.microsoft.com/defender-endpoint/onboarding"
+      ],
+      "customer_title": "Some PCs may not be enrolled in advanced device protection",
+      "customer_summary": "Paying for advanced device security only helps machines that are actually enrolled and healthy. A large gap means laptops or servers may be missing the deeper monitoring you already fund.",
+      "customer_next_step": "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
+      "status_label": "Check pending"
+    },
+    {
+      "check_id": "mdo-p2-policies-default",
+      "title": "Defender for Office 365 P2 policies not broadly enforced",
+      "workload": "defender",
+      "status": "skipped",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "evidence": {
+        "collector": "graph_mdo",
+        "source": "checks/defender/mdo-p2-policies-default.yaml"
+      },
+      "entitlements_used": [
+        "defender_office_p2"
+      ],
+      "remediation": "Enforce Safe Attachments and Safe Links for all recipients; enable preset security policies or equivalent custom policies in block mode.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/preset-security-policies"
+      ],
+      "customer_title": "Extra email protections may not cover everyone yet",
+      "customer_summary": "Your license can open suspicious attachments and links safely and stop many phishing attacks. If those features are off, in test mode, or only applied to a pilot group, most people still lack the stronger shield.",
+      "customer_next_step": "Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.",
+      "status_label": "Check pending"
+    },
+    {
+      "check_id": "sen-analytics-rule-coverage",
+      "title": "Sentinel workspace with thin analytics rule coverage",
+      "workload": "sentinel",
+      "status": "skipped",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "evidence": {
+        "collector": "sentinel_analytics",
+        "source": "checks/sentinel/sen-analytics-rule-coverage.yaml"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "Enable relevant content hub solutions and scheduled rules; cover identity, endpoint, and cloud control-plane sources first.",
+      "references": [
+        "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
+      ],
+      "customer_title": "Your security command center may have few alarms turned on",
+      "customer_summary": "A central security workspace only helps if detection rules are enabled. An empty or near-default setup means you pay for the building but leave most of the alarm system off.",
+      "customer_next_step": "Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.",
+      "status_label": "Check pending"
+    },
+    {
+      "check_id": "mdi-sensors-missing",
+      "title": "Defender for Identity licensed but sensors missing or unhealthy",
+      "workload": "defender",
+      "status": "skipped",
+      "severity": "medium",
+      "value_impact": "high",
+      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "evidence": {
+        "collector": "mdi_sensors",
+        "source": "checks/defender/mdi-sensors-missing.yaml"
+      },
+      "entitlements_used": [
+        "defender_identity"
+      ],
+      "remediation": "Deploy and health-check MDI sensors on all DCs; fix connectivity and directory service account configuration issues.",
+      "references": [
+        "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity"
+      ],
+      "customer_title": "On-site directory servers may lack attack sensors",
+      "customer_summary": "If you still run traditional office directory servers, special sensors watch for attackers moving through them. Without healthy sensors, that part of your environment can stay invisible.",
+      "customer_next_step": "Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.",
+      "status_label": "Check pending"
+    },
+    {
+      "check_id": "pur-dlp-not-enforced",
+      "title": "Purview DLP licensed but not enforced in production",
+      "workload": "purview",
+      "status": "skipped",
+      "severity": "medium",
+      "value_impact": "high",
+      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "evidence": {
+        "collector": "purview_dlp",
+        "source": "checks/purview/pur-dlp-not-enforced.yaml"
+      },
+      "entitlements_used": [
+        "purview_dlp"
+      ],
+      "remediation": "Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams, and endpoints; move from simulation to enforce after tuning.",
+      "references": [
+        "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
+      ],
+      "customer_title": "Guardrails against accidental data leaks may not be active",
+      "customer_summary": "Your plan can warn or stop people from sharing sensitive information (like payment cards or personal data) in the wrong place. If rules are missing or still in test mode, everyday mistakes can still walk out the door.",
+      "customer_next_step": "Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from \"test\" to \"enforce\" after a short tuning period.",
+      "status_label": "Check pending"
+    },
+    {
+      "check_id": "sen-ueba-not-enabled",
+      "title": "Sentinel UEBA / entity analytics not enabled",
+      "workload": "sentinel",
+      "status": "skipped",
+      "severity": "medium",
+      "value_impact": "medium",
+      "summary": "Entitlements resolved, but this control check is not implemented yet.",
+      "evidence": {
+        "collector": "sentinel_ueba",
+        "source": "checks/sentinel/sen-ueba-not-enabled.yaml"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "Enable Entity behavior analytics (UEBA) on the Sentinel workspace and ensure required data sources are connected.",
+      "references": [
+        "https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics"
+      ],
+      "customer_title": "Behavior-based detection may still be switched off",
+      "customer_summary": "Modern security tools can learn normal patterns for people and devices, then flag unusual behavior. That intelligence is often left off after the workspace is created.",
+      "customer_next_step": "Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.",
+      "status_label": "Check pending"
+    }
+  ],
+  "recommended_next_steps": [
+    "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky.",
+    "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).",
+    "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
+    "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.",
+    "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools)."
+  ],
+  "warnings": []
+}

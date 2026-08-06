@@ -115,6 +115,12 @@ def _not_licensed_finding(check: CheckDefinition, owned: set[str]) -> Finding:
 
 
 def _skipped_finding(check: CheckDefinition, owned: set[str]) -> Finding:
+    source = check.source_path
+    if source:
+        # Avoid leaking absolute developer paths into portable reports
+        source = source.replace("\\", "/").split("/checks/")[-1]
+        if not source.startswith("checks/"):
+            source = f"checks/{source}" if "checks/" not in source else source
     return _base_finding(
         check,
         status=FindingStatus.SKIPPED,
@@ -122,7 +128,7 @@ def _skipped_finding(check: CheckDefinition, owned: set[str]) -> Finding:
             "Entitlements resolved, but this control check is not implemented yet."
         ),
         owned=owned,
-        evidence={"collector": check.collector, "source": check.source_path},
+        evidence={"collector": check.collector, "source": source},
     )
 
 
@@ -331,6 +337,8 @@ def run_scan(
     if scan_mode == "dry_run":
         skus = collect_subscribed_skus(auth, dry_run=True)
         evidence = _gather_evidence(scan_mode=scan_mode, client=None, warnings=warnings)
+        tenant_id = tenant_id or "00000000-0000-0000-0000-000000000000"
+        tenant_display_name = tenant_display_name or "Contoso Demo (dry-run)"
     else:
         with GraphClient(auth) as client:
             try:

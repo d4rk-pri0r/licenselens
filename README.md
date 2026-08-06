@@ -2,15 +2,13 @@
 
 **See what you paid for but never turned on.**
 
-CLI package name: `licenselens` · Command: `licenselens`
+CLI package: `licenselens` · Command: `licenselens` · Release: **v0.1.0**
 
 Security License Lens detects **Microsoft security configuration debt**: high-value capabilities included in E5, Entra ID P2, Defender, Sentinel, Purview, and related SKUs that remain at default or unused.
 
 It is **not** another generic CIS/baseline scanner. It starts from **owned entitlements** (SKUs / service plans), maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
 Reports lead with **plain-language outcomes** for owners and SMBs (“stronger email protection”, “smarter sign-in rules”), then tuck product names and SKU codes into a technical section for consultants.
-
-> Status: **v0.1.0b3** — full identity pack live: CA, Identity Protection (via CA risk), PIM usage, dormant privileged accounts.
 
 ## Why Security License Lens?
 
@@ -34,42 +32,45 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
 
-# List registered checks
+# Demo scan (no tenant required)
 licenselens checks
-
-# Dry-run scan → static HTML dashboard (+ JSON + Markdown)
 licenselens scan -o reports
 open reports/security-license-lens-report.html   # macOS
+```
 
-# Live entitlements (app-only)
+### Live tenant (identity pack)
+
+```bash
 export AZURE_TENANT_ID=...
 export AZURE_CLIENT_ID=...
 export AZURE_CLIENT_SECRET=...
+
 licenselens doctor --live --auth client_secret
 licenselens scan --live --auth client_secret -o reports
 ```
 
-See [docs/app-registration.md](docs/app-registration.md) for Entra app setup. Configuration control checks beyond SKU→capability mapping are not fully live yet.
+Interactive alternative: `--auth device` (see [docs/app-registration.md](docs/app-registration.md)).
 
-## v0.1 check pack (registered)
+Sample dry-run output is checked in at [examples/sample-report/](examples/sample-report/).
 
-| ID | Workload | Theme |
-|----|----------|--------|
-| `id-pim-unused` | Identity | PIM not operationalized |
-| `id-ca-priv-gaps` | Identity | Privileged CA / legacy auth gaps |
-| `id-idprotect-off` | Identity | Identity Protection off / report-only |
-| `id-dormant-privileged` | Identity | Dormant privileged identities |
-| `mdo-p2-policies-default` | Defender | MDO P2 not broadly enforced |
-| `mde-onboard-gap` | Endpoint | MDE licensed vs onboarded gap |
-| `mdi-sensors-missing` | Defender | MDI sensors missing / unhealthy |
-| `sen-analytics-rule-coverage` | Sentinel | Thin analytics rule coverage |
-| `sen-ueba-not-enabled` | Sentinel | UEBA not enabled |
-| `pur-dlp-not-enforced` | Purview | DLP not enforced |
+## What is live in v0.1.0?
 
-**Live identity evaluators:** `id-ca-priv-gaps`, `id-idprotect-off`, `id-pim-unused`, `id-dormant-privileged`.  
-Defender / Sentinel / Purview checks remain `skipped` until those collectors ship; unlicensed capabilities report `not_licensed`.
+| Check ID | Workload | Live? |
+|----------|----------|-------|
+| `id-ca-priv-gaps` | Identity | Yes — CA MFA + legacy auth |
+| `id-idprotect-off` | Identity | Yes — risk-based CA |
+| `id-pim-unused` | Identity | Yes — standing roles vs PIM |
+| `id-dormant-privileged` | Identity | Yes — unused privileged users |
+| `mdo-p2-policies-default` | Defender | Registered (skipped) |
+| `mde-onboard-gap` | Endpoint | Registered (skipped) |
+| `mdi-sensors-missing` | Defender | Registered (skipped) |
+| `sen-analytics-rule-coverage` | Sentinel | Registered (skipped) |
+| `sen-ueba-not-enabled` | Sentinel | Registered (skipped) |
+| `pur-dlp-not-enforced` | Purview | Registered (skipped) |
 
-## Architecture (MVP)
+Unlicensed capabilities report `not_licensed` instead of false gaps.
+
+## Architecture
 
 ```
 SKUs / service plans → capability catalog → eligible checks
@@ -78,12 +79,21 @@ SKUs / service plans → capability catalog → eligible checks
 
 - **Catalog** (`catalog/`) — capabilities unlocked by plans/SKUs  
 - **Checks** (`checks/`) — YAML definitions; community-friendly  
-- **Engine** — only runs (or marks) checks the tenant is entitled to  
+- **Engine** — entitlement-aware evaluation + plain-language findings  
 - **Report** — portable static HTML (no server)
 
 ## Permissions
 
-Read-only Microsoft Graph application permissions are planned for live mode. See [docs/permissions.md](docs/permissions.md).
+Read-only Microsoft Graph **application** permissions with admin consent.  
+See [docs/permissions.md](docs/permissions.md) and [docs/app-registration.md](docs/app-registration.md).
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success (no gap/partial findings) |
+| 1 | Completed with gap or partial findings |
+| 2 | Auth / configuration / Graph error |
 
 ## Project layout
 
@@ -92,9 +102,18 @@ catalog/           # entitlement → capability map
 checks/            # YAML check definitions by workload
 src/licenselens/   # CLI, auth, collectors, engine, report
 templates/         # HTML report template
-docs/              # architecture, contributing checks, comparison
+examples/          # sample scrubbed report
+docs/              # architecture, permissions, contributing checks
 tests/             # fixture-based unit tests
 ```
+
+## Roadmap (v0.2+)
+
+- Defender for Office / Endpoint / Identity collectors  
+- Microsoft Sentinel analytics + UEBA checks  
+- Purview DLP enforcement checks  
+- MSP multi-tenant batch mode  
+- Optional Secure Score enrichment  
 
 ## Contributing
 
@@ -102,7 +121,7 @@ New checks are the primary contribution path. See [CONTRIBUTING.md](CONTRIBUTING
 
 ## Security
 
-Report vulnerabilities privately per [SECURITY.md](SECURITY.md). Security License Lens is intended to be **read-only**.
+Report vulnerabilities privately per [SECURITY.md](SECURITY.md). This tool is **read-only** and sends no telemetry by default.
 
 ## License
 
@@ -110,4 +129,4 @@ Report vulnerabilities privately per [SECURITY.md](SECURITY.md). Security Licens
 
 ## Disclaimer
 
-Security License Lens is an independent open-source project and is **not** affiliated with, endorsed by, or sponsored by Microsoft Corporation. “Microsoft”, “Entra”, “Defender”, “Sentinel”, and “Purview” are trademarks of their respective owners.
+Security License Lens is an independent open-source project and is **not** affiliated with, endorsed by, or sponsored by Microsoft Corporation. Findings are advisory and do not constitute a compliance certification. “Microsoft”, “Entra”, “Defender”, “Sentinel”, and “Purview” are trademarks of their respective owners.

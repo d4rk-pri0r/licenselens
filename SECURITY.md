@@ -2,9 +2,9 @@
 
 ## Supported versions
 
-| Version   | Supported |
-|-----------|-----------|
-| 0.1.x-a   | Yes (active development) |
+| Version | Supported |
+|---------|-----------|
+| 0.1.x   | Yes (current) |
 
 ## Reporting a vulnerability
 
@@ -21,6 +21,22 @@ Include:
 
 ## Design expectations
 
-- Security License Lens aims to be **read-only** against customer tenants
-- No customer tokens or report artifacts should be committed to the repo
+- Security License Lens is **read-only** against customer tenants (no write Graph/Azure APIs)
+- No telemetry is sent by default; reports are written only to paths you choose
+- Do not commit customer tokens, `.env` files, live reports, or unredacted exports
+- Default dormant-account evidence redacts UPN local-parts; treat full JSON as sensitive
+- Prefer certificate credentials over long-lived client secrets in production MSP use
 - Collectors must not call write APIs
+
+## Data handling
+
+| Data | Handling |
+|------|----------|
+| Access tokens | In-memory only via azure-identity; never logged |
+| Client secrets | Environment variables only; never printed |
+| HTML/JSON/MD reports | Local files under your control; may contain tenant configuration metadata |
+| Dry-run demo data | Synthetic Contoso-style fixtures only |
+
+## Scope
+
+Findings are **advisory**. This tool does not certify compliance, replace Microsoft Secure Score, or provide incident response.
