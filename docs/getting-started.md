@@ -20,7 +20,12 @@ licenselens scan -o reports
 
 Open `reports/security-license-lens-report.html` in a browser.
 
-## Live scan (entitlements)
+## Sample report
+
+A scrubbed dry-run report is committed at `examples/sample-report/` so you can
+preview HTML output without a tenant.
+
+## Live scan (identity pack)
 
 1. Register an app and grant admin consent — [app-registration.md](app-registration.md)
 2. Preflight:

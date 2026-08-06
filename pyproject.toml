@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "licenselens"
-version = "0.1.0b3"
+version = "0.1.0"
 description = "Security License Lens — detect Microsoft security configuration debt: capabilities you pay for but leave unused."
 readme = "README.md"
 license = "MIT"
@@ -21,7 +21,7 @@ keywords = [
   "graph",
 ]
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Environment :: Console",
   "Intended Audience :: Information Technology",
   "License :: OSI Approved :: MIT License",
