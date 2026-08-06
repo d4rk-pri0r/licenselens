@@ -9,7 +9,7 @@ Security License Lens is designed for **read-only** access.
 | `Organization.Read.All` | Subscribed SKUs / service plans |
 | `Directory.Read.All` | Directory roles, basic identity inventory |
 | `RoleManagement.Read.Directory` | Role assignments / PIM surfaces |
-| `Policy.Read.All` | Conditional Access policies |
+| `Policy.Read.All` | Conditional Access policies (required for `id-ca-priv-gaps`, `id-idprotect-off`) |
 | `IdentityRiskyUser.Read.All` | Identity Protection risky users |
 | `IdentityRiskEvent.Read.All` | Identity Protection risk events |
 | `AuditLog.Read.All` | Sign-in logs (dormant privileged, CA evidence) |

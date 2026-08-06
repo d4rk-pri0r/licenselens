@@ -14,8 +14,12 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert result.capability_summaries
     assert result.findings
     assert result.recommended_next_steps
+    by_id = {f.check_id: f for f in result.findings}
+    assert by_id["id-ca-priv-gaps"].status == FindingStatus.PARTIAL
+    assert by_id["id-idprotect-off"].status == FindingStatus.GAP
     assert any(f.status == FindingStatus.SKIPPED for f in result.findings)
     assert all(f.customer_title for f in result.findings)
+    assert result.has_actionable_gaps
     assert any("admin" in c.plain_name.lower() for c in result.capability_summaries)
 
     html = write_html_report(result, tmp_path / "r.html")

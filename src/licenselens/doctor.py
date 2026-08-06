@@ -118,6 +118,26 @@ def run_doctor(auth: AuthContext) -> DoctorReport:
                         detail=str(exc),
                     )
                 )
+
+            try:
+                from licenselens.collectors.conditional_access import collect_ca_policies
+
+                policies = collect_ca_policies(client)
+                report.checks.append(
+                    DoctorCheck(
+                        name="conditionalAccess",
+                        ok=True,
+                        detail=f"Read {len(policies)} Conditional Access policy(ies).",
+                    )
+                )
+            except GraphError as exc:
+                report.checks.append(
+                    DoctorCheck(
+                        name="conditionalAccess",
+                        ok=False,
+                        detail=str(exc),
+                    )
+                )
     except (AuthError, GraphError) as exc:
         report.checks.append(
             DoctorCheck(name="graph", ok=False, detail=str(exc))

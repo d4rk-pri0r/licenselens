@@ -10,7 +10,7 @@ It is **not** another generic CIS/baseline scanner. It starts from **owned entit
 
 Reports lead with **plain-language outcomes** for owners and SMBs (“stronger email protection”, “smarter sign-in rules”), then tuck product names and SKU codes into a technical section for consultants.
 
-> Status: **v0.1.0b1** — live Graph auth + subscribed SKU collection; configuration check evaluators still rolling out (identity pack next).
+> Status: **v0.1.0b2** — live Graph auth, SKUs, and first identity evaluators (Conditional Access + Identity Protection via CA risk policies).
 
 ## Why Security License Lens?
 
@@ -66,7 +66,8 @@ See [docs/app-registration.md](docs/app-registration.md) for Entra app setup. Co
 | `sen-ueba-not-enabled` | Sentinel | UEBA not enabled |
 | `pur-dlp-not-enforced` | Purview | DLP not enforced |
 
-In the scaffold, licensed checks report `skipped` (collector pending); unlicensed ones report `not_licensed`.
+**Live evaluators today:** `id-ca-priv-gaps`, `id-idprotect-off`.  
+Other licensed checks report `skipped` until their collectors ship; unlicensed ones report `not_licensed`.
 
 ## Architecture (MVP)
 

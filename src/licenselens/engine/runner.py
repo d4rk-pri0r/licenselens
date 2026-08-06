@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+from typing import Any
 
 from licenselens import __version__
 from licenselens.auth import AuthContext, AuthMode
@@ -11,7 +12,9 @@ from licenselens.catalog.loader import (
     load_capabilities,
     resolve_owned_capabilities,
 )
+from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
+from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
 from licenselens.errors import GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
@@ -48,61 +51,102 @@ def _customer_fields(check: CheckDefinition) -> dict[str, str]:
     }
 
 
-def _placeholder_finding(check: CheckDefinition, owned: set[str]) -> Finding:
-    """Emit structured placeholders until check runners are implemented (Session B+)."""
+def _base_finding(
+    check: CheckDefinition,
+    *,
+    status: FindingStatus,
+    summary: str,
+    owned: set[str],
+    evidence: dict[str, Any] | None = None,
+    customer_summary: str | None = None,
+    customer_next_step: str | None = None,
+) -> Finding:
     customer = _customer_fields(check)
-
-    if not _eligible(check, owned):
-        return Finding(
-            check_id=check.id,
-            title=check.title,
-            workload=check.workload,
-            status=FindingStatus.NOT_LICENSED,
-            severity=check.severity,
-            value_impact=check.value_impact,
-            summary=(
-                "Required capability not detected in tenant entitlements; "
-                "check skipped."
-            ),
-            customer_title=customer["customer_title"],
-            customer_summary=(
-                "This protection does not appear to be included in the licenses "
-                "we detected, so there is nothing to configure for it yet."
-            ),
-            customer_next_step=(
-                "If you expected this capability, confirm the correct Microsoft "
-                "plan is assigned, or talk to your licensing partner."
-            ),
-            status_label=STATUS_PLAIN_LABELS[FindingStatus.NOT_LICENSED.value],
-            entitlements_used=[],
-            remediation=check.remediation,
-            references=check.references,
-        )
-
     return Finding(
         check_id=check.id,
         title=check.title,
         workload=check.workload,
-        status=FindingStatus.SKIPPED,
+        status=status,
         severity=check.severity,
         value_impact=check.value_impact,
-        summary=(
-            "Entitlements resolved, but this control check is not implemented yet. "
-            "SKU / capability mapping is live; configuration evaluation lands next."
-        ),
+        summary=summary,
         customer_title=customer["customer_title"],
-        customer_summary=customer["customer_summary"],
-        customer_next_step=customer["customer_next_step"],
-        status_label=STATUS_PLAIN_LABELS[FindingStatus.SKIPPED.value],
-        evidence={"collector": check.collector, "source": check.source_path},
+        customer_summary=customer_summary or customer["customer_summary"],
+        customer_next_step=customer_next_step or customer["customer_next_step"],
+        status_label=STATUS_PLAIN_LABELS[status.value],
+        evidence=evidence or {},
         entitlements_used=[c for c in check.required_capabilities if c in owned],
         remediation=check.remediation,
         references=check.references,
     )
 
 
+def _not_licensed_finding(check: CheckDefinition, owned: set[str]) -> Finding:
+    return _base_finding(
+        check,
+        status=FindingStatus.NOT_LICENSED,
+        summary=(
+            "Required capability not detected in tenant entitlements; check skipped."
+        ),
+        owned=owned,
+        customer_summary=(
+            "This protection does not appear to be included in the licenses "
+            "we detected, so there is nothing to configure for it yet."
+        ),
+        customer_next_step=(
+            "If you expected this capability, confirm the correct Microsoft "
+            "plan is assigned, or talk to your licensing partner."
+        ),
+        evidence={},
+    )
+
+
+def _skipped_finding(check: CheckDefinition, owned: set[str]) -> Finding:
+    return _base_finding(
+        check,
+        status=FindingStatus.SKIPPED,
+        summary=(
+            "Entitlements resolved, but this control check is not implemented yet."
+        ),
+        owned=owned,
+        evidence={"collector": check.collector, "source": check.source_path},
+    )
+
+
+def _error_finding(check: CheckDefinition, owned: set[str], message: str) -> Finding:
+    return _base_finding(
+        check,
+        status=FindingStatus.ERROR,
+        summary=f"Could not evaluate check: {message}",
+        owned=owned,
+        customer_summary=(
+            "We could not verify this protection automatically. This is often a "
+            "permissions issue — see the technical summary and app registration guide."
+        ),
+        customer_next_step=(
+            "Ask IT to confirm Policy.Read.All (application) is granted with admin "
+            "consent, then re-run the scan."
+        ),
+        evidence={"error": message},
+    )
+
+
+def _from_evaluation(
+    check: CheckDefinition,
+    owned: set[str],
+    evaluation: Evaluation,
+) -> Finding:
+    return _base_finding(
+        check,
+        status=evaluation.status,
+        summary=evaluation.summary,
+        owned=owned,
+        evidence=evaluation.evidence,
+        customer_summary=evaluation.customer_summary,
+    )
+
+
 def _recommended_next_steps(findings: list[Finding], limit: int = 5) -> list[str]:
-    """Top plain-language next steps for gaps / partial / pending licensed checks."""
     actionable = [
         f
         for f in findings
@@ -131,6 +175,59 @@ def _recommended_next_steps(findings: list[Finding], limit: int = 5) -> list[str
     return steps
 
 
+def _gather_evidence(
+    *,
+    scan_mode: str,
+    client: GraphClient | None,
+    warnings: list[str],
+) -> dict[str, Any]:
+    """Collect shared evidence blobs for evaluators."""
+    evidence: dict[str, Any] = {}
+
+    if scan_mode == "dry_run":
+        evidence["ca_policies"] = list(DEMO_CA_POLICIES)
+        return evidence
+
+    assert client is not None
+    try:
+        evidence["ca_policies"] = collect_ca_policies(client)
+    except GraphError as exc:
+        warnings.append(f"Conditional Access policies could not be read: {exc}")
+        evidence["ca_policies_error"] = str(exc)
+
+    return evidence
+
+
+def _evaluate_check(
+    check: CheckDefinition,
+    owned: set[str],
+    evidence: dict[str, Any],
+) -> Finding:
+    if not _eligible(check, owned):
+        return _not_licensed_finding(check, owned)
+
+    evaluator = EVALUATORS.get(check.id)
+    if evaluator is None:
+        return _skipped_finding(check, owned)
+
+    # Evaluators that need CA data
+    if check.id in {"id-ca-priv-gaps", "id-idprotect-off"}:
+        if evidence.get("ca_policies_error"):
+            return _error_finding(check, owned, str(evidence["ca_policies_error"]))
+        if "ca_policies" not in evidence:
+            return _error_finding(
+                check,
+                owned,
+                "Conditional Access policy data was not collected.",
+            )
+
+    try:
+        result = evaluator(check, evidence)
+    except Exception as exc:  # noqa: BLE001
+        return _error_finding(check, owned, str(exc))
+    return _from_evaluation(check, owned, result)
+
+
 def run_scan(
     auth: AuthContext,
     *,
@@ -142,9 +239,11 @@ def run_scan(
     tenant_id = auth.tenant_id
     tenant_display_name: str | None = None
     scan_mode = "dry_run" if dry_run or auth.mode == AuthMode.DRY_RUN else "live"
+    evidence: dict[str, Any] = {}
 
     if scan_mode == "dry_run":
         skus = collect_subscribed_skus(auth, dry_run=True)
+        evidence = _gather_evidence(scan_mode=scan_mode, client=None, warnings=warnings)
     else:
         with GraphClient(auth) as client:
             try:
@@ -157,6 +256,9 @@ def run_scan(
                 skus = collect_subscribed_skus_live(client)
             except GraphError:
                 raise
+            evidence = _gather_evidence(
+                scan_mode=scan_mode, client=client, warnings=warnings
+            )
 
     owned = resolve_owned_capabilities(capabilities, skus)
     owned_set = set(owned)
@@ -167,7 +269,7 @@ def run_scan(
         wanted = set(workloads)
         checks = [c for c in checks if c.workload in wanted]
 
-    findings = [_placeholder_finding(c, owned_set) for c in checks]
+    findings = [_evaluate_check(c, owned_set, evidence) for c in checks]
     findings.sort(
         key=lambda f: (
             _STATUS_PRIORITY.get(f.status, 99),
@@ -178,11 +280,11 @@ def run_scan(
         )
     )
 
-    if scan_mode == "live":
+    live_pending = [f.check_id for f in findings if f.status == FindingStatus.SKIPPED]
+    if scan_mode == "live" and live_pending:
         warnings.append(
-            "Configuration checks are not fully live yet — identity control "
-            "evaluators arrive in the next release. Entitlements and capability "
-            "mapping above are from your real tenant."
+            "Some configuration checks are not implemented yet and were marked "
+            f"pending: {', '.join(sorted(live_pending))}."
         )
 
     return ScanResult(
