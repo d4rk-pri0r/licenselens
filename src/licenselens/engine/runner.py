@@ -5,14 +5,16 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from licenselens import __version__
-from licenselens.auth import AuthContext
+from licenselens.auth import AuthContext, AuthMode
 from licenselens.catalog.loader import (
     capability_summaries_for,
     load_capabilities,
     resolve_owned_capabilities,
 )
-from licenselens.collectors.skus import collect_subscribed_skus
+from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
 from licenselens.engine.loader import load_checks
+from licenselens.errors import GraphError
+from licenselens.graph import GraphClient, fetch_organization_context
 from licenselens.models import (
     STATUS_PLAIN_LABELS,
     CheckDefinition,
@@ -47,7 +49,7 @@ def _customer_fields(check: CheckDefinition) -> dict[str, str]:
 
 
 def _placeholder_finding(check: CheckDefinition, owned: set[str]) -> Finding:
-    """v0.1a: emit structured placeholders until collectors are implemented."""
+    """Emit structured placeholders until check runners are implemented (Session B+)."""
     customer = _customer_fields(check)
 
     if not _eligible(check, owned):
@@ -85,8 +87,8 @@ def _placeholder_finding(check: CheckDefinition, owned: set[str]) -> Finding:
         severity=check.severity,
         value_impact=check.value_impact,
         summary=(
-            "Check is registered and licensed, but the collector is not "
-            "implemented yet (scaffold)."
+            "Entitlements resolved, but this control check is not implemented yet. "
+            "SKU / capability mapping is live; configuration evaluation lands next."
         ),
         customer_title=customer["customer_title"],
         customer_summary=customer["customer_summary"],
@@ -136,7 +138,26 @@ def run_scan(
     dry_run: bool = True,
 ) -> ScanResult:
     capabilities = load_capabilities()
-    skus = collect_subscribed_skus(auth, dry_run=dry_run)
+    warnings = list(auth.warnings)
+    tenant_id = auth.tenant_id
+    tenant_display_name: str | None = None
+    scan_mode = "dry_run" if dry_run or auth.mode == AuthMode.DRY_RUN else "live"
+
+    if scan_mode == "dry_run":
+        skus = collect_subscribed_skus(auth, dry_run=True)
+    else:
+        with GraphClient(auth) as client:
+            try:
+                org_id, org_name = fetch_organization_context(client)
+                tenant_id = org_id or tenant_id
+                tenant_display_name = org_name
+            except GraphError as exc:
+                warnings.append(f"Could not read organization profile: {exc}")
+            try:
+                skus = collect_subscribed_skus_live(client)
+            except GraphError:
+                raise
+
     owned = resolve_owned_capabilities(capabilities, skus)
     owned_set = set(owned)
     summaries = capability_summaries_for(capabilities, owned)
@@ -157,13 +178,24 @@ def run_scan(
         )
     )
 
+    if scan_mode == "live":
+        warnings.append(
+            "Configuration checks are not fully live yet — identity control "
+            "evaluators arrive in the next release. Entitlements and capability "
+            "mapping above are from your real tenant."
+        )
+
     return ScanResult(
         version=__version__,
-        tenant_id=auth.tenant_id,
+        tenant_id=tenant_id,
+        tenant_display_name=tenant_display_name,
+        scan_mode=scan_mode,
+        auth_mode=auth.mode.value,
         scanned_at=datetime.now(UTC).isoformat(),
         owned_capabilities=owned,
         capability_summaries=summaries,
         subscribed_skus=skus,
         findings=findings,
         recommended_next_steps=_recommended_next_steps(findings),
+        warnings=warnings,
     )

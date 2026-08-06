@@ -122,8 +122,19 @@
     <div class="meta">
       <div>Version <code>{{ result.version }}</code></div>
       <div>Scanned <code>{{ result.scanned_at }}</code></div>
-      <div>Organization <code>{{ result.tenant_id or "demo / dry-run" }}</code></div>
+      <div>Mode <code>{{ result.scan_mode }}{% if result.auth_mode %} / {{ result.auth_mode }}{% endif %}</code></div>
+      <div>Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
     </div>
+    {% if result.warnings %}
+    <div class="intro" style="border-color: color-mix(in srgb, var(--partial) 50%, var(--border));">
+      <strong>Notes</strong>
+      <ul style="margin: 0.5rem 0 0; padding-left: 1.2rem;">
+        {% for w in result.warnings %}
+        <li>{{ w }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
     <div class="intro">
       <strong>How to read this report:</strong>
       Microsoft licenses often include powerful protections with confusing product names.

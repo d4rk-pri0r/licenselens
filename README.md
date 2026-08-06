@@ -10,7 +10,7 @@ It is **not** another generic CIS/baseline scanner. It starts from **owned entit
 
 Reports lead with **plain-language outcomes** for owners and SMBs (“stronger email protection”, “smarter sign-in rules”), then tuck product names and SKU codes into a technical section for consultants.
 
-> Status: **v0.1.0a1 scaffold** — dry-run engine, catalog, check registry, and static HTML report. Live Graph collectors land next.
+> Status: **v0.1.0b1** — live Graph auth + subscribed SKU collection; configuration check evaluators still rolling out (identity pack next).
 
 ## Why Security License Lens?
 
@@ -40,9 +40,16 @@ licenselens checks
 # Dry-run scan → static HTML dashboard (+ JSON + Markdown)
 licenselens scan -o reports
 open reports/security-license-lens-report.html   # macOS
+
+# Live entitlements (app-only)
+export AZURE_TENANT_ID=...
+export AZURE_CLIENT_ID=...
+export AZURE_CLIENT_SECRET=...
+licenselens doctor --live --auth client_secret
+licenselens scan --live --auth client_secret -o reports
 ```
 
-Live tenant scans (`--live`) are intentionally not enabled in this alpha.
+See [docs/app-registration.md](docs/app-registration.md) for Entra app setup. Configuration control checks beyond SKU→capability mapping are not fully live yet.
 
 ## v0.1 check pack (registered)
 

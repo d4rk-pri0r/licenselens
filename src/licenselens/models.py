@@ -151,12 +151,16 @@ class ScanResult(BaseModel):
     tool_display_name: str = "Security License Lens"
     version: str
     tenant_id: str | None = None
+    tenant_display_name: str | None = None
+    scan_mode: str = "dry_run"  # dry_run | live
+    auth_mode: str | None = None
     scanned_at: str
     owned_capabilities: list[str] = Field(default_factory=list)
     capability_summaries: list[CapabilitySummary] = Field(default_factory=list)
     subscribed_skus: list[SubscribedSku] = Field(default_factory=list)
     findings: list[Finding] = Field(default_factory=list)
     recommended_next_steps: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
 
     @property
     def counts_by_status(self) -> dict[str, int]:
@@ -164,3 +168,7 @@ class ScanResult(BaseModel):
         for f in self.findings:
             counts[f.status.value] = counts.get(f.status.value, 0) + 1
         return counts
+
+    @property
+    def has_actionable_gaps(self) -> bool:
+        return any(f.status in {FindingStatus.GAP, FindingStatus.PARTIAL} for f in self.findings)

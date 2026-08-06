@@ -18,11 +18,22 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
         "",
         f"- **Version:** {result.version}",
         f"- **Scanned at:** {result.scanned_at}",
-        f"- **Tenant:** {result.tenant_id or 'n/a (dry-run)'}",
-        "",
-        "## At a glance",
+        f"- **Mode:** {result.scan_mode}"
+        + (f" / {result.auth_mode}" if result.auth_mode else ""),
+        f"- **Organization:** {result.tenant_display_name or result.tenant_id or 'n/a (dry-run)'}",
         "",
     ]
+    if result.warnings:
+        lines.extend(["## Notes", ""])
+        for warning in result.warnings:
+            lines.append(f"- {warning}")
+        lines.append("")
+    lines.extend(
+        [
+        "## At a glance",
+        "",
+        ]
+    )
     if counts:
         for status, n in sorted(counts.items()):
             label = STATUS_PLAIN_LABELS.get(status, status)
