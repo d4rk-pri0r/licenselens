@@ -4,27 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from licenselens.collectors.privileged_roles import PRIVILEGED_ROLE_TEMPLATE_IDS
 from licenselens.graph import GraphClient
-
-# Representative well-known privileged directory role template IDs.
-PRIVILEGED_ROLE_TEMPLATE_IDS: frozenset[str] = frozenset(
-    {
-        "62e90394-69f5-4237-9190-012177145e10",  # Global Administrator
-        "e8611ab8-c189-46e8-94e1-60213ab1f814",  # Privileged Role Administrator
-        "194ae4cb-b126-40b2-bd5b-6091b380977d",  # Security Administrator
-        "f28a1f50-f6e7-4571-818b-6a12f2af6b6c",  # SharePoint Administrator
-        "29232cdf-9323-42fd-ade2-1d097af3e4de",  # Exchange Administrator
-        "b1be1c3e-b65d-4f19-8427-f6fa0d97feb9",  # Conditional Access Administrator
-        "9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3",  # Application Administrator
-        "158c047a-c907-4556-b7ef-446551a6b5f7",  # Cloud Application Administrator
-        "7be44c8a-adaf-4e2a-84d6-ab2649e08a13",  # Privileged Authentication Administrator
-        "c4e39bd9-1100-46d3-8c65-fb160da0071f",  # Authentication Administrator
-        "729827e3-9c14-49f7-bb1b-9608f156bbb8",  # Helpdesk Administrator
-        "fdd7a751-b60b-444a-984c-02652fe8fa1c",  # Groups Administrator
-        "fe930be7-5e62-47db-91af-98c3a49a38b1",  # User Administrator
-        "3a2c62db-5318-420d-8d74-23affee5d9d5",  # Intune Administrator
-    }
-)
 
 LEGACY_CLIENT_APP_TYPES: frozenset[str] = frozenset({"exchangeActiveSync", "other"})
 

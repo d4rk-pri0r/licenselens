@@ -58,6 +58,7 @@ class GraphClient:
         path: str,
         *,
         params: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[Any]:
         url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
         last_error: Exception | None = None
@@ -67,8 +68,16 @@ class GraphClient:
                 "Authorization": f"Bearer {self._get_token()}",
                 "Accept": "application/json",
             }
+            if json_body is not None:
+                headers["Content-Type"] = "application/json"
             try:
-                response = self._http.request(method, url, headers=headers, params=params)
+                response = self._http.request(
+                    method,
+                    url,
+                    headers=headers,
+                    params=params,
+                    json=json_body,
+                )
             except httpx.HTTPError as exc:
                 last_error = exc
                 if attempt >= self._max_retries:
@@ -103,6 +112,18 @@ class GraphClient:
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
         data = self.request("GET", path, params=params)
+        if not isinstance(data, dict):
+            raise GraphError("Expected a JSON object from Graph.")
+        return data
+
+    def post(
+        self,
+        path: str,
+        *,
+        json_body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        data = self.request("POST", path, params=params, json_body=json_body)
         if not isinstance(data, dict):
             raise GraphError("Expected a JSON object from Graph.")
         return data

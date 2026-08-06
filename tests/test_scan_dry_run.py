@@ -17,6 +17,11 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     by_id = {f.check_id: f for f in result.findings}
     assert by_id["id-ca-priv-gaps"].status == FindingStatus.PARTIAL
     assert by_id["id-idprotect-off"].status == FindingStatus.GAP
+    assert by_id["id-pim-unused"].status == FindingStatus.GAP
+    assert by_id["id-dormant-privileged"].status in {
+        FindingStatus.GAP,
+        FindingStatus.PARTIAL,
+    }
     assert any(f.status == FindingStatus.SKIPPED for f in result.findings)
     assert all(f.customer_title for f in result.findings)
     assert result.has_actionable_gaps

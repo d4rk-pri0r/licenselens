@@ -138,6 +138,26 @@ def run_doctor(auth: AuthContext) -> DoctorReport:
                         detail=str(exc),
                     )
                 )
+
+            try:
+                from licenselens.collectors.privileged_roles import collect_role_assignments
+
+                roles = collect_role_assignments(client)
+                report.checks.append(
+                    DoctorCheck(
+                        name="roleAssignments",
+                        ok=True,
+                        detail=f"Read {len(roles)} directory role assignment(s).",
+                    )
+                )
+            except GraphError as exc:
+                report.checks.append(
+                    DoctorCheck(
+                        name="roleAssignments",
+                        ok=False,
+                        detail=str(exc),
+                    )
+                )
     except (AuthError, GraphError) as exc:
         report.checks.append(
             DoctorCheck(name="graph", ok=False, detail=str(exc))
