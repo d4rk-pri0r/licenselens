@@ -1,6 +1,6 @@
 # Permissions
 
-LicenseLens is designed for **read-only** access.
+Security License Lens is designed for **read-only** access.
 
 ## Microsoft Graph (application permissions) — planned v0.1
 
@@ -25,4 +25,4 @@ Workload-specific APIs (MDE, MDI, Sentinel, Purview) will document additional ro
 
 ## Least privilege
 
-Prefer a dedicated app registration with **no write permissions**. Do not grant `*.ReadWrite.*` for LicenseLens.
+Prefer a dedicated app registration with **no write permissions**. Do not grant `*.ReadWrite.*` for Security License Lens.

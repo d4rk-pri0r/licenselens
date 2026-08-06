@@ -25,7 +25,7 @@ htmlcov/
 *.swp
 .DS_Store
 
-# LicenseLens outputs
+# Security License Lens outputs
 reports/
 *.report.html
 *.report.json

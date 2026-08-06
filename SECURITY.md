@@ -21,6 +21,6 @@ Include:
 
 ## Design expectations
 
-- LicenseLens aims to be **read-only** against customer tenants
+- Security License Lens aims to be **read-only** against customer tenants
 - No customer tokens or report artifacts should be committed to the repo
 - Collectors must not call write APIs

@@ -1,4 +1,4 @@
-"""LicenseLens command-line interface."""
+"""Security License Lens command-line interface."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from licenselens import __version__
+from licenselens import __cli_name__, __product_name__, __version__
 from licenselens.auth import AuthMode, build_auth_context
 from licenselens.engine.loader import load_checks
 from licenselens.engine.runner import run_scan
@@ -16,8 +16,11 @@ from licenselens.models import Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 
 app = typer.Typer(
-    name="licenselens",
-    help="Detect Microsoft security configuration debt: paid capabilities left unused.",
+    name=__cli_name__,
+    help=(
+        f"{__product_name__}: detect Microsoft security configuration debt — "
+        "capabilities you pay for but leave unused."
+    ),
     no_args_is_help=True,
     add_completion=False,
 )
@@ -26,8 +29,8 @@ console = Console()
 
 @app.command("version")
 def version_cmd() -> None:
-    """Print the LicenseLens version."""
-    console.print(f"licenselens {__version__}")
+    """Print the Security License Lens version."""
+    console.print(f"{__product_name__} ({__cli_name__}) {__version__}")
 
 
 @app.command("checks")
@@ -45,7 +48,7 @@ def checks_cmd(
         console.print("[yellow]No checks found.[/yellow]")
         raise typer.Exit(code=0)
 
-    table = Table(title="LicenseLens checks")
+    table = Table(title=f"{__product_name__} checks")
     table.add_column("ID")
     table.add_column("Workload")
     table.add_column("Severity")
@@ -108,13 +111,13 @@ def scan_cmd(
         )
         raise typer.Exit(code=2)
 
-    console.print("[cyan]Running LicenseLens scan (dry-run)…[/cyan]")
+    console.print(f"[cyan]Running {__product_name__} scan (dry-run)…[/cyan]")
     result = run_scan(auth, workloads=workloads, dry_run=dry_run)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    html_path = write_html_report(result, output_dir / "licenselens-report.html")
-    json_path = write_json_report(result, output_dir / "licenselens-report.json")
-    md_path = write_markdown_report(result, output_dir / "licenselens-report.md")
+    html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
+    json_path = write_json_report(result, output_dir / "security-license-lens-report.json")
+    md_path = write_markdown_report(result, output_dir / "security-license-lens-report.md")
 
     counts = result.counts_by_status
     console.print(

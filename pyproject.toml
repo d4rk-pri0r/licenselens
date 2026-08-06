@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "licenselens"
 version = "0.1.0a1"
-description = "Detect Microsoft security configuration debt: capabilities you pay for but leave unused."
+description = "Security License Lens — detect Microsoft security configuration debt: capabilities you pay for but leave unused."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.12"

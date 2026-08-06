@@ -147,7 +147,8 @@ class CapabilitySummary(BaseModel):
 
 
 class ScanResult(BaseModel):
-    tool: str = "licenselens"
+    tool: str = "security-license-lens"
+    tool_display_name: str = "Security License Lens"
     version: str
     tenant_id: str | None = None
     scanned_at: str

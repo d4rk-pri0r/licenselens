@@ -2,7 +2,7 @@
 
 ## Our pledge
 
-We pledge to make participation in LicenseLens a harassment-free experience for everyone.
+We pledge to make participation in Security License Lens a harassment-free experience for everyone.
 
 ## Our standards
 

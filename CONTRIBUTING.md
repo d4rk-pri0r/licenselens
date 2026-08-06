@@ -1,4 +1,4 @@
-# Contributing to LicenseLens
+# Contributing to Security License Lens
 
 Thanks for helping map paid Microsoft security capabilities to real configuration.
 
