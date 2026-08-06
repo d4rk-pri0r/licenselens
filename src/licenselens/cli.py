@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import StrEnum
 from pathlib import Path
 
 import typer
@@ -10,8 +11,10 @@ from rich.table import Table
 
 from licenselens import __cli_name__, __product_name__, __version__
 from licenselens.auth import AuthMode, build_auth_context
+from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
 from licenselens.engine.runner import run_scan
+from licenselens.errors import AuthError, GraphError, LicenseLensError
 from licenselens.models import Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 
@@ -27,6 +30,32 @@ app = typer.Typer(
 console = Console()
 
 
+class AuthModeOption(StrEnum):
+    DEVICE = "device"
+    CLIENT_SECRET = "client_secret"
+    AZURE_CLI = "azure_cli"
+
+
+def _to_auth_mode(option: AuthModeOption | None, *, live: bool) -> AuthMode:
+    if not live:
+        return AuthMode.DRY_RUN
+    if option is None:
+        return AuthMode.DEVICE_CODE
+    return {
+        AuthModeOption.DEVICE: AuthMode.DEVICE_CODE,
+        AuthModeOption.CLIENT_SECRET: AuthMode.CLIENT_SECRET,
+        AuthModeOption.AZURE_CLI: AuthMode.AZURE_CLI,
+    }[option]
+
+
+def _exit_for_scan(result_has_gaps: bool, *, errored: bool = False) -> None:
+    if errored:
+        raise typer.Exit(code=2)
+    if result_has_gaps:
+        raise typer.Exit(code=1)
+    raise typer.Exit(code=0)
+
+
 @app.command("version")
 def version_cmd() -> None:
     """Print the Security License Lens version."""
@@ -34,15 +63,8 @@ def version_cmd() -> None:
 
 
 @app.command("checks")
-def checks_cmd(
-    list_only: bool = typer.Option(
-        True,
-        "--list/--no-list",
-        help="List registered checks.",
-    ),
-) -> None:
+def checks_cmd() -> None:
     """List registered checks from the checks/ tree."""
-    del list_only  # reserved for future filters
     checks = load_checks()
     if not checks:
         console.print("[yellow]No checks found.[/yellow]")
@@ -65,6 +87,63 @@ def checks_cmd(
     console.print(table)
 
 
+@app.command("doctor")
+def doctor_cmd(
+    live: bool = typer.Option(
+        False,
+        "--live/--dry-run",
+        help="Probe a real tenant (default: dry-run message only).",
+    ),
+    auth: AuthModeOption | None = typer.Option(
+        None,
+        "--auth",
+        help="Live auth mode: device | client_secret | azure_cli.",
+    ),
+    tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
+    client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
+    client_secret: str | None = typer.Option(
+        None,
+        "--client-secret",
+        envvar="AZURE_CLIENT_SECRET",
+        help="Client secret (prefer env AZURE_CLIENT_SECRET).",
+    ),
+) -> None:
+    """Preflight credentials and core Graph permissions (SKUs / organization)."""
+    mode = _to_auth_mode(auth, live=live)
+    try:
+        ctx = build_auth_context(
+            mode=mode,
+            tenant_id=tenant_id,
+            client_id=client_id,
+            client_secret=client_secret,
+        )
+        report = run_doctor(ctx)
+    except LicenseLensError as exc:
+        console.print(f"[red]Doctor failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+
+    for warning in ctx.warnings:
+        console.print(f"[yellow]Warning:[/yellow] {warning}")
+
+    table = Table(title=f"{__product_name__} doctor")
+    table.add_column("Check")
+    table.add_column("OK")
+    table.add_column("Detail")
+    for item in report.checks:
+        table.add_row(item.name, "yes" if item.ok else "no", item.detail)
+    console.print(table)
+
+    if report.tenant_display_name or report.tenant_id:
+        console.print(
+            f"Tenant: {report.tenant_display_name or '—'} "
+            f"({report.tenant_id or '—'})"
+        )
+    if report.sku_count:
+        console.print(f"Subscribed SKUs: {report.sku_count}")
+
+    raise typer.Exit(code=0 if report.ok else 2)
+
+
 @app.command("scan")
 def scan_cmd(
     output_dir: Path = typer.Option(
@@ -79,15 +158,23 @@ def scan_cmd(
         "-w",
         help="Limit to workload(s): identity, defender, sentinel, purview, endpoint.",
     ),
-    dry_run: bool = typer.Option(
-        True,
-        "--dry-run/--live",
-        help="Dry-run uses demo entitlements (default). Live Graph is not ready yet.",
+    live: bool = typer.Option(
+        False,
+        "--live/--dry-run",
+        help="Query a real tenant via Microsoft Graph (default: dry-run demo data).",
     ),
-    tenant_id: str | None = typer.Option(
+    auth: AuthModeOption | None = typer.Option(
         None,
-        "--tenant-id",
-        help="Target tenant ID (live mode).",
+        "--auth",
+        help="Live auth mode: device | client_secret | azure_cli (default: device).",
+    ),
+    tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
+    client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
+    client_secret: str | None = typer.Option(
+        None,
+        "--client-secret",
+        envvar="AZURE_CLIENT_SECRET",
+        help="Client secret (prefer env AZURE_CLIENT_SECRET).",
     ),
 ) -> None:
     """Run entitlement-aware checks and write a static HTML dashboard."""
@@ -99,20 +186,33 @@ def scan_cmd(
             console.print(f"[red]Invalid workload:[/red] {exc}")
             raise typer.Exit(code=2) from exc
 
-    auth = build_auth_context(
-        mode=AuthMode.DRY_RUN if dry_run else AuthMode.DEVICE_CODE,
-        tenant_id=tenant_id,
-    )
-
-    if not dry_run:
-        console.print(
-            "[red]Live scan is not implemented in this scaffold. "
-            "Use the default --dry-run.[/red]"
+    mode = _to_auth_mode(auth, live=live)
+    try:
+        auth_ctx = build_auth_context(
+            mode=mode,
+            tenant_id=tenant_id,
+            client_id=client_id,
+            client_secret=client_secret,
         )
-        raise typer.Exit(code=2)
+    except AuthError as exc:
+        console.print(f"[red]Auth configuration error:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
 
-    console.print(f"[cyan]Running {__product_name__} scan (dry-run)…[/cyan]")
-    result = run_scan(auth, workloads=workloads, dry_run=dry_run)
+    for warning in auth_ctx.warnings:
+        console.print(f"[yellow]Warning:[/yellow] {warning}")
+
+    label = "live" if live else "dry-run"
+    console.print(f"[cyan]Running {__product_name__} scan ({label})…[/cyan]")
+
+    try:
+        result = run_scan(auth_ctx, workloads=workloads, dry_run=not live)
+    except (AuthError, GraphError) as exc:
+        console.print(f"[red]Scan failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+
+    for warning in result.warnings:
+        if warning not in auth_ctx.warnings:
+            console.print(f"[yellow]Warning:[/yellow] {warning}")
 
     output_dir.mkdir(parents=True, exist_ok=True)
     html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
@@ -120,14 +220,18 @@ def scan_cmd(
     md_path = write_markdown_report(result, output_dir / "security-license-lens-report.md")
 
     counts = result.counts_by_status
+    org = result.tenant_display_name or result.tenant_id or "n/a"
     console.print(
-        f"[green]Done.[/green] findings={len(result.findings)} "
-        f"owned_capabilities={len(result.owned_capabilities)} "
-        f"status_counts={counts}"
+        f"[green]Done.[/green] org={org} mode={result.scan_mode} "
+        f"skus={len(result.subscribed_skus)} "
+        f"capabilities={len(result.owned_capabilities)} "
+        f"findings={len(result.findings)} status_counts={counts}"
     )
     console.print(f"  HTML  {html_path}")
     console.print(f"  JSON  {json_path}")
     console.print(f"  MD    {md_path}")
+
+    _exit_for_scan(result.has_actionable_gaps)
 
 
 def main() -> None:

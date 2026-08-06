@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 from licenselens.auth import AuthContext, AuthMode
+from licenselens.errors import AuthError
+from licenselens.graph import GraphClient
 from licenselens.models import ServicePlan, SubscribedSku
 
-# Fixture used for dry-run / demos until live Graph is wired.
+# Fixture used for dry-run / demos without a tenant.
 _DEMO_SKUS: list[SubscribedSku] = [
     SubscribedSku(
         sku_id="demo-e5",
@@ -46,20 +48,59 @@ _DEMO_SKUS: list[SubscribedSku] = [
 ]
 
 
+def _parse_sku(raw: dict) -> SubscribedSku:
+    prepaid = raw.get("prepaidUnits") or {}
+    enabled_units = prepaid.get("enabled")
+    plans_raw = raw.get("servicePlans") or []
+    plans = [
+        ServicePlan(
+            service_plan_id=p.get("servicePlanId"),
+            service_plan_name=str(p.get("servicePlanName") or ""),
+            provisioning_status=p.get("provisioningStatus"),
+        )
+        for p in plans_raw
+        if p.get("servicePlanName")
+    ]
+    return SubscribedSku(
+        sku_id=raw.get("skuId"),
+        sku_part_number=str(raw.get("skuPartNumber") or raw.get("skuId") or "UNKNOWN"),
+        capability_status=raw.get("capabilityStatus"),
+        prepaid_units=int(enabled_units) if enabled_units is not None else None,
+        consumed_units=raw.get("consumedUnits"),
+        service_plans=plans,
+    )
+
+
+def skus_from_graph_values(values: list[dict]) -> list[SubscribedSku]:
+    """Parse Graph subscribedSkus value array (test helper + collector)."""
+    return [_parse_sku(item) for item in values]
+
+
+def collect_subscribed_skus_live(client: GraphClient) -> list[SubscribedSku]:
+    """Fetch /subscribedSkus via Graph."""
+    rows = client.get_list("/subscribedSkus")
+    return skus_from_graph_values(rows)
+
+
 def collect_subscribed_skus(
     auth: AuthContext,
     *,
     dry_run: bool = True,
+    client: GraphClient | None = None,
 ) -> list[SubscribedSku]:
-    """Return subscribed SKUs.
-
-    Dry-run returns a synthetic E5-like entitlement set so the engine and
-    report can be exercised without a tenant.
-    """
+    """Return subscribed SKUs (demo data or live Graph)."""
     if dry_run or auth.mode == AuthMode.DRY_RUN:
         return list(_DEMO_SKUS)
 
-    raise NotImplementedError(
-        "Live Graph SKU collection is not implemented in this scaffold. "
-        "Use --dry-run or wait for the collector milestone."
-    )
+    if client is not None:
+        return collect_subscribed_skus_live(client)
+
+    if not auth.has_credentials:
+        raise AuthError("Live SKU collection requires authenticated credentials.")
+
+    with GraphClient(auth) as graph:
+        return collect_subscribed_skus_live(graph)
+
+
+def demo_skus() -> list[SubscribedSku]:
+    return list(_DEMO_SKUS)
