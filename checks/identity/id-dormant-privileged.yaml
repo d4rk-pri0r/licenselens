@@ -1,5 +1,12 @@
 id: id-dormant-privileged
 title: Dormant privileged identities still enabled
+customer_title: Powerful accounts that nobody uses are still switched on
+customer_summary: >
+  Admin or high-privilege accounts that sit unused are favorite targets.
+  Attackers love quiet accounts because nobody notices when they suddenly wake up.
+customer_next_step: >
+  Review enabled admin accounts that have not signed in for a long time;
+  disable or remove access you no longer need.
 description: >
   Enabled identities holding directory or PIM roles with no successful
   sign-in for a long window are high-value takeover targets and unused

@@ -1,5 +1,13 @@
 id: id-idprotect-off
 title: Identity Protection policies off or report-only
+customer_title: Suspicious sign-ins may not be blocked automatically
+customer_summary: >
+  Your plan can flag odd sign-in behavior (like a login from an unusual country
+  right after one at the office). If those protections are off or "report only,"
+  risky logins may still succeed.
+customer_next_step: >
+  Turn on risk-based sign-in protection in stages — start by requiring extra
+  verification when Microsoft marks a sign-in as risky.
 description: >
   Entra ID P2 includes Identity Protection. Risk policies left disabled or
   report-only leave paid risk detections unenforced.

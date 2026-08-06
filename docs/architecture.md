@@ -15,10 +15,14 @@ Auth → Collectors → Entitlement resolution → Check selection → Findings 
 ## Key types
 
 - `SubscribedSku` / `ServicePlan` — tenant entitlements
-- `Capability` — product feature unlocked by entitlements
-- `CheckDefinition` — declarative check metadata
+- `Capability` — product feature unlocked by entitlements, plus plain-language
+  `plain_name`, `outcome`, `why_it_matters`, `if_unused` for customer reports
+- `CheckDefinition` — declarative check metadata, including `customer_title`,
+  `customer_summary`, `customer_next_step`
 - `Finding` — result with status `gap | partial | ok | not_licensed | error | skipped`
-- `ScanResult` — full portable scan artifact
+  and mirrored customer-facing fields
+- `CapabilitySummary` — owned capabilities ready for the “What you already pay for” section
+- `ScanResult` — full portable scan artifact, including `recommended_next_steps`
 
 ## Extensibility
 

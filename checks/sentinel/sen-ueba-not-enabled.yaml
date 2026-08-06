@@ -1,5 +1,13 @@
 id: sen-ueba-not-enabled
 title: Sentinel UEBA / entity analytics not enabled
+customer_title: Behavior-based detection may still be switched off
+customer_summary: >
+  Modern security tools can learn normal patterns for people and devices,
+  then flag unusual behavior. That intelligence is often left off after
+  the workspace is created.
+customer_next_step: >
+  Ask your security admin to turn on behavior analytics (UEBA) in the
+  security workspace and connect the main data sources it needs.
 description: >
   User and Entity Behavior Analytics is a high-value Sentinel capability
   often left off after workspace creation.
