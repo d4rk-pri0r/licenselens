@@ -32,4 +32,9 @@ jobs:
         run: pytest -q
 
       - name: Dry-run scan
-        run: licenselens scan -o reports
+        # Exit 1 means gaps/partial findings (expected in demo data)
+        run: |
+          set +e
+          licenselens scan -o reports
+          code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then exit "$code"; fi
