@@ -2,17 +2,17 @@
 
 Security License Lens is designed for **read-only** access.
 
-## Microsoft Graph (application permissions) — identity pack (v0.1)
+## Microsoft Graph (application permissions)
 
 | Permission | Purpose |
 |------------|---------|
 | `Organization.Read.All` | Tenant profile + subscribed SKUs |
 | `Directory.Read.All` | Directory object lookup for privileged principals |
-| `RoleManagement.Read.Directory` | Role assignments + PIM eligibility (`id-pim-unused`, `id-dormant-privileged`) |
-| `Policy.Read.All` | Conditional Access (`id-ca-priv-gaps`, `id-idprotect-off`) |
-| `AuditLog.Read.All` | Sign-in logs (`id-dormant-privileged`) |
-| `User.Read.All` | Optional user detail (often covered by Directory.Read.All) |
-| `SecurityEvents.Read.All` | Secure Score (MDO / MDI proxy signals) |
+| `RoleManagement.Read.Directory` | Role assignments + PIM eligibility |
+| `Policy.Read.All` | Conditional Access |
+| `AuditLog.Read.All` | Sign-in logs (dormant privileged) |
+| `User.Read.All` | Optional user detail |
+| `SecurityEvents.Read.All` | Secure Score (MDO / MDI / DLP proxy signals) |
 
 Grant **application** permissions and **admin consent**.
 
@@ -20,20 +20,36 @@ Grant **application** permissions and **admin consent**.
 
 | Permission | Application | Purpose |
 |------------|-------------|---------|
-| `Machine.Read.All` | WindowsDefenderATP / Microsoft Defender for Endpoint | Onboarded device inventory (`mde-onboard-gap`) |
-
-In Entra app registration → **API permissions** → **APIs my organization uses** → search **WindowsDefenderATP** or **Microsoft Defender for Endpoint** → Application permission `Machine.Read.All` → admin consent.
+| `Machine.Read.All` | WindowsDefenderATP / Microsoft Defender for Endpoint | Onboarded device inventory |
 
 Token audience: `https://api.securitycenter.microsoft.com`.
 
-## Still upcoming
+## Microsoft Sentinel (Azure RBAC)
 
-Sentinel (Azure RBAC) and Purview DLP collectors document additional roles when they ship.
+Sentinel checks require a workspace binding:
 
-## Azure RBAC (Sentinel checks — future)
+```bash
+--workspace-resource-id /subscriptions/{sub}/resourceGroups/{rg}/providers/Microsoft.OperationalInsights/workspaces/{name}
+```
 
-- **Log Analytics Reader** (or equivalent) on target workspaces
-- **Microsoft Sentinel Reader** where required for analytics rule inventory
+Or:
+
+```bash
+--subscription-id ... --resource-group ... --workspace-name ...
+```
+
+| Role on workspace (recommended) | Purpose |
+|----------------------------------|---------|
+| **Microsoft Sentinel Reader** | Analytics rules + settings |
+| Log Analytics Reader | Often insufficient alone for SecurityInsights APIs |
+
+The app’s service principal (or signed-in user) must hold the role on the workspace (or parent RG/subscription).
+
+Token audience: `https://management.azure.com`.
+
+## Purview DLP
+
+v0.2 uses **Secure Score** DLP/information-protection controls as a proxy (`SecurityEvents.Read.All`). Direct Purview policy APIs are attempted best-effort and may not be available to app-only auth.
 
 ## Least privilege
 

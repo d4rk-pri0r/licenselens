@@ -120,8 +120,8 @@
     <h1>Security License Lens</h1>
     <p class="tagline">Security you already pay for — explained in plain English</p>
     <div class="meta">
-      <div>Version <code>0.2.0b1</code></div>
-      <div>Scanned <code>2026-08-05T15:46:50.829231+00:00</code></div>
+      <div>Version <code>0.2.0</code></div>
+      <div>Scanned <code>2026-08-05T15:53:23.263401+00:00</code></div>
       <div>Mode <code>dry_run / dry_run</code></div>
       <div>Organization <code>Contoso Demo (dry-run)</code></div>
     </div>
@@ -138,7 +138,7 @@
     <div class="tiles">
       
       <div class="tile">
-        <div class="n">4</div>
+        <div class="n">6</div>
         <div class="l">
           Needs attention
           <small>gap</small>
@@ -146,7 +146,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">3</div>
+        <div class="n">4</div>
         <div class="l">
           Partly set up
           <small>partial</small>
@@ -170,7 +170,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">3</div>
+        <div class="n">0</div>
         <div class="l">
           Check pending
           <small>skipped</small>
@@ -307,6 +307,24 @@
       
       <article class="finding">
         <div class="finding-head">
+          <span class="badge gap">Needs attention</span>
+          <h3>Guardrails against accidental data leaks may not be active</h3>
+        </div>
+        <p>You appear to pay for data-leak protection that is not meaningfully enforced yet.</p>
+        <p><strong>Suggested next step:</strong> Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</p>
+      </article>
+      
+      <article class="finding">
+        <div class="finding-head">
+          <span class="badge gap">Needs attention</span>
+          <h3>Behavior-based detection may still be switched off</h3>
+        </div>
+        <p>Behavior analytics that learn normal patterns for people and devices still looks switched off.</p>
+        <p><strong>Suggested next step:</strong> Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.</p>
+      </article>
+      
+      <article class="finding">
+        <div class="finding-head">
           <span class="badge partial">Partly set up</span>
           <h3>Powerful accounts may sign in without strong extra checks</h3>
         </div>
@@ -326,37 +344,19 @@
       <article class="finding">
         <div class="finding-head">
           <span class="badge partial">Partly set up</span>
-          <h3>On-site directory servers may lack attack sensors</h3>
-        </div>
-        <p>We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.</p>
-        <p><strong>Suggested next step:</strong> Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.</p>
-      </article>
-      
-      <article class="finding">
-        <div class="finding-head">
-          <span class="badge skipped">Check pending</span>
           <h3>Your security command center may have few alarms turned on</h3>
         </div>
-        <p>A central security workspace only helps if detection rules are enabled. An empty or near-default setup means you pay for the building but leave most of the alarm system off.</p>
+        <p>Some detection alarms are on, but coverage still looks light for a paid security command center.</p>
         <p><strong>Suggested next step:</strong> Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.</p>
       </article>
       
       <article class="finding">
         <div class="finding-head">
-          <span class="badge skipped">Check pending</span>
-          <h3>Guardrails against accidental data leaks may not be active</h3>
+          <span class="badge partial">Partly set up</span>
+          <h3>On-site directory servers may lack attack sensors</h3>
         </div>
-        <p>Your plan can warn or stop people from sharing sensitive information (like payment cards or personal data) in the wrong place. If rules are missing or still in test mode, everyday mistakes can still walk out the door.</p>
-        <p><strong>Suggested next step:</strong> Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</p>
-      </article>
-      
-      <article class="finding">
-        <div class="finding-head">
-          <span class="badge skipped">Check pending</span>
-          <h3>Behavior-based detection may still be switched off</h3>
-        </div>
-        <p>Modern security tools can learn normal patterns for people and devices, then flag unusual behavior. That intelligence is often left off after the workspace is created.</p>
-        <p><strong>Suggested next step:</strong> Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.</p>
+        <p>We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.</p>
+        <p><strong>Suggested next step:</strong> Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.</p>
       </article>
       
     </section>
@@ -375,7 +375,7 @@
         
         <li>Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.</li>
         
-        <li>Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</li>
+        <li>Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</li>
         
       </ol>
     </section>
@@ -459,6 +459,22 @@
           </tr>
           
           <tr>
+            <td><span class="badge gap">gap</span></td>
+            <td><code>pur-dlp-not-enforced</code></td>
+            <td>Purview DLP licensed but not enforced in production</td>
+            <td>purview</td>
+            <td>medium</td>
+          </tr>
+          
+          <tr>
+            <td><span class="badge gap">gap</span></td>
+            <td><code>sen-ueba-not-enabled</code></td>
+            <td>Sentinel UEBA / entity analytics not enabled</td>
+            <td>sentinel</td>
+            <td>medium</td>
+          </tr>
+          
+          <tr>
             <td><span class="badge partial">partial</span></td>
             <td><code>id-ca-priv-gaps</code></td>
             <td>Privileged sign-ins not strongly gated by Conditional Access</td>
@@ -476,14 +492,6 @@
           
           <tr>
             <td><span class="badge partial">partial</span></td>
-            <td><code>mdi-sensors-missing</code></td>
-            <td>Defender for Identity licensed but sensors missing or unhealthy</td>
-            <td>defender</td>
-            <td>medium</td>
-          </tr>
-          
-          <tr>
-            <td><span class="badge skipped">skipped</span></td>
             <td><code>sen-analytics-rule-coverage</code></td>
             <td>Sentinel workspace with thin analytics rule coverage</td>
             <td>sentinel</td>
@@ -491,18 +499,10 @@
           </tr>
           
           <tr>
-            <td><span class="badge skipped">skipped</span></td>
-            <td><code>pur-dlp-not-enforced</code></td>
-            <td>Purview DLP licensed but not enforced in production</td>
-            <td>purview</td>
-            <td>medium</td>
-          </tr>
-          
-          <tr>
-            <td><span class="badge skipped">skipped</span></td>
-            <td><code>sen-ueba-not-enabled</code></td>
-            <td>Sentinel UEBA / entity analytics not enabled</td>
-            <td>sentinel</td>
+            <td><span class="badge partial">partial</span></td>
+            <td><code>mdi-sensors-missing</code></td>
+            <td>Defender for Identity licensed but sensors missing or unhealthy</td>
+            <td>defender</td>
             <td>medium</td>
           </tr>
           

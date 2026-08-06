@@ -27,10 +27,16 @@ from licenselens.collectors.privileged_roles import (
     collect_role_eligibility_schedules,
     privileged_principal_ids,
 )
+from licenselens.collectors.purview import DEMO_DLP_BUNDLE, collect_purview_dlp_bundle
 from licenselens.collectors.secure_score import (
     DEMO_SECURE_SCORE,
     collect_latest_secure_score,
     extract_control_scores,
+)
+from licenselens.collectors.sentinel import (
+    DEMO_SENTINEL_RULES,
+    DEMO_SENTINEL_UEBA,
+    collect_sentinel_bundle,
 )
 from licenselens.collectors.signins import (
     collect_directory_objects_by_ids,
@@ -217,6 +223,9 @@ _CHECK_EVIDENCE_KEYS: dict[str, list[str]] = {
     "mdo-p2-policies-default": ["secure_score_controls"],
     "mde-onboard-gap": ["mde_summary"],
     "mdi-sensors-missing": ["secure_score_controls"],
+    "sen-analytics-rule-coverage": ["sentinel_rules"],
+    "sen-ueba-not-enabled": ["sentinel_ueba"],
+    "pur-dlp-not-enforced": ["purview_dlp"],
 }
 
 
@@ -227,6 +236,7 @@ def _gather_evidence(
     auth: AuthContext,
     skus: list[SubscribedSku],
     warnings: list[str],
+    workspace_resource_id: str | None = None,
 ) -> dict[str, Any]:
     """Collect shared evidence blobs for evaluators."""
     evidence: dict[str, Any] = {
@@ -242,6 +252,9 @@ def _gather_evidence(
         evidence["principal_directory"] = dict(DEMO_PRINCIPAL_DIRECTORY)
         evidence["secure_score_controls"] = extract_control_scores(DEMO_SECURE_SCORE)
         evidence["mde_summary"] = dict(DEMO_MDE_SUMMARY)
+        evidence["sentinel_rules"] = dict(DEMO_SENTINEL_RULES)
+        evidence["sentinel_ueba"] = dict(DEMO_SENTINEL_UEBA)
+        evidence["purview_dlp"] = dict(DEMO_DLP_BUNDLE)
         return evidence
 
     assert client is not None
@@ -301,6 +314,7 @@ def _gather_evidence(
     except GraphError as exc:
         warnings.append(f"Secure Score could not be read: {exc}")
         evidence["secure_score_controls_error"] = str(exc)
+        evidence["secure_score_controls"] = []
 
     licensed = mde_licensed_units(skus)
     try:
@@ -310,6 +324,31 @@ def _gather_evidence(
     except (AuthError, GraphError) as exc:
         warnings.append(f"Defender for Endpoint inventory could not be read: {exc}")
         evidence["mde_summary_error"] = str(exc)
+
+    # Sentinel pack
+    if workspace_resource_id:
+        try:
+            bundle = collect_sentinel_bundle(auth, workspace_resource_id)
+            evidence["sentinel_rules"] = bundle.get("sentinel_rules") or {}
+            evidence["sentinel_ueba"] = bundle.get("sentinel_ueba") or {}
+            evidence["workspace_resource_id"] = bundle.get("workspace_resource_id")
+        except (AuthError, GraphError) as exc:
+            warnings.append(f"Sentinel workspace could not be read: {exc}")
+            evidence["sentinel_rules_error"] = str(exc)
+            evidence["sentinel_ueba_error"] = str(exc)
+    else:
+        evidence["sentinel_workspace_missing"] = True
+        warnings.append(
+            "No Sentinel workspace provided (--workspace-resource-id). "
+            "Sentinel checks will report an error until a workspace is supplied."
+        )
+
+    # Purview DLP (Secure Score proxy)
+    controls = list(evidence.get("secure_score_controls") or [])
+    if evidence.get("secure_score_controls_error") and not controls:
+        evidence["purview_dlp_error"] = str(evidence["secure_score_controls_error"])
+    else:
+        evidence["purview_dlp"] = collect_purview_dlp_bundle(client, controls)
 
     return evidence
 
@@ -346,9 +385,22 @@ def _evaluate_check(
             )
         if key == "mde_summary" and evidence.get("mde_summary_error"):
             return _error_finding(check, owned, str(evidence["mde_summary_error"]))
+        if key == "sentinel_rules" and evidence.get("sentinel_rules_error"):
+            return _error_finding(check, owned, str(evidence["sentinel_rules_error"]))
+        if key == "sentinel_ueba" and evidence.get("sentinel_ueba_error"):
+            # Allow evaluator to handle partial settings failures when summary exists
+            if "sentinel_ueba" not in evidence:
+                return _error_finding(check, owned, str(evidence["sentinel_ueba_error"]))
+        if key == "purview_dlp" and evidence.get("purview_dlp_error"):
+            return _error_finding(check, owned, str(evidence["purview_dlp_error"]))
         if key not in evidence and err_key not in evidence:
             # role_eligibilities may be missing only on hard failure before set
             if key == "role_eligibilities":
+                continue
+            # Sentinel workspace missing is handled inside evaluators
+            if key in {"sentinel_rules", "sentinel_ueba"} and evidence.get(
+                "sentinel_workspace_missing"
+            ):
                 continue
             return _error_finding(
                 check,
@@ -368,6 +420,7 @@ def run_scan(
     *,
     workloads: list[Workload] | None = None,
     dry_run: bool = True,
+    workspace_resource_id: str | None = None,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
@@ -384,6 +437,7 @@ def run_scan(
             auth=auth,
             skus=skus,
             warnings=warnings,
+            workspace_resource_id=workspace_resource_id,
         )
         tenant_id = tenant_id or "00000000-0000-0000-0000-000000000000"
         tenant_display_name = tenant_display_name or "Contoso Demo (dry-run)"
@@ -405,6 +459,7 @@ def run_scan(
                 auth=auth,
                 skus=skus,
                 warnings=warnings,
+                workspace_resource_id=workspace_resource_id,
             )
 
     owned = resolve_owned_capabilities(capabilities, skus)

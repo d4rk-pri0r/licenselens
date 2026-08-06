@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from enum import StrEnum
 from pathlib import Path
 
@@ -11,6 +12,7 @@ from rich.table import Table
 
 from licenselens import __cli_name__, __product_name__, __version__
 from licenselens.auth import AuthMode, build_auth_context
+from licenselens.collectors.arm import build_workspace_resource_id
 from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
 from licenselens.engine.runner import run_scan
@@ -46,6 +48,27 @@ def _to_auth_mode(option: AuthModeOption | None, *, live: bool) -> AuthMode:
         AuthModeOption.CLIENT_SECRET: AuthMode.CLIENT_SECRET,
         AuthModeOption.AZURE_CLI: AuthMode.AZURE_CLI,
     }[option]
+
+
+def _resolve_workspace_resource_id(
+    workspace_resource_id: str | None,
+    subscription_id: str | None,
+    resource_group: str | None,
+    workspace_name: str | None,
+) -> str | None:
+    rid = (workspace_resource_id or os.environ.get("SENTINEL_WORKSPACE_RESOURCE_ID") or "").strip()
+    if rid:
+        return rid
+    sub = (subscription_id or os.environ.get("AZURE_SUBSCRIPTION_ID") or "").strip()
+    rg = (resource_group or os.environ.get("SENTINEL_RESOURCE_GROUP") or "").strip()
+    name = (workspace_name or os.environ.get("SENTINEL_WORKSPACE_NAME") or "").strip()
+    if sub and rg and name:
+        return build_workspace_resource_id(
+            subscription_id=sub,
+            resource_group=rg,
+            workspace_name=name,
+        )
+    return None
 
 
 def _exit_for_scan(result_has_gaps: bool, *, errored: bool = False) -> None:
@@ -107,9 +130,32 @@ def doctor_cmd(
         envvar="AZURE_CLIENT_SECRET",
         help="Client secret (prefer env AZURE_CLIENT_SECRET).",
     ),
+    workspace_resource_id: str | None = typer.Option(
+        None,
+        "--workspace-resource-id",
+        help="Sentinel/Log Analytics workspace ARM resource ID.",
+    ),
+    subscription_id: str | None = typer.Option(
+        None,
+        "--subscription-id",
+        envvar="AZURE_SUBSCRIPTION_ID",
+    ),
+    resource_group: str | None = typer.Option(
+        None,
+        "--resource-group",
+        envvar="SENTINEL_RESOURCE_GROUP",
+    ),
+    workspace_name: str | None = typer.Option(
+        None,
+        "--workspace-name",
+        envvar="SENTINEL_WORKSPACE_NAME",
+    ),
 ) -> None:
-    """Preflight credentials and core Graph permissions (SKUs / organization)."""
+    """Preflight credentials and core Graph / optional Sentinel permissions."""
     mode = _to_auth_mode(auth, live=live)
+    workspace = _resolve_workspace_resource_id(
+        workspace_resource_id, subscription_id, resource_group, workspace_name
+    )
     try:
         ctx = build_auth_context(
             mode=mode,
@@ -117,7 +163,7 @@ def doctor_cmd(
             client_id=client_id,
             client_secret=client_secret,
         )
-        report = run_doctor(ctx)
+        report = run_doctor(ctx, workspace_resource_id=workspace)
     except LicenseLensError as exc:
         console.print(f"[red]Doctor failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
@@ -176,6 +222,27 @@ def scan_cmd(
         envvar="AZURE_CLIENT_SECRET",
         help="Client secret (prefer env AZURE_CLIENT_SECRET).",
     ),
+    workspace_resource_id: str | None = typer.Option(
+        None,
+        "--workspace-resource-id",
+        help="Sentinel workspace ARM resource ID (required for live Sentinel checks).",
+    ),
+    subscription_id: str | None = typer.Option(
+        None,
+        "--subscription-id",
+        envvar="AZURE_SUBSCRIPTION_ID",
+        help="Azure subscription ID (with --resource-group and --workspace-name).",
+    ),
+    resource_group: str | None = typer.Option(
+        None,
+        "--resource-group",
+        envvar="SENTINEL_RESOURCE_GROUP",
+    ),
+    workspace_name: str | None = typer.Option(
+        None,
+        "--workspace-name",
+        envvar="SENTINEL_WORKSPACE_NAME",
+    ),
 ) -> None:
     """Run entitlement-aware checks and write a static HTML dashboard."""
     workloads: list[Workload] | None = None
@@ -187,6 +254,9 @@ def scan_cmd(
             raise typer.Exit(code=2) from exc
 
     mode = _to_auth_mode(auth, live=live)
+    workspace = _resolve_workspace_resource_id(
+        workspace_resource_id, subscription_id, resource_group, workspace_name
+    )
     try:
         auth_ctx = build_auth_context(
             mode=mode,
@@ -205,7 +275,12 @@ def scan_cmd(
     console.print(f"[cyan]Running {__product_name__} scan ({label})…[/cyan]")
 
     try:
-        result = run_scan(auth_ctx, workloads=workloads, dry_run=not live)
+        result = run_scan(
+            auth_ctx,
+            workloads=workloads,
+            dry_run=not live,
+            workspace_resource_id=workspace,
+        )
     except (AuthError, GraphError) as exc:
         console.print(f"[red]Scan failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc

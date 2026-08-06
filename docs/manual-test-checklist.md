@@ -1,4 +1,4 @@
-# Manual test checklist (v0.1.0)
+# Manual test checklist (v0.2.0)
 
 Use a Microsoft 365 Developer tenant or a non-production customer lab.
 
@@ -11,7 +11,7 @@ Use a Microsoft 365 Developer tenant or a non-production customer lab.
 
 ## Dry-run
 
-- [ ] `licenselens version` prints `0.1.0`
+- [ ] `licenselens version` prints `0.2.0`
 - [ ] `licenselens checks` lists 10 checks
 - [ ] `licenselens doctor` (default) succeeds
 - [ ] `licenselens scan -o reports` writes HTML/JSON/MD
@@ -47,11 +47,25 @@ licenselens doctor --live --auth device \
 - [ ] Browser/device login completes
 - [ ] Doctor succeeds with the same checks
 
+## Live — Sentinel
+
+```bash
+licenselens doctor --live --auth client_secret \
+  --workspace-resource-id "/subscriptions/.../resourceGroups/.../providers/Microsoft.OperationalInsights/workspaces/..."
+licenselens scan --live --auth client_secret \
+  --workspace-resource-id "..." -o reports-sentinel
+```
+
+- [ ] Doctor `sentinelWorkspace` row OK with rule counts
+- [ ] `sen-analytics-rule-coverage` and `sen-ueba-not-enabled` are not `skipped`
+- [ ] Missing workspace on live scan → Sentinel checks `error` with plain-language guidance
+
 ## Negative tests
 
 - [ ] Wrong client secret → exit `2`, clear auth error
 - [ ] Missing `Policy.Read.All` → CA checks `error` or doctor CA row fails (not a crash)
 - [ ] `--workload identity` limits findings to identity checks
+- [ ] Dry-run: **zero** `skipped` findings for the original 10 checks when demo SKUs unlock them
 
 ## Sign-off
 
