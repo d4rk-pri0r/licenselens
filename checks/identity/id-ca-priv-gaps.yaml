@@ -1,0 +1,18 @@
+id: id-ca-priv-gaps
+title: Privileged sign-ins not strongly gated by Conditional Access
+description: >
+  Tenants with Conditional Access still often leave privileged accounts
+  without enforced MFA/device controls, or still allow legacy authentication.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: high
+value_impact: high
+collector: graph_ca
+remediation: >
+  Create CA policies that require phishing-resistant MFA for privileged
+  roles and block legacy authentication tenant-wide where possible.
+references:
+  - https://learn.microsoft.com/entra/identity/conditional-access/overview
+  - https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication
+enabled: true

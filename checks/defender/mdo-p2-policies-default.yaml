@@ -1,0 +1,17 @@
+id: mdo-p2-policies-default
+title: Defender for Office 365 P2 policies not broadly enforced
+description: >
+  Safe Attachments / Safe Links and related P2 protections often remain
+  off, audit-only, or scoped to pilots despite E5/MDO P2 licensing.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+collector: graph_mdo
+remediation: >
+  Enforce Safe Attachments and Safe Links for all recipients; enable
+  preset security policies or equivalent custom policies in block mode.
+references:
+  - https://learn.microsoft.com/defender-office-365/preset-security-policies
+enabled: true

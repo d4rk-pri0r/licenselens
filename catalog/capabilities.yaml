@@ -1,0 +1,100 @@
+# Capability catalog — maps Microsoft service plans / SKUs to high-value features.
+# Community PRs welcome. Prefer service_plan_names (stable) over sku_part_numbers.
+
+version: 1
+capabilities:
+  - id: entra_id_p2
+    name: Microsoft Entra ID P2
+    description: PIM, Identity Protection, access reviews, and related P2 identity features.
+    workloads: [identity]
+    service_plan_names:
+      - AAD_PREMIUM_P2
+    sku_part_numbers:
+      - AAD_PREMIUM_P2
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - EMSPREMIUM
+    docs_url: https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+
+  - id: conditional_access
+    name: Conditional Access
+    description: Entra Conditional Access policy engine (included with P1/P2 and many suites).
+    workloads: [identity]
+    service_plan_names:
+      - AAD_PREMIUM
+      - AAD_PREMIUM_P2
+    sku_part_numbers:
+      - AAD_PREMIUM
+      - AAD_PREMIUM_P2
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+
+  - id: identity_protection
+    name: Microsoft Entra ID Protection
+    description: User and sign-in risk detection and risk-based Conditional Access.
+    workloads: [identity]
+    service_plan_names:
+      - AAD_PREMIUM_P2
+    sku_part_numbers:
+      - AAD_PREMIUM_P2
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+
+  - id: defender_office_p2
+    name: Microsoft Defender for Office 365 P2
+    description: Safe Attachments, Safe Links, threat investigation, automated response.
+    workloads: [defender]
+    service_plan_names:
+      - THREAT_INTELLIGENCE
+      - ATP_ENTERPRISE
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - IDENTITY_THREAT_PROTECTION
+
+  - id: defender_endpoint_p2
+    name: Microsoft Defender for Endpoint P2
+    description: Endpoint detection and response, threat and vulnerability management.
+    workloads: [defender, endpoint]
+    service_plan_names:
+      - DEFENDER_ENDPOINT_P2
+      - MDATP_XPLAT
+    sku_part_numbers:
+      - SPE_E5
+      - IDENTITY_THREAT_PROTECTION
+      - DEFENDER_ENDPOINT_P2
+
+  - id: defender_identity
+    name: Microsoft Defender for Identity
+    description: On-premises identity threat detection (sensors on DCs / AD FS).
+    workloads: [defender, identity]
+    service_plan_names:
+      - ATA
+      - MDI_Service_Plan
+    sku_part_numbers:
+      - SPE_E5
+      - EMSPREMIUM
+      - ENTERPRISEPREMIUM
+
+  - id: microsoft_sentinel
+    name: Microsoft Sentinel
+    description: Cloud-native SIEM/SOAR analytics workspace capabilities.
+    workloads: [sentinel]
+    service_plan_names:
+      - MICROSOFT_SENTINEL
+    sku_part_numbers:
+      - MICROSOFT_SENTINEL
+      - AZURE_SENTINEL
+
+  - id: purview_dlp
+    name: Microsoft Purview Data Loss Prevention
+    description: Endpoint and workload DLP policy enforcement.
+    workloads: [purview]
+    service_plan_names:
+      - MIP_S_CLP2
+      - INFORMATION_BARRIERS
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE

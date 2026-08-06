@@ -1,0 +1,28 @@
+# Curated notes for common Microsoft 365 / security SKUs.
+# Not exhaustive — capabilities.yaml is the source of truth for entitlement mapping.
+# Expand via community PRs with verified service plan names from Graph subscribedSkus.
+
+version: 1
+notes:
+  - sku_part_number: SPE_E5
+    common_name: Microsoft 365 E5
+    typically_includes:
+      - AAD_PREMIUM_P2
+      - THREAT_INTELLIGENCE
+      - DEFENDER_ENDPOINT_P2
+      - MIP_S_CLP2
+
+  - sku_part_number: SPE_E3
+    common_name: Microsoft 365 E3
+    typically_includes:
+      - AAD_PREMIUM
+
+  - sku_part_number: AAD_PREMIUM_P2
+    common_name: Entra ID P2 (standalone)
+    typically_includes:
+      - AAD_PREMIUM_P2
+
+  - sku_part_number: MICROSOFT_SENTINEL
+    common_name: Microsoft Sentinel
+    typically_includes:
+      - MICROSOFT_SENTINEL
