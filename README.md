@@ -2,7 +2,7 @@
 
 **See what you paid for but never turned on.**
 
-CLI package: `licenselens` · Command: `licenselens` · Release: **v0.1.0**
+CLI package: `licenselens` · Command: `licenselens` · Release: **v0.2.0b1**
 
 Security License Lens detects **Microsoft security configuration debt**: high-value capabilities included in E5, Entra ID P2, Defender, Sentinel, Purview, and related SKUs that remain at default or unused.
 
@@ -53,7 +53,7 @@ Interactive alternative: `--auth device` (see [docs/app-registration.md](docs/ap
 
 Sample dry-run output is checked in at [examples/sample-report/](examples/sample-report/).
 
-## What is live in v0.1.0?
+## What is live in v0.2.0b1?
 
 | Check ID | Workload | Live? |
 |----------|----------|-------|
@@ -61,9 +61,9 @@ Sample dry-run output is checked in at [examples/sample-report/](examples/sample
 | `id-idprotect-off` | Identity | Yes — risk-based CA |
 | `id-pim-unused` | Identity | Yes — standing roles vs PIM |
 | `id-dormant-privileged` | Identity | Yes — unused privileged users |
-| `mdo-p2-policies-default` | Defender | Registered (skipped) |
-| `mde-onboard-gap` | Endpoint | Registered (skipped) |
-| `mdi-sensors-missing` | Defender | Registered (skipped) |
+| `mdo-p2-policies-default` | Defender | Yes — Secure Score proxy |
+| `mde-onboard-gap` | Endpoint | Yes — MDE API vs licensed units |
+| `mdi-sensors-missing` | Defender | Yes — Secure Score proxy |
 | `sen-analytics-rule-coverage` | Sentinel | Registered (skipped) |
 | `sen-ueba-not-enabled` | Sentinel | Registered (skipped) |
 | `pur-dlp-not-enforced` | Purview | Registered (skipped) |
@@ -107,13 +107,12 @@ docs/              # architecture, permissions, contributing checks
 tests/             # fixture-based unit tests
 ```
 
-## Roadmap (v0.2+)
+## Roadmap
 
-- Defender for Office / Endpoint / Identity collectors  
 - Microsoft Sentinel analytics + UEBA checks  
 - Purview DLP enforcement checks  
+- Direct MDO policy APIs (reduce Secure Score proxy reliance)  
 - MSP multi-tenant batch mode  
-- Optional Secure Score enrichment  
 
 ## Contributing
 

@@ -5,6 +5,21 @@ All notable changes to Security License Lens are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0b1] — 2026-08-05
+
+### Added
+- **Defender pack (Session E)**
+  - `mdo-p2-policies-default` via Secure Score control signals (Safe Links/Attachments proxy)
+  - `mde-onboard-gap` via Defender for Endpoint API machine inventory vs licensed units
+  - `mdi-sensors-missing` via Secure Score control signals
+- Secure Score collector (`SecurityEvents.Read.All`)
+- MDE API client (`Machine.Read.All` on WindowsDefenderATP)
+- Doctor probes for Secure Score and MDE API
+
+### Notes
+- MDO/MDI use Secure Score as a proxy when direct policy/sensor APIs are unavailable
+- Sentinel and Purview checks remain registered but skipped
+
 ## [0.1.0] — 2026-08-05
 
 First production-oriented release for **identity-first** Microsoft tenant assessments.

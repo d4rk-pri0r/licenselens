@@ -158,9 +158,55 @@ def run_doctor(auth: AuthContext) -> DoctorReport:
                         detail=str(exc),
                     )
                 )
+
+            try:
+                from licenselens.collectors.secure_score import collect_latest_secure_score
+
+                score = collect_latest_secure_score(client)
+                n = len((score or {}).get("controlScores") or [])
+                report.checks.append(
+                    DoctorCheck(
+                        name="secureScore",
+                        ok=score is not None,
+                        detail=(
+                            f"Secure Score read ok ({n} control scores)."
+                            if score
+                            else "No Secure Score snapshot returned."
+                        ),
+                    )
+                )
+            except GraphError as exc:
+                report.checks.append(
+                    DoctorCheck(name="secureScore", ok=False, detail=str(exc))
+                )
     except (AuthError, GraphError) as exc:
         report.checks.append(
             DoctorCheck(name="graph", ok=False, detail=str(exc))
         )
+
+    # Optional Defender for Endpoint API (separate resource)
+    if auth.mode != AuthMode.DRY_RUN and auth.credential is not None:
+        try:
+            from licenselens.collectors.mde import collect_mde_machine_summary
+
+            mde = collect_mde_machine_summary(auth)
+            report.checks.append(
+                DoctorCheck(
+                    name="defenderEndpoint",
+                    ok=True,
+                    detail=(
+                        f"MDE API ok — onboarded machines signal: "
+                        f"{mde.get('onboarded_machines')} ({mde.get('count_method')})."
+                    ),
+                )
+            )
+        except (AuthError, GraphError) as exc:
+            report.checks.append(
+                DoctorCheck(
+                    name="defenderEndpoint",
+                    ok=False,
+                    detail=str(exc),
+                )
+            )
 
     return report

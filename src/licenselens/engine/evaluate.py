@@ -470,9 +470,263 @@ def _redact_upn(upn: str) -> str:
     return f"{local[0]}***@{domain}"
 
 
+def _score_status(ratio: float | None, *, matched: int) -> FindingStatus:
+    if matched <= 0 or ratio is None:
+        return FindingStatus.PARTIAL
+    if ratio >= 0.85:
+        return FindingStatus.OK
+    if ratio >= 0.45:
+        return FindingStatus.PARTIAL
+    return FindingStatus.GAP
+
+
+def evaluate_mdo_p2_policies(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Assess MDO-oriented Secure Score controls (Safe Links/Attachments proxy)."""
+    del check
+    from licenselens.collectors.secure_score import MDO_CONTROL_HINTS, summarize_controls
+
+    controls = list(evidence.get("secure_score_controls") or [])
+    summary = summarize_controls(controls, MDO_CONTROL_HINTS)
+    ratio = summary.get("ratio")
+    matched = int(summary.get("matched_count") or 0)
+
+    evidence_out = {
+        "source": "secureScore.controlScores",
+        "matched_controls": matched,
+        "score_ratio": ratio,
+        "controls": summary.get("controls") or [],
+        "note": (
+            "Uses Microsoft Secure Score control signals as a proxy for "
+            "Defender for Office 365 policy enforcement when direct policy "
+            "APIs are unavailable."
+        ),
+    }
+
+    if matched == 0:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "No Defender for Office 365–related Secure Score controls were "
+                "found. Unable to confirm Safe Links/Attachments enforcement."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "We could not automatically confirm whether extra email "
+                "protections are turned on. Ask IT to verify Safe Links and "
+                "Safe Attachments for all users."
+            ),
+        )
+
+    status = _score_status(float(ratio) if ratio is not None else None, matched=matched)
+    pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
+    if status == FindingStatus.OK:
+        return Evaluation(
+            status=status,
+            summary=(
+                f"Secure Score shows strong MDO-related control completion "
+                f"({matched} controls, ~{pct} of matched max score)."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Extra email protections look largely enabled based on Microsoft's "
+                "security score signals."
+            ),
+        )
+    if status == FindingStatus.PARTIAL:
+        return Evaluation(
+            status=status,
+            summary=(
+                f"Secure Score shows partial MDO-related control completion "
+                f"({matched} controls, ~{pct}). Safe Links/Attachments may be "
+                "incomplete or not fully enforced."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Some stronger email protections appear configured, but not fully. "
+                "Safe Links and Safe Attachments may still miss people or stay in "
+                "test mode."
+            ),
+        )
+    return Evaluation(
+        status=status,
+        summary=(
+            f"Secure Score shows weak MDO-related control completion "
+            f"({matched} controls, ~{pct}) despite Defender for Office licensing."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "You appear to pay for stronger email protection, but Microsoft's "
+            "score signals suggest much of it is not turned on yet."
+        ),
+    )
+
+
+def evaluate_mde_onboard_gap(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Compare MDE licensed units vs onboarded machines."""
+    del check
+    summary = dict(evidence.get("mde_summary") or {})
+    licensed = summary.get("licensed_units")
+    onboarded = summary.get("onboarded_machines")
+    truncated = bool(summary.get("truncated"))
+
+    if onboarded is None:
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Defender for Endpoint machine inventory was not available.",
+            evidence=summary,
+            customer_summary=(
+                "We could not read device enrollment numbers for advanced PC "
+                "protection. This is often a missing API permission."
+            ),
+        )
+
+    onboarded_i = int(onboarded)
+    evidence_out = {
+        **summary,
+        "coverage_ratio": (
+            (onboarded_i / int(licensed)) if licensed and int(licensed) > 0 else None
+        ),
+    }
+
+    if licensed is None or int(licensed) <= 0:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"Found {onboarded_i} Defender for Endpoint machine(s), but could "
+                "not determine licensed unit count from SKUs."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Devices are enrolled in advanced protection, but we could not "
+                "compare that number to purchased seats automatically."
+            ),
+        )
+
+    licensed_i = int(licensed)
+    ratio = onboarded_i / licensed_i if licensed_i else 0.0
+    evidence_out["coverage_ratio"] = ratio
+
+    if ratio >= 0.85 and not truncated:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                f"Defender for Endpoint coverage looks healthy: "
+                f"{onboarded_i} onboarded vs ~{licensed_i} licensed units "
+                f"({ratio * 100:.0f}%)."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Most paid device-protection seats appear matched by enrolled devices."
+            ),
+        )
+
+    if ratio >= 0.5:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"Partial Defender for Endpoint onboarding: {onboarded_i} onboarded "
+                f"vs ~{licensed_i} licensed units ({ratio * 100:.0f}%)."
+                + (" Machine count may be truncated." if truncated else "")
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Some PCs are enrolled in advanced protection, but a noticeable "
+                "share of paid seats still look unused."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary=(
+            f"Large Defender for Endpoint onboarding gap: {onboarded_i} onboarded "
+            f"vs ~{licensed_i} licensed units ({ratio * 100:.0f}%)."
+            + (" Machine count may be truncated." if truncated else "")
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "You appear to pay for advanced device protection on many seats, but "
+            "relatively few devices are enrolled."
+        ),
+    )
+
+
+def evaluate_mdi_sensors(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Assess Defender for Identity posture via Secure Score control signals."""
+    del check
+    from licenselens.collectors.secure_score import MDI_CONTROL_HINTS, summarize_controls
+
+    controls = list(evidence.get("secure_score_controls") or [])
+    summary = summarize_controls(controls, MDI_CONTROL_HINTS)
+    ratio = summary.get("ratio")
+    matched = int(summary.get("matched_count") or 0)
+    evidence_out = {
+        "source": "secureScore.controlScores",
+        "matched_controls": matched,
+        "score_ratio": ratio,
+        "controls": summary.get("controls") or [],
+        "note": (
+            "Defender for Identity sensor health is approximated from Secure Score "
+            "controls when the MDI API is not configured."
+        ),
+    }
+
+    if matched == 0:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "No Defender for Identity–related Secure Score controls were found. "
+                "Cannot confirm sensor deployment from this signal alone."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "We could not confirm whether on-site directory attack sensors are "
+                "installed. If you still run office domain controllers, ask IT to verify."
+            ),
+        )
+
+    status = _score_status(float(ratio) if ratio is not None else None, matched=matched)
+    pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
+    if status == FindingStatus.OK:
+        cust = (
+            "On-site directory protection signals look healthy based on "
+            "Microsoft's security score."
+        )
+    elif status == FindingStatus.PARTIAL:
+        cust = (
+            "Some Defender for Identity protections appear configured, but "
+            "coverage may be incomplete."
+        )
+    else:
+        cust = (
+            "You may be paying for directory attack sensors that are missing or "
+            "unhealthy."
+        )
+    return Evaluation(
+        status=status,
+        summary=(
+            f"Defender for Identity–related Secure Score completion ~{pct} "
+            f"across {matched} control(s)."
+        ),
+        evidence=evidence_out,
+        customer_summary=cust,
+    )
+
+
 EVALUATORS: dict[str, Evaluator] = {
     "id-ca-priv-gaps": evaluate_ca_priv_gaps,
     "id-idprotect-off": evaluate_idprotect_off,
     "id-pim-unused": evaluate_pim_unused,
     "id-dormant-privileged": evaluate_dormant_privileged,
+    "mdo-p2-policies-default": evaluate_mdo_p2_policies,
+    "mde-onboard-gap": evaluate_mde_onboard_gap,
+    "mdi-sensors-missing": evaluate_mdi_sensors,
 }

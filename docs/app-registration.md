@@ -27,19 +27,25 @@ export AZURE_CLIENT_SECRET="<secret>"   # client_secret mode only
 
 ## 3. API permissions (application, admin consent)
 
-Minimum for **Session A** (SKU + organization):
+See the full matrix in [permissions.md](permissions.md).
 
-| Permission | Type | Purpose |
-|------------|------|---------|
-| `Organization.Read.All` | Application | Tenant display name |
-| `Organization.Read.All` covers org; SKUs use | | |
-| `Directory.Read.All` **or** license-related read | Application | `subscribedSkus` |
+**Microsoft Graph (application)** — identity + Secure Score:
 
-Practical starter set used by this project (identity-first roadmap):
+- `Organization.Read.All`
+- `Directory.Read.All`
+- `Policy.Read.All`
+- `RoleManagement.Read.Directory`
+- `AuditLog.Read.All`
+- `SecurityEvents.Read.All` (Secure Score for MDO/MDI signals)
 
-See [permissions.md](permissions.md). Grant **application** permissions and click **Grant admin consent**.
+**Microsoft Defender for Endpoint** (optional, for `mde-onboard-gap`):
 
-> `subscribedSkus` is available to apps with appropriate directory/organization directory reads. If Graph returns 403, add `Organization.Read.All` and `Directory.Read.All`, consent again, and re-run `licenselens doctor --live`.
+- API: WindowsDefenderATP / Microsoft Defender for Endpoint  
+- Application permission: `Machine.Read.All`
+
+Grant **admin consent** after adding permissions.
+
+> If Graph returns 403, re-check consent and re-run `licenselens doctor --live`.
 
 ## 4. Client secret (app-only)
 
