@@ -162,5 +162,17 @@ DEMO_SECURE_SCORE: dict[str, Any] = {
             "score": 0.4,
             "maxScore": 1.0,
         },
+        {
+            "controlName": "DLP_Policies_Enabled",
+            "description": "Data loss prevention policies not enforced",
+            "score": 0.1,
+            "maxScore": 1.0,
+        },
+        {
+            "controlName": "Information_Protection_DLP",
+            "description": "Information protection and DLP",
+            "score": 0.15,
+            "maxScore": 1.0,
+        },
     ],
 }

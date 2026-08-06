@@ -1,12 +1,12 @@
 {
   "tool": "security-license-lens",
   "tool_display_name": "Security License Lens",
-  "version": "0.2.0b1",
+  "version": "0.2.0",
   "tenant_id": "00000000-0000-0000-0000-000000000000",
   "tenant_display_name": "Contoso Demo (dry-run)",
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
-  "scanned_at": "2026-08-05T15:46:50.829231+00:00",
+  "scanned_at": "2026-08-05T15:53:23.263401+00:00",
   "owned_capabilities": [
     "conditional_access",
     "defender_endpoint_p2",
@@ -284,6 +284,83 @@
       "status_label": "Needs attention"
     },
     {
+      "check_id": "pur-dlp-not-enforced",
+      "title": "Purview DLP licensed but not enforced in production",
+      "workload": "purview",
+      "status": "gap",
+      "severity": "medium",
+      "value_impact": "high",
+      "summary": "Secure Score suggests DLP is largely unused (2 controls, ~10% completion).",
+      "evidence": {
+        "dlp_secure_score": {
+          "matched_count": 2,
+          "score_sum": 0.2,
+          "max_sum": 2.0,
+          "ratio": 0.1,
+          "weak_control_count": 2,
+          "source": "secureScore.controlScores",
+          "controls": [
+            {
+              "controlName": "DLP_Policies_Enabled",
+              "description": "Data loss prevention policies",
+              "score": 0.1,
+              "maxScore": 1.0
+            },
+            {
+              "controlName": "Endpoint_DLP",
+              "description": "Endpoint DLP",
+              "score": 0.1,
+              "maxScore": 1.0
+            }
+          ]
+        },
+        "dlp_graph_policies": null,
+        "dlp_graph_error": null,
+        "proxy": true,
+        "note": "Uses Microsoft Secure Score DLP/information-protection controls as a proxy when direct Purview policy APIs are unavailable to the app."
+      },
+      "entitlements_used": [
+        "purview_dlp"
+      ],
+      "remediation": "Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams, and endpoints; move from simulation to enforce after tuning.",
+      "references": [
+        "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
+      ],
+      "customer_title": "Guardrails against accidental data leaks may not be active",
+      "customer_summary": "You appear to pay for data-leak protection that is not meaningfully enforced yet.",
+      "customer_next_step": "Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from \"test\" to \"enforce\" after a short tuning period.",
+      "status_label": "Needs attention"
+    },
+    {
+      "check_id": "sen-ueba-not-enabled",
+      "title": "Sentinel UEBA / entity analytics not enabled",
+      "workload": "sentinel",
+      "status": "gap",
+      "severity": "medium",
+      "value_impact": "medium",
+      "summary": "Sentinel UEBA / entity analytics does not appear enabled.",
+      "evidence": {
+        "ueba_enabled": false,
+        "entity_analytics_enabled": false,
+        "ueba_setting_enabled": null,
+        "setting_names": [],
+        "raw_entity_present": false,
+        "raw_ueba_present": false,
+        "workspace_resource_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "Enable Entity behavior analytics (UEBA) on the Sentinel workspace and ensure required data sources are connected.",
+      "references": [
+        "https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics"
+      ],
+      "customer_title": "Behavior-based detection may still be switched off",
+      "customer_summary": "Behavior analytics that learn normal patterns for people and devices still looks switched off.",
+      "customer_next_step": "Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.",
+      "status_label": "Needs attention"
+    },
+    {
       "check_id": "id-ca-priv-gaps",
       "title": "Privileged sign-ins not strongly gated by Conditional Access",
       "workload": "identity",
@@ -364,6 +441,41 @@
       "status_label": "Partly set up"
     },
     {
+      "check_id": "sen-analytics-rule-coverage",
+      "title": "Sentinel workspace with thin analytics rule coverage",
+      "workload": "sentinel",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Thin Sentinel analytics coverage: 2 enabled scheduled/NRT rule(s), 2 tactic(s) (total rules=3).",
+      "evidence": {
+        "total_rules": 3,
+        "enabled_rules": 2,
+        "enabled_scheduled_or_nrt": 2,
+        "tactics": [
+          "InitialAccess",
+          "Persistence"
+        ],
+        "tactic_count": 2,
+        "sample_enabled_rules": [
+          "Demo Sign-in spike",
+          "Demo Rare process"
+        ],
+        "workspace_resource_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "Enable relevant content hub solutions and scheduled rules; cover identity, endpoint, and cloud control-plane sources first.",
+      "references": [
+        "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
+      ],
+      "customer_title": "Your security command center may have few alarms turned on",
+      "customer_summary": "Some detection alarms are on, but coverage still looks light for a paid security command center.",
+      "customer_next_step": "Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.",
+      "status_label": "Partly set up"
+    },
+    {
       "check_id": "mdi-sensors-missing",
       "title": "Defender for Identity licensed but sensors missing or unhealthy",
       "workload": "defender",
@@ -389,78 +501,6 @@
       "customer_summary": "We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.",
       "customer_next_step": "Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.",
       "status_label": "Partly set up"
-    },
-    {
-      "check_id": "sen-analytics-rule-coverage",
-      "title": "Sentinel workspace with thin analytics rule coverage",
-      "workload": "sentinel",
-      "status": "skipped",
-      "severity": "high",
-      "value_impact": "high",
-      "summary": "Entitlements resolved, but this control check is not implemented yet.",
-      "evidence": {
-        "collector": "sentinel_analytics",
-        "source": "checks/sentinel/sen-analytics-rule-coverage.yaml"
-      },
-      "entitlements_used": [
-        "microsoft_sentinel"
-      ],
-      "remediation": "Enable relevant content hub solutions and scheduled rules; cover identity, endpoint, and cloud control-plane sources first.",
-      "references": [
-        "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
-      ],
-      "customer_title": "Your security command center may have few alarms turned on",
-      "customer_summary": "A central security workspace only helps if detection rules are enabled. An empty or near-default setup means you pay for the building but leave most of the alarm system off.",
-      "customer_next_step": "Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.",
-      "status_label": "Check pending"
-    },
-    {
-      "check_id": "pur-dlp-not-enforced",
-      "title": "Purview DLP licensed but not enforced in production",
-      "workload": "purview",
-      "status": "skipped",
-      "severity": "medium",
-      "value_impact": "high",
-      "summary": "Entitlements resolved, but this control check is not implemented yet.",
-      "evidence": {
-        "collector": "purview_dlp",
-        "source": "checks/purview/pur-dlp-not-enforced.yaml"
-      },
-      "entitlements_used": [
-        "purview_dlp"
-      ],
-      "remediation": "Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams, and endpoints; move from simulation to enforce after tuning.",
-      "references": [
-        "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
-      ],
-      "customer_title": "Guardrails against accidental data leaks may not be active",
-      "customer_summary": "Your plan can warn or stop people from sharing sensitive information (like payment cards or personal data) in the wrong place. If rules are missing or still in test mode, everyday mistakes can still walk out the door.",
-      "customer_next_step": "Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from \"test\" to \"enforce\" after a short tuning period.",
-      "status_label": "Check pending"
-    },
-    {
-      "check_id": "sen-ueba-not-enabled",
-      "title": "Sentinel UEBA / entity analytics not enabled",
-      "workload": "sentinel",
-      "status": "skipped",
-      "severity": "medium",
-      "value_impact": "medium",
-      "summary": "Entitlements resolved, but this control check is not implemented yet.",
-      "evidence": {
-        "collector": "sentinel_ueba",
-        "source": "checks/sentinel/sen-ueba-not-enabled.yaml"
-      },
-      "entitlements_used": [
-        "microsoft_sentinel"
-      ],
-      "remediation": "Enable Entity behavior analytics (UEBA) on the Sentinel workspace and ensure required data sources are connected.",
-      "references": [
-        "https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics"
-      ],
-      "customer_title": "Behavior-based detection may still be switched off",
-      "customer_summary": "Modern security tools can learn normal patterns for people and devices, then flag unusual behavior. That intelligence is often left off after the workspace is created.",
-      "customer_next_step": "Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.",
-      "status_label": "Check pending"
     }
   ],
   "recommended_next_steps": [
@@ -468,7 +508,7 @@
     "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).",
     "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
     "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
-    "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts."
+    "Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from \"test\" to \"enforce\" after a short tuning period."
   ],
   "warnings": []
 }

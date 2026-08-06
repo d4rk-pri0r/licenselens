@@ -30,8 +30,12 @@ class DoctorReport:
         return all(c.ok for c in self.checks)
 
 
-def run_doctor(auth: AuthContext) -> DoctorReport:
-    """Validate credentials and core Graph reads used by Session A."""
+def run_doctor(
+    auth: AuthContext,
+    *,
+    workspace_resource_id: str | None = None,
+) -> DoctorReport:
+    """Validate credentials and core Graph / optional Sentinel reads."""
     report = DoctorReport(mode=auth.mode)
 
     if auth.mode == AuthMode.DRY_RUN:
@@ -206,6 +210,45 @@ def run_doctor(auth: AuthContext) -> DoctorReport:
                     name="defenderEndpoint",
                     ok=False,
                     detail=str(exc),
+                )
+            )
+
+        # Optional Sentinel workspace (ARM)
+        if workspace_resource_id:
+            try:
+                from licenselens.collectors.sentinel import collect_sentinel_bundle
+
+                bundle = collect_sentinel_bundle(auth, workspace_resource_id)
+                rules = bundle.get("sentinel_rules") or {}
+                ueba = bundle.get("sentinel_ueba") or {}
+                report.checks.append(
+                    DoctorCheck(
+                        name="sentinelWorkspace",
+                        ok=True,
+                        detail=(
+                            f"Sentinel workspace ok — rules total="
+                            f"{rules.get('total_rules')}, enabled_scheduled="
+                            f"{rules.get('enabled_scheduled_or_nrt')}, "
+                            f"ueba={ueba.get('ueba_enabled')}."
+                        ),
+                    )
+                )
+            except (AuthError, GraphError) as exc:
+                report.checks.append(
+                    DoctorCheck(
+                        name="sentinelWorkspace",
+                        ok=False,
+                        detail=str(exc),
+                    )
+                )
+        else:
+            report.checks.append(
+                DoctorCheck(
+                    name="sentinelWorkspace",
+                    ok=True,
+                    detail=(
+                        "Skipped (pass --workspace-resource-id to probe Sentinel)."
+                    ),
                 )
             )
 

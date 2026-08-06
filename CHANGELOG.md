@@ -5,6 +5,23 @@ All notable changes to Security License Lens are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-08-05
+
+### Added
+- **Complete 10-check pack (Session F)**
+  - `sen-analytics-rule-coverage` — ARM SecurityInsights alert rules
+  - `sen-ueba-not-enabled` — ARM UEBA / entity analytics settings
+  - `pur-dlp-not-enforced` — Secure Score DLP/information-protection proxy
+- ARM client (`https://management.azure.com`) for Sentinel
+- CLI workspace binding: `--workspace-resource-id` or subscription/RG/name
+- Doctor probe for Sentinel workspace when workspace ID is provided
+- Dry-run demos for Sentinel + Purview; sample report updated
+
+### Notes
+- All 10 registered checks evaluate when licensed (no more `skipped` for the original pack)
+- Sentinel live scans require workspace + Microsoft Sentinel Reader (or equivalent)
+- MDO/MDI/Purview may still rely on Secure Score proxies
+
 ## [0.2.0b1] — 2026-08-05
 
 ### Added

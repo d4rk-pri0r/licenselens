@@ -2,16 +2,15 @@
 
 A plain-language view of security capabilities you already pay for — and whether they are set up to help your organization.
 
-- **Version:** 0.2.0b1
-- **Scanned at:** 2026-08-05T15:46:50.829231+00:00
+- **Version:** 0.2.0
+- **Scanned at:** 2026-08-05T15:53:23.263401+00:00
 - **Mode:** dry_run / dry_run
 - **Organization:** Contoso Demo (dry-run)
 
 ## At a glance
 
-- **Needs attention** (`gap`): 4
-- **Partly set up** (`partial`): 3
-- **Check pending** (`skipped`): 3
+- **Needs attention** (`gap`): 6
+- **Partly set up** (`partial`): 4
 
 ## What you already pay for
 
@@ -110,6 +109,20 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.
 - **Technical id:** `id-dormant-privileged`
 
+### Guardrails against accidental data leaks may not be active
+
+- **Status:** Needs attention
+- **In plain English:** You appear to pay for data-leak protection that is not meaningfully enforced yet.
+- **Suggested next step:** Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.
+- **Technical id:** `pur-dlp-not-enforced`
+
+### Behavior-based detection may still be switched off
+
+- **Status:** Needs attention
+- **In plain English:** Behavior analytics that learn normal patterns for people and devices still looks switched off.
+- **Suggested next step:** Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.
+- **Technical id:** `sen-ueba-not-enabled`
+
 ### Powerful accounts may sign in without strong extra checks
 
 - **Status:** Partly set up
@@ -124,6 +137,13 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.
 - **Technical id:** `mdo-p2-policies-default`
 
+### Your security command center may have few alarms turned on
+
+- **Status:** Partly set up
+- **In plain English:** Some detection alarms are on, but coverage still looks light for a paid security command center.
+- **Suggested next step:** Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.
+- **Technical id:** `sen-analytics-rule-coverage`
+
 ### On-site directory servers may lack attack sensors
 
 - **Status:** Partly set up
@@ -131,34 +151,13 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.
 - **Technical id:** `mdi-sensors-missing`
 
-### Your security command center may have few alarms turned on
-
-- **Status:** Check pending
-- **In plain English:** A central security workspace only helps if detection rules are enabled. An empty or near-default setup means you pay for the building but leave most of the alarm system off.
-- **Suggested next step:** Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.
-- **Technical id:** `sen-analytics-rule-coverage`
-
-### Guardrails against accidental data leaks may not be active
-
-- **Status:** Check pending
-- **In plain English:** Your plan can warn or stop people from sharing sensitive information (like payment cards or personal data) in the wrong place. If rules are missing or still in test mode, everyday mistakes can still walk out the door.
-- **Suggested next step:** Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.
-- **Technical id:** `pur-dlp-not-enforced`
-
-### Behavior-based detection may still be switched off
-
-- **Status:** Check pending
-- **In plain English:** Modern security tools can learn normal patterns for people and devices, then flag unusual behavior. That intelligence is often left off after the workspace is created.
-- **Suggested next step:** Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.
-- **Technical id:** `sen-ueba-not-enabled`
-
 ## Recommended first steps
 
 1. Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.
 2. Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).
 3. Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
 4. Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.
-5. Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
+5. Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.
 
 ## Technical details
 

@@ -43,7 +43,12 @@ See the full matrix in [permissions.md](permissions.md).
 - API: WindowsDefenderATP / Microsoft Defender for Endpoint  
 - Application permission: `Machine.Read.All`
 
-Grant **admin consent** after adding permissions.
+**Microsoft Sentinel** (optional, for Sentinel checks):
+
+- Assign the app’s service principal **Microsoft Sentinel Reader** on the target Log Analytics workspace (or parent scope)
+- Pass `--workspace-resource-id` (full ARM ID) on `scan` / `doctor`
+
+Grant **admin consent** after adding Graph/MDE permissions.
 
 > If Graph returns 403, re-check consent and re-run `licenselens doctor --live`.
 

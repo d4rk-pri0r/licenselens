@@ -32,13 +32,17 @@ Auth → Collectors → Entitlement resolution → Check selection → Findings 
 - Register pure evaluators in `engine/evaluate.py` (`EVALUATORS`)
 - Keep reporting format stable so MSPs can archive JSON over time
 
-## v0.1 identity data plane
+## Data plane (v0.2)
 
-| Evidence | Graph |
-|----------|--------|
-| SKUs | `GET /subscribedSkus` |
-| CA policies | `GET /identity/conditionalAccess/policies` |
-| Role assignments | `GET /roleManagement/directory/roleAssignments` |
-| PIM eligibility | `GET /roleManagement/directory/roleEligibilitySchedules` |
-| Sign-ins (bounded) | `GET /auditLogs/signIns` (success, lookback, page cap) |
-| Principals | `POST /directoryObjects/getByIds` |
+| Evidence | API |
+|----------|-----|
+| SKUs | Graph `GET /subscribedSkus` |
+| CA policies | Graph `GET /identity/conditionalAccess/policies` |
+| Role assignments | Graph `GET /roleManagement/directory/roleAssignments` |
+| PIM eligibility | Graph `GET /roleManagement/directory/roleEligibilitySchedules` |
+| Sign-ins (bounded) | Graph `GET /auditLogs/signIns` |
+| Principals | Graph `POST /directoryObjects/getByIds` |
+| Secure Score | Graph `GET /security/secureScores` |
+| MDE machines | `https://api.securitycenter.microsoft.com/api/machines` |
+| Sentinel rules | ARM `.../Microsoft.SecurityInsights/alertRules` |
+| Sentinel settings | ARM `.../Microsoft.SecurityInsights/settings` |

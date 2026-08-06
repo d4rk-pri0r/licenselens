@@ -32,9 +32,11 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
         FindingStatus.PARTIAL,
         FindingStatus.OK,
     }
-    # Sentinel / Purview still pending
-    assert by_id["sen-analytics-rule-coverage"].status == FindingStatus.SKIPPED
-    assert by_id["pur-dlp-not-enforced"].status == FindingStatus.SKIPPED
+    assert by_id["sen-analytics-rule-coverage"].status == FindingStatus.PARTIAL
+    assert by_id["sen-ueba-not-enabled"].status == FindingStatus.GAP
+    assert by_id["pur-dlp-not-enforced"].status == FindingStatus.GAP
+    # Full original pack should not be skipped when capabilities are owned
+    assert not any(f.status == FindingStatus.SKIPPED for f in result.findings)
     assert all(f.customer_title for f in result.findings)
     assert result.has_actionable_gaps
     assert any("admin" in c.plain_name.lower() for c in result.capability_summaries)
