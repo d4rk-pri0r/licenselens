@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LicenseLens report</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --text: #e8eefc;
+      --muted: #9aa8c7;
+      --accent: #5b9dff;
+      --gap: #f07178;
+      --partial: #ffcc66;
+      --ok: #7fd99a;
+      --notlic: #7a8499;
+      --skipped: #8b95a8;
+      --border: #243049;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #1a2744 0%, var(--bg) 55%);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    header, main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+    header h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
+    header p { margin: 0; color: var(--muted); }
+    .meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: 0.95rem; }
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin: 1.5rem 0; }
+    .tile {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .tile .n { font-size: 1.6rem; font-weight: 700; }
+    .tile .l { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    h2 { margin: 0 0 0.75rem; font-size: 1.1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    th, td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge.gap { background: color-mix(in srgb, var(--gap) 25%, transparent); color: var(--gap); }
+    .badge.partial { background: color-mix(in srgb, var(--partial) 25%, transparent); color: var(--partial); }
+    .badge.ok { background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
+    .badge.not_licensed { background: color-mix(in srgb, var(--notlic) 25%, transparent); color: var(--notlic); }
+    .badge.skipped, .badge.error { background: color-mix(in srgb, var(--skipped) 25%, transparent); color: var(--skipped); }
+    .caps { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .cap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.25rem 0.55rem;
+      font-size: 0.85rem;
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--muted); font-size: 0.85rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LicenseLens</h1>
+    <p>Paid Microsoft security capabilities vs. realized configuration</p>
+    <div class="meta">
+      <div>Version <code>{{ result.version }}</code></div>
+      <div>Scanned <code>{{ result.scanned_at }}</code></div>
+      <div>Tenant <code>{{ result.tenant_id or "dry-run / demo" }}</code></div>
+      <div>Findings <code>{{ findings|length }}</code></div>
+    </div>
+  </header>
+
+  <main>
+    <div class="tiles">
+      {% for status in ["gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
+      <div class="tile">
+        <div class="n">{{ counts.get(status, 0) }}</div>
+        <div class="l">{{ status }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <section>
+      <h2>Owned capabilities</h2>
+      {% if result.owned_capabilities %}
+      <div class="caps">
+        {% for cap in result.owned_capabilities %}
+        <span class="cap">{{ cap }}</span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color: var(--muted); margin: 0;">No capabilities resolved from entitlements.</p>
+      {% endif %}
+    </section>
+
+    <section>
+      <h2>Subscribed SKUs (sample / collected)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Part number</th>
+            <th>Status</th>
+            <th>Units</th>
+            <th>Service plans</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sku in result.subscribed_skus %}
+          <tr>
+            <td><code>{{ sku.sku_part_number }}</code></td>
+            <td>{{ sku.capability_status or "—" }}</td>
+            <td>{{ sku.consumed_units or 0 }} / {{ sku.prepaid_units or "—" }}</td>
+            <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" style="color: var(--muted);">No SKUs collected.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Findings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Check</th>
+            <th>Workload</th>
+            <th>Severity</th>
+            <th>Value</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in findings %}
+          <tr>
+            <td><span class="badge {{ f.status.value }}">{{ f.status.value }}</span></td>
+            <td><code>{{ f.check_id }}</code><br />{{ f.title }}</td>
+            <td>{{ f.workload.value }}</td>
+            <td>{{ f.severity.value }}</td>
+            <td>{{ f.value_impact.value }}</td>
+            <td>{{ f.summary }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" style="color: var(--muted);">No findings.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    Generated by LicenseLens. Read-only assessment tooling — review findings before acting.
+    Not affiliated with Microsoft.
+  </footer>
+</body>
+</html>

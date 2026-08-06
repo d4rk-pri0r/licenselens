@@ -1,0 +1,17 @@
+id: pur-dlp-not-enforced
+title: Purview DLP licensed but not enforced in production
+description: >
+  E5/Purview DLP often remains unconfigured or stuck in test/simulation
+  mode, so paid data-protection controls never block or alert in production.
+workload: purview
+required_capabilities:
+  - purview_dlp
+severity: medium
+value_impact: high
+collector: purview_dlp
+remediation: >
+  Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams,
+  and endpoints; move from simulation to enforce after tuning.
+references:
+  - https://learn.microsoft.com/purview/dlp-learn-about-dlp
+enabled: true

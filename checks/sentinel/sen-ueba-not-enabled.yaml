@@ -1,0 +1,17 @@
+id: sen-ueba-not-enabled
+title: Sentinel UEBA / entity analytics not enabled
+description: >
+  User and Entity Behavior Analytics is a high-value Sentinel capability
+  often left off after workspace creation.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: medium
+value_impact: medium
+collector: sentinel_ueba
+remediation: >
+  Enable Entity behavior analytics (UEBA) on the Sentinel workspace and
+  ensure required data sources are connected.
+references:
+  - https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics
+enabled: true

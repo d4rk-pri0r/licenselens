@@ -1,0 +1,18 @@
+id: id-pim-unused
+title: PIM licensed but privileged access not operationalized
+description: >
+  Entra ID P2 enables Privileged Identity Management. Standing permanent
+  privileged roles with little or no eligible/activated PIM usage indicates
+  paid capability left unused.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+collector: graph_pim
+remediation: >
+  Convert standing admin roles to PIM-eligible where possible, require
+  activation with MFA/justification, and review permanent role assignments.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+enabled: true

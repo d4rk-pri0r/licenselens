@@ -1,0 +1,17 @@
+id: mde-onboard-gap
+title: Defender for Endpoint licensed seats vs onboarded devices gap
+description: >
+  Large gaps between MDE P2 licensing and onboarded devices mean EDR
+  coverage (and license value) is not realized.
+workload: endpoint
+required_capabilities:
+  - defender_endpoint_p2
+severity: high
+value_impact: high
+collector: mde_onboarding
+remediation: >
+  Onboard missing devices via Intune, GPO, or scripts; investigate
+  unhealthy sensors; align license assignment with actual endpoints.
+references:
+  - https://learn.microsoft.com/defender-endpoint/onboarding
+enabled: true

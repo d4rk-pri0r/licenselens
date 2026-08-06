@@ -1,0 +1,18 @@
+id: id-dormant-privileged
+title: Dormant privileged identities still enabled
+description: >
+  Enabled identities holding directory or PIM roles with no successful
+  sign-in for a long window are high-value takeover targets and unused
+  license surface.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: medium
+value_impact: medium
+collector: graph_signins_roles
+remediation: >
+  Disable or archive unused privileged accounts, remove unneeded role
+  assignments, and prefer just-in-time access via PIM.
+references:
+  - https://attack.mitre.org/techniques/T1078/004/
+enabled: true

@@ -1,0 +1,17 @@
+id: sen-analytics-rule-coverage
+title: Sentinel workspace with thin analytics rule coverage
+description: >
+  A Sentinel workspace with few enabled scheduled analytics rules leaves
+  SIEM spend without detection yield.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: high
+value_impact: high
+collector: sentinel_analytics
+remediation: >
+  Enable relevant content hub solutions and scheduled rules; cover
+  identity, endpoint, and cloud control-plane sources first.
+references:
+  - https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+enabled: true
