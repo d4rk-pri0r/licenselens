@@ -1,6 +1,6 @@
 ---
 name: Check request
-about: Propose a new LicenseLens check
+about: Propose a new Security License Lens check
 title: "check: "
 labels: check
 ---

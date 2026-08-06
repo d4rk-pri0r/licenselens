@@ -1,8 +1,10 @@
-# LicenseLens
+# Security License Lens
 
 **See what you paid for but never turned on.**
 
-LicenseLens detects **Microsoft security configuration debt**: high-value capabilities included in E5, Entra ID P2, Defender, Sentinel, Purview, and related SKUs that remain at default or unused.
+CLI package name: `licenselens` · Command: `licenselens`
+
+Security License Lens detects **Microsoft security configuration debt**: high-value capabilities included in E5, Entra ID P2, Defender, Sentinel, Purview, and related SKUs that remain at default or unused.
 
 It is **not** another generic CIS/baseline scanner. It starts from **owned entitlements** (SKUs / service plans), maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
@@ -10,7 +12,7 @@ Reports lead with **plain-language outcomes** for owners and SMBs (“stronger e
 
 > Status: **v0.1.0a1 scaffold** — dry-run engine, catalog, check registry, and static HTML report. Live Graph collectors land next.
 
-## Why LicenseLens?
+## Why Security License Lens?
 
 | Tool | Optimizes for |
 |------|----------------|
@@ -19,7 +21,7 @@ Reports lead with **plain-language outcomes** for owners and SMBs (“stronger e
 | [Monkey365](https://github.com/silverhack/monkey365) | Broad CSPM / CIS-style assessment |
 | Microsoft Secure Score | Score + recommendations (not SKU-gated) |
 | License waste scripts | Seat assignment efficiency |
-| **LicenseLens** | **Owned SKUs → expected high-value controls → unused/default gaps** |
+| **Security License Lens** | **Owned SKUs → expected high-value controls → unused/default gaps** |
 
 Audience: MSPs, consultants, security architects, and SecOps leads who need a sharp **security + value** narrative for “licensed but minimally configured” tenants.
 
@@ -37,7 +39,7 @@ licenselens checks
 
 # Dry-run scan → static HTML dashboard (+ JSON + Markdown)
 licenselens scan -o reports
-open reports/licenselens-report.html   # macOS
+open reports/security-license-lens-report.html   # macOS
 ```
 
 Live tenant scans (`--live`) are intentionally not enabled in this alpha.
@@ -92,7 +94,7 @@ New checks are the primary contribution path. See [CONTRIBUTING.md](CONTRIBUTING
 
 ## Security
 
-Report vulnerabilities privately per [SECURITY.md](SECURITY.md). LicenseLens is intended to be **read-only**.
+Report vulnerabilities privately per [SECURITY.md](SECURITY.md). Security License Lens is intended to be **read-only**.
 
 ## License
 
@@ -100,4 +102,4 @@ Report vulnerabilities privately per [SECURITY.md](SECURITY.md). LicenseLens is 
 
 ## Disclaimer
 
-LicenseLens is an independent open-source project and is **not** affiliated with, endorsed by, or sponsored by Microsoft Corporation. “Microsoft”, “Entra”, “Defender”, “Sentinel”, and “Purview” are trademarks of their respective owners.
+Security License Lens is an independent open-source project and is **not** affiliated with, endorsed by, or sponsored by Microsoft Corporation. “Microsoft”, “Entra”, “Defender”, “Sentinel”, and “Purview” are trademarks of their respective owners.

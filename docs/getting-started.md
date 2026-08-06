@@ -18,7 +18,7 @@ licenselens checks
 licenselens scan -o reports
 ```
 
-Open `reports/licenselens-report.html` in a browser.
+Open `reports/security-license-lens-report.html` in a browser.
 
 ## Live scan
 

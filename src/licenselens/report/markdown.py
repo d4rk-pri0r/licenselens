@@ -11,7 +11,7 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     counts = result.counts_by_status
     lines = [
-        "# LicenseLens report",
+        f"# {result.tool_display_name} report",
         "",
         "A plain-language view of security capabilities you already pay for — "
         "and whether they are set up to help your organization.",
