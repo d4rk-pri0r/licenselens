@@ -13,6 +13,19 @@ from licenselens.catalog.loader import (
     resolve_owned_capabilities,
 )
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
+from licenselens.collectors.privileged_roles import (
+    DEMO_PRINCIPAL_DIRECTORY,
+    DEMO_RECENT_SIGNIN_USER_IDS,
+    DEMO_ROLE_ASSIGNMENTS,
+    DEMO_ROLE_ELIGIBILITIES,
+    collect_role_assignments,
+    collect_role_eligibility_schedules,
+    privileged_principal_ids,
+)
+from licenselens.collectors.signins import (
+    collect_directory_objects_by_ids,
+    collect_recent_success_signin_user_ids,
+)
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
 from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
@@ -175,6 +188,18 @@ def _recommended_next_steps(findings: list[Finding], limit: int = 5) -> list[str
     return steps
 
 
+_CHECK_EVIDENCE_KEYS: dict[str, list[str]] = {
+    "id-ca-priv-gaps": ["ca_policies"],
+    "id-idprotect-off": ["ca_policies"],
+    "id-pim-unused": ["role_assignments", "role_eligibilities"],
+    "id-dormant-privileged": [
+        "role_assignments",
+        "recent_signin_user_ids",
+        "principal_directory",
+    ],
+}
+
+
 def _gather_evidence(
     *,
     scan_mode: str,
@@ -182,10 +207,17 @@ def _gather_evidence(
     warnings: list[str],
 ) -> dict[str, Any]:
     """Collect shared evidence blobs for evaluators."""
-    evidence: dict[str, Any] = {}
+    evidence: dict[str, Any] = {
+        "signin_lookback_days": 90,
+        "signin_sample_truncated": False,
+    }
 
     if scan_mode == "dry_run":
         evidence["ca_policies"] = list(DEMO_CA_POLICIES)
+        evidence["role_assignments"] = list(DEMO_ROLE_ASSIGNMENTS)
+        evidence["role_eligibilities"] = list(DEMO_ROLE_ELIGIBILITIES)
+        evidence["recent_signin_user_ids"] = set(DEMO_RECENT_SIGNIN_USER_IDS)
+        evidence["principal_directory"] = dict(DEMO_PRINCIPAL_DIRECTORY)
         return evidence
 
     assert client is not None
@@ -194,6 +226,48 @@ def _gather_evidence(
     except GraphError as exc:
         warnings.append(f"Conditional Access policies could not be read: {exc}")
         evidence["ca_policies_error"] = str(exc)
+
+    try:
+        evidence["role_assignments"] = collect_role_assignments(client)
+    except GraphError as exc:
+        warnings.append(f"Directory role assignments could not be read: {exc}")
+        evidence["role_assignments_error"] = str(exc)
+
+    try:
+        evidence["role_eligibilities"] = collect_role_eligibility_schedules(client)
+    except GraphError as exc:
+        # PIM eligibility may 403 if not licensed / not consented — treat as empty + warn
+        warnings.append(
+            f"PIM role eligibility schedules could not be read (treating as none): {exc}"
+        )
+        evidence["role_eligibilities"] = []
+        evidence["role_eligibilities_error"] = str(exc)
+
+    assignments = list(evidence.get("role_assignments") or [])
+    principal_ids = sorted(privileged_principal_ids(assignments))
+
+    try:
+        # Detect truncation: if we hit max pages, flag it
+        max_pages = 15
+        signin_ids = collect_recent_success_signin_user_ids(
+            client, lookback_days=90, max_pages=max_pages
+        )
+        evidence["recent_signin_user_ids"] = signin_ids
+        # Heuristic: very full page budget suggests truncation
+        evidence["signin_sample_truncated"] = len(signin_ids) >= max_pages * 400
+    except GraphError as exc:
+        warnings.append(f"Sign-in logs could not be read: {exc}")
+        evidence["recent_signin_error"] = str(exc)
+
+    if principal_ids and "role_assignments_error" not in evidence:
+        try:
+            evidence["principal_directory"] = collect_directory_objects_by_ids(
+                client, principal_ids
+            )
+        except GraphError as exc:
+            warnings.append(f"Privileged principal directory lookup failed: {exc}")
+            evidence["principal_directory_error"] = str(exc)
+            evidence["principal_directory"] = {}
 
     return evidence
 
@@ -210,15 +284,28 @@ def _evaluate_check(
     if evaluator is None:
         return _skipped_finding(check, owned)
 
-    # Evaluators that need CA data
-    if check.id in {"id-ca-priv-gaps", "id-idprotect-off"}:
-        if evidence.get("ca_policies_error"):
+    required_keys = _CHECK_EVIDENCE_KEYS.get(check.id, [])
+    for key in required_keys:
+        err_key = f"{key}_error"
+        # Map composite keys to error names used above
+        if key == "ca_policies" and evidence.get("ca_policies_error"):
             return _error_finding(check, owned, str(evidence["ca_policies_error"]))
-        if "ca_policies" not in evidence:
+        if key == "role_assignments" and evidence.get("role_assignments_error"):
+            return _error_finding(check, owned, str(evidence["role_assignments_error"]))
+        if key == "recent_signin_user_ids" and evidence.get("recent_signin_error"):
+            return _error_finding(check, owned, str(evidence["recent_signin_error"]))
+        if key == "principal_directory" and evidence.get("principal_directory_error"):
+            return _error_finding(
+                check, owned, str(evidence["principal_directory_error"])
+            )
+        if key not in evidence and err_key not in evidence:
+            # role_eligibilities may be missing only on hard failure before set
+            if key == "role_eligibilities":
+                continue
             return _error_finding(
                 check,
                 owned,
-                "Conditional Access policy data was not collected.",
+                f"Required evidence '{key}' was not collected.",
             )
 
     try:
