@@ -95,7 +95,7 @@ def test_pack_preference_identity_over_endpoint_over_starter():
 def test_starter_demoted_off_default_card_when_packs_exclude_starter():
     identity = _finding("id-a", pack=CheckPack.IDENTITY)
     starter = _finding("pur-a", pack=CheckPack.STARTER)
-    # Default talk packs exclude starter.
+    # Default packs exclude starter.
     moves = rank_moves([starter, identity], packs=["identity", "email", "endpoint"])
     assert [m.check_ids[0] for m in moves] == ["id-a"]
     # Explicit starter scope includes it.

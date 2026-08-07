@@ -13,9 +13,9 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 | Purview DLP | Secure Score proxy (+ best-effort) | Full Purview policy surface app-only |
 | Sentinel | ARM analytics rules + UEBA when workspace given | Full content-hub depth |
 
-## Email pack (talk default)
+## Email pack (default off)
 
-- Default talk packs are **identity + endpoint**.
+- Default packs are **identity + endpoint**.
 - Email is **off** the default card because there is no Graph read API for MDO policy configuration (Microsoft Q&A + docs: PowerShell / portal only).
 - Opt-in degraded path: `--allow-email-proxy` uses Secure Score control scores, labeled proxy, subject to strict proxy quality policy, **never** rolls up to fully working.
 
@@ -43,6 +43,6 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 - No product telemetry by default.
 - No Huntress (or other vendor) branding in-product.
 
-## Freeze note
+## Stability note
 
-After the talk freeze date, check IDs stay stable unless a diff note is published. Prefer additive fields in JSON for MSP glue.
+Check IDs stay stable across minor releases unless a changelog note says otherwise. Prefer additive fields in JSON for MSP glue.

@@ -1,6 +1,6 @@
 # Multi-tenant batch config for `licenselens batch tenants.yaml -o reports`
 #
-# Default talk packs are identity + endpoint. Email is off by default
+# Default packs are identity + endpoint. Email is off by default
 # (no Graph API for MDO policy config). Pass allow_email_proxy only when
 # you explicitly want the labeled Secure Score degraded path.
 

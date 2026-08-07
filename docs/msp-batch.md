@@ -35,7 +35,7 @@ tenants:
 
 Full example: [examples/tenants.yaml](../examples/tenants.yaml).
 
-Email pack is **off by default** (no Graph API for MDO policy config). Only set `allow_email_proxy: true` when the customer accepts a labeled Secure Score degraded path.
+Email is **off by default** (no Graph API for MDO policy config). Only set `allow_email_proxy: true` when the customer accepts a labeled Secure Score degraded path.
 
 ## Friday batch
 

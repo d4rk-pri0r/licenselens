@@ -24,7 +24,7 @@ def test_loads_ten_v01_checks():
         assert check.customer_next_step, check.id
 
 
-def test_all_enabled_checks_have_talk_metadata():
+def test_all_enabled_checks_have_pack_metadata():
     checks = load_checks()
     for check in checks:
         if not check.enabled:
@@ -36,10 +36,10 @@ def test_all_enabled_checks_have_talk_metadata():
         assert check.exposure_class.value in {"none", "elevated", "exposed"}, check.id
 
 
-def test_talk_pack_coverage():
+def test_pack_coverage():
     checks = load_checks()
     packs = {c.pack.value for c in checks if c.enabled}
-    # The three talk packs must each contain at least one enabled check.
+    # Core packs must each contain at least one enabled check.
     for required in ("identity", "email", "endpoint"):
-        assert required in packs, f"talk pack {required!r} has no checks"
+        assert required in packs, f"pack {required!r} has no checks"
     assert "starter" in packs

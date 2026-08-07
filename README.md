@@ -2,16 +2,16 @@
 
 **The security you already own (and ignore).**
 
-CLI: `licenselens` · Release: **v0.2.x → talk-ready**
+CLI: `licenselens` · Release: **v0.2.x**
 
 Security License Lens finds **Microsoft security configuration debt**: high-value capabilities in E5, Entra ID P2, Defender, and related SKUs that stay at default or unused. It starts from **owned entitlements**, maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
-> Sample card (dry-run Contoso): [examples/sample-report/](examples/sample-report/)
+> Sample report (dry-run): [examples/sample-report/](examples/sample-report/)
 
-## Monday path (start here)
+## Quick start
 
 ```bash
-# One-command offline demo → HTML card
+# One-command offline demo → HTML report
 pipx install licenselens   # or: pip install -e ".[dev]"
 licenselens demo
 
@@ -19,7 +19,7 @@ licenselens demo
 licenselens quickstart
 ```
 
-Default talk packs are **identity + endpoint**. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
+Default packs are **identity + endpoint**. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
 
 ### Live / MSP
 
@@ -74,7 +74,7 @@ Unlicensed capabilities report `not_licensed` instead of false gaps.
 
 See [docs/limitations.md](docs/limitations.md) for the full list. Short version:
 
-- **Email pack off default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled
+- **Email pack off by default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled
 - MDI / Purview may still use **Secure Score proxies** (starter packs)
 - Sentinel needs a **workspace ARM ID** + Azure RBAC
 - Sign-in / MDE inventories may **truncate** on huge tenants
