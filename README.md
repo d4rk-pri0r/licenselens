@@ -1,14 +1,33 @@
 # Security License Lens
 
-**See what you paid for but never turned on.**
+**The security you already own (and ignore).**
 
-CLI package: `licenselens` · Command: `licenselens` · Release: **v0.2.0**
+CLI: `licenselens` · Release: **v0.2.x → talk-ready**
 
-Security License Lens detects **Microsoft security configuration debt**: high-value capabilities included in E5, Entra ID P2, Defender, Sentinel, Purview, and related SKUs that remain at default or unused.
+Security License Lens finds **Microsoft security configuration debt**: high-value capabilities in E5, Entra ID P2, Defender, and related SKUs that stay at default or unused. It starts from **owned entitlements**, maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
-It is **not** another generic CIS/baseline scanner. It starts from **owned entitlements** (SKUs / service plans), maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
+> Sample card (dry-run Contoso): [examples/sample-report/](examples/sample-report/)
 
-Reports lead with **plain-language outcomes** for owners and SMBs, then tuck product names and SKU codes into a technical section for consultants.
+## Monday path (start here)
+
+```bash
+# One-command offline demo → HTML card
+pipx install licenselens   # or: pip install -e ".[dev]"
+licenselens demo
+
+# Your own tenant (read-only device code)
+licenselens quickstart
+```
+
+Default talk packs are **identity + endpoint**. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
+
+### Live / MSP
+
+```bash
+licenselens doctor --live --auth client_secret
+licenselens scan --live --auth client_secret -o reports
+licenselens batch tenants.yaml -o reports
+```
 
 ## Why Security License Lens?
 
@@ -20,36 +39,6 @@ Reports lead with **plain-language outcomes** for owners and SMBs, then tuck pro
 | Microsoft Secure Score | Score + recommendations (not SKU-gated) |
 | License waste scripts | Seat assignment efficiency |
 | **Security License Lens** | **Owned SKUs → expected high-value controls → unused/default gaps** |
-
-## Quick start
-
-```bash
-cd licenselens
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-licenselens checks
-licenselens scan -o reports
-open reports/security-license-lens-report.html
-```
-
-### Live tenant
-
-```bash
-export AZURE_TENANT_ID=...
-export AZURE_CLIENT_ID=...
-export AZURE_CLIENT_SECRET=...
-
-licenselens doctor --live --auth client_secret
-licenselens scan --live --auth client_secret -o reports
-
-# Sentinel checks (workspace required)
-licenselens scan --live --auth client_secret \
-  --workspace-resource-id "/subscriptions/.../resourceGroups/.../providers/Microsoft.OperationalInsights/workspaces/..." \
-  -o reports
-```
-
-Sample dry-run output: [examples/sample-report/](examples/sample-report/).
 
 ### Diff, discovery, and batch
 
@@ -72,7 +61,7 @@ licenselens batch tenants.yaml -o reports
 | `id-idprotect-off` | Identity | Risk-based CA |
 | `id-pim-unused` | Identity | Standing roles vs PIM eligibility |
 | `id-dormant-privileged` | Identity | Unused privileged users |
-| `mdo-p2-policies-default` | Defender | Secure Score proxy (Safe Links/Attachments) |
+| `mdo-p2-policies-default` | Defender | Off default packs; opt-in `--allow-email-proxy` only |
 | `mde-onboard-gap` | Endpoint | MDE API vs licensed units |
 | `mdi-sensors-missing` | Defender | Secure Score proxy |
 | `sen-analytics-rule-coverage` | Sentinel | ARM analytics rules (workspace required) |
@@ -83,10 +72,14 @@ Unlicensed capabilities report `not_licensed` instead of false gaps.
 
 ### Known limitations
 
-- MDO, MDI, and Purview DLP may use **Secure Score proxies** when direct policy APIs are unavailable
-- Sentinel requires **workspace ARM ID** + Azure RBAC (Microsoft Sentinel Reader)
-- MDE machine counts may truncate on very large tenants
+See [docs/limitations.md](docs/limitations.md) for the full list. Short version:
+
+- **Email pack off default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled
+- MDI / Purview may still use **Secure Score proxies** (starter packs)
+- Sentinel needs a **workspace ARM ID** + Azure RBAC
+- Sign-in / MDE inventories may **truncate** on huge tenants
 - Findings are **advisory**, not a compliance certification
+- **No product telemetry** by default
 
 ## Architecture
 

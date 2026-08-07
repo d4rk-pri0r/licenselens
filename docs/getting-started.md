@@ -20,6 +20,39 @@ licenselens scan -o reports
 
 Open `reports/security-license-lens-report.html` in a browser.
 
+## Quick demo
+
+```bash
+licenselens demo -o reports --open
+```
+
+Runs the offline demo tenant, prints the executive summary to the terminal,
+writes the HTML report, and optionally opens it in your browser. The report is
+from curated demo data — not a real tenant.
+
+## Docker
+
+Run the offline demo in a container and collect reports via a mounted volume:
+
+```bash
+docker build -t licenselens .
+mkdir -p reports
+docker run --rm -v "$PWD/reports:/reports" licenselens
+# or explicitly:
+docker run --rm -v "$PWD/reports:/reports" licenselens demo -o /reports
+```
+
+`licenselens` is the image entrypoint, so any command works:
+
+```bash
+docker run --rm -v "$PWD/reports:/reports" licenselens scan --live --auth device -o /reports
+docker run --rm licenselens version
+docker run --rm licenselens checks
+```
+
+> Note: `--auth device` needs an interactive terminal; add `-it`:
+> `docker run --rm -it -v "$PWD/reports:/reports" licenselens scan --live --auth device -o /reports`
+
 ## Sample report
 
 A scrubbed dry-run report is committed at `examples/sample-report/` so you can

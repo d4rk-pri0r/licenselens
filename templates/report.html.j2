@@ -113,6 +113,34 @@
     details.tech[open] > summary { margin-bottom: 0.75rem; color: var(--text); }
     footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--muted); font-size: 0.85rem; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; }
+    .hero { break-inside: avoid; page-break-inside: avoid; }
+    @media print {
+      body {
+        background: #fff;
+        color: #111;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      header, main, footer { max-width: none; padding: 0.5rem 0; }
+      .hero {
+        border: 2px solid #243049 !important;
+        background: #f4f7fc !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .tile, .card, .finding, section {
+        background: #fff !important;
+        border-color: #ccc !important;
+        break-inside: avoid;
+      }
+      details.tech { display: none; }
+      footer { display: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+    @media screen and (max-width: 720px) {
+      .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      header h1 { font-size: 1.4rem; }
+    }
   </style>
 </head>
 <body>
@@ -143,7 +171,37 @@
     </div>
   </header>
 
-  <main>
+    <main>
+    {% set rollup = result.capability_rollup %}
+    <section class="hero" style="background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border));">
+      <h2>Your security at a glance</h2>
+      <p class="section-help">{{ rollup.realized_sentence }}.</p>
+      <div class="tiles" style="margin-top: 0;">
+        <div class="tile">
+          <div class="n">{{ rollup.you_own }}</div>
+          <div class="l">Protections you own<small>in licensed workloads</small></div>
+        </div>
+        <div class="tile">
+          <div class="n" style="color: var(--ok);">{{ rollup.fully_working }}</div>
+          <div class="l">Fully working<small>set up and active</small></div>
+        </div>
+        <div class="tile">
+          <div class="n">{{ rollup.realized_percent }}<span style="font-size: 0.9rem;">%</span></div>
+          <div class="l">Realized<small>of what you own</small></div>
+        </div>
+        <div class="tile">
+          <div class="n" style="color: var(--partial);">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
+          <div class="l">Need attention<small>gaps and partial setups</small></div>
+        </div>
+        {% if result.has_exposed %}
+        <div class="tile" style="border-color: var(--gap);">
+          <div class="n" style="color: var(--gap);">{{ result.exposed_count }}</div>
+          <div class="l">Exposed<small>high-risk gaps, do first</small></div>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
     <div class="tiles">
       {% for status in status_order %}
       <div class="tile">
@@ -177,6 +235,28 @@
       <p style="color: var(--muted); margin: 0;">No licensed capabilities were resolved from entitlements.</p>
       {% endif %}
     </section>
+
+    {% if result.moves %}
+    <section>
+      <h2>Top things to do first</h2>
+      <p class="section-help">
+        Ordered by what protects the most with the least effort. Each is written so you can hand it to IT.
+      </p>
+      <ol class="steps">
+        {% for move in result.moves %}
+        <li style="margin-bottom: 0.9rem;">
+          <strong>{{ move.title }}</strong>
+          {% if move.effort_label %}<span class="badge partial" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
+          <div style="color: var(--muted); margin-top: 0.25rem;">{{ move.why }}</div>
+          {% if move.customer_next_step %}<div style="margin-top: 0.25rem;"><strong>Next step:</strong> {{ move.customer_next_step }}</div>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      <p style="color: var(--muted); font-size: 0.85rem; margin: 0.75rem 0 0;">
+        Effort is a rough guide, not a quote.
+      </p>
+    </section>
+    {% endif %}
 
     <section>
       <h2>Where you may not be getting the full benefit</h2>

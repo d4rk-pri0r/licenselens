@@ -62,9 +62,7 @@ def diff_scans(old_path: Path, new_path: Path) -> dict[str, Any]:
         elif os_ and ns_ and rank.get(ns_, 9) > rank.get(os_, 9):
             improved.append(cid)
         if oc and nc and oc != nc:
-            confidence_changes.append(
-                {"check_id": cid, "old": str(oc), "new": str(nc)}
-            )
+            confidence_changes.append({"check_id": cid, "old": str(oc), "new": str(nc)})
 
     return {
         "old_file": str(old_path),

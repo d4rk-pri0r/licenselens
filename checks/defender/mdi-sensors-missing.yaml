@@ -16,6 +16,12 @@ required_capabilities:
   - defender_identity
 severity: medium
 value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://security.microsoft.com/health
 collector: mdi_sensors
 remediation: >
   Deploy and health-check MDI sensors on all DCs; fix connectivity and

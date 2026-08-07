@@ -17,6 +17,12 @@ required_capabilities:
   - entra_id_p2
 severity: high
 value_impact: high
+impact: high
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_AAD_IAM/RoleAssignmentsBlade
 collector: graph_pim
 remediation: >
   Convert standing admin roles to PIM-eligible where possible, require

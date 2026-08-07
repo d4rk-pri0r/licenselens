@@ -7,7 +7,12 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from licenselens.collectors import conditional_access as ca
-from licenselens.models import CheckDefinition, Confidence, FindingStatus
+from licenselens.models import (
+    CheckDefinition,
+    Confidence,
+    ExposureClass,
+    FindingStatus,
+)
 
 
 @dataclass
@@ -19,9 +24,35 @@ class Evaluation:
     confidence: Confidence = Confidence.MEDIUM
     data_sources: list[str] = field(default_factory=list)
     limitations: list[str] = field(default_factory=list)
+    exposure_class: ExposureClass = ExposureClass.NONE
 
 
 Evaluator = Callable[[CheckDefinition, dict[str, Any]], Evaluation]
+
+
+def _legacy_auth_exposed(*, enforced: bool, report_only: bool) -> bool:
+    """EXPOSED when legacy auth is broadly allowed with no block and no monitoring."""
+    return not enforced and not report_only
+
+
+def _mfa_less_privileged_exposed(
+    *,
+    privileged_principals: int,
+    mfa_enforced: bool,
+    mfa_report_only: bool,
+) -> bool:
+    """EXPOSED when privileged principals exist with no enforced MFA coverage.
+
+    Report-only MFA still leaves a live MFA-less path today, so it does not
+    clear the rubric. Break-glass exclusions are the documented exception.
+    """
+    return privileged_principals > 0 and not mfa_enforced
+
+
+_BREAK_GLASS_NOTE = (
+    "Break-glass (emergency access) accounts are often excluded from MFA on "
+    "purpose — confirm exclusions in Conditional Access before changing anything."
+)
 
 
 def evaluate_ca_priv_gaps(
@@ -30,7 +61,10 @@ def evaluate_ca_priv_gaps(
 ) -> Evaluation:
     """Assess MFA coverage and legacy-auth blocking via Conditional Access."""
     del check  # metadata unused; signature shared with registry
+    from licenselens.collectors import privileged_roles as priv
+
     policies: list[dict[str, Any]] = list(evidence.get("ca_policies") or [])
+    assignments: list[dict[str, Any]] = list(evidence.get("role_assignments") or [])
     enabled = [p for p in policies if ca.is_enabled(p)]
     report_only = [p for p in policies if ca.is_report_only(p)]
 
@@ -47,6 +81,30 @@ def evaluate_ca_priv_gaps(
     legacy_enforced = [p for p in enabled if ca.is_legacy_auth_block(p)]
     legacy_report = [p for p in report_only if ca.is_legacy_auth_block(p)]
 
+    priv_asg = priv.filter_privileged_assignments(assignments)
+    privileged_principal_count = len(
+        {str(a.get("principalId")) for a in priv_asg if a.get("principalId")}
+    )
+    ga_standing = [
+        a
+        for a in priv_asg
+        if str(a.get("roleDefinitionId") or "").lower() == priv.GLOBAL_ADMIN_TEMPLATE_ID.lower()
+    ]
+
+    exposure_flags: list[str] = []
+    limitations: list[str] = []
+    if _legacy_auth_exposed(enforced=bool(legacy_enforced), report_only=bool(legacy_report)):
+        exposure_flags.append("legacy_auth_broadly_allowed")
+    if _mfa_less_privileged_exposed(
+        privileged_principals=privileged_principal_count,
+        mfa_enforced=bool(mfa_enforced),
+        mfa_report_only=bool(mfa_report),
+    ):
+        exposure_flags.append("mfa_missing_for_privileged")
+        limitations.append(_BREAK_GLASS_NOTE)
+
+    exposure_class = ExposureClass.EXPOSED if exposure_flags else ExposureClass.NONE
+
     evidence_out = {
         "policy_count": len(policies),
         "enabled_count": len(enabled),
@@ -55,6 +113,11 @@ def evaluate_ca_priv_gaps(
         "mfa_report_only_policies": [p.get("displayName") for p in mfa_report],
         "legacy_block_enforced": [p.get("displayName") for p in legacy_enforced],
         "legacy_block_report_only": [p.get("displayName") for p in legacy_report],
+        "privileged_principal_count": privileged_principal_count,
+        "global_admin_standing_count": len(ga_standing),
+        "mfa_covers_privileged": bool(mfa_enforced),
+        "mfa_report_only_covers_privileged": bool(mfa_report),
+        "exposure_flags": exposure_flags,
     }
 
     if not policies:
@@ -66,12 +129,26 @@ def evaluate_ca_priv_gaps(
                 "We did not find sign-in rules that require extra verification. "
                 "Powerful accounts may be able to sign in with only a password."
             ),
+            exposure_class=exposure_class,
+            limitations=limitations,
         )
 
     has_mfa = bool(mfa_enforced)
     has_legacy = bool(legacy_enforced)
     has_mfa_ro = bool(mfa_report)
     has_legacy_ro = bool(legacy_report)
+
+    exposure_sentence = ""
+    if "legacy_auth_broadly_allowed" in exposure_flags:
+        exposure_sentence += (
+            " EXPOSED: outdated sign-in methods that skip modern security checks "
+            "are broadly allowed right now."
+        )
+    if "mfa_missing_for_privileged" in exposure_flags:
+        exposure_sentence += (
+            " EXPOSED: privileged admin accounts can currently sign in without "
+            "enforced multi-factor authentication."
+        )
 
     if has_mfa and has_legacy:
         return Evaluation(
@@ -85,6 +162,8 @@ def evaluate_ca_priv_gaps(
                 "Strong sign-in rules look enforced: extra verification is required "
                 "and outdated sign-in methods are blocked."
             ),
+            exposure_class=exposure_class,
+            limitations=limitations,
         )
 
     if has_mfa or has_legacy or has_mfa_ro or has_legacy_ro:
@@ -108,8 +187,10 @@ def evaluate_ca_priv_gaps(
             customer_summary=(
                 "Some sign-in protections are present, but the full set is not "
                 "enforced yet (multi-factor authentication and/or blocking outdated "
-                "sign-in methods)."
+                "sign-in methods)." + exposure_sentence
             ),
+            exposure_class=exposure_class,
+            limitations=limitations,
         )
 
     return Evaluation(
@@ -122,7 +203,10 @@ def evaluate_ca_priv_gaps(
         customer_summary=(
             "Sign-in rules may exist, but they do not clearly require strong "
             "verification for important accounts or block outdated sign-in methods."
+            + exposure_sentence
         ),
+        exposure_class=exposure_class,
+        limitations=limitations,
     )
 
 
@@ -140,9 +224,7 @@ def evaluate_idprotect_off(
         for p in risk_policies:
             if not ca.is_enabled(p):
                 continue
-            levels = (
-                ca.sign_in_risk_levels(p) if kind == "sign_in" else ca.user_risk_levels(p)
-            )
+            levels = ca.sign_in_risk_levels(p) if kind == "sign_in" else ca.user_risk_levels(p)
             if not levels:
                 continue
             controls = {
@@ -158,9 +240,7 @@ def evaluate_idprotect_off(
         for p in risk_policies:
             if not ca.is_report_only(p):
                 continue
-            levels = (
-                ca.sign_in_risk_levels(p) if kind == "sign_in" else ca.user_risk_levels(p)
-            )
+            levels = ca.sign_in_risk_levels(p) if kind == "sign_in" else ca.user_risk_levels(p)
             if levels:
                 out.append(p)
         return out
@@ -244,17 +324,12 @@ def evaluate_pim_unused(
     priv_asg = priv.filter_privileged_assignments(assignments)
     priv_elig = priv.filter_privileged_eligibilities(eligibilities)
 
-    permanent_principals = {
-        str(a.get("principalId")) for a in priv_asg if a.get("principalId")
-    }
-    eligible_principals = {
-        str(s.get("principalId")) for s in priv_elig if s.get("principalId")
-    }
+    permanent_principals = {str(a.get("principalId")) for a in priv_asg if a.get("principalId")}
+    eligible_principals = {str(s.get("principalId")) for s in priv_elig if s.get("principalId")}
     ga_standing = [
         a
         for a in priv_asg
-        if str(a.get("roleDefinitionId") or "").lower()
-        == priv.GLOBAL_ADMIN_TEMPLATE_ID.lower()
+        if str(a.get("roleDefinitionId") or "").lower() == priv.GLOBAL_ADMIN_TEMPLATE_ID.lower()
     ]
 
     evidence_out = {
@@ -362,9 +437,7 @@ def evaluate_dormant_privileged(
     signin_truncated = bool(evidence.get("signin_sample_truncated"))
 
     priv_asg = priv.filter_privileged_assignments(assignments)
-    principal_ids = sorted(
-        {str(a.get("principalId")) for a in priv_asg if a.get("principalId")}
-    )
+    principal_ids = sorted({str(a.get("principalId")) for a in priv_asg if a.get("principalId")})
 
     dormant_users: list[dict[str, str]] = []
     active_users = 0
@@ -419,9 +492,7 @@ def evaluate_dormant_privileged(
             status=FindingStatus.PARTIAL,
             summary="No privileged role principals were found to evaluate for dormancy.",
             evidence=evidence_out,
-            customer_summary=(
-                "We could not list high-privilege accounts to check for inactivity."
-            ),
+            customer_summary=("We could not list high-privilege accounts to check for inactivity."),
         )
 
     if not dormant_users:
@@ -510,9 +581,7 @@ def evaluate_mdo_p2_policies(
     proxy_meta = dict(
         confidence=Confidence.LOW,
         data_sources=["secureScore.controlScores (proxy)"],
-        limitations=[
-            "Secure Score is a proxy — verify Safe Links/Attachments in the portal."
-        ],
+        limitations=["Secure Score is a proxy — verify Safe Links/Attachments in the portal."],
     )
 
     if matched == 0:
@@ -877,13 +946,13 @@ def evaluate_sen_ueba(
             status=FindingStatus.ERROR,
             summary=f"Could not read Sentinel settings: {evidence['sentinel_ueba_error']}",
             evidence=ueba,
-            customer_summary=(
-                "We could not verify behavior analytics settings on the workspace."
-            ),
+            customer_summary=("We could not verify behavior analytics settings on the workspace."),
         )
 
-    if ueba.get("settings_error") and ueba.get("ueba_enabled") is False and not ueba.get(
-        "raw_entity_present"
+    if (
+        ueba.get("settings_error")
+        and ueba.get("ueba_enabled") is False
+        and not ueba.get("raw_entity_present")
     ):
         # Could not read settings — distinguish from explicitly off
         return Evaluation(

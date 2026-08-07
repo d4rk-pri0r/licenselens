@@ -21,6 +21,8 @@ class DoctorCheck:
     name: str
     ok: bool
     detail: str
+    fix: str = ""
+    optional: bool = False  # True = nice-to-have (e.g. MDE API); failure is ⚠, not ✗
 
 
 @dataclass
@@ -35,6 +37,11 @@ class DoctorReport:
     @property
     def ok(self) -> bool:
         return all(c.ok for c in self.checks)
+
+    @property
+    def ready(self) -> bool:
+        """Identity-essential checks pass; optional probes may still warn."""
+        return all(c.ok for c in self.checks if not c.optional)
 
 
 def run_doctor(
@@ -51,9 +58,7 @@ def run_doctor(
     try:
         profile_value = DoctorProfile(profile)
     except ValueError as exc:
-        raise ValueError(
-            f"Unknown doctor profile: {profile!r} (expected basic or full)."
-        ) from exc
+        raise ValueError(f"Unknown doctor profile: {profile!r} (expected basic or full).") from exc
     report = DoctorReport(mode=auth.mode, profile=profile_value)
 
     if auth.mode == AuthMode.DRY_RUN:
@@ -122,6 +127,7 @@ def run_doctor(
                             "Could not read /organization. "
                             "Grant Organization.Read.All (application) with admin consent."
                         ),
+                        fix="Grant Organization.Read.All (application) with admin consent.",
                     )
                 )
 
@@ -141,6 +147,7 @@ def run_doctor(
                         name="subscribedSkus",
                         ok=False,
                         detail=str(exc),
+                        fix="Grant Organization.Read.All so licenses can be read.",
                     )
                 )
 
@@ -161,6 +168,7 @@ def run_doctor(
                         name="conditionalAccess",
                         ok=False,
                         detail=str(exc),
+                        fix="Grant Policy.Read.All (or the CA read scope) with admin consent.",
                     )
                 )
 
@@ -181,6 +189,7 @@ def run_doctor(
                         name="roleAssignments",
                         ok=False,
                         detail=str(exc),
+                        fix="Grant RoleManagement.Read.Directory to read privileged roles.",
                     )
                 )
 
@@ -198,15 +207,46 @@ def run_doctor(
                             if score
                             else "No Secure Score snapshot returned."
                         ),
+                        optional=True,
+                        fix="Grant SecurityEvents.Read.All if you use --allow-email-proxy.",
                     )
                 )
             except GraphError as exc:
                 report.checks.append(
-                    DoctorCheck(name="secureScore", ok=False, detail=str(exc))
+                    DoctorCheck(
+                        name="secureScore",
+                        ok=False,
+                        detail=str(exc),
+                        optional=True,
+                        fix="Grant the Secure Score read permission with admin consent.",
+                    )
                 )
+
+            # Email policy config has no Graph read path (PowerShell-only).
+            report.checks.append(
+                DoctorCheck(
+                    name="emailProtection",
+                    ok=False,
+                    optional=True,
+                    detail=(
+                        "Email policy config (Safe Links / Safe Attachments / "
+                        "preset Standard·Strict) is not readable via Graph."
+                    ),
+                    fix=(
+                        "Verify in Defender portal → Preset security policies, "
+                        "or Exchange Online PowerShell (Get-ATPProtectionPolicyRule). "
+                        "Optional: --allow-email-proxy for a labeled Secure Score path."
+                    ),
+                )
+            )
     except (AuthError, GraphError) as exc:
         report.checks.append(
-            DoctorCheck(name="graph", ok=False, detail=str(exc))
+            DoctorCheck(
+                name="graph",
+                ok=False,
+                detail=str(exc),
+                fix="Confirm credentials and that the app has admin consent.",
+            )
         )
 
     # Optional Defender for Endpoint API (separate resource) — full profile only
@@ -235,6 +275,8 @@ def run_doctor(
                     name="defenderEndpoint",
                     ok=False,
                     detail=str(exc),
+                    optional=True,
+                    fix="Endpoint pack is optional — identity scanning still works without MDE API.",
                 )
             )
 
@@ -264,6 +306,8 @@ def run_doctor(
                         name="sentinelWorkspace",
                         ok=False,
                         detail=str(exc),
+                        optional=True,
+                        fix="Sentinel is optional — the scan runs without it.",
                     )
                 )
         else:
@@ -271,9 +315,7 @@ def run_doctor(
                 DoctorCheck(
                     name="sentinelWorkspace",
                     ok=True,
-                    detail=(
-                        "Skipped (pass --workspace-resource-id to probe Sentinel)."
-                    ),
+                    detail=("Skipped (pass --workspace-resource-id to probe Sentinel)."),
                 )
             )
 

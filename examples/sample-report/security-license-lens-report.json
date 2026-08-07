@@ -1,12 +1,13 @@
 {
   "tool": "security-license-lens",
   "tool_display_name": "Security License Lens",
-  "version": "0.2.0",
-  "tenant_id": "00000000-0000-0000-0000-000000000000",
+  "version": "0.3.0.dev1",
+  "tenant_id": "dry-run",
   "tenant_display_name": "Contoso Demo (dry-run)",
+  "tenant_slug": null,
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
-  "scanned_at": "2026-08-05T15:53:23.263401+00:00",
+  "scanned_at": "2026-08-07T19:03:27.416686+00:00",
   "owned_capabilities": [
     "conditional_access",
     "defender_endpoint_p2",
@@ -164,6 +165,12 @@
       "status": "gap",
       "severity": "high",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
       "summary": "No Conditional Access policies with user-risk or sign-in-risk conditions were found (Identity Protection not operationalized via CA).",
       "evidence": {
         "risk_policy_count": 0,
@@ -182,7 +189,13 @@
       "customer_title": "Suspicious sign-ins may not be blocked automatically",
       "customer_summary": "We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.",
       "customer_next_step": "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky.",
-      "status_label": "Needs attention"
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": []
     },
     {
       "check_id": "id-pim-unused",
@@ -191,6 +204,12 @@
       "status": "gap",
       "severity": "high",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "admin",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://portal.azure.com/#view/Microsoft_AAD_IAM/RoleAssignmentsBlade",
       "summary": "Found 4 standing privileged role assignment(s) and 0 PIM eligible schedules \u2014 just-in-time admin access is not in use.",
       "evidence": {
         "privileged_permanent_assignments": 4,
@@ -214,7 +233,13 @@
       "customer_title": "Admin accounts still have \"always on\" superpowers",
       "customer_summary": "Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.",
       "customer_next_step": "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).",
-      "status_label": "Needs attention"
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": []
     },
     {
       "check_id": "mde-onboard-gap",
@@ -223,6 +248,12 @@
       "status": "gap",
       "severity": "high",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/machines",
       "summary": "Large Defender for Endpoint onboarding gap: 40 onboarded vs ~100 licensed units (40%).",
       "evidence": {
         "onboarded_machines": 40,
@@ -242,7 +273,14 @@
       "customer_title": "Some PCs may not be enrolled in advanced device protection",
       "customer_summary": "You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.",
       "customer_next_step": "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
-      "status_label": "Needs attention"
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "mde.api.machines",
+        "graph.subscribedSkus"
+      ],
+      "limitations": []
     },
     {
       "check_id": "id-dormant-privileged",
@@ -251,6 +289,12 @@
       "status": "gap",
       "severity": "medium",
       "value_impact": "medium",
+      "impact": "medium",
+      "effort": "days",
+      "blast_radius": "admin",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/SignInEventsBlade",
       "summary": "Found 2 enabled privileged user(s) with no successful sign-in in the last 90 days (of 4 privileged principal(s)).",
       "evidence": {
         "privileged_principal_count": 4,
@@ -281,7 +325,13 @@
       "customer_title": "Powerful accounts that nobody uses are still switched on",
       "customer_summary": "Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.",
       "customer_next_step": "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
-      "status_label": "Needs attention"
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": []
     },
     {
       "check_id": "pur-dlp-not-enforced",
@@ -290,6 +340,12 @@
       "status": "gap",
       "severity": "medium",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://purview.microsoft.com/policiespage",
       "summary": "Secure Score suggests DLP is largely unused (2 controls, ~10% completion).",
       "evidence": {
         "dlp_secure_score": {
@@ -327,9 +383,18 @@
         "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
       ],
       "customer_title": "Guardrails against accidental data leaks may not be active",
-      "customer_summary": "You appear to pay for data-leak protection that is not meaningfully enforced yet.",
+      "customer_summary": "You appear to pay for data-leak protection that is not meaningfully enforced yet. Confirm in the Purview portal.",
       "customer_next_step": "Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from \"test\" to \"enforce\" after a short tuning period.",
-      "status_label": "Needs attention"
+      "status_label": "Needs attention",
+      "confidence": "low",
+      "confidence_label": "Low confidence \u2014 verify in portal",
+      "data_sources": [
+        "secureScore.controlScores (proxy)"
+      ],
+      "limitations": [
+        "Secure Score proxy \u2014 verify DLP enforce mode in Purview portal.",
+        "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
+      ]
     },
     {
       "check_id": "sen-ueba-not-enabled",
@@ -338,6 +403,12 @@
       "status": "gap",
       "severity": "medium",
       "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics",
       "summary": "Sentinel UEBA / entity analytics does not appear enabled.",
       "evidence": {
         "ueba_enabled": false,
@@ -358,7 +429,13 @@
       "customer_title": "Behavior-based detection may still be switched off",
       "customer_summary": "Behavior analytics that learn normal patterns for people and devices still looks switched off.",
       "customer_next_step": "Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.",
-      "status_label": "Needs attention"
+      "status_label": "Needs attention",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
+      "data_sources": [
+        "azure.arm.securityInsights"
+      ],
+      "limitations": []
     },
     {
       "check_id": "id-ca-priv-gaps",
@@ -367,6 +444,12 @@
       "status": "partial",
       "severity": "high",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
       "summary": "Conditional Access is partially configured: missing enforced legacy authentication block (report-only legacy block exists).",
       "evidence": {
         "policy_count": 2,
@@ -379,7 +462,12 @@
         "legacy_block_enforced": [],
         "legacy_block_report_only": [
           "Demo: Block legacy auth (report-only)"
-        ]
+        ],
+        "privileged_principal_count": 4,
+        "global_admin_standing_count": 2,
+        "mfa_covers_privileged": true,
+        "mfa_report_only_covers_privileged": false,
+        "exposure_flags": []
       },
       "entitlements_used": [
         "conditional_access"
@@ -392,53 +480,13 @@
       "customer_title": "Powerful accounts may sign in without strong extra checks",
       "customer_summary": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).",
       "customer_next_step": "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.",
-      "status_label": "Partly set up"
-    },
-    {
-      "check_id": "mdo-p2-policies-default",
-      "title": "Defender for Office 365 P2 policies not broadly enforced",
-      "workload": "defender",
-      "status": "partial",
-      "severity": "high",
-      "value_impact": "high",
-      "summary": "Secure Score shows partial MDO-related control completion (3 controls, ~45%). Safe Links/Attachments may be incomplete or not fully enforced.",
-      "evidence": {
-        "source": "secureScore.controlScores",
-        "matched_controls": 3,
-        "score_ratio": 0.45,
-        "controls": [
-          {
-            "controlName": "SafeLinks_Enabled",
-            "description": "Safe Links is enabled for email",
-            "score": 1.0,
-            "maxScore": 1.0
-          },
-          {
-            "controlName": "SafeAttachments_Enabled",
-            "description": "Safe Attachments not fully rolled out",
-            "score": 0.0,
-            "maxScore": 1.0
-          },
-          {
-            "controlName": "AntiPhish_Policy",
-            "description": "Anti-phishing policy in audit mode",
-            "score": 0.35,
-            "maxScore": 1.0
-          }
-        ],
-        "note": "Uses Microsoft Secure Score control signals as a proxy for Defender for Office 365 policy enforcement when direct policy APIs are unavailable."
-      },
-      "entitlements_used": [
-        "defender_office_p2"
+      "status_label": "Partly set up",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
       ],
-      "remediation": "Enforce Safe Attachments and Safe Links for all recipients; enable preset security policies or equivalent custom policies in block mode.",
-      "references": [
-        "https://learn.microsoft.com/defender-office-365/preset-security-policies"
-      ],
-      "customer_title": "Extra email protections may not cover everyone yet",
-      "customer_summary": "Some stronger email protections appear configured, but not fully. Safe Links and Safe Attachments may still miss people or stay in test mode.",
-      "customer_next_step": "Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.",
-      "status_label": "Partly set up"
+      "limitations": []
     },
     {
       "check_id": "sen-analytics-rule-coverage",
@@ -447,6 +495,12 @@
       "status": "partial",
       "severity": "high",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in",
       "summary": "Thin Sentinel analytics coverage: 2 enabled scheduled/NRT rule(s), 2 tactic(s) (total rules=3).",
       "evidence": {
         "total_rules": 3,
@@ -473,7 +527,13 @@
       "customer_title": "Your security command center may have few alarms turned on",
       "customer_summary": "Some detection alarms are on, but coverage still looks light for a paid security command center.",
       "customer_next_step": "Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.",
-      "status_label": "Partly set up"
+      "status_label": "Partly set up",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
+      "data_sources": [
+        "azure.arm.securityInsights"
+      ],
+      "limitations": []
     },
     {
       "check_id": "mdi-sensors-missing",
@@ -482,9 +542,16 @@
       "status": "partial",
       "severity": "medium",
       "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/health",
       "summary": "No Defender for Identity\u2013related Secure Score controls were found. Cannot confirm sensor deployment from this signal alone.",
       "evidence": {
         "source": "secureScore.controlScores",
+        "proxy": true,
         "matched_controls": 0,
         "score_ratio": null,
         "controls": [],
@@ -500,15 +567,165 @@
       "customer_title": "On-site directory servers may lack attack sensors",
       "customer_summary": "We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.",
       "customer_next_step": "Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.",
-      "status_label": "Partly set up"
+      "status_label": "Partly set up",
+      "confidence": "low",
+      "confidence_label": "Low confidence \u2014 verify in portal",
+      "data_sources": [
+        "secureScore.controlScores (proxy)"
+      ],
+      "limitations": [
+        "Secure Score proxy \u2014 verify MDI sensors in the Defender portal.",
+        "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
+      ]
+    },
+    {
+      "check_id": "mdo-p2-policies-default",
+      "title": "Defender for Office 365 P2 policies not broadly enforced",
+      "workload": "defender",
+      "status": "skipped",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/presetSecurityPolicies",
+      "summary": "Email protection policy config is not readable via Microsoft Graph (Safe Links / Safe Attachments / preset policies require Exchange Online PowerShell). Enable --allow-email-proxy for a labeled Secure Score degraded path, or verify in the Defender portal.",
+      "evidence": {
+        "source": "none",
+        "proxy": false,
+        "email_proxy_enabled": false,
+        "note": "No Graph API reads MDO email policy config. Direct path is Exchange Online PowerShell only."
+      },
+      "entitlements_used": [
+        "defender_office_p2"
+      ],
+      "remediation": "Enforce Safe Attachments and Safe Links for all recipients; enable preset security policies or equivalent custom policies in block mode.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/preset-security-policies"
+      ],
+      "customer_title": "Turn on Safe Links and Safe Attachments for everyone",
+      "customer_summary": "We cannot automatically confirm whether extra email protections (Safe Links and Safe Attachments) cover everyone. Ask IT to check Preset security policies in the Microsoft Defender portal, or run Exchange Online PowerShell (Get-ATPProtectionPolicyRule).",
+      "customer_next_step": "Open Preset security policies in the Defender portal and turn on Standard protection for all users, or confirm with Exchange Online PowerShell.",
+      "status_label": "Check pending",
+      "confidence": "low",
+      "confidence_label": "Low confidence \u2014 verify in portal",
+      "data_sources": [
+        "secureScore.controlScores (proxy)"
+      ],
+      "limitations": [
+        "Email policy config is PowerShell-only; not verified automatically.",
+        "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
+      ]
     }
   ],
   "recommended_next_steps": [
+    "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.",
     "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky.",
-    "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).",
-    "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
-    "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
-    "Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from \"test\" to \"enforce\" after a short tuning period."
+    "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles)."
   ],
-  "warnings": []
+  "warnings": [],
+  "limitations": [
+    "Strict proxy mode is ON: Secure Score\u2013based checks (MDO, MDI, Purview DLP) never report fully OK and are labeled low confidence.",
+    "Proxy-based checks in this report: mdi-sensors-missing, mdo-p2-policies-default, pur-dlp-not-enforced."
+  ],
+  "data_sources_used": [
+    "azure.arm.securityInsights",
+    "graph.subscribedSkus",
+    "mde.api.machines",
+    "microsoft.graph",
+    "secureScore.controlScores (proxy)"
+  ],
+  "workspace_resource_id": null,
+  "strict_proxy": true,
+  "packs_scanned": [
+    "identity",
+    "endpoint"
+  ],
+  "moves": [
+    {
+      "title": "Require multi-factor authentication for admins and block legacy email si\u2026",
+      "why": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).",
+      "effort": "hours",
+      "check_ids": [
+        "id-ca-priv-gaps"
+      ],
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+      "customer_next_step": "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts."
+    },
+    {
+      "title": "Turn on risk-based sign-in protection in stages \u2014 start by requiring ext\u2026",
+      "why": "We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.",
+      "effort": "hours",
+      "check_ids": [
+        "id-idprotect-off"
+      ],
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+      "customer_next_step": "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky."
+    },
+    {
+      "title": "Ask IT to turn on time-limited admin access for your top admins first (G\u2026",
+      "why": "Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.",
+      "effort": "days",
+      "check_ids": [
+        "id-pim-unused"
+      ],
+      "deep_link": "https://portal.azure.com/#view/Microsoft_AAD_IAM/RoleAssignmentsBlade",
+      "customer_next_step": "Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles)."
+    }
+  ],
+  "capability_rollup": {
+    "you_own": 4,
+    "fully_working": 0,
+    "needs_attention": 3,
+    "partly_set_up": 1,
+    "not_licensed": 0,
+    "realized_percent": 0
+  },
+  "capability_outcomes": [
+    {
+      "id": "identity_protection",
+      "name": "Microsoft Entra ID Protection",
+      "plain_name": "Alerts when a sign-in looks suspicious",
+      "status": "needs_attention",
+      "status_label": "Needs attention",
+      "related_check_ids": [
+        "id-idprotect-off"
+      ]
+    },
+    {
+      "id": "defender_endpoint_p2",
+      "name": "Microsoft Defender for Endpoint P2",
+      "plain_name": "Deep protection and visibility on PCs and devices",
+      "status": "needs_attention",
+      "status_label": "Needs attention",
+      "related_check_ids": [
+        "mde-onboard-gap"
+      ]
+    },
+    {
+      "id": "entra_id_p2",
+      "name": "Microsoft Entra ID P2",
+      "plain_name": "Stronger control over admin accounts",
+      "status": "needs_attention",
+      "status_label": "Needs attention",
+      "related_check_ids": [
+        "id-dormant-privileged",
+        "id-pim-unused"
+      ]
+    },
+    {
+      "id": "conditional_access",
+      "name": "Conditional Access",
+      "plain_name": "Smarter sign-in rules",
+      "status": "partly_set_up",
+      "status_label": "Partly set up",
+      "related_check_ids": [
+        "id-ca-priv-gaps"
+      ]
+    }
+  ],
+  "has_exposed": false,
+  "exposed_check_ids": []
 }

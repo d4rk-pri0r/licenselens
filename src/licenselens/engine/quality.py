@@ -111,9 +111,7 @@ def apply_quality_policy(
     finding.summary = summary
     finding.customer_summary = customer_summary
     finding.confidence = confidence
-    finding.confidence_label = CONFIDENCE_PLAIN_LABELS.get(
-        confidence.value, confidence.value
-    )
+    finding.confidence_label = CONFIDENCE_PLAIN_LABELS.get(confidence.value, confidence.value)
     finding.data_sources = list(dict.fromkeys(data_sources))
     finding.limitations = list(dict.fromkeys(limitations))
     finding.status_label = finding.status_label  # refreshed by caller if status changed
@@ -129,9 +127,7 @@ def scan_level_limitations(findings: list[Finding], *, strict_proxy: bool) -> li
         )
     proxy_ids = [f.check_id for f in findings if f.check_id in PROXY_CHECK_IDS]
     if proxy_ids:
-        notes.append(
-            "Proxy-based checks in this report: " + ", ".join(sorted(proxy_ids)) + "."
-        )
+        notes.append("Proxy-based checks in this report: " + ", ".join(sorted(proxy_ids)) + ".")
     if any(
         "truncated" in (f.limitations or []) or (f.evidence or {}).get("truncated")
         for f in findings

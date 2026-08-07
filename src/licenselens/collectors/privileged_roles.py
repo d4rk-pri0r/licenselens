@@ -77,9 +77,7 @@ def filter_privileged_eligibilities(
     schedules: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     return [
-        s
-        for s in schedules
-        if is_privileged_role_definition(str(s.get("roleDefinitionId") or ""))
+        s for s in schedules if is_privileged_role_definition(str(s.get("roleDefinitionId") or ""))
     ]
 
 
