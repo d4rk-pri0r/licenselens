@@ -16,6 +16,12 @@ required_capabilities:
   - entra_id_p2
 severity: medium
 value_impact: medium
+impact: medium
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/SignInEventsBlade
 collector: graph_signins_roles
 remediation: >
   Disable or archive unused privileged accounts, remove unneeded role

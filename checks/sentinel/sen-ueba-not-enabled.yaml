@@ -16,6 +16,12 @@ required_capabilities:
   - microsoft_sentinel
 severity: medium
 value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics
 collector: sentinel_ueba
 remediation: >
   Enable Entity behavior analytics (UEBA) on the Sentinel workspace and

@@ -120,8 +120,8 @@
     <h1>Security License Lens</h1>
     <p class="tagline">Security you already pay for — explained in plain English</p>
     <div class="meta">
-      <div>Version <code>0.2.0</code></div>
-      <div>Scanned <code>2026-08-05T15:53:23.263401+00:00</code></div>
+      <div>Version <code>0.3.0.dev1</code></div>
+      <div>Scanned <code>2026-08-07T19:03:27.416686+00:00</code></div>
       <div>Mode <code>dry_run / dry_run</code></div>
       <div>Organization <code>Contoso Demo (dry-run)</code></div>
     </div>
@@ -134,7 +134,32 @@
     </div>
   </header>
 
-  <main>
+    <main>
+    
+    <section class="hero" style="background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border));">
+      <h2>Your security at a glance</h2>
+      <p class="section-help">4 of 4 still not fully working.</p>
+      <div class="tiles" style="margin-top: 0;">
+        <div class="tile">
+          <div class="n">4</div>
+          <div class="l">Protections you own<small>in licensed workloads</small></div>
+        </div>
+        <div class="tile">
+          <div class="n" style="color: var(--ok);">0</div>
+          <div class="l">Fully working<small>set up and active</small></div>
+        </div>
+        <div class="tile">
+          <div class="n">0<span style="font-size: 0.9rem;">%</span></div>
+          <div class="l">Realized<small>of what you own</small></div>
+        </div>
+        <div class="tile">
+          <div class="n" style="color: var(--partial);">4</div>
+          <div class="l">Need attention<small>gaps and partial setups</small></div>
+        </div>
+        
+      </div>
+    </section>
+
     <div class="tiles">
       
       <div class="tile">
@@ -146,7 +171,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">4</div>
+        <div class="n">3</div>
         <div class="l">
           Partly set up
           <small>partial</small>
@@ -170,7 +195,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">0</div>
+        <div class="n">1</div>
         <div class="l">
           Check pending
           <small>skipped</small>
@@ -263,6 +288,42 @@
       
     </section>
 
+    
+    <section>
+      <h2>Top things to do first</h2>
+      <p class="section-help">
+        Ordered by what protects the most with the least effort. Each is written so you can hand it to IT.
+      </p>
+      <ol class="steps">
+        
+        <li style="margin-bottom: 0.9rem;">
+          <strong>Require multi-factor authentication for admins and block legacy email si…</strong>
+          <span class="badge partial" style="margin-left: 0.5rem;">~a few hours</span>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).</div>
+          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</div>
+        </li>
+        
+        <li style="margin-bottom: 0.9rem;">
+          <strong>Turn on risk-based sign-in protection in stages — start by requiring ext…</strong>
+          <span class="badge partial" style="margin-left: 0.5rem;">~a few hours</span>
+          <div style="color: var(--muted); margin-top: 0.25rem;">We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.</div>
+          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</div>
+        </li>
+        
+        <li style="margin-bottom: 0.9rem;">
+          <strong>Ask IT to turn on time-limited admin access for your top admins first (G…</strong>
+          <span class="badge partial" style="margin-left: 0.5rem;">~days</span>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.</div>
+          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).</div>
+        </li>
+        
+      </ol>
+      <p style="color: var(--muted); font-size: 0.85rem; margin: 0.75rem 0 0;">
+        Effort is a rough guide, not a quote.
+      </p>
+    </section>
+    
+
     <section>
       <h2>Where you may not be getting the full benefit</h2>
       <p class="section-help">
@@ -310,7 +371,7 @@
           <span class="badge gap">Needs attention</span>
           <h3>Guardrails against accidental data leaks may not be active</h3>
         </div>
-        <p>You appear to pay for data-leak protection that is not meaningfully enforced yet.</p>
+        <p>You appear to pay for data-leak protection that is not meaningfully enforced yet. Confirm in the Purview portal.</p>
         <p><strong>Suggested next step:</strong> Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</p>
       </article>
       
@@ -335,15 +396,6 @@
       <article class="finding">
         <div class="finding-head">
           <span class="badge partial">Partly set up</span>
-          <h3>Extra email protections may not cover everyone yet</h3>
-        </div>
-        <p>Some stronger email protections appear configured, but not fully. Safe Links and Safe Attachments may still miss people or stay in test mode.</p>
-        <p><strong>Suggested next step:</strong> Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.</p>
-      </article>
-      
-      <article class="finding">
-        <div class="finding-head">
-          <span class="badge partial">Partly set up</span>
           <h3>Your security command center may have few alarms turned on</h3>
         </div>
         <p>Some detection alarms are on, but coverage still looks light for a paid security command center.</p>
@@ -359,6 +411,15 @@
         <p><strong>Suggested next step:</strong> Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.</p>
       </article>
       
+      <article class="finding">
+        <div class="finding-head">
+          <span class="badge skipped">Check pending</span>
+          <h3>Turn on Safe Links and Safe Attachments for everyone</h3>
+        </div>
+        <p>We cannot automatically confirm whether extra email protections (Safe Links and Safe Attachments) cover everyone. Ask IT to check Preset security policies in the Microsoft Defender portal, or run Exchange Online PowerShell (Get-ATPProtectionPolicyRule).</p>
+        <p><strong>Suggested next step:</strong> Open Preset security policies in the Defender portal and turn on Standard protection for all users, or confirm with Exchange Online PowerShell.</p>
+      </article>
+      
     </section>
 
     
@@ -367,15 +428,11 @@
       <p class="section-help">A short list you can hand to IT or your Microsoft partner.</p>
       <ol class="steps">
         
+        <li>Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</li>
+        
         <li>Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</li>
         
         <li>Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).</li>
-        
-        <li>Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).</li>
-        
-        <li>Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.</li>
-        
-        <li>Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</li>
         
       </ol>
     </section>
@@ -484,14 +541,6 @@
           
           <tr>
             <td><span class="badge partial">partial</span></td>
-            <td><code>mdo-p2-policies-default</code></td>
-            <td>Defender for Office 365 P2 policies not broadly enforced</td>
-            <td>defender</td>
-            <td>high</td>
-          </tr>
-          
-          <tr>
-            <td><span class="badge partial">partial</span></td>
             <td><code>sen-analytics-rule-coverage</code></td>
             <td>Sentinel workspace with thin analytics rule coverage</td>
             <td>sentinel</td>
@@ -504,6 +553,14 @@
             <td>Defender for Identity licensed but sensors missing or unhealthy</td>
             <td>defender</td>
             <td>medium</td>
+          </tr>
+          
+          <tr>
+            <td><span class="badge skipped">skipped</span></td>
+            <td><code>mdo-p2-policies-default</code></td>
+            <td>Defender for Office 365 P2 policies not broadly enforced</td>
+            <td>defender</td>
+            <td>high</td>
           </tr>
           
         </tbody>

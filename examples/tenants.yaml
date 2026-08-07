@@ -1,0 +1,23 @@
+# Multi-tenant batch config for `licenselens batch tenants.yaml -o reports`
+#
+# Default talk packs are identity + endpoint. Email is off by default
+# (no Graph API for MDO policy config). Pass allow_email_proxy only when
+# you explicitly want the labeled Secure Score degraded path.
+
+defaults:
+  auth: client_secret
+  # packs: [identity, endpoint]   # optional; matches product default
+  # allow_email_proxy: false
+
+tenants:
+  - slug: contoso
+    tenant_id: "00000000-0000-0000-0000-000000000001"
+    # client_id / client_secret from env AZURE_CLIENT_ID / AZURE_CLIENT_SECRET
+    # or set per-tenant:
+    # client_id: "..."
+    # client_secret: "..."
+
+  - slug: fabrikam
+    tenant_id: "00000000-0000-0000-0000-000000000002"
+    # packs: [identity, endpoint]
+    # workspace_resource_id: "/subscriptions/.../workspaces/..."

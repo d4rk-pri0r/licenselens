@@ -1,13 +1,13 @@
 id: mdo-p2-policies-default
 title: Defender for Office 365 P2 policies not broadly enforced
-customer_title: Extra email protections may not cover everyone yet
+customer_title: Turn on Safe Links and Safe Attachments for everyone
 customer_summary: >
   Your license can open suspicious attachments and links safely and stop
   many phishing attacks. If those features are off, in test mode, or only
   applied to a pilot group, most people still lack the stronger shield.
 customer_next_step: >
-  Turn on the recommended email security policies for all users
-  (not just a test group), starting with safe links and safe attachments.
+  Turn on Preset security policies (Standard) for all users in the
+  Defender portal — Safe Links and Safe Attachments included.
 description: >
   Safe Attachments / Safe Links and related P2 protections often remain
   off, audit-only, or scoped to pilots despite E5/MDO P2 licensing.
@@ -16,6 +16,12 @@ required_capabilities:
   - defender_office_p2
 severity: high
 value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/presetSecurityPolicies
 collector: graph_mdo
 remediation: >
   Enforce Safe Attachments and Safe Links for all recipients; enable

@@ -46,12 +46,20 @@ from licenselens.collectors.skus import collect_subscribed_skus, collect_subscri
 from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
 from licenselens.engine.quality import apply_quality_policy, scan_level_limitations
+from licenselens.engine.rank import (
+    rank_moves,
+    recommended_next_steps_from_moves,
+)
+from licenselens.engine.rollup import capability_rollup
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
 from licenselens.models import (
+    DEFAULT_TALK_PACKS,
     STATUS_PLAIN_LABELS,
     CheckDefinition,
+    CheckPack,
     Confidence,
+    ExposureClass,
     Finding,
     FindingStatus,
     ScanResult,
@@ -105,6 +113,12 @@ def _base_finding(
         status=status,
         severity=check.severity,
         value_impact=check.value_impact,
+        impact=check.impact,
+        effort=check.effort,
+        blast_radius=check.blast_radius,
+        pack=check.pack,
+        exposure_class=check.exposure_class,
+        deep_link=check.deep_link,
         summary=summary,
         customer_title=customer["customer_title"],
         customer_summary=customer_summary or customer["customer_summary"],
@@ -119,9 +133,7 @@ def _base_finding(
         limitations=list(limitations or []),
     )
     finding = apply_quality_policy(finding, strict_proxy=strict_proxy)
-    finding.status_label = STATUS_PLAIN_LABELS.get(
-        finding.status.value, finding.status.value
-    )
+    finding.status_label = STATUS_PLAIN_LABELS.get(finding.status.value, finding.status.value)
     return finding
 
 
@@ -131,9 +143,7 @@ def _not_licensed_finding(
     return _base_finding(
         check,
         status=FindingStatus.NOT_LICENSED,
-        summary=(
-            "Required capability not detected in tenant entitlements; check skipped."
-        ),
+        summary=("Required capability not detected in tenant entitlements; check skipped."),
         owned=owned,
         customer_summary=(
             "This protection does not appear to be included in the licenses "
@@ -161,9 +171,7 @@ def _skipped_finding(
     return _base_finding(
         check,
         status=FindingStatus.SKIPPED,
-        summary=(
-            "Entitlements resolved, but this control check is not implemented yet."
-        ),
+        summary=("Entitlements resolved, but this control check is not implemented yet."),
         owned=owned,
         evidence={"collector": check.collector, "source": source},
         confidence=Confidence.LOW,
@@ -204,7 +212,7 @@ def _from_evaluation(
     *,
     strict_proxy: bool = True,
 ) -> Finding:
-    return _base_finding(
+    finding = _base_finding(
         check,
         status=evaluation.status,
         summary=evaluation.summary,
@@ -216,22 +224,22 @@ def _from_evaluation(
         limitations=evaluation.limitations,
         strict_proxy=strict_proxy,
     )
+    if evaluation.exposure_class != ExposureClass.NONE:
+        finding.exposure_class = evaluation.exposure_class
+    return finding
 
 
 def _recommended_next_steps(findings: list[Finding], limit: int = 5) -> list[str]:
     actionable = [
         f
         for f in findings
-        if f.status
-        in {FindingStatus.GAP, FindingStatus.PARTIAL, FindingStatus.SKIPPED}
+        if f.status in {FindingStatus.GAP, FindingStatus.PARTIAL, FindingStatus.SKIPPED}
         and f.customer_next_step
     ]
     actionable.sort(
         key=lambda f: (
             _STATUS_PRIORITY.get(f.status, 99),
-            {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}.get(
-                f.severity.value, 9
-            ),
+            {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}.get(f.severity.value, 9),
         )
     )
     steps: list[str] = []
@@ -248,7 +256,7 @@ def _recommended_next_steps(findings: list[Finding], limit: int = 5) -> list[str
 
 
 _CHECK_EVIDENCE_KEYS: dict[str, list[str]] = {
-    "id-ca-priv-gaps": ["ca_policies"],
+    "id-ca-priv-gaps": ["ca_policies", "role_assignments"],
     "id-idprotect-off": ["ca_policies"],
     "id-pim-unused": ["role_assignments", "role_eligibilities"],
     "id-dormant-privileged": [
@@ -389,12 +397,33 @@ def _gather_evidence(
     return evidence
 
 
+_EMAIL_UNREADABLE_SUMMARY = (
+    "Email protection policy config is not readable via Microsoft Graph "
+    "(Safe Links / Safe Attachments / preset policies require Exchange Online "
+    "PowerShell). Enable --allow-email-proxy for a labeled Secure Score "
+    "degraded path, or verify in the Defender portal."
+)
+
+_EMAIL_UNREADABLE_CUSTOMER = (
+    "We cannot automatically confirm whether extra email protections "
+    "(Safe Links and Safe Attachments) cover everyone. Ask IT to check "
+    "Preset security policies in the Microsoft Defender portal, or run "
+    "Exchange Online PowerShell (Get-ATPProtectionPolicyRule)."
+)
+
+_EMAIL_UNREADABLE_NEXT = (
+    "Open Preset security policies in the Defender portal and turn on "
+    "Standard protection for all users, or confirm with Exchange Online PowerShell."
+)
+
+
 def _evaluate_check(
     check: CheckDefinition,
     owned: set[str],
     evidence: dict[str, Any],
     *,
     strict_proxy: bool = True,
+    allow_email_proxy: bool = False,
 ) -> Finding:
     if not _eligible(check, owned):
         return _not_licensed_finding(check, owned, strict_proxy=strict_proxy)
@@ -402,6 +431,32 @@ def _evaluate_check(
     evaluator = EVALUATORS.get(check.id)
     if evaluator is None:
         return _skipped_finding(check, owned, strict_proxy=strict_proxy)
+
+    # MDO policy config has no Graph read API — skip unless operator opts into proxy.
+    if check.id == "mdo-p2-policies-default" and not allow_email_proxy:
+        return _base_finding(
+            check,
+            status=FindingStatus.SKIPPED,
+            summary=_EMAIL_UNREADABLE_SUMMARY,
+            owned=owned,
+            customer_summary=_EMAIL_UNREADABLE_CUSTOMER,
+            customer_next_step=_EMAIL_UNREADABLE_NEXT,
+            evidence={
+                "source": "none",
+                "proxy": False,
+                "email_proxy_enabled": False,
+                "note": (
+                    "No Graph API reads MDO email policy config. "
+                    "Direct path is Exchange Online PowerShell only."
+                ),
+            },
+            confidence=Confidence.LOW,
+            data_sources=[],
+            limitations=[
+                "Email policy config is PowerShell-only; not verified automatically.",
+            ],
+            strict_proxy=strict_proxy,
+        )
 
     required_keys = _CHECK_EVIDENCE_KEYS.get(check.id, [])
     for key in required_keys:
@@ -483,8 +538,10 @@ def run_scan(
     dry_run: bool = True,
     workspace_resource_id: str | None = None,
     strict_proxy: bool = True,
+    allow_email_proxy: bool = False,
     tenant_slug: str | None = None,
     discover_workspaces: bool = False,
+    packs: list[CheckPack] | list[str] | None = None,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
@@ -567,14 +624,19 @@ def run_scan(
             warnings.append(f"Workspace auto-discover failed: {exc}")
 
     findings = [
-        _evaluate_check(c, owned_set, evidence, strict_proxy=strict_proxy) for c in checks
+        _evaluate_check(
+            c,
+            owned_set,
+            evidence,
+            strict_proxy=strict_proxy,
+            allow_email_proxy=allow_email_proxy,
+        )
+        for c in checks
     ]
     findings.sort(
         key=lambda f: (
             _STATUS_PRIORITY.get(f.status, 99),
-            {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}.get(
-                f.severity.value, 9
-            ),
+            {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}.get(f.severity.value, 9),
             f.check_id,
         )
     )
@@ -593,6 +655,18 @@ def run_scan(
 
     limitations = scan_level_limitations(findings, strict_proxy=strict_proxy)
 
+    pack_scope = packs if packs is not None else DEFAULT_TALK_PACKS
+    pack_values = [p.value if isinstance(p, CheckPack) else str(p) for p in pack_scope]
+    moves = rank_moves(findings, limit=3, packs=pack_scope)
+    rollup, outcomes = capability_rollup(
+        load_checks(),
+        findings,
+        owned,
+        summaries,
+        packs_scanned=pack_scope,
+    )
+    exposed_ids = [f.check_id for f in findings if f.exposure_class == ExposureClass.EXPOSED]
+
     return ScanResult(
         version=__version__,
         tenant_id=tenant_id,
@@ -605,11 +679,16 @@ def run_scan(
         capability_summaries=summaries,
         subscribed_skus=skus,
         findings=findings,
-        recommended_next_steps=_recommended_next_steps(findings),
+        recommended_next_steps=recommended_next_steps_from_moves(moves),
         warnings=warnings,
         limitations=limitations,
         data_sources_used=data_sources_used,
-        workspace_resource_id=workspace_resource_id
-        or evidence.get("workspace_resource_id"),
+        workspace_resource_id=workspace_resource_id or evidence.get("workspace_resource_id"),
         strict_proxy=strict_proxy,
+        packs_scanned=pack_values,
+        moves=moves,
+        capability_rollup=rollup,
+        capability_outcomes=outcomes,
+        has_exposed=bool(exposed_ids),
+        exposed_check_ids=sorted(set(exposed_ids)),
     )

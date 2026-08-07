@@ -22,10 +22,7 @@ def collect_sentinel_alert_rules(
 ) -> list[dict[str, Any]]:
     """List SecurityInsights alertRules for a workspace."""
     rid = encode_resource_path(workspace_resource_id)
-    path = (
-        f"{rid}/providers/Microsoft.SecurityInsights/alertRules"
-        f"?api-version={ALERT_RULES_API}"
-    )
+    path = f"{rid}/providers/Microsoft.SecurityInsights/alertRules?api-version={ALERT_RULES_API}"
     with ArmClient(auth) as client:
         return client.get_list(path, max_pages=40)
 
@@ -36,10 +33,7 @@ def collect_sentinel_settings(
 ) -> list[dict[str, Any]]:
     """List SecurityInsights settings (includes EntityAnalytics / UEBA)."""
     rid = encode_resource_path(workspace_resource_id)
-    path = (
-        f"{rid}/providers/Microsoft.SecurityInsights/settings"
-        f"?api-version={SETTINGS_API}"
-    )
+    path = f"{rid}/providers/Microsoft.SecurityInsights/settings?api-version={SETTINGS_API}"
     with ArmClient(auth) as client:
         return client.get_list(path, max_pages=10)
 

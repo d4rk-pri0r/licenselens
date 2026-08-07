@@ -39,6 +39,41 @@ class ValueImpact(StrEnum):
     LOW = "low"
 
 
+class Effort(StrEnum):
+    """Rough time-to-fix bucket used for move effort labels (not a quote)."""
+
+    MINUTES = "minutes"
+    HOURS = "hours"
+    HALF_DAY = "half_day"
+    DAYS = "days"
+
+
+class BlastRadius(StrEnum):
+    """Who is affected if this protection stays off."""
+
+    ADMIN = "admin"
+    ALL_USERS = "all_users"
+    DEVICES = "devices"
+    DATA = "data"
+
+
+class CheckPack(StrEnum):
+    """Talk-pack grouping used for ranking and the top card."""
+
+    IDENTITY = "identity"
+    EMAIL = "email"
+    ENDPOINT = "endpoint"
+    STARTER = "starter"
+
+
+class ExposureClass(StrEnum):
+    """Severity class beyond an ordinary gap (drives the EXPOSED chip)."""
+
+    NONE = "none"
+    ELEVATED = "elevated"
+    EXPOSED = "exposed"
+
+
 class Workload(StrEnum):
     IDENTITY = "identity"
     DEFENDER = "defender"
@@ -62,6 +97,48 @@ CONFIDENCE_PLAIN_LABELS: dict[str, str] = {
     "medium": "Medium confidence",
     "low": "Low confidence — verify in portal",
 }
+
+EFFORT_PLAIN_LABELS: dict[str, str] = {
+    "minutes": "~minutes",
+    "hours": "~a few hours",
+    "half_day": "~half a day",
+    "days": "~days",
+}
+
+EFFORT_DISCLAIMER = "Effort is a rough guide, not a quote."
+
+PACK_PLAIN_LABELS: dict[str, str] = {
+    "identity": "Identity",
+    "email": "Email",
+    "endpoint": "Endpoint",
+    "starter": "Starter",
+}
+
+IMPACT_PLAIN_LABELS: dict[str, str] = {
+    "high": "High impact",
+    "medium": "Medium impact",
+    "low": "Low impact",
+}
+
+EXPOSURE_PLAIN_LABELS: dict[str, str] = {
+    "exposed": "EXPOSED",
+    "elevated": "ELEVATED",
+    "none": "None",
+}
+
+# The brand hallway line for the top card eyebrow.
+HALLWAY_LINE = "The security you already own (and ignore)"
+
+# Capability rollup statuses shown on the top card.
+CAPABILITY_STATUS_LABELS: dict[str, str] = {
+    "fully_working": "Fully working",
+    "needs_attention": "Needs attention",
+    "partly_set_up": "Partly set up",
+    "not_licensed": "Not in your plan",
+}
+
+# Email dropped from default talk packs (spike: no Graph API for MDO policy config).
+DEFAULT_TALK_PACKS: list[str] = ["identity", "endpoint"]
 
 PROXY_CHECK_IDS: frozenset[str] = frozenset(
     {
@@ -118,6 +195,12 @@ class CheckDefinition(BaseModel):
     required_capabilities: list[str] = Field(default_factory=list)
     severity: Severity = Severity.MEDIUM
     value_impact: ValueImpact = ValueImpact.MEDIUM
+    impact: ValueImpact = ValueImpact.MEDIUM
+    effort: Effort = Effort.HOURS
+    blast_radius: BlastRadius = BlastRadius.ALL_USERS
+    pack: CheckPack = CheckPack.STARTER
+    exposure_class: ExposureClass = ExposureClass.NONE
+    deep_link: str | None = None
     remediation: str = ""
     references: list[str] = Field(default_factory=list)
     collector: str = "noop"
@@ -131,6 +214,18 @@ class CheckDefinition(BaseModel):
     def display_customer_title(self) -> str:
         return self.customer_title or self.title
 
+    @property
+    def effort_label(self) -> str:
+        return EFFORT_PLAIN_LABELS.get(self.effort.value, self.effort.value)
+
+    @property
+    def impact_label(self) -> str:
+        return IMPACT_PLAIN_LABELS.get(self.impact.value, self.impact.value)
+
+    @property
+    def pack_label(self) -> str:
+        return PACK_PLAIN_LABELS.get(self.pack.value, self.pack.value)
+
 
 class Finding(BaseModel):
     check_id: str
@@ -139,6 +234,12 @@ class Finding(BaseModel):
     status: FindingStatus
     severity: Severity
     value_impact: ValueImpact
+    impact: ValueImpact = ValueImpact.MEDIUM
+    effort: Effort = Effort.HOURS
+    blast_radius: BlastRadius = BlastRadius.ALL_USERS
+    pack: CheckPack = CheckPack.STARTER
+    exposure_class: ExposureClass = ExposureClass.NONE
+    deep_link: str | None = None
     summary: str
     evidence: dict[str, Any] = Field(default_factory=dict)
     entitlements_used: list[str] = Field(default_factory=list)
@@ -157,6 +258,18 @@ class Finding(BaseModel):
     def display_customer_title(self) -> str:
         return self.customer_title or self.title
 
+    @property
+    def effort_label(self) -> str:
+        return EFFORT_PLAIN_LABELS.get(self.effort.value, self.effort.value)
+
+    @property
+    def impact_label(self) -> str:
+        return IMPACT_PLAIN_LABELS.get(self.impact.value, self.impact.value)
+
+    @property
+    def pack_label(self) -> str:
+        return PACK_PLAIN_LABELS.get(self.pack.value, self.pack.value)
+
 
 class CapabilitySummary(BaseModel):
     id: str
@@ -166,6 +279,52 @@ class CapabilitySummary(BaseModel):
     why_it_matters: str = ""
     if_unused: str = ""
     docs_url: str | None = None
+
+
+class TopMove(BaseModel):
+    """One prioritized move for the top card (owner voice, ≤3 shown)."""
+
+    title: str
+    why: str
+    effort: Effort = Effort.HOURS
+    check_ids: list[str] = Field(default_factory=list)
+    deep_link: str | None = None
+    customer_next_step: str = ""
+
+    @property
+    def effort_label(self) -> str:
+        return EFFORT_PLAIN_LABELS.get(self.effort.value, self.effort.value)
+
+
+class CapabilityRollup(BaseModel):
+    """Rolled-up status of owned, in-scope capabilities for the top card."""
+
+    you_own: int = 0
+    fully_working: int = 0
+    needs_attention: int = 0
+    partly_set_up: int = 0
+    not_licensed: int = 0
+    realized_percent: int = 0
+
+    @property
+    def realized_sentence(self) -> str:
+        missing = self.you_own - self.fully_working
+        if self.you_own <= 0:
+            return "No assessed protections were owned."
+        if missing <= 0:
+            return f"All {self.you_own} assessed protections are fully working."
+        return f"{missing} of {self.you_own} still not fully working"
+
+
+class CapabilityOutcome(BaseModel):
+    """Per-capability rollup result shown with the top card numbers."""
+
+    id: str
+    name: str
+    plain_name: str
+    status: str
+    status_label: str = ""
+    related_check_ids: list[str] = Field(default_factory=list)
 
 
 class ScanResult(BaseModel):
@@ -188,6 +347,12 @@ class ScanResult(BaseModel):
     data_sources_used: list[str] = Field(default_factory=list)
     workspace_resource_id: str | None = None
     strict_proxy: bool = True
+    packs_scanned: list[str] = Field(default_factory=list)
+    moves: list[TopMove] = Field(default_factory=list)
+    capability_rollup: CapabilityRollup = Field(default_factory=CapabilityRollup)
+    capability_outcomes: list[CapabilityOutcome] = Field(default_factory=list)
+    has_exposed: bool = False
+    exposed_check_ids: list[str] = Field(default_factory=list)
 
     @property
     def counts_by_status(self) -> dict[str, int]:
@@ -207,3 +372,7 @@ class ScanResult(BaseModel):
     @property
     def has_actionable_gaps(self) -> bool:
         return any(f.status in {FindingStatus.GAP, FindingStatus.PARTIAL} for f in self.findings)
+
+    @property
+    def exposed_count(self) -> int:
+        return len(self.exposed_check_ids)

@@ -51,9 +51,7 @@ def test_diff_scans_tracks_confidence_changes(tmp_path: Path):
         _scan([_finding("a", "gap", confidence="low")]),
     )
     diff = diff_scans(old, new)
-    assert diff["confidence_changes"] == [
-        {"check_id": "a", "old": "high", "new": "low"}
-    ]
+    assert diff["confidence_changes"] == [{"check_id": "a", "old": "high", "new": "low"}]
 
 
 def test_diff_scans_marks_improvement(tmp_path: Path):

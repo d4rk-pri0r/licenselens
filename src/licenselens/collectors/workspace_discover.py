@@ -30,10 +30,7 @@ def workspace_looks_like_sentinel(
 ) -> bool:
     """True if SecurityInsights alertRules API is reachable (even if empty)."""
     rid = workspace_resource_id.lstrip("/")
-    path = (
-        f"{rid}/providers/Microsoft.SecurityInsights/alertRules"
-        f"?api-version=2023-11-01&$top=1"
-    )
+    path = f"{rid}/providers/Microsoft.SecurityInsights/alertRules?api-version=2023-11-01&$top=1"
     try:
         client.get(path)
         return True

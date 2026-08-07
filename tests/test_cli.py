@@ -94,3 +94,34 @@ def test_doctor_command_invalid_profile_exits_2():
     result = runner.invoke(app, ["doctor", "--profile", "deep"])
     assert result.exit_code == 2
     assert "profile" in result.stdout.lower()
+
+
+def test_scan_dry_run_prints_top_card(tmp_path: Path):
+    result = runner.invoke(app, ["scan", "--output-dir", str(tmp_path / "out")])
+    # Dry-run has actionable gaps -> exit 1, report written, summary shown.
+    assert result.exit_code == 1, result.output
+    assert "Your security at a glance" in result.stdout
+    assert "Protections you own:" in result.stdout
+    assert "Top things to do first:" in result.stdout
+    assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
+
+
+def test_demo_command_prints_html_path(tmp_path: Path):
+    result = runner.invoke(app, ["demo", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 0, result.output
+    assert "offline demo scan" in result.stdout
+    assert "Protections you own:" in result.stdout
+    assert "security-license-lens-report.html" in result.stdout
+    assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
+
+
+def test_quickstart_help_and_invalid_secret_rail():
+    result = runner.invoke(app, ["quickstart", "--help"])
+    assert result.exit_code == 0, result.output
+    assert "read-only" in result.stdout.lower()
+
+    # Client-secret path without the other credentials -> plain-English rail.
+    result = runner.invoke(app, ["quickstart", "--client-secret", "s3cret"])
+    assert result.exit_code == 2
+    assert "app-only" in result.stdout.lower()
+    assert "client_secret" in result.stdout

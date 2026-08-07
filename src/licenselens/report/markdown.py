@@ -18,8 +18,7 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
         "",
         f"- **Version:** {result.version}",
         f"- **Scanned at:** {result.scanned_at}",
-        f"- **Mode:** {result.scan_mode}"
-        + (f" / {result.auth_mode}" if result.auth_mode else ""),
+        f"- **Mode:** {result.scan_mode}" + (f" / {result.auth_mode}" if result.auth_mode else ""),
         f"- **Organization:** {result.tenant_display_name or result.tenant_id or 'n/a (dry-run)'}",
         "",
     ]
@@ -30,10 +29,31 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
         lines.append("")
     lines.extend(
         [
-        "## At a glance",
-        "",
+            "## At a glance",
+            "",
         ]
     )
+    rollup = result.capability_rollup
+    lines.append(f"**{rollup.realized_sentence}.**")
+    lines.append("")
+    lines.append(
+        f"- **Protections you own:** {rollup.you_own} "
+        f"(fully working: {rollup.fully_working}, {rollup.realized_percent}% realized)"
+    )
+    lines.append(f"- **Need attention:** {rollup.needs_attention + rollup.partly_set_up}")
+    if result.has_exposed:
+        lines.append(f"- **Exposed (fix first):** {', '.join(result.exposed_check_ids) or 'n/a'}")
+    lines.append("")
+    if result.moves:
+        lines.extend(["### Top things to do first", ""])
+        for i, move in enumerate(result.moves, start=1):
+            effort = f" *({move.effort_label.lower()})*" if move.effort_label else ""
+            lines.append(f"{i}. **{move.title}**{effort} — {move.why}")
+            if move.customer_next_step:
+                lines.append(f"   - Next step: {move.customer_next_step}")
+        lines.append("")
+        lines.append("*Effort is a rough guide, not a quote.*")
+        lines.append("")
     if counts:
         for status, n in sorted(counts.items()):
             label = STATUS_PLAIN_LABELS.get(status, status)

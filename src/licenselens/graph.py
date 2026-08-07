@@ -94,8 +94,10 @@ class GraphClient:
                 if attempt >= self._max_retries:
                     raise self._error_from_response(response)
                 retry_after = response.headers.get("Retry-After")
-                delay = float(retry_after) if retry_after and retry_after.isdigit() else min(
-                    2**attempt, 8
+                delay = (
+                    float(retry_after)
+                    if retry_after and retry_after.isdigit()
+                    else min(2**attempt, 8)
                 )
                 time.sleep(delay)
                 continue

@@ -116,8 +116,7 @@ def build_credential(
     if mode == AuthMode.DEVICE_CODE:
         if not tenant_id:
             raise AuthError(
-                "Device-code auth requires a tenant id "
-                "(--tenant-id or AZURE_TENANT_ID)."
+                "Device-code auth requires a tenant id (--tenant-id or AZURE_TENANT_ID)."
             )
         public_client = client_id or DEFAULT_PUBLIC_CLIENT_ID
         warnings_note = client_id is None
@@ -170,8 +169,7 @@ def build_auth_context(
     return AuthContext(
         mode=mode,
         tenant_id=tid,
-        client_id=cid
-        or (DEFAULT_PUBLIC_CLIENT_ID if mode == AuthMode.DEVICE_CODE else None),
+        client_id=cid or (DEFAULT_PUBLIC_CLIENT_ID if mode == AuthMode.DEVICE_CODE else None),
         credential=credential,
         warnings=warnings,
     )

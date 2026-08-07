@@ -16,6 +16,12 @@ required_capabilities:
   - defender_endpoint_p2
 severity: high
 value_impact: high
+impact: high
+effort: days
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://security.microsoft.com/machines
 collector: mde_onboarding
 remediation: >
   Onboard missing devices via Intune, GPO, or scripts; investigate

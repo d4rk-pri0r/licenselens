@@ -2,15 +2,32 @@
 
 A plain-language view of security capabilities you already pay for — and whether they are set up to help your organization.
 
-- **Version:** 0.2.0
-- **Scanned at:** 2026-08-05T15:53:23.263401+00:00
+- **Version:** 0.3.0.dev1
+- **Scanned at:** 2026-08-07T19:03:27.416686+00:00
 - **Mode:** dry_run / dry_run
 - **Organization:** Contoso Demo (dry-run)
 
 ## At a glance
 
+**4 of 4 still not fully working.**
+
+- **Protections you own:** 4 (fully working: 0, 0% realized)
+- **Need attention:** 4
+
+### Top things to do first
+
+1. **Require multi-factor authentication for admins and block legacy email si…** *(~a few hours)* — Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).
+   - Next step: Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
+2. **Turn on risk-based sign-in protection in stages — start by requiring ext…** *(~a few hours)* — We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.
+   - Next step: Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.
+3. **Ask IT to turn on time-limited admin access for your top admins first (G…** *(~days)* — Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.
+   - Next step: Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).
+
+*Effort is a rough guide, not a quote.*
+
 - **Needs attention** (`gap`): 6
-- **Partly set up** (`partial`): 4
+- **Partly set up** (`partial`): 3
+- **Check pending** (`skipped`): 1
 
 ## What you already pay for
 
@@ -112,7 +129,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Guardrails against accidental data leaks may not be active
 
 - **Status:** Needs attention
-- **In plain English:** You appear to pay for data-leak protection that is not meaningfully enforced yet.
+- **In plain English:** You appear to pay for data-leak protection that is not meaningfully enforced yet. Confirm in the Purview portal.
 - **Suggested next step:** Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.
 - **Technical id:** `pur-dlp-not-enforced`
 
@@ -130,13 +147,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
 - **Technical id:** `id-ca-priv-gaps`
 
-### Extra email protections may not cover everyone yet
-
-- **Status:** Partly set up
-- **In plain English:** Some stronger email protections appear configured, but not fully. Safe Links and Safe Attachments may still miss people or stay in test mode.
-- **Suggested next step:** Turn on the recommended email security policies for all users (not just a test group), starting with safe links and safe attachments.
-- **Technical id:** `mdo-p2-policies-default`
-
 ### Your security command center may have few alarms turned on
 
 - **Status:** Partly set up
@@ -151,13 +161,18 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.
 - **Technical id:** `mdi-sensors-missing`
 
+### Turn on Safe Links and Safe Attachments for everyone
+
+- **Status:** Check pending
+- **In plain English:** We cannot automatically confirm whether extra email protections (Safe Links and Safe Attachments) cover everyone. Ask IT to check Preset security policies in the Microsoft Defender portal, or run Exchange Online PowerShell (Get-ATPProtectionPolicyRule).
+- **Suggested next step:** Open Preset security policies in the Defender portal and turn on Standard protection for all users, or confirm with Exchange Online PowerShell.
+- **Technical id:** `mdo-p2-policies-default`
+
 ## Recommended first steps
 
-1. Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.
-2. Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).
-3. Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
-4. Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.
-5. Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.
+1. Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
+2. Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.
+3. Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).
 
 ## Technical details
 
