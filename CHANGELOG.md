@@ -25,18 +25,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (otherwise warns and refuses to guess)
 - **Structured output layout** — `output.build_report_dir` slug/timestamp
   nesting with a `flat=True` legacy mode
-- **Talk path verbs** — `licenselens demo`, `licenselens quickstart`; top-card
+- **First-run commands** — `licenselens demo`, `licenselens quickstart`; top-card
   rollup + ranked moves; EXPOSED classes for legacy auth and MFA-less GA
 - **Batch defaults** — `tenants.yaml` top-level `defaults:` merged into each
   tenant; optional `packs` and `allow_email_proxy`
 
 ### Changed
-- **Default talk packs** are `identity` + `endpoint` (email dropped)
-- **MDO email check** no longer uses Secure Score by default. Spike found no
-  Graph API for Safe Links / Safe Attachments / preset policy config
-  (Exchange Online PowerShell only). Opt-in: `--allow-email-proxy` (labeled,
-  never rolls up to fully working). Doctor reports email policy unreadability
-  with a portal/PowerShell one-line fix.
+- **Default packs** are `identity` + `endpoint` (email off by default)
+- **MDO email check** no longer uses Secure Score by default. No Graph API
+  reads Safe Links / Safe Attachments / preset policy config (Exchange Online
+  PowerShell only). Opt-in: `--allow-email-proxy` (labeled, never rolls up to
+  fully working). Doctor reports email policy unreadability with a
+  portal/PowerShell one-line fix.
 
 ### Notes
 - `diff` rank ordering mirrors engine finding priority (gap < partial <

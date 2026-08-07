@@ -54,7 +54,7 @@ from licenselens.engine.rollup import capability_rollup
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
 from licenselens.models import (
-    DEFAULT_TALK_PACKS,
+    DEFAULT_PACKS,
     STATUS_PLAIN_LABELS,
     CheckDefinition,
     CheckPack,
@@ -655,7 +655,7 @@ def run_scan(
 
     limitations = scan_level_limitations(findings, strict_proxy=strict_proxy)
 
-    pack_scope = packs if packs is not None else DEFAULT_TALK_PACKS
+    pack_scope = packs if packs is not None else DEFAULT_PACKS
     pack_values = [p.value if isinstance(p, CheckPack) else str(p) for p in pack_scope]
     moves = rank_moves(findings, limit=3, packs=pack_scope)
     rollup, outcomes = capability_rollup(

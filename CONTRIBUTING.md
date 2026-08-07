@@ -39,6 +39,14 @@ Minimum bar for a new check PR:
 - `ruff` for lint
 - Do not commit secrets, tenant IDs from real customers, or unredacted reports
 
+## Public docs and releases
+
+This repo is a standalone product. Keep GitHub-facing material presentation-neutral:
+
+- Do **not** mention conference talks, CFPs, slide decks, “talk-ready” milestones, or event names in README, CHANGELOG, docs, CLI help, release notes, or commit messages meant for GitHub.
+- Describe features in product terms (quick start, default packs, demo command).
+- Local planning tools (OpenSpec changes, editor agent config) stay out of the repo — see `.gitignore`.
+
 ## Pull requests
 
 - One logical change per PR

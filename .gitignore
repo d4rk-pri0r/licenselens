@@ -30,3 +30,7 @@ reports/
 *.report.html
 *.report.json
 out/
+
+# Local planning / tooling (not part of the public product)
+openspec/
+.opencode/

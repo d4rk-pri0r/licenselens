@@ -58,7 +58,7 @@ class BlastRadius(StrEnum):
 
 
 class CheckPack(StrEnum):
-    """Talk-pack grouping used for ranking and the top card."""
+    """Pack grouping used for ranking and the top card."""
 
     IDENTITY = "identity"
     EMAIL = "email"
@@ -126,8 +126,8 @@ EXPOSURE_PLAIN_LABELS: dict[str, str] = {
     "none": "None",
 }
 
-# The brand hallway line for the top card eyebrow.
-HALLWAY_LINE = "The security you already own (and ignore)"
+# Top-card tagline.
+TAGLINE = "The security you already own (and ignore)"
 
 # Capability rollup statuses shown on the top card.
 CAPABILITY_STATUS_LABELS: dict[str, str] = {
@@ -137,8 +137,9 @@ CAPABILITY_STATUS_LABELS: dict[str, str] = {
     "not_licensed": "Not in your plan",
 }
 
-# Email dropped from default talk packs (spike: no Graph API for MDO policy config).
-DEFAULT_TALK_PACKS: list[str] = ["identity", "endpoint"]
+# Default packs for ranking/rollup. Email is off by default (no Graph API for
+# MDO policy config — Exchange Online PowerShell only).
+DEFAULT_PACKS: list[str] = ["identity", "endpoint"]
 
 PROXY_CHECK_IDS: frozenset[str] = frozenset(
     {

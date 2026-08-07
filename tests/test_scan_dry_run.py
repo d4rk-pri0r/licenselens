@@ -34,7 +34,7 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert by_id["sen-analytics-rule-coverage"].status == FindingStatus.PARTIAL
     assert by_id["sen-ueba-not-enabled"].status == FindingStatus.GAP
     assert by_id["pur-dlp-not-enforced"].status == FindingStatus.GAP
-    # Default talk packs are identity + endpoint (email dropped).
+    # Default packs are identity + endpoint (email off by default).
     assert "email" not in result.packs_scanned
     assert "identity" in result.packs_scanned
     assert "endpoint" in result.packs_scanned

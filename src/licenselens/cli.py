@@ -304,7 +304,7 @@ def scan_cmd(
     packs: list[str] | None = typer.Option(
         None,
         "--pack",
-        help="Talk packs to rank on the card (default: identity, endpoint). "
+        help="Packs to include on the top card (default: identity, endpoint). "
         "Repeatable. Email is off by default — no Graph API for MDO policy config.",
     ),
     allow_email_proxy: bool = typer.Option(
