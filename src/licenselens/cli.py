@@ -314,7 +314,10 @@ def scan_cmd(
     allow_email_proxy: bool = typer.Option(
         False,
         "--allow-email-proxy/--no-email-proxy",
-        help="Opt into Secure Score proxy for the email pack check (labeled, never fully working).",
+        help="Opt into a labeled Secure Score proxy for the email pack "
+        "(MDI/Purview also proxy when their packs are included). "
+        "Email policy config is PowerShell-only — no Graph read API exists. "
+        "Proxy findings never roll up to fully working.",
     ),
     open_browser: bool = typer.Option(
         False,
@@ -372,9 +375,7 @@ def scan_cmd(
             report = run_doctor(auth_ctx)
             org_label = report.tenant_display_name or report.tenant_id or "your organization"
             if not report.ready:
-                console.print(
-                    "[yellow]Preflight incomplete — some reads may be limited.[/yellow]"
-                )
+                console.print("[yellow]Preflight incomplete — some reads may be limited.[/yellow]")
             console.print(f"Connected to: [bold]{org_label}[/bold]")
             if not typer.confirm(f"Scan {org_label} now? (read-only)", default=True):
                 console.print("Nothing was changed.")

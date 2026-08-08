@@ -641,12 +641,29 @@ def run_scan(
         )
     )
 
-    live_pending = [f.check_id for f in findings if f.status == FindingStatus.SKIPPED]
+    live_pending = [f for f in findings if f.status == FindingStatus.SKIPPED]
     if scan_mode == "live" and live_pending:
-        warnings.append(
-            "Some configuration checks are not implemented yet and were marked "
-            f"pending: {', '.join(sorted(live_pending))}."
-        )
+        missing_eval = [
+            f.check_id
+            for f in live_pending
+            if (f.evidence or {}).get("email_proxy_enabled") is not False
+        ]
+        unreadable = [
+            f.check_id
+            for f in live_pending
+            if (f.evidence or {}).get("email_proxy_enabled") is False
+        ]
+        if missing_eval:
+            warnings.append(
+                "Some configuration checks are not implemented yet and were marked "
+                f"pending: {', '.join(sorted(missing_eval))}."
+            )
+        if unreadable:
+            warnings.append(
+                "Email policy config cannot be read via Microsoft Graph "
+                "(PowerShell / portal only). Pass --allow-email-proxy for a labeled "
+                f"Secure Score degraded path. Affected checks: {', '.join(sorted(unreadable))}."
+            )
 
     data_sources_used: list[str] = []
     for f in findings:

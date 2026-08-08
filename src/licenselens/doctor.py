@@ -276,7 +276,8 @@ def run_doctor(
                     ok=False,
                     detail=str(exc),
                     optional=True,
-                    fix="Endpoint pack is optional — identity scanning still works without MDE API.",
+                    fix="Endpoint pack is optional — "
+                    "identity scanning still works without MDE API.",
                 )
             )
 

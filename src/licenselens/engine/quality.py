@@ -122,8 +122,9 @@ def scan_level_limitations(findings: list[Finding], *, strict_proxy: bool) -> li
     notes: list[str] = []
     if strict_proxy:
         notes.append(
-            "Strict proxy mode is ON: Secure Score–based checks (MDO, MDI, Purview DLP) "
-            "never report fully OK and are labeled low confidence."
+            "Strict proxy mode is ON: Secure Score–based checks (MDI, Purview DLP) "
+            "never report fully OK and are labeled low confidence. "
+            "MDO email is off by default (use --allow-email-proxy for a labeled degraded path)."
         )
     proxy_ids = [f.check_id for f in findings if f.check_id in PROXY_CHECK_IDS]
     if proxy_ids:
