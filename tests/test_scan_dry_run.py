@@ -16,7 +16,7 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert result.recommended_next_steps
     by_id = {f.check_id: f for f in result.findings}
     assert by_id["id-ca-priv-gaps"].status == FindingStatus.PARTIAL
-    assert by_id["id-idprotect-off"].status == FindingStatus.GAP
+    assert by_id["id-idprotect-off"].status == FindingStatus.OK
     assert by_id["id-pim-unused"].status == FindingStatus.GAP
     assert by_id["id-dormant-privileged"].status in {
         FindingStatus.GAP,
@@ -34,6 +34,9 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert by_id["sen-analytics-rule-coverage"].status == FindingStatus.PARTIAL
     assert by_id["sen-ueba-not-enabled"].status == FindingStatus.GAP
     assert by_id["pur-dlp-not-enforced"].status == FindingStatus.GAP
+    # New identity depth checks
+    assert by_id["id-security-defaults-on"].status == FindingStatus.GAP
+    assert by_id["id-access-reviews-unused"].status == FindingStatus.GAP
     # Default packs are identity + endpoint (email off by default).
     assert "email" not in result.packs_scanned
     assert "identity" in result.packs_scanned

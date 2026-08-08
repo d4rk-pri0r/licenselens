@@ -27,6 +27,32 @@
       line-height: 1.55;
     }
     header, main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .logo-mark {
+      position: relative;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, transparent 38%, var(--accent) 39%, var(--accent) 52%, transparent 53%);
+      flex-shrink: 0;
+    }
+    .logo-mark::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, transparent 55%, color-mix(in srgb, var(--accent) 30%, transparent) 56%);
+    }
     header h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
     header .tagline { margin: 0; color: var(--muted); font-size: 1.05rem; }
     .meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: 0.95rem; }
@@ -49,6 +75,14 @@
     .tile .n { font-size: 1.6rem; font-weight: 700; }
     .tile .l { color: var(--muted); font-size: 0.85rem; margin-top: 0.15rem; }
     .tile .l small { display: block; opacity: 0.7; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
+    .donut {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .donut svg { width: 56px; height: 56px; flex-shrink: 0; }
+    .donut .donut-val { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+    .donut .donut-label { color: var(--muted); font-size: 0.82rem; margin-top: 0.1rem; }
     section {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -58,6 +92,35 @@
     }
     h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
     .section-help { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .filter-bar button {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .filter-bar button:hover { border-color: var(--accent); color: var(--text); }
+    .filter-bar button.active {
+      background: color-mix(in srgb, var(--accent) 20%, var(--panel));
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filter-count {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; }
     .card {
       border: 1px solid var(--border);
@@ -69,6 +132,26 @@
     .card .msft { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.65rem; }
     .card p { margin: 0.4rem 0; font-size: 0.92rem; }
     .card p span { color: var(--muted); font-weight: 600; }
+    .cap-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .cap-status::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .cap-status.needs_attention { color: var(--gap); }
+    .cap-status.needs_attention::before { background: var(--gap); }
+    .cap-status.partly_set_up { color: var(--partial); }
+    .cap-status.partly_set_up::before { background: var(--partial); }
+    .cap-status.fully_working { color: var(--ok); }
+    .cap-status.fully_working::before { background: var(--ok); }
     .finding {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -77,8 +160,26 @@
       background: color-mix(in srgb, var(--bg) 40%, var(--panel));
     }
     .finding:last-child { margin-bottom: 0; }
+    .finding.gap { border-left: 3px solid var(--gap); }
+    .finding.partial { border-left: 3px solid var(--partial); }
+    .finding.ok { border-left: 3px solid var(--ok); }
+    .finding.not_licensed { border-left: 3px solid var(--notlic); }
+    .finding.skipped, .finding.error { border-left: 3px solid var(--skipped); }
     .finding-head { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: center; margin-bottom: 0.5rem; }
     .finding-head h3 { margin: 0; font-size: 1.02rem; flex: 1 1 220px; }
+    .finding-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .finding-meta .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
     .steps { margin: 0; padding-left: 1.2rem; }
     .steps li { margin: 0.45rem 0; }
     table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
@@ -96,6 +197,10 @@
     .badge.ok { background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
     .badge.not_licensed { background: color-mix(in srgb, var(--notlic) 25%, transparent); color: var(--notlic); }
     .badge.skipped, .badge.error { background: color-mix(in srgb, var(--skipped) 25%, transparent); color: var(--skipped); }
+    .badge.effort {
+      background: color-mix(in srgb, var(--muted) 18%, transparent);
+      color: var(--muted);
+    }
     details.tech {
       margin-top: 0.25rem;
       border: 1px dashed var(--border);
@@ -145,12 +250,17 @@
 </head>
 <body>
   <header>
-    <h1>Security License Lens</h1>
-    <p class="tagline">{{ tagline }}</p>
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <div>
+        <h1>Security License Lens</h1>
+        <p class="tagline">{{ tagline }}</p>
+      </div>
+    </div>
     <div class="meta">
       <div>Version <code>{{ result.version }}</code></div>
-      <div>Scanned <code>{{ result.scanned_at }}</code></div>
-      <div>Mode <code>{{ result.scan_mode }}{% if result.auth_mode %} / {{ result.auth_mode }}{% endif %}</code></div>
+      <div>Scanned <code>{{ result.display_scanned_at }}</code></div>
+      <div>Mode <code>{{ result.scan_mode }}{% if result.auth_mode and result.auth_mode != result.scan_mode %} / {{ result.auth_mode }}{% endif %}</code></div>
       <div>Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
     </div>
     {% if result.warnings %}
@@ -163,12 +273,6 @@
       </ul>
     </div>
     {% endif %}
-    <div class="intro">
-      <strong>How to read this report:</strong>
-      Microsoft licenses often include powerful protections with confusing product names.
-      Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-      Product names and technical IDs are available in the technical section at the bottom.
-    </div>
   </header>
 
     <main>
@@ -186,8 +290,20 @@
           <div class="l">Fully working<small>set up and active</small></div>
         </div>
         <div class="tile">
-          <div class="n">{{ rollup.realized_percent }}<span style="font-size: 0.9rem;">%</span></div>
-          <div class="l">Realized<small>of what you own</small></div>
+          <div class="donut">
+            <svg viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ok)" stroke-width="2.5"
+                stroke-dasharray="{{ rollup.realized_percent }} 100" stroke-linecap="round"
+                transform="rotate(-90 18 18)"
+                opacity="{{ 0.3 if rollup.realized_percent == 0 else 1 }}"
+              />
+            </svg>
+            <div>
+              <div class="donut-val"{% if rollup.realized_percent == 0 %} style="color: var(--gap);"{% elif rollup.realized_percent >= 75 %} style="color: var(--ok);"{% else %} style="color: var(--partial);"{% endif %}>{{ rollup.realized_percent }}%</div>
+              <div class="donut-label">Realized</div>
+            </div>
+          </div>
         </div>
         <div class="tile">
           <div class="n" style="color: var(--partial);">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
@@ -201,6 +317,15 @@
         {% endif %}
       </div>
     </section>
+
+    <details class="tech" style="margin-bottom: 1rem;">
+      <summary>How to read this report</summary>
+      <p style="margin: 0.5rem 0 0; color: var(--text); font-size: 0.92rem;">
+        Microsoft licenses often include powerful protections with confusing product names.
+        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
+        Product names and technical IDs are available in the technical section at the bottom.
+      </p>
+    </details>
 
     <div class="tiles">
       {% for status in status_order %}
@@ -222,7 +347,11 @@
       {% if result.capability_summaries %}
       <div class="cards">
         {% for cap in result.capability_summaries %}
+        {% set cap_outcome = outcome_by_id.get(cap.id) %}
         <article class="card">
+          {% if cap_outcome %}
+          <div class="cap-status {{ cap_outcome.status }}">{{ capability_status_labels.get(cap_outcome.status, cap_outcome.status) }}</div>
+          {% endif %}
           <h3>{{ cap.plain_name }}</h3>
           <div class="msft">Microsoft name: {{ cap.name }}</div>
           {% if cap.outcome %}<p><span>What it does.</span> {{ cap.outcome }}</p>{% endif %}
@@ -246,7 +375,7 @@
         {% for move in result.moves %}
         <li style="margin-bottom: 0.9rem;">
           <strong>{{ move.title }}</strong>
-          {% if move.effort_label %}<span class="badge partial" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
+          {% if move.effort_label %}<span class="badge effort" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
           <div style="color: var(--muted); margin-top: 0.25rem;">{{ move.why }}</div>
           {% if move.customer_next_step %}<div style="margin-top: 0.25rem;"><strong>Next step:</strong> {{ move.customer_next_step }}</div>{% endif %}
         </li>
@@ -263,11 +392,28 @@
       <p class="section-help">
         Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
       </p>
+      <div class="filter-bar">
+        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
+        {% for s in ["all", "gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
+        <button data-filter="{{ s }}"{% if s == "all" %} class="active"{% endif %}>{{ status_labels.get(s, s) if s != "all" else "All" }}</button>
+        {% endfor %}
+        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
+        {% for w in ["all", "identity", "endpoint", "defender", "sentinel", "purview"] %}
+        <button data-workload="{{ w }}"{% if w == "all" %} class="active"{% endif %}>{{ w if w != "all" else "All" }}</button>
+        {% endfor %}
+        <span class="filter-count">Showing <strong>{{ findings|length }}</strong> of <strong>{{ findings|length }}</strong></span>
+      </div>
       {% for f in findings %}
-      <article class="finding">
+      <article class="finding {{ f.status.value }}" data-status="{{ f.status.value }}" data-workload="{{ f.workload.value }}">
         <div class="finding-head">
           <span class="badge {{ f.status.value }}">{{ f.status_label or status_labels.get(f.status.value, f.status.value) }}</span>
           <h3>{{ f.display_customer_title }}</h3>
+        </div>
+        <div class="finding-meta">
+          {% if f.severity %}<span class="meta-item">&#x25CF; {{ f.severity.value | capitalize }} severity</span>{% endif %}
+          {% if f.effort_label %}<span class="meta-item">&#x23F1; {{ f.effort_label }}</span>{% endif %}
+          {% if f.blast_radius %}<span class="meta-item">&#x1F465; {{ f.blast_radius.value | replace('_', ' ') }}</span>{% endif %}
+          {% if f.workload %}<span class="meta-item">{{ f.workload.value | capitalize }}</span>{% endif %}
         </div>
         {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
         {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}
@@ -345,5 +491,51 @@
   <footer>
     {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
   </footer>
+  <script>
+    (function() {
+      var findings = document.querySelectorAll('.finding');
+      var countEl = document.querySelector('.filter-count strong');
+      var totalEl = countEl ? countEl.parentNode : null;
+      var total = findings.length;
+
+      var activeStatus = 'all';
+      var activeWorkload = 'all';
+
+      function updateButtons(selector, value) {
+        document.querySelectorAll(selector).forEach(function(btn) {
+          btn.classList.toggle('active', btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value);
+        });
+      }
+
+      function applyFilters() {
+        var visible = 0;
+        findings.forEach(function(f) {
+          var s = f.getAttribute('data-status');
+          var w = f.getAttribute('data-workload');
+          var match = (activeStatus === 'all' || s === activeStatus) &&
+                      (activeWorkload === 'all' || w === activeWorkload);
+          f.hidden = !match;
+          if (match) visible++;
+        });
+        if (totalEl) totalEl.textContent = 'Showing ' + visible + ' of ' + total;
+      }
+
+      document.querySelectorAll('[data-filter]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeStatus = this.getAttribute('data-filter');
+          updateButtons('[data-filter]', activeStatus);
+          applyFilters();
+        });
+      });
+
+      document.querySelectorAll('[data-workload]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeWorkload = this.getAttribute('data-workload');
+          updateButtons('[data-workload]', activeWorkload);
+          applyFilters();
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

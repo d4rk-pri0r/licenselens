@@ -375,5 +375,15 @@ class ScanResult(BaseModel):
         return any(f.status in {FindingStatus.GAP, FindingStatus.PARTIAL} for f in self.findings)
 
     @property
+    def display_scanned_at(self) -> str:
+        try:
+            from datetime import datetime
+
+            dt = datetime.fromisoformat(self.scanned_at)
+            return dt.strftime("%B %d, %Y at %I:%M %p UTC")
+        except (ValueError, AttributeError):
+            return self.scanned_at
+
+    @property
     def exposed_count(self) -> int:
         return len(self.exposed_check_ids)

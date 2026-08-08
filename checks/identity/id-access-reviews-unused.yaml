@@ -1,0 +1,33 @@
+id: id-access-reviews-unused
+title: Access Reviews licensed but not configured
+customer_title: Set up periodic access reviews for admins and guests
+customer_summary: >
+  Your plan can automatically ask managers or admins to confirm who still
+  needs powerful access, and to remove guest accounts that are no longer
+  active. That process does not look like it has been set up or run yet,
+  meaning unused accounts may remain open.
+customer_next_step: >
+  Create an Access Review for your Global Administrators and guest users
+  (monthly or quarterly), then review the first round of results.
+description: >
+  Entra ID P2 (or equivalent) includes access reviews for groups,
+  applications, and privileged roles. Many tenants never create a review
+  or never complete one, leaving privilege accumulation unchecked.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade
+collector: graph_access_reviews
+remediation: >
+  Create access review definitions for privileged directory roles and
+  guest user access; configure recurring cadence and reviewers.
+references:
+  - https://learn.microsoft.com/entra/id-governance/access-reviews-overview
+enabled: true

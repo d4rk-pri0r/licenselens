@@ -12,6 +12,10 @@ from licenselens.catalog.loader import (
     load_capabilities,
     resolve_owned_capabilities,
 )
+from licenselens.collectors.access_reviews import (
+    DEMO_ACCESS_REVIEWS,
+    collect_access_review_definitions,
+)
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
 from licenselens.collectors.mde import (
     DEMO_MDE_SUMMARY,
@@ -43,6 +47,10 @@ from licenselens.collectors.signins import (
     collect_recent_success_signin_user_ids,
 )
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
+from licenselens.collectors.security_defaults import (
+    DEMO_SECURITY_DEFAULTS,
+    collect_security_defaults_policy,
+)
 from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
 from licenselens.engine.quality import apply_quality_policy, scan_level_limitations
@@ -264,6 +272,8 @@ _CHECK_EVIDENCE_KEYS: dict[str, list[str]] = {
         "recent_signin_user_ids",
         "principal_directory",
     ],
+    "id-security-defaults-on": ["security_defaults_policy"],
+    "id-access-reviews-unused": ["access_review_definitions"],
     "mdo-p2-policies-default": ["secure_score_controls"],
     "mde-onboard-gap": ["mde_summary"],
     "mdi-sensors-missing": ["secure_score_controls"],
@@ -299,6 +309,8 @@ def _gather_evidence(
         evidence["sentinel_rules"] = dict(DEMO_SENTINEL_RULES)
         evidence["sentinel_ueba"] = dict(DEMO_SENTINEL_UEBA)
         evidence["purview_dlp"] = dict(DEMO_DLP_BUNDLE)
+        evidence["security_defaults_policy"] = dict(DEMO_SECURITY_DEFAULTS)
+        evidence["access_review_definitions"] = list(DEMO_ACCESS_REVIEWS)
         return evidence
 
     assert client is not None
@@ -393,6 +405,22 @@ def _gather_evidence(
         evidence["purview_dlp_error"] = str(evidence["secure_score_controls_error"])
     else:
         evidence["purview_dlp"] = collect_purview_dlp_bundle(client, controls)
+
+    # Security defaults policy state
+    try:
+        evidence["security_defaults_policy"] = collect_security_defaults_policy(client)
+    except GraphError as exc:
+        warnings.append(f"Security defaults policy could not be read: {exc}")
+        evidence["security_defaults_policy_error"] = str(exc)
+        evidence["security_defaults_policy"] = {}
+
+    # Access review definitions
+    try:
+        evidence["access_review_definitions"] = collect_access_review_definitions(client)
+    except GraphError as exc:
+        warnings.append(f"Access review definitions could not be read: {exc}")
+        evidence["access_review_definitions_error"] = str(exc)
+        evidence["access_review_definitions"] = []
 
     return evidence
 

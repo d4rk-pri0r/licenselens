@@ -54,7 +54,7 @@ EFFORT_PENALTY: dict[Effort, float] = {
 # Direct evidence is worth more than Secure Score proxy signals.
 PROXY_FACTOR = 0.5
 
-_MAX_TITLE_LEN = 72
+_MAX_TITLE_LEN = 140
 
 
 def _is_proxy(finding: Finding) -> bool:
@@ -81,7 +81,7 @@ def _verb_title(finding: Finding) -> str:
     ).strip()
     first = text.split(".")[0].strip()
     if len(first) > _MAX_TITLE_LEN:
-        first = first[:_MAX_TITLE_LEN].rstrip().rstrip(",;: ") + "…"
+        first = first[:_MAX_TITLE_LEN].rsplit(" ", 1)[0].rstrip(",;: ") + "…"
     return first
 
 

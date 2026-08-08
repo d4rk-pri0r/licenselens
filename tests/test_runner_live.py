@@ -131,6 +131,15 @@ def test_live_scan_all_collectors_respond(monkeypatch):
             }
         ),
     )
+    # Security defaults & access reviews
+    fake.register_get(
+        "/policies/identitySecurityDefaultsEnforcementPolicy",
+        ok({"id": "sd-1", "isEnabled": True}),
+    )
+    fake.register_list(
+        "/identityGovernance/accessReviews/definitions",
+        ok({"value": []}),
+    )
 
     result = _live_results(monkeypatch, fake)
     assert result.scan_mode == "live"
