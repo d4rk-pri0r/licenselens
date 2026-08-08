@@ -32,7 +32,7 @@ jobs:
         run: ruff format --check src tests
 
       - name: Pytest with coverage
-        run: pytest tests/ --cov=licenselens --cov-report=term-missing --cov-fail-under=65 -q
+        run: pytest tests/ --cov=licenselens --cov-report=term-missing --cov-fail-under=72 -q
 
       - name: Dry-run scan
         # Exit 1 means gaps/partial findings (expected in demo data)
