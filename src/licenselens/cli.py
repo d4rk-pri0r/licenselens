@@ -29,7 +29,7 @@ app = typer.Typer(
     help=(
         f"{__product_name__}: the security you already own (and ignore).\n\n"
         "Start here:  licenselens demo\n"
-        "Then:        licenselens quickstart\n"
+        "Then:        licenselens scan   (prompts when interactive)\n"
         "MSP path:    licenselens batch tenants.yaml"
     ),
     no_args_is_help=True,
@@ -262,10 +262,14 @@ def scan_cmd(
         "-w",
         help="Limit to workload(s): identity, defender, sentinel, purview, endpoint.",
     ),
-    live: bool = typer.Option(
-        False,
+    live: bool | None = typer.Option(
+        None,
         "--live/--dry-run",
-        help="Query a real tenant via Microsoft Graph (default: dry-run demo data).",
+        help=(
+            "Query a real tenant via Microsoft Graph. "
+            "In an interactive terminal, omit this flag to be prompted "
+            "(default without a TTY: dry-run demo data)."
+        ),
     ),
     auth: AuthModeOption | None = typer.Option(
         None,
@@ -312,8 +316,19 @@ def scan_cmd(
         "--allow-email-proxy/--no-email-proxy",
         help="Opt into Secure Score proxy for the email pack check (labeled, never fully working).",
     ),
+    open_browser: bool = typer.Option(
+        False,
+        "--open/--no-open",
+        help="Open the generated HTML report in your browser.",
+    ),
 ) -> None:
-    """Run entitlement-aware checks and write a static HTML dashboard."""
+    """Run entitlement-aware checks and write a static HTML dashboard.
+
+    In an interactive terminal, missing options are prompted. Flags and env vars
+    always win when already set.
+    """
+    from licenselens.cli_prompts import resolve_scan_inputs
+
     workloads: list[Workload] | None = None
     if workload:
         try:
@@ -322,37 +337,68 @@ def scan_cmd(
             console.print(f"[red]Invalid workload:[/red] {exc}")
             raise typer.Exit(code=2) from exc
 
-    mode = _to_auth_mode(auth, live=live)
     workspace = _resolve_workspace_resource_id(
         workspace_resource_id, subscription_id, resource_group, workspace_name
     )
+    wizard = resolve_scan_inputs(
+        live=live,
+        auth=auth.value if auth is not None else None,
+        tenant_id=tenant_id,
+        client_id=client_id,
+        client_secret=client_secret,
+        output_dir=output_dir,
+        workspace_resource_id=workspace,
+        open_browser=open_browser,
+    )
+
     try:
         auth_ctx = build_auth_context(
-            mode=mode,
-            tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret,
+            mode=wizard.auth_mode,
+            tenant_id=wizard.tenant_id,
+            client_id=wizard.client_id,
+            client_secret=wizard.client_secret,
         )
     except AuthError as exc:
         console.print(f"[red]Auth configuration error:[/red] {exc}")
+        if wizard.live:
+            _print_device_code_rail()
         raise typer.Exit(code=2) from exc
 
     for warning in auth_ctx.warnings:
         console.print(f"[yellow]Warning:[/yellow] {warning}")
 
-    label = "live" if live else "dry-run"
+    if wizard.live and wizard.run_doctor:
+        try:
+            report = run_doctor(auth_ctx)
+            org_label = report.tenant_display_name or report.tenant_id or "your organization"
+            if not report.ready:
+                console.print(
+                    "[yellow]Preflight incomplete — some reads may be limited.[/yellow]"
+                )
+            console.print(f"Connected to: [bold]{org_label}[/bold]")
+            if not typer.confirm(f"Scan {org_label} now? (read-only)", default=True):
+                console.print("Nothing was changed.")
+                raise typer.Exit(code=0)
+        except (LicenseLensError, ValueError) as exc:
+            _print_device_code_rail()
+            console.print(f"[red]Preflight failed:[/red] {exc}")
+            raise typer.Exit(code=2) from exc
+
+    label = "live" if wizard.live else "dry-run"
     console.print(f"[cyan]Running {__product_name__} scan ({label})…[/cyan]")
 
     try:
         result = run_scan(
             auth_ctx,
             workloads=workloads,
-            dry_run=not live,
-            workspace_resource_id=workspace,
+            dry_run=not wizard.live,
+            workspace_resource_id=wizard.workspace_resource_id,
             packs=packs,
             allow_email_proxy=allow_email_proxy,
         )
     except (AuthError, GraphError) as exc:
+        if wizard.live:
+            _print_device_code_rail()
         console.print(f"[red]Scan failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
 
@@ -360,10 +406,11 @@ def scan_cmd(
         if warning not in auth_ctx.warnings:
             console.print(f"[yellow]Warning:[/yellow] {warning}")
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
-    json_path = write_json_report(result, output_dir / "security-license-lens-report.json")
-    md_path = write_markdown_report(result, output_dir / "security-license-lens-report.md")
+    out = wizard.output_dir
+    out.mkdir(parents=True, exist_ok=True)
+    html_path = write_html_report(result, out / "security-license-lens-report.html")
+    json_path = write_json_report(result, out / "security-license-lens-report.json")
+    md_path = write_markdown_report(result, out / "security-license-lens-report.md")
 
     counts = result.counts_by_status
     org = result.tenant_display_name or result.tenant_id or "n/a"
@@ -377,6 +424,11 @@ def scan_cmd(
     console.print(f"  HTML  {html_path}")
     console.print(f"  JSON  {json_path}")
     console.print(f"  MD    {md_path}")
+
+    if wizard.open_browser:
+        import webbrowser
+
+        webbrowser.open(str(html_path.resolve()))
 
     _exit_for_scan(result.has_actionable_gaps)
 

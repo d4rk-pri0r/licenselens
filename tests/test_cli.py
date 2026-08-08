@@ -97,13 +97,107 @@ def test_doctor_command_invalid_profile_exits_2():
 
 
 def test_scan_dry_run_prints_top_card(tmp_path: Path):
-    result = runner.invoke(app, ["scan", "--output-dir", str(tmp_path / "out")])
+    result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
     # Dry-run has actionable gaps -> exit 1, report written, summary shown.
     assert result.exit_code == 1, result.output
     assert "Your security at a glance" in result.stdout
     assert "Protections you own:" in result.stdout
     assert "Top things to do first:" in result.stdout
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
+
+
+def test_scan_non_tty_defaults_to_dry_run(tmp_path: Path):
+    # CliRunner is non-interactive; bare scan without --live stays dry-run.
+    result = runner.invoke(app, ["scan", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 1, result.output
+    assert "dry-run" in result.stdout
+    assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
+
+
+def test_scan_live_non_tty_missing_auth_exits_2(tmp_path: Path, monkeypatch):
+    monkeypatch.delenv("AZURE_TENANT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
+    result = runner.invoke(
+        app,
+        ["scan", "--live", "--output-dir", str(tmp_path / "out")],
+    )
+    assert result.exit_code == 2, result.output
+    assert "missing auth" in result.stdout.lower() or "interactive terminal" in result.stdout.lower()
+
+
+def test_scan_interactive_demo_path(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr("licenselens.cli_prompts.is_interactive", lambda: True)
+    # Mode: 1 = demo sample data. Remaining prompts should not run for dry-run.
+    result = runner.invoke(
+        app,
+        ["scan", "--output-dir", str(tmp_path / "out")],
+        input="1\n",
+    )
+    assert result.exit_code == 1, result.output
+    assert "What do you want to scan?" in result.stdout
+    assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
+
+
+def test_resolve_scan_inputs_non_interactive_uses_flags(monkeypatch, tmp_path: Path):
+    from licenselens.auth import AuthMode
+    from licenselens.cli_prompts import resolve_scan_inputs
+
+    monkeypatch.setattr("licenselens.cli_prompts.is_interactive", lambda: False)
+    result = resolve_scan_inputs(
+        live=True,
+        auth="client_secret",
+        tenant_id="t1",
+        client_id="c1",
+        client_secret="s1",
+        output_dir=tmp_path / "r",
+        workspace_resource_id="/subscriptions/x/resourceGroups/y/providers/Microsoft.OperationalInsights/workspaces/z",
+        open_browser=False,
+    )
+    assert result.live is True
+    assert result.auth_mode == AuthMode.CLIENT_SECRET
+    assert result.tenant_id == "t1"
+    assert result.client_id == "c1"
+    assert result.client_secret == "s1"
+    assert result.run_doctor is False
+    assert result.workspace_resource_id is not None
+
+
+def test_resolve_scan_inputs_interactive_live_client_secret(monkeypatch, tmp_path: Path):
+    from licenselens.auth import AuthMode
+    from licenselens.cli_prompts import resolve_scan_inputs
+
+    monkeypatch.setattr("licenselens.cli_prompts.is_interactive", lambda: True)
+    prompts = iter(
+        [
+            "tenant-guid",
+            "app-guid",
+            "super-secret",
+            str(tmp_path / "out"),
+        ]
+    )
+    confirms = iter([False, False, False])  # open, sentinel, doctor
+    monkeypatch.setattr("typer.prompt", lambda *a, **k: next(prompts))
+    monkeypatch.setattr("typer.confirm", lambda *a, **k: next(confirms))
+
+    result = resolve_scan_inputs(
+        live=True,
+        auth="client_secret",
+        tenant_id=None,
+        client_id=None,
+        client_secret=None,
+        output_dir=Path("reports"),
+        workspace_resource_id=None,
+        open_browser=False,
+    )
+    assert result.live is True
+    assert result.auth_mode == AuthMode.CLIENT_SECRET
+    assert result.tenant_id == "tenant-guid"
+    assert result.client_id == "app-guid"
+    assert result.client_secret == "super-secret"
+    assert result.output_dir == tmp_path / "out"
+    assert result.open_browser is False
+    assert result.run_doctor is False
 
 
 def test_demo_command_prints_html_path(tmp_path: Path):

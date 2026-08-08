@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   nesting with a `flat=True` legacy mode
 - **First-run commands** — `licenselens demo`, `licenselens quickstart`; top-card
   rollup + ranked moves; EXPOSED classes for legacy auth and MFA-less GA
+- **Interactive `scan`** — in a TTY, prompts for demo vs live, auth method,
+  missing credentials, output dir, optional browser open / Sentinel / doctor;
+  non-TTY stays dry-run by default and never hangs
 - **Batch defaults** — `tenants.yaml` top-level `defaults:` merged into each
   tenant; optional `packs` and `allow_email_proxy`
 

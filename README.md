@@ -15,9 +15,17 @@ Security License Lens finds **Microsoft security configuration debt**: high-valu
 pipx install licenselens   # or: pip install -e ".[dev]"
 licenselens demo
 
-# Your own tenant (read-only device code)
+# Interactive scan: prompts for anything missing (TTY)
+licenselens scan
+
+# Or jump straight to a live tenant walkthrough
 licenselens quickstart
 ```
+
+In a terminal, `licenselens scan` asks demo vs live tenant, sign-in method, and
+other missing options. Flags and `AZURE_*` env vars always win when set.
+Non-interactive environments default to dry-run (or exit with a clear error on
+`--live` without credentials).
 
 Default packs are **identity + endpoint**. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
 
