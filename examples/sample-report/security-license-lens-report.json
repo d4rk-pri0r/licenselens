@@ -7,7 +7,7 @@
   "tenant_slug": null,
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
-  "scanned_at": "2026-08-07T19:03:27.416686+00:00",
+  "scanned_at": "2026-08-08T16:48:50.396225+00:00",
   "owned_capabilities": [
     "conditional_access",
     "defender_endpoint_p2",
@@ -627,7 +627,7 @@
   ],
   "warnings": [],
   "limitations": [
-    "Strict proxy mode is ON: Secure Score\u2013based checks (MDO, MDI, Purview DLP) never report fully OK and are labeled low confidence.",
+    "Strict proxy mode is ON: Secure Score\u2013based checks (MDI, Purview DLP) never report fully OK and are labeled low confidence. MDO email is off by default (use --allow-email-proxy for a labeled degraded path).",
     "Proxy-based checks in this report: mdi-sensors-missing, mdo-p2-policies-default, pur-dlp-not-enforced."
   ],
   "data_sources_used": [

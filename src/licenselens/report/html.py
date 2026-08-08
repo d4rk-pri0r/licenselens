@@ -6,7 +6,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from licenselens.models import STATUS_PLAIN_LABELS, ScanResult
+from licenselens.models import STATUS_PLAIN_LABELS, TAGLINE, ScanResult
 from licenselens.paths import templates_dir
 
 
@@ -19,6 +19,7 @@ def write_html_report(result: ScanResult, path: Path) -> Path:
     template = env.get_template("report.html.j2")
     html = template.render(
         result=result,
+        tagline=TAGLINE,
         counts=result.counts_by_status,
         findings=result.findings,
         status_labels=STATUS_PLAIN_LABELS,

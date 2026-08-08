@@ -5,7 +5,7 @@ All notable changes to Security License Lens are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [0.2.1] — Unreleased
+## [0.3.0.dev1] — Unreleased
 
 ### Added
 - **Scan diff (`licenselens diff`)** — compare two scan JSON artifacts by
@@ -25,13 +25,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (otherwise warns and refuses to guess)
 - **Structured output layout** — `output.build_report_dir` slug/timestamp
   nesting with a `flat=True` legacy mode
-- **First-run commands** — `licenselens demo`, `licenselens quickstart`; top-card
-  rollup + ranked moves; EXPOSED classes for legacy auth and MFA-less GA
+- **Demo and quickstart commands** — `licenselens demo`, `licenselens quickstart`
+- **Top-card rollup** — capability rollup (% realized), ranked moves (impact,
+  exposure, effort), EXPOSED chip for legacy auth and MFA-less GA
 - **Interactive `scan`** — in a TTY, prompts for demo vs live, auth method,
   missing credentials, output dir, optional browser open / Sentinel / doctor;
   non-TTY stays dry-run by default and never hangs
 - **Batch defaults** — `tenants.yaml` top-level `defaults:` merged into each
   tenant; optional `packs` and `allow_email_proxy`
+- **HTML TAGLINE** — report now uses the product tagline in its header and footer
 
 ### Changed
 - **Default packs** are `identity` + `endpoint` (email off by default)
@@ -40,6 +42,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   PowerShell only). Opt-in: `--allow-email-proxy` (labeled, never rolls up to
   fully working). Doctor reports email policy unreadability with a
   portal/PowerShell one-line fix.
+- **Live SKIPPED warnings** now separate "cannot verify via Graph" (email
+  policy config) from genuinely unimplemented evaluators
+- **CI** now enforces `ruff format --check` and a 65% line coverage floor
 
 ### Notes
 - `diff` rank ordering mirrors engine finding priority (gap < partial <

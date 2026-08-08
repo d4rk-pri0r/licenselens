@@ -224,9 +224,7 @@ def resolve_scan_inputs(
             open_html = typer.confirm(
                 "Open the HTML report in your browser when done?", default=True
             )
-        if not workspace and typer.confirm(
-            "Include Sentinel workspace checks?", default=False
-        ):
+        if not workspace and typer.confirm("Include Sentinel workspace checks?", default=False):
             workspace = (
                 typer.prompt(
                     "Sentinel workspace ARM resource ID (or leave blank to skip)",
@@ -234,9 +232,7 @@ def resolve_scan_inputs(
                 ).strip()
                 or None
             )
-        run_doc = typer.confirm(
-            "Run a quick preflight (doctor) before scanning?", default=True
-        )
+        run_doc = typer.confirm("Run a quick preflight (doctor) before scanning?", default=True)
 
     return ScanWizardResult(
         live=True,

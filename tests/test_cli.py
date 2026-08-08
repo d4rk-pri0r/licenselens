@@ -123,7 +123,9 @@ def test_scan_live_non_tty_missing_auth_exits_2(tmp_path: Path, monkeypatch):
         ["scan", "--live", "--output-dir", str(tmp_path / "out")],
     )
     assert result.exit_code == 2, result.output
-    assert "missing auth" in result.stdout.lower() or "interactive terminal" in result.stdout.lower()
+    assert (
+        "missing auth" in result.stdout.lower() or "interactive terminal" in result.stdout.lower()
+    )
 
 
 def test_scan_interactive_demo_path(tmp_path: Path, monkeypatch):
