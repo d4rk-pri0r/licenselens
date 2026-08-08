@@ -122,19 +122,33 @@ DEMO_CA_POLICIES: list[dict[str, Any]] = [
         },
     },
     {
-        "id": "demo-legacy-report",
-        "displayName": "Demo: Block legacy auth (report-only)",
-        "state": "enabledForReportingButNotEnforced",
+        "id": "demo-risk-signin",
+        "displayName": "Demo: Require MFA for sign-in risk",
+        "state": "enabled",
         "conditions": {
             "users": {"includeUsers": ["All"], "includeRoles": []},
-            "clientAppTypes": ["exchangeActiveSync", "other"],
-            "signInRiskLevels": [],
+            "clientAppTypes": ["all"],
+            "signInRiskLevels": ["high", "medium"],
             "userRiskLevels": [],
         },
         "grantControls": {
             "operator": "OR",
-            "builtInControls": ["block"],
+            "builtInControls": ["mfa"],
         },
     },
-    # No risk-based CA in demo → Identity Protection check should GAP
+    {
+        "id": "demo-risk-user",
+        "displayName": "Demo: Require password change for user risk",
+        "state": "enabled",
+        "conditions": {
+            "users": {"includeUsers": ["All"], "includeRoles": []},
+            "clientAppTypes": ["all"],
+            "signInRiskLevels": [],
+            "userRiskLevels": ["high"],
+        },
+        "grantControls": {
+            "operator": "OR",
+            "builtInControls": ["passwordChange"],
+        },
+    },
 ]

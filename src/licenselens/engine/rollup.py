@@ -57,14 +57,17 @@ def capability_rollup(
     for f in findings:
         findings_by_check.setdefault(f.check_id, []).append(f)
 
-    # Map owned in-scope capability -> related check ids + statuses.
-    related: dict[str, list[str]] = {}
+    # Map ALL owned capabilities -> related check ids + statuses (for outcome
+    # dots). The rollup counts are gated by pack below so the hero card stays
+    # accurate for the packs being scanned.
+    all_related: dict[str, list[str]] = {}
+    in_scope_related: dict[str, list[str]] = {}
     for check in checks:
-        if check.pack.value not in pack_ids:
-            continue
         for cap_id in check.required_capabilities:
             if cap_id in owned:
-                related.setdefault(cap_id, []).append(check.id)
+                all_related.setdefault(cap_id, []).append(check.id)
+                if check.pack.value in pack_ids:
+                    in_scope_related.setdefault(cap_id, []).append(check.id)
 
     summary_by_id = {c.id: c for c in capability_summaries}
 
@@ -81,8 +84,8 @@ def capability_rollup(
     }
     rollup.not_licensed = len(referenced - owned)
 
-    for cap_id in sorted(related):
-        check_ids = related[cap_id]
+    for cap_id in sorted(in_scope_related):
+        check_ids = in_scope_related[cap_id]
         statuses: list[FindingStatus] = []
         for check_id in check_ids:
             statuses.extend(f.status for f in findings_by_check.get(check_id, []))
@@ -110,6 +113,33 @@ def capability_rollup(
                 related_check_ids=check_ids,
             )
         )
+
+    # Add outcomes for owned capabilities that land outside the scanned packs.
+    handled = {o.id for o in outcomes}
+    for cap_id in sorted(all_related):
+        if cap_id in handled:
+            continue
+        check_ids = all_related[cap_id]
+        statuses: list[FindingStatus] = []
+        for check_id in check_ids:
+            statuses.extend(f.status for f in findings_by_check.get(check_id, []))
+        if not statuses:
+            continue
+        status = _capability_status(statuses)
+        if status is None:
+            continue
+        summary = summary_by_id.get(cap_id)
+        outcomes.append(
+            CapabilityOutcome(
+                id=cap_id,
+                name=summary.name if summary else cap_id,
+                plain_name=summary.plain_name if summary else cap_id,
+                status=status,
+                status_label=CAPABILITY_STATUS_LABELS.get(status, status),
+                related_check_ids=check_ids,
+            )
+        )
+        handled.add(cap_id)
 
     rollup.realized_percent = (
         round(rollup.fully_working / rollup.you_own * 100) if rollup.you_own else 0

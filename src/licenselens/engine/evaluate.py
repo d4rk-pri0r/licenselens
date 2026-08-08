@@ -553,6 +553,91 @@ def _score_status(ratio: float | None, *, matched: int) -> FindingStatus:
     return FindingStatus.GAP
 
 
+def evaluate_security_defaults_on(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Security defaults enabled while the tenant is licensed for Conditional Access."""
+    del check
+    policy = evidence.get("security_defaults_policy") or {}
+    is_enabled = bool(policy.get("isEnabled")) if isinstance(policy, dict) else False
+
+    evidence_out = {
+        "security_defaults_enabled": is_enabled,
+        "policy_id": policy.get("id") if isinstance(policy, dict) else None,
+    }
+
+    if not is_enabled:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                "Security defaults are disabled, suggesting Conditional Access "
+                "is being used instead of the free baseline."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "The one-size-fits-all security defaults are not in use — your "
+                "tenant appears ready for custom sign-in rules."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary=(
+            "Security defaults are enabled, but the tenant is licensed for "
+            "Conditional Access. MFA is required only in high-risk scenarios "
+            "and legacy auth is not blocked."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "Your plan includes smarter sign-in rules you can customize, but "
+            "the tenant is still relying on the free baseline security "
+            "defaults. Turn them off and create Conditional Access policies "
+            "instead — especially for admins and sensitive apps."
+        ),
+    )
+
+
+def evaluate_access_reviews_unused(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Access reviews licensed but not configured."""
+    del check
+    definitions = list(evidence.get("access_review_definitions") or [])
+    count = len(definitions)
+
+    evidence_out = {
+        "definition_count": count,
+        "definition_ids": [d.get("id") for d in definitions if isinstance(d, dict)][:10],
+    }
+
+    if count == 0:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                "No access review definitions were found. Access Reviews "
+                "are included in the tenant's plan but have never been configured."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Your plan can periodically confirm who still needs powerful "
+                "access and clean up old guest accounts. That process does not "
+                "look set up yet."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.OK,
+        summary=f"Found {count} access review definition(s) — the process is configured.",
+        evidence=evidence_out,
+        customer_summary=(
+            "Periodic access reviews appear to be set up. Confirm the most "
+            "recent round has completed successfully."
+        ),
+    )
+
+
 def evaluate_mdo_p2_policies(
     check: CheckDefinition,
     evidence: dict[str, Any],
@@ -1077,6 +1162,8 @@ EVALUATORS: dict[str, Evaluator] = {
     "id-idprotect-off": evaluate_idprotect_off,
     "id-pim-unused": evaluate_pim_unused,
     "id-dormant-privileged": evaluate_dormant_privileged,
+    "id-security-defaults-on": evaluate_security_defaults_on,
+    "id-access-reviews-unused": evaluate_access_reviews_unused,
     "mdo-p2-policies-default": evaluate_mdo_p2_policies,
     "mde-onboard-gap": evaluate_mde_onboard_gap,
     "mdi-sensors-missing": evaluate_mdi_sensors,

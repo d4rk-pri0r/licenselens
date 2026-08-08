@@ -61,7 +61,7 @@ licenselens discover-workspace --auth client_secret
 licenselens batch tenants.yaml -o reports
 ```
 
-## Full check pack (v0.2.0)
+## Full check pack (v0.3.0)
 
 | Check ID | Workload | Live evaluation |
 |----------|----------|-----------------|
@@ -69,6 +69,8 @@ licenselens batch tenants.yaml -o reports
 | `id-idprotect-off` | Identity | Risk-based CA |
 | `id-pim-unused` | Identity | Standing roles vs PIM eligibility |
 | `id-dormant-privileged` | Identity | Unused privileged users |
+| `id-security-defaults-on` | Identity | Security defaults ON despite CA licenses |
+| `id-access-reviews-unused` | Identity | Access Reviews licensed but never configured |
 | `mdo-p2-policies-default` | Defender | Off default packs; opt-in `--allow-email-proxy` only |
 | `mde-onboard-gap` | Endpoint | MDE API vs licensed units |
 | `mdi-sensors-missing` | Defender | Secure Score proxy |

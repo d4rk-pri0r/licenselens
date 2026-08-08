@@ -20,11 +20,10 @@ def _policies(*policies: dict) -> list[dict]:
     return list(policies)
 
 
-def test_ca_priv_gaps_demo_is_partial():
+def test_ca_priv_gaps_demo_is_partial_exposed():
     result = evaluate_ca_priv_gaps(_check("id-ca-priv-gaps"), {"ca_policies": DEMO_CA_POLICIES})
     assert result.status == FindingStatus.PARTIAL
-    assert result.evidence["mfa_enforced_policies"]
-    assert result.evidence["legacy_block_report_only"]
+    assert result.exposure_class == ExposureClass.EXPOSED
 
 
 def test_ca_priv_gaps_ok_when_mfa_and_legacy_enforced():
@@ -57,9 +56,9 @@ def test_ca_priv_gaps_empty_is_gap():
     assert result.status == FindingStatus.GAP
 
 
-def test_idprotect_demo_is_gap():
+def test_idprotect_demo_is_ok():
     result = evaluate_idprotect_off(_check("id-idprotect-off"), {"ca_policies": DEMO_CA_POLICIES})
-    assert result.status == FindingStatus.GAP
+    assert result.status == FindingStatus.OK
 
 
 def test_idprotect_ok_with_both_risk_policies():
@@ -200,14 +199,14 @@ def test_no_privileged_principals_means_no_mfa_exposure():
     assert result.exposure_class == ExposureClass.NONE
 
 
-def test_demo_tenant_is_not_exposed():
-    # Demo fixture: MFA enforced + legacy report-only -> partial, not exposed.
+def test_demo_tenant_has_exposure_from_open_legacy_auth():
+    # Demo fixture: MFA enforced but legacy auth fully open -> partial + EXPOSED.
     result = evaluate_ca_priv_gaps(
         _check("id-ca-priv-gaps"),
         {"ca_policies": DEMO_CA_POLICIES, "role_assignments": DEMO_ROLE_ASSIGNMENTS},
     )
     assert result.status == FindingStatus.PARTIAL
-    assert result.exposure_class == ExposureClass.NONE
+    assert result.exposure_class == ExposureClass.EXPOSED
 
 
 def test_pim_unused_remains_non_exposed_ordinary_gap():

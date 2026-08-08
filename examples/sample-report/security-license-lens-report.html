@@ -27,6 +27,32 @@
       line-height: 1.55;
     }
     header, main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .logo-mark {
+      position: relative;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, transparent 38%, var(--accent) 39%, var(--accent) 52%, transparent 53%);
+      flex-shrink: 0;
+    }
+    .logo-mark::before {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, transparent 55%, color-mix(in srgb, var(--accent) 30%, transparent) 56%);
+    }
     header h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
     header .tagline { margin: 0; color: var(--muted); font-size: 1.05rem; }
     .meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: 0.95rem; }
@@ -49,6 +75,14 @@
     .tile .n { font-size: 1.6rem; font-weight: 700; }
     .tile .l { color: var(--muted); font-size: 0.85rem; margin-top: 0.15rem; }
     .tile .l small { display: block; opacity: 0.7; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
+    .donut {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .donut svg { width: 56px; height: 56px; flex-shrink: 0; }
+    .donut .donut-val { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
+    .donut .donut-label { color: var(--muted); font-size: 0.82rem; margin-top: 0.1rem; }
     section {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -58,6 +92,35 @@
     }
     h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
     .section-help { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; }
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .filter-bar button {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      padding: 0.3rem 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .filter-bar button:hover { border-color: var(--accent); color: var(--text); }
+    .filter-bar button.active {
+      background: color-mix(in srgb, var(--accent) 20%, var(--panel));
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filter-count {
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
     .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; }
     .card {
       border: 1px solid var(--border);
@@ -69,6 +132,26 @@
     .card .msft { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.65rem; }
     .card p { margin: 0.4rem 0; font-size: 0.92rem; }
     .card p span { color: var(--muted); font-weight: 600; }
+    .cap-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .cap-status::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .cap-status.needs_attention { color: var(--gap); }
+    .cap-status.needs_attention::before { background: var(--gap); }
+    .cap-status.partly_set_up { color: var(--partial); }
+    .cap-status.partly_set_up::before { background: var(--partial); }
+    .cap-status.fully_working { color: var(--ok); }
+    .cap-status.fully_working::before { background: var(--ok); }
     .finding {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -77,8 +160,26 @@
       background: color-mix(in srgb, var(--bg) 40%, var(--panel));
     }
     .finding:last-child { margin-bottom: 0; }
+    .finding.gap { border-left: 3px solid var(--gap); }
+    .finding.partial { border-left: 3px solid var(--partial); }
+    .finding.ok { border-left: 3px solid var(--ok); }
+    .finding.not_licensed { border-left: 3px solid var(--notlic); }
+    .finding.skipped, .finding.error { border-left: 3px solid var(--skipped); }
     .finding-head { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: center; margin-bottom: 0.5rem; }
     .finding-head h3 { margin: 0; font-size: 1.02rem; flex: 1 1 220px; }
+    .finding-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .finding-meta .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
     .steps { margin: 0; padding-left: 1.2rem; }
     .steps li { margin: 0.45rem 0; }
     table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
@@ -96,6 +197,10 @@
     .badge.ok { background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
     .badge.not_licensed { background: color-mix(in srgb, var(--notlic) 25%, transparent); color: var(--notlic); }
     .badge.skipped, .badge.error { background: color-mix(in srgb, var(--skipped) 25%, transparent); color: var(--skipped); }
+    .badge.effort {
+      background: color-mix(in srgb, var(--muted) 18%, transparent);
+      color: var(--muted);
+    }
     details.tech {
       margin-top: 0.25rem;
       border: 1px dashed var(--border);
@@ -145,53 +250,78 @@
 </head>
 <body>
   <header>
-    <h1>Security License Lens</h1>
-    <p class="tagline">The security you already own (and ignore)</p>
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <div>
+        <h1>Security License Lens</h1>
+        <p class="tagline">The security you already own (and ignore)</p>
+      </div>
+    </div>
     <div class="meta">
       <div>Version <code>0.3.0.dev1</code></div>
-      <div>Scanned <code>2026-08-08T16:48:50.396225+00:00</code></div>
-      <div>Mode <code>dry_run / dry_run</code></div>
+      <div>Scanned <code>August 08, 2026 at 06:03 PM UTC</code></div>
+      <div>Mode <code>dry_run</code></div>
       <div>Organization <code>Contoso Demo (dry-run)</code></div>
     </div>
     
-    <div class="intro">
-      <strong>How to read this report:</strong>
-      Microsoft licenses often include powerful protections with confusing product names.
-      Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-      Product names and technical IDs are available in the technical section at the bottom.
-    </div>
   </header>
 
     <main>
     
     <section class="hero" style="background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border));">
       <h2>Your security at a glance</h2>
-      <p class="section-help">4 of 4 still not fully working.</p>
+      <p class="section-help">3 of 4 still not fully working.</p>
       <div class="tiles" style="margin-top: 0;">
         <div class="tile">
           <div class="n">4</div>
           <div class="l">Protections you own<small>in licensed workloads</small></div>
         </div>
         <div class="tile">
-          <div class="n" style="color: var(--ok);">0</div>
+          <div class="n" style="color: var(--ok);">1</div>
           <div class="l">Fully working<small>set up and active</small></div>
         </div>
         <div class="tile">
-          <div class="n">0<span style="font-size: 0.9rem;">%</span></div>
-          <div class="l">Realized<small>of what you own</small></div>
+          <div class="donut">
+            <svg viewBox="0 0 36 36">
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--border)" stroke-width="2.5"/>
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ok)" stroke-width="2.5"
+                stroke-dasharray="25 100" stroke-linecap="round"
+                transform="rotate(-90 18 18)"
+                opacity="1"
+              />
+            </svg>
+            <div>
+              <div class="donut-val" style="color: var(--partial);">25%</div>
+              <div class="donut-label">Realized</div>
+            </div>
+          </div>
         </div>
         <div class="tile">
-          <div class="n" style="color: var(--partial);">4</div>
+          <div class="n" style="color: var(--partial);">3</div>
           <div class="l">Need attention<small>gaps and partial setups</small></div>
+        </div>
+        
+        <div class="tile" style="border-color: var(--gap);">
+          <div class="n" style="color: var(--gap);">1</div>
+          <div class="l">Exposed<small>high-risk gaps, do first</small></div>
         </div>
         
       </div>
     </section>
 
+    <details class="tech" style="margin-bottom: 1rem;">
+      <summary>How to read this report</summary>
+      <p style="margin: 0.5rem 0 0; color: var(--text); font-size: 0.92rem;">
+        Microsoft licenses often include powerful protections with confusing product names.
+        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
+        Product names and technical IDs are available in the technical section at the bottom.
+      </p>
+    </details>
+
     <div class="tiles">
       
       <div class="tile">
-        <div class="n">6</div>
+        <div class="n">7</div>
         <div class="l">
           Needs attention
           <small>gap</small>
@@ -207,7 +337,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">0</div>
+        <div class="n">1</div>
         <div class="l">
           Looking good
           <small>ok</small>
@@ -248,7 +378,11 @@
       
       <div class="cards">
         
+        
         <article class="card">
+          
+          <div class="cap-status needs_attention">Needs attention</div>
+          
           <h3>Smarter sign-in rules</h3>
           <div class="msft">Microsoft name: Conditional Access</div>
           <p><span>What it does.</span> Decide who can sign in, from where, on which devices, and whether they must prove it is really them (for example with multi-factor authentication).</p>
@@ -256,7 +390,11 @@
           <p><span>If it is not set up.</span> Your licenses include advanced sign-in rules, but they may still be loose or incomplete.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status needs_attention">Needs attention</div>
+          
           <h3>Deep protection and visibility on PCs and devices</h3>
           <div class="msft">Microsoft name: Microsoft Defender for Endpoint P2</div>
           <p><span>What it does.</span> See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.</p>
@@ -264,7 +402,11 @@
           <p><span>If it is not set up.</span> You may be paying for advanced device protection on seats that are not fully enrolled.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status partly_set_up">Partly set up</div>
+          
           <h3>Watchdogs on your on-site directory (if you still have one)</h3>
           <div class="msft">Microsoft name: Microsoft Defender for Identity</div>
           <p><span>What it does.</span> Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.</p>
@@ -272,7 +414,11 @@
           <p><span>If it is not set up.</span> Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status partly_set_up">Partly set up</div>
+          
           <h3>Stronger email and file threat protection</h3>
           <div class="msft">Microsoft name: Microsoft Defender for Office 365 P2</div>
           <p><span>What it does.</span> Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.</p>
@@ -280,7 +426,11 @@
           <p><span>If it is not set up.</span> Extra email protections in your license may still be off, in test mode, or only covering a few people.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status needs_attention">Needs attention</div>
+          
           <h3>Stronger control over admin accounts</h3>
           <div class="msft">Microsoft name: Microsoft Entra ID P2</div>
           <p><span>What it does.</span> Give people powerful admin rights only when they need them, and get better tools to catch risky sign-ins on high-value accounts.</p>
@@ -288,7 +438,11 @@
           <p><span>If it is not set up.</span> You are paying for stronger admin protections that are not fully turned on yet.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status fully_working">Fully working</div>
+          
           <h3>Alerts when a sign-in looks suspicious</h3>
           <div class="msft">Microsoft name: Microsoft Entra ID Protection</div>
           <p><span>What it does.</span> Automatically spot odd sign-in behavior (impossible travel, leaked passwords, unfamiliar locations) and require extra proof or block access.</p>
@@ -296,7 +450,11 @@
           <p><span>If it is not set up.</span> Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status needs_attention">Needs attention</div>
+          
           <h3>A central security command center in the cloud</h3>
           <div class="msft">Microsoft name: Microsoft Sentinel</div>
           <p><span>What it does.</span> Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.</p>
@@ -304,7 +462,11 @@
           <p><span>If it is not set up.</span> A security workspace may exist, but few detections or smart analytics are turned on.</p>
         </article>
         
+        
         <article class="card">
+          
+          <div class="cap-status needs_attention">Needs attention</div>
+          
           <h3>Guardrails so sensitive data is harder to leak</h3>
           <div class="msft">Microsoft name: Microsoft Purview Data Loss Prevention</div>
           <p><span>What it does.</span> Warn or block people when they try to share credit cards, health data, or other sensitive information in the wrong place.</p>
@@ -325,24 +487,24 @@
       <ol class="steps">
         
         <li style="margin-bottom: 0.9rem;">
-          <strong>Require multi-factor authentication for admins and block legacy email si…</strong>
-          <span class="badge partial" style="margin-left: 0.5rem;">~a few hours</span>
-          <div style="color: var(--muted); margin-top: 0.25rem;">Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).</div>
+          <strong>Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts</strong>
+          <span class="badge effort" style="margin-left: 0.5rem;">~a few hours</span>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.</div>
           <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</div>
         </li>
         
         <li style="margin-bottom: 0.9rem;">
-          <strong>Turn on risk-based sign-in protection in stages — start by requiring ext…</strong>
-          <span class="badge partial" style="margin-left: 0.5rem;">~a few hours</span>
-          <div style="color: var(--muted); margin-top: 0.25rem;">We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.</div>
-          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</div>
+          <strong>Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a…</strong>
+          <span class="badge effort" style="margin-left: 0.5rem;">~a few hours</span>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Your plan includes smarter sign-in rules you can customize, but the tenant is still relying on the free baseline security defaults. Turn them off and create Conditional Access policies instead — especially for admins and sensitive apps.</div>
+          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a report-only pilot if you prefer).</div>
         </li>
         
         <li style="margin-bottom: 0.9rem;">
-          <strong>Ask IT to turn on time-limited admin access for your top admins first (G…</strong>
-          <span class="badge partial" style="margin-left: 0.5rem;">~days</span>
-          <div style="color: var(--muted); margin-top: 0.25rem;">Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.</div>
-          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).</div>
+          <strong>Create an Access Review for your Global Administrators and guest users (monthly or quarterly), then review the first round of results</strong>
+          <span class="badge effort" style="margin-left: 0.5rem;">~a few hours</span>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Your plan can periodically confirm who still needs powerful access and clean up old guest accounts. That process does not look set up yet.</div>
+          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Create an Access Review for your Global Administrators and guest users (monthly or quarterly), then review the first round of results.</div>
         </li>
         
       </ol>
@@ -357,95 +519,218 @@
       <p class="section-help">
         Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
       </p>
+      <div class="filter-bar">
+        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
+        
+        <button data-filter="all" class="active">All</button>
+        
+        <button data-filter="gap">Needs attention</button>
+        
+        <button data-filter="partial">Partly set up</button>
+        
+        <button data-filter="ok">Looking good</button>
+        
+        <button data-filter="not_licensed">Not in your plan</button>
+        
+        <button data-filter="skipped">Check pending</button>
+        
+        <button data-filter="error">Could not verify</button>
+        
+        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
+        
+        <button data-workload="all" class="active">All</button>
+        
+        <button data-workload="identity">identity</button>
+        
+        <button data-workload="endpoint">endpoint</button>
+        
+        <button data-workload="defender">defender</button>
+        
+        <button data-workload="sentinel">sentinel</button>
+        
+        <button data-workload="purview">purview</button>
+        
+        <span class="filter-count">Showing <strong>12</strong> of <strong>12</strong></span>
+      </div>
       
-      <article class="finding">
-        <div class="finding-head">
-          <span class="badge gap">Needs attention</span>
-          <h3>Suspicious sign-ins may not be blocked automatically</h3>
-        </div>
-        <p>We did not find automatic responses when Microsoft marks a sign-in or account as risky. That protection may still be turned off.</p>
-        <p><strong>Suggested next step:</strong> Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</p>
-      </article>
-      
-      <article class="finding">
+      <article class="finding gap" data-status="gap" data-workload="identity">
         <div class="finding-head">
           <span class="badge gap">Needs attention</span>
           <h3>Admin accounts still have "always on" superpowers</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~days</span>
+          <span class="meta-item">&#x1F465; admin</span>
+          <span class="meta-item">Identity</span>
         </div>
         <p>Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.</p>
         <p><strong>Suggested next step:</strong> Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).</p>
       </article>
       
-      <article class="finding">
+      <article class="finding gap" data-status="gap" data-workload="identity">
+        <div class="finding-head">
+          <span class="badge gap">Needs attention</span>
+          <h3>Switch from basic security defaults to smarter sign-in rules</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Identity</span>
+        </div>
+        <p>Your plan includes smarter sign-in rules you can customize, but the tenant is still relying on the free baseline security defaults. Turn them off and create Conditional Access policies instead — especially for admins and sensitive apps.</p>
+        <p><strong>Suggested next step:</strong> Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a report-only pilot if you prefer).</p>
+      </article>
+      
+      <article class="finding gap" data-status="gap" data-workload="endpoint">
         <div class="finding-head">
           <span class="badge gap">Needs attention</span>
           <h3>Some PCs may not be enrolled in advanced device protection</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~days</span>
+          <span class="meta-item">&#x1F465; devices</span>
+          <span class="meta-item">Endpoint</span>
         </div>
         <p>You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.</p>
         <p><strong>Suggested next step:</strong> Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).</p>
       </article>
       
-      <article class="finding">
+      <article class="finding gap" data-status="gap" data-workload="identity">
+        <div class="finding-head">
+          <span class="badge gap">Needs attention</span>
+          <h3>Set up periodic access reviews for admins and guests</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; Medium severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; admin</span>
+          <span class="meta-item">Identity</span>
+        </div>
+        <p>Your plan can periodically confirm who still needs powerful access and clean up old guest accounts. That process does not look set up yet.</p>
+        <p><strong>Suggested next step:</strong> Create an Access Review for your Global Administrators and guest users (monthly or quarterly), then review the first round of results.</p>
+      </article>
+      
+      <article class="finding gap" data-status="gap" data-workload="identity">
         <div class="finding-head">
           <span class="badge gap">Needs attention</span>
           <h3>Powerful accounts that nobody uses are still switched on</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; Medium severity</span>
+          <span class="meta-item">&#x23F1; ~days</span>
+          <span class="meta-item">&#x1F465; admin</span>
+          <span class="meta-item">Identity</span>
         </div>
         <p>Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.</p>
         <p><strong>Suggested next step:</strong> Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.</p>
       </article>
       
-      <article class="finding">
+      <article class="finding gap" data-status="gap" data-workload="purview">
         <div class="finding-head">
           <span class="badge gap">Needs attention</span>
           <h3>Guardrails against accidental data leaks may not be active</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; Medium severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; data</span>
+          <span class="meta-item">Purview</span>
         </div>
         <p>You appear to pay for data-leak protection that is not meaningfully enforced yet. Confirm in the Purview portal.</p>
         <p><strong>Suggested next step:</strong> Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</p>
       </article>
       
-      <article class="finding">
+      <article class="finding gap" data-status="gap" data-workload="sentinel">
         <div class="finding-head">
           <span class="badge gap">Needs attention</span>
           <h3>Behavior-based detection may still be switched off</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; Medium severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Sentinel</span>
         </div>
         <p>Behavior analytics that learn normal patterns for people and devices still looks switched off.</p>
         <p><strong>Suggested next step:</strong> Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.</p>
       </article>
       
-      <article class="finding">
+      <article class="finding partial" data-status="partial" data-workload="identity">
         <div class="finding-head">
           <span class="badge partial">Partly set up</span>
           <h3>Powerful accounts may sign in without strong extra checks</h3>
         </div>
-        <p>Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).</p>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Identity</span>
+        </div>
+        <p>Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.</p>
         <p><strong>Suggested next step:</strong> Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</p>
       </article>
       
-      <article class="finding">
+      <article class="finding partial" data-status="partial" data-workload="sentinel">
         <div class="finding-head">
           <span class="badge partial">Partly set up</span>
           <h3>Your security command center may have few alarms turned on</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Sentinel</span>
         </div>
         <p>Some detection alarms are on, but coverage still looks light for a paid security command center.</p>
         <p><strong>Suggested next step:</strong> Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.</p>
       </article>
       
-      <article class="finding">
+      <article class="finding partial" data-status="partial" data-workload="defender">
         <div class="finding-head">
           <span class="badge partial">Partly set up</span>
           <h3>On-site directory servers may lack attack sensors</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; Medium severity</span>
+          <span class="meta-item">&#x23F1; ~days</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Defender</span>
         </div>
         <p>We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.</p>
         <p><strong>Suggested next step:</strong> Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.</p>
       </article>
       
-      <article class="finding">
+      <article class="finding skipped" data-status="skipped" data-workload="defender">
         <div class="finding-head">
           <span class="badge skipped">Check pending</span>
           <h3>Turn on Safe Links and Safe Attachments for everyone</h3>
         </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Defender</span>
+        </div>
         <p>We cannot automatically confirm whether extra email protections (Safe Links and Safe Attachments) cover everyone. Ask IT to check Preset security policies in the Microsoft Defender portal, or run Exchange Online PowerShell (Get-ATPProtectionPolicyRule).</p>
         <p><strong>Suggested next step:</strong> Open Preset security policies in the Defender portal and turn on Standard protection for all users, or confirm with Exchange Online PowerShell.</p>
+      </article>
+      
+      <article class="finding ok" data-status="ok" data-workload="identity">
+        <div class="finding-head">
+          <span class="badge ok">Looking good</span>
+          <h3>Suspicious sign-ins may not be blocked automatically</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item">&#x25CF; High severity</span>
+          <span class="meta-item">&#x23F1; ~a few hours</span>
+          <span class="meta-item">&#x1F465; all users</span>
+          <span class="meta-item">Identity</span>
+        </div>
+        <p>Suspicious sign-ins and risky accounts appear to trigger automatic extra checks or blocks.</p>
+        <p><strong>Suggested next step:</strong> Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</p>
       </article>
       
     </section>
@@ -458,9 +743,9 @@
         
         <li>Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</li>
         
-        <li>Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</li>
+        <li>Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a report-only pilot if you prefer).</li>
         
-        <li>Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).</li>
+        <li>Create an Access Review for your Global Administrators and guest users (monthly or quarterly), then review the first round of results.</li>
         
       </ol>
     </section>
@@ -513,16 +798,16 @@
           
           <tr>
             <td><span class="badge gap">gap</span></td>
-            <td><code>id-idprotect-off</code></td>
-            <td>Identity Protection policies off or report-only</td>
+            <td><code>id-pim-unused</code></td>
+            <td>PIM licensed but privileged access not operationalized</td>
             <td>identity</td>
             <td>high</td>
           </tr>
           
           <tr>
             <td><span class="badge gap">gap</span></td>
-            <td><code>id-pim-unused</code></td>
-            <td>PIM licensed but privileged access not operationalized</td>
+            <td><code>id-security-defaults-on</code></td>
+            <td>Security defaults enabled instead of Conditional Access</td>
             <td>identity</td>
             <td>high</td>
           </tr>
@@ -533,6 +818,14 @@
             <td>Defender for Endpoint licensed seats vs onboarded devices gap</td>
             <td>endpoint</td>
             <td>high</td>
+          </tr>
+          
+          <tr>
+            <td><span class="badge gap">gap</span></td>
+            <td><code>id-access-reviews-unused</code></td>
+            <td>Access Reviews licensed but not configured</td>
+            <td>identity</td>
+            <td>medium</td>
           </tr>
           
           <tr>
@@ -591,6 +884,14 @@
             <td>high</td>
           </tr>
           
+          <tr>
+            <td><span class="badge ok">ok</span></td>
+            <td><code>id-idprotect-off</code></td>
+            <td>Identity Protection policies off or report-only</td>
+            <td>identity</td>
+            <td>high</td>
+          </tr>
+          
         </tbody>
       </table>
     </details>
@@ -599,5 +900,51 @@
   <footer>
     The security you already own (and ignore) &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
   </footer>
+  <script>
+    (function() {
+      var findings = document.querySelectorAll('.finding');
+      var countEl = document.querySelector('.filter-count strong');
+      var totalEl = countEl ? countEl.parentNode : null;
+      var total = findings.length;
+
+      var activeStatus = 'all';
+      var activeWorkload = 'all';
+
+      function updateButtons(selector, value) {
+        document.querySelectorAll(selector).forEach(function(btn) {
+          btn.classList.toggle('active', btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value);
+        });
+      }
+
+      function applyFilters() {
+        var visible = 0;
+        findings.forEach(function(f) {
+          var s = f.getAttribute('data-status');
+          var w = f.getAttribute('data-workload');
+          var match = (activeStatus === 'all' || s === activeStatus) &&
+                      (activeWorkload === 'all' || w === activeWorkload);
+          f.hidden = !match;
+          if (match) visible++;
+        });
+        if (totalEl) totalEl.textContent = 'Showing ' + visible + ' of ' + total;
+      }
+
+      document.querySelectorAll('[data-filter]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeStatus = this.getAttribute('data-filter');
+          updateButtons('[data-filter]', activeStatus);
+          applyFilters();
+        });
+      });
+
+      document.querySelectorAll('[data-workload]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          activeWorkload = this.getAttribute('data-workload');
+          updateButtons('[data-workload]', activeWorkload);
+          applyFilters();
+        });
+      });
+    })();
+  </script>
 </body>
 </html>
