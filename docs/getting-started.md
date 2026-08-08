@@ -15,10 +15,25 @@ pip install -e ".[dev]"
 ```bash
 licenselens version
 licenselens checks
-licenselens scan -o reports
+licenselens scan --dry-run -o reports
+# or, in a terminal with no flags: choose "Demo sample data" when prompted
+licenselens scan
 ```
 
 Open `reports/security-license-lens-report.html` in a browser.
+
+## Interactive scan (prompts)
+
+In an interactive terminal, `licenselens scan` walks you through missing options:
+
+1. Demo sample data vs your Microsoft tenant  
+2. Sign-in method (device code, app secret, or Azure CLI)  
+3. Tenant / app credentials if needed  
+4. Output folder, open HTML, optional Sentinel workspace, optional preflight  
+
+Flags and environment variables always override prompts. In CI or pipes (no TTY),
+the command does not hang: default is dry-run, and `--live` without credentials
+exits with a short message listing what to set.
 
 ## Quick demo
 
