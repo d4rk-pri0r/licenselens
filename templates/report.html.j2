@@ -279,42 +279,30 @@
     {% set rollup = result.capability_rollup %}
     <section class="hero" style="background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border));">
       <h2>Your security at a glance</h2>
-      <p class="section-help">{{ rollup.realized_sentence }}.</p>
+      <p class="section-help">
+        {{ rollup.realized_sentence }}.
+        {% if result.has_exposed %}
+        <strong>High-risk priority (fix first):</strong>
+        {% for f in findings if f.check_id in result.exposed_check_ids %}{{ f.display_customer_title }}{% if not loop.last %}, {% endif %}{% endfor %}
+        {% endif %}
+      </p>
       <div class="tiles" style="margin-top: 0;">
         <div class="tile">
+          <div class="n">{{ result.owned_capabilities | length }}</div>
+          <div class="l">Licensed capabilities detected<small>across all detected licenses</small></div>
+        </div>
+        <div class="tile">
           <div class="n">{{ rollup.you_own }}</div>
-          <div class="l">Protections you own<small>in licensed workloads</small></div>
+          <div class="l">Prioritized capabilities<small>{{ result.packs_scanned | join(', ') }} priority packs</small></div>
         </div>
         <div class="tile">
           <div class="n" style="color: var(--ok);">{{ rollup.fully_working }}</div>
-          <div class="l">Fully working<small>set up and active</small></div>
-        </div>
-        <div class="tile">
-          <div class="donut">
-            <svg viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--border)" stroke-width="2.5"/>
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ok)" stroke-width="2.5"
-                stroke-dasharray="{{ rollup.realized_percent }} 100" stroke-linecap="round"
-                transform="rotate(-90 18 18)"
-                opacity="{{ 0.3 if rollup.realized_percent == 0 else 1 }}"
-              />
-            </svg>
-            <div>
-              <div class="donut-val"{% if rollup.realized_percent == 0 %} style="color: var(--gap);"{% elif rollup.realized_percent >= 75 %} style="color: var(--ok);"{% else %} style="color: var(--partial);"{% endif %}>{{ rollup.realized_percent }}%</div>
-              <div class="donut-label">Realized</div>
-            </div>
-          </div>
+          <div class="l">Fully working<small>{{ rollup.realized_percent }}% realized; of {{ rollup.you_own }} prioritized capabilities</small></div>
         </div>
         <div class="tile">
           <div class="n" style="color: var(--partial);">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
-          <div class="l">Need attention<small>gaps and partial setups</small></div>
+          <div class="l">Need attention<small>of {{ rollup.you_own }} prioritized capabilities</small></div>
         </div>
-        {% if result.has_exposed %}
-        <div class="tile" style="border-color: var(--gap);">
-          <div class="n" style="color: var(--gap);">{{ result.exposed_count }}</div>
-          <div class="l">Exposed<small>high-risk gaps, do first</small></div>
-        </div>
-        {% endif %}
       </div>
     </section>
 
@@ -323,7 +311,7 @@
       <p style="margin: 0.5rem 0 0; color: var(--text); font-size: 0.92rem;">
         Microsoft licenses often include powerful protections with confusing product names.
         Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-        Product names and technical IDs are available in the technical section at the bottom.
+        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
       </p>
     </details>
 
@@ -357,6 +345,8 @@
           {% if cap.outcome %}<p><span>What it does.</span> {{ cap.outcome }}</p>{% endif %}
           {% if cap.why_it_matters %}<p><span>Why it matters.</span> {{ cap.why_it_matters }}</p>{% endif %}
           {% if cap.if_unused %}<p><span>If it is not set up.</span> {{ cap.if_unused }}</p>{% endif %}
+          <p><span>Included through license SKU(s).</span> {{ cap.matched_skus | join(', ') or 'Not reported' }}</p>
+          <p><span>Matching service plan(s).</span> {{ cap.matched_service_plans | join(', ') or 'No matching service plan reported' }}</p>
         </article>
         {% endfor %}
       </div>
@@ -417,23 +407,19 @@
         </div>
         {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
         {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> {{ f.confidence_label or f.confidence.value }}</p>
+          <p><strong>Data sources:</strong> {{ f.data_sources | join(', ') or 'Not reported' }}</p>
+          <p><strong>Limitations:</strong> {{ f.limitations | join('; ') or 'None reported' }}</p>
+          {% if f.deep_link %}<p><a href="{{ f.deep_link }}">Open Microsoft admin page</a></p>{% endif %}
+          <p><strong>Technical ID:</strong> <code>{{ f.check_id }}</code></p>
+        </details>
       </article>
       {% else %}
       <p style="color: var(--muted); margin: 0;">No findings.</p>
       {% endfor %}
     </section>
-
-    {% if result.recommended_next_steps %}
-    <section>
-      <h2>Recommended first steps</h2>
-      <p class="section-help">A short list you can hand to IT or your Microsoft partner.</p>
-      <ol class="steps">
-        {% for step in result.recommended_next_steps %}
-        <li>{{ step }}</li>
-        {% endfor %}
-      </ol>
-    </section>
-    {% endif %}
 
     <details class="tech">
       <summary>Technical details (product names, SKUs, check IDs)</summary>

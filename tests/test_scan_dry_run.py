@@ -55,7 +55,8 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert "Security License Lens" in html_text
     assert "What you already pay for" in html_text
     assert "plain English" in html_text.lower() or "What it does" in html_text
-    assert "Recommended first steps" in html_text
+    assert html_text.count("Top things to do first") == 1
+    assert "Recommended first steps" not in html_text
     assert js.is_file() and "customer_title" in js.read_text(encoding="utf-8")
     assert md_text.startswith("# Security License Lens")
     assert "What you already pay for" in md_text
@@ -84,9 +85,9 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
 
     # Hero top card renders the rollup numbers and sentence.
     assert "Your security at a glance" in html
-    assert "Protections you own" in html
+    assert "Licensed capabilities detected" in html
+    assert "Prioritized capabilities" in html
     assert "Fully working" in html
-    assert "Realized" in html
     assert str(result.capability_rollup.you_own) in html
     assert result.capability_rollup.realized_sentence in html
     assert "Need attention" in html
@@ -103,9 +104,64 @@ def test_markdown_report_leads_with_executive_summary(tmp_path: Path):
     result = run_scan(auth, dry_run=True)
     md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
 
-    # Executive summary precedes findings: rollup sentence, moves, exposed note.
     assert result.capability_rollup.realized_sentence in md
-    assert "Protections you own:" in md
+    assert "Licensed capabilities detected:" in md
+    assert "Prioritized capabilities:" in md
     assert "Top things to do first" in md
     assert result.moves[0].title in md
     assert md.index(result.capability_rollup.realized_sentence) < md.index("## Where you may")
+
+
+def test_reports_distinguish_detected_from_prioritized_capabilities(tmp_path: Path):
+    auth = build_auth_context(mode=AuthMode.DRY_RUN)
+    result = run_scan(auth, dry_run=True)
+    html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
+    md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
+
+    detected = len(result.owned_capabilities)
+    prioritized = result.capability_rollup.you_own
+    assert detected > prioritized
+    assert f"{result.capability_rollup.realized_percent}% realized" in html
+    for report in (html, md):
+        assert "Licensed capabilities detected" in report
+        assert str(detected) in report
+        assert "Prioritized capabilities" in report
+        assert str(prioritized) in report
+        assert "identity" in report
+        assert "endpoint" in report
+        assert f"of {prioritized} prioritized capabilities" in report
+        for cap in result.capability_summaries:
+            assert ", ".join(cap.matched_skus) in report
+            if cap.matched_service_plans:
+                assert ", ".join(cap.matched_service_plans) in report
+
+
+def test_reports_identify_priority_packs(tmp_path: Path):
+    auth = build_auth_context(mode=AuthMode.DRY_RUN)
+    result = run_scan(auth, dry_run=True)
+    html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
+    md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
+
+    for report in (html, md):
+        assert "priority packs" in report
+        assert "packs scanned" not in report
+
+
+def test_reports_surface_evidence_and_one_action_plan(tmp_path: Path):
+    auth = build_auth_context(mode=AuthMode.DRY_RUN)
+    result = run_scan(auth, dry_run=True)
+    html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
+    md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
+
+    finding_with_limitations = next(f for f in result.findings if f.limitations)
+    exposed_finding = next(f for f in result.findings if f.check_id in result.exposed_check_ids)
+    for report in (html, md):
+        assert report.count("Top things to do first") == 1
+        assert "Recommended first steps" not in report
+        assert "High-risk priority (fix first)" in report
+        assert exposed_finding.display_customer_title in report
+        assert finding_with_limitations.confidence_label in report
+        assert ", ".join(finding_with_limitations.data_sources) in report
+        assert finding_with_limitations.limitations[0] in report
+        assert finding_with_limitations.deep_link in report
+        assert "Open Microsoft admin page" in report
