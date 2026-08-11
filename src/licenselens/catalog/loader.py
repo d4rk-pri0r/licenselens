@@ -6,8 +6,12 @@ from pathlib import Path
 
 import yaml
 
-from licenselens.models import Capability, CapabilitySummary, SubscribedSku, Workload
+from licenselens.models import Capability, CapabilitySummary, ServicePlan, SubscribedSku, Workload
 from licenselens.paths import catalog_dir
+
+
+def _service_plan_is_active(plan: ServicePlan) -> bool:
+    return (plan.provisioning_status or "Success").lower() in {"success", "enabled", ""}
 
 
 def _clean(text: str | None) -> str:
@@ -50,7 +54,7 @@ def resolve_owned_capabilities(
         p.service_plan_name.upper()
         for sku in skus
         for p in sku.service_plans
-        if (p.provisioning_status or "Success").lower() in {"success", "enabled", ""}
+        if _service_plan_is_active(p)
     }
     part_numbers = {s.sku_part_number.upper() for s in skus if s.sku_part_number}
 
@@ -66,6 +70,7 @@ def resolve_owned_capabilities(
 def capability_summaries_for(
     capabilities: list[Capability],
     owned_ids: list[str],
+    skus: list[SubscribedSku],
 ) -> list[CapabilitySummary]:
     """Build plain-language cards for capabilities the tenant owns."""
     by_id = {c.id: c for c in capabilities}
@@ -74,11 +79,29 @@ def capability_summaries_for(
         cap = by_id.get(cap_id)
         if cap is None:
             continue
+        service_plan_names = {name.upper() for name in cap.service_plan_names}
+        sku_part_numbers = {part_number.upper() for part_number in cap.sku_part_numbers}
         summaries.append(
             CapabilitySummary(
                 id=cap.id,
                 name=cap.name,
                 plain_name=cap.display_plain_name,
+                matched_skus=sorted(
+                    {
+                        sku.sku_part_number
+                        for sku in skus
+                        if sku.sku_part_number.upper() in sku_part_numbers
+                    }
+                ),
+                matched_service_plans=sorted(
+                    {
+                        plan.service_plan_name
+                        for sku in skus
+                        for plan in sku.service_plans
+                        if _service_plan_is_active(plan)
+                        and plan.service_plan_name.upper() in service_plan_names
+                    }
+                ),
                 outcome=cap.outcome,
                 why_it_matters=cap.why_it_matters,
                 if_unused=cap.if_unused,
