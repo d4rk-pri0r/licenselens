@@ -259,7 +259,7 @@
     </div>
     <div class="meta">
       <div>Version <code>0.3.0.dev1</code></div>
-      <div>Scanned <code>August 08, 2026 at 06:03 PM UTC</code></div>
+      <div>Scanned <code>August 11, 2026 at 06:09 PM UTC</code></div>
       <div>Mode <code>dry_run</code></div>
       <div>Organization <code>Contoso Demo (dry-run)</code></div>
     </div>
@@ -270,42 +270,30 @@
     
     <section class="hero" style="background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 16%, var(--panel)), var(--panel)); border-color: color-mix(in srgb, var(--accent) 45%, var(--border));">
       <h2>Your security at a glance</h2>
-      <p class="section-help">3 of 4 still not fully working.</p>
+      <p class="section-help">
+        3 of 4 still not fully working.
+        
+        <strong>High-risk priority (fix first):</strong>
+        Powerful accounts may sign in without strong extra checks
+        
+      </p>
       <div class="tiles" style="margin-top: 0;">
         <div class="tile">
+          <div class="n">8</div>
+          <div class="l">Licensed capabilities detected<small>across all detected licenses</small></div>
+        </div>
+        <div class="tile">
           <div class="n">4</div>
-          <div class="l">Protections you own<small>in licensed workloads</small></div>
+          <div class="l">Prioritized capabilities<small>identity, endpoint priority packs</small></div>
         </div>
         <div class="tile">
           <div class="n" style="color: var(--ok);">1</div>
-          <div class="l">Fully working<small>set up and active</small></div>
-        </div>
-        <div class="tile">
-          <div class="donut">
-            <svg viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--border)" stroke-width="2.5"/>
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="var(--ok)" stroke-width="2.5"
-                stroke-dasharray="25 100" stroke-linecap="round"
-                transform="rotate(-90 18 18)"
-                opacity="1"
-              />
-            </svg>
-            <div>
-              <div class="donut-val" style="color: var(--partial);">25%</div>
-              <div class="donut-label">Realized</div>
-            </div>
-          </div>
+          <div class="l">Fully working<small>25% realized; of 4 prioritized capabilities</small></div>
         </div>
         <div class="tile">
           <div class="n" style="color: var(--partial);">3</div>
-          <div class="l">Need attention<small>gaps and partial setups</small></div>
+          <div class="l">Need attention<small>of 4 prioritized capabilities</small></div>
         </div>
-        
-        <div class="tile" style="border-color: var(--gap);">
-          <div class="n" style="color: var(--gap);">1</div>
-          <div class="l">Exposed<small>high-risk gaps, do first</small></div>
-        </div>
-        
       </div>
     </section>
 
@@ -314,7 +302,7 @@
       <p style="margin: 0.5rem 0 0; color: var(--text); font-size: 0.92rem;">
         Microsoft licenses often include powerful protections with confusing product names.
         Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-        Product names and technical IDs are available in the technical section at the bottom.
+        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
       </p>
     </details>
 
@@ -388,6 +376,8 @@
           <p><span>What it does.</span> Decide who can sign in, from where, on which devices, and whether they must prove it is really them (for example with multi-factor authentication).</p>
           <p><span>Why it matters.</span> Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.</p>
           <p><span>If it is not set up.</span> Your licenses include advanced sign-in rules, but they may still be loose or incomplete.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> AAD_PREMIUM_P2</p>
         </article>
         
         
@@ -400,6 +390,8 @@
           <p><span>What it does.</span> See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.</p>
           <p><span>Why it matters.</span> Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.</p>
           <p><span>If it is not set up.</span> You may be paying for advanced device protection on seats that are not fully enrolled.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> DEFENDER_ENDPOINT_P2</p>
         </article>
         
         
@@ -412,6 +404,8 @@
           <p><span>What it does.</span> Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.</p>
           <p><span>Why it matters.</span> Many organizations still rely on on-site domain controllers. Cloud-only tools cannot see every attack path there.</p>
           <p><span>If it is not set up.</span> Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> No matching service plan reported</p>
         </article>
         
         
@@ -424,6 +418,8 @@
           <p><span>What it does.</span> Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.</p>
           <p><span>Why it matters.</span> Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.</p>
           <p><span>If it is not set up.</span> Extra email protections in your license may still be off, in test mode, or only covering a few people.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> THREAT_INTELLIGENCE</p>
         </article>
         
         
@@ -436,6 +432,8 @@
           <p><span>What it does.</span> Give people powerful admin rights only when they need them, and get better tools to catch risky sign-ins on high-value accounts.</p>
           <p><span>Why it matters.</span> Admin accounts are the keys to your email, files, and business apps. If one is stolen, an attacker can look like a trusted employee.</p>
           <p><span>If it is not set up.</span> You are paying for stronger admin protections that are not fully turned on yet.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> AAD_PREMIUM_P2</p>
         </article>
         
         
@@ -448,6 +446,8 @@
           <p><span>What it does.</span> Automatically spot odd sign-in behavior (impossible travel, leaked passwords, unfamiliar locations) and require extra proof or block access.</p>
           <p><span>Why it matters.</span> Attackers often use valid passwords. Risk detection helps catch the session even when the password was correct.</p>
           <p><span>If it is not set up.</span> Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> AAD_PREMIUM_P2</p>
         </article>
         
         
@@ -460,6 +460,8 @@
           <p><span>What it does.</span> Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.</p>
           <p><span>Why it matters.</span> Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.</p>
           <p><span>If it is not set up.</span> A security workspace may exist, but few detections or smart analytics are turned on.</p>
+          <p><span>Included through license SKU(s).</span> MICROSOFT_SENTINEL</p>
+          <p><span>Matching service plan(s).</span> MICROSOFT_SENTINEL</p>
         </article>
         
         
@@ -472,6 +474,8 @@
           <p><span>What it does.</span> Warn or block people when they try to share credit cards, health data, or other sensitive information in the wrong place.</p>
           <p><span>Why it matters.</span> Accidental oversharing is common. Guardrails protect customers and reduce regulatory and reputational harm.</p>
           <p><span>If it is not set up.</span> Data-protection rules may be missing or still in "test only" mode, so nothing is enforced yet.</p>
+          <p><span>Included through license SKU(s).</span> SPE_E5</p>
+          <p><span>Matching service plan(s).</span> MIP_S_CLP2</p>
         </article>
         
       </div>
@@ -494,10 +498,10 @@
         </li>
         
         <li style="margin-bottom: 0.9rem;">
-          <strong>Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a…</strong>
+          <strong>Create equivalent Conditional Access policies for MFA and legacy-authentication blocking in report-only mode</strong>
           <span class="badge effort" style="margin-left: 0.5rem;">~a few hours</span>
-          <div style="color: var(--muted); margin-top: 0.25rem;">Your plan includes smarter sign-in rules you can customize, but the tenant is still relying on the free baseline security defaults. Turn them off and create Conditional Access policies instead — especially for admins and sensitive apps.</div>
-          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a report-only pilot if you prefer).</div>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Security Defaults already includes baseline MFA protection and blocks outdated sign-in methods. Your plan also includes smarter sign-in rules you can customize, but that paid capability remains unused.</div>
+          <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Create equivalent Conditional Access policies for MFA and legacy-authentication blocking in report-only mode. Validate coverage, exclusions, emergency access, and sign-in impact; then perform a controlled cutover from Security Defaults to the validated policies.</div>
         </li>
         
         <li style="margin-bottom: 0.9rem;">
@@ -566,12 +570,20 @@
         </div>
         <p>Admin superpowers appear permanently on. Time-limited admin access (included in your stronger identity plan) does not look like it is being used.</p>
         <p><strong>Suggested next step:</strong> Ask IT to turn on time-limited admin access for your top admins first (Global Administrator and similar roles).</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> microsoft.graph</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://portal.azure.com/#view/Microsoft_AAD_IAM/RoleAssignmentsBlade">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>id-pim-unused</code></p>
+        </details>
       </article>
       
       <article class="finding gap" data-status="gap" data-workload="identity">
         <div class="finding-head">
           <span class="badge gap">Needs attention</span>
-          <h3>Switch from basic security defaults to smarter sign-in rules</h3>
+          <h3>Move from Security Defaults to customizable sign-in rules</h3>
         </div>
         <div class="finding-meta">
           <span class="meta-item">&#x25CF; High severity</span>
@@ -579,8 +591,16 @@
           <span class="meta-item">&#x1F465; all users</span>
           <span class="meta-item">Identity</span>
         </div>
-        <p>Your plan includes smarter sign-in rules you can customize, but the tenant is still relying on the free baseline security defaults. Turn them off and create Conditional Access policies instead — especially for admins and sensitive apps.</p>
-        <p><strong>Suggested next step:</strong> Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a report-only pilot if you prefer).</p>
+        <p>Security Defaults already includes baseline MFA protection and blocks outdated sign-in methods. Your plan also includes smarter sign-in rules you can customize, but that paid capability remains unused.</p>
+        <p><strong>Suggested next step:</strong> Create equivalent Conditional Access policies for MFA and legacy-authentication blocking in report-only mode. Validate coverage, exclusions, emergency access, and sign-in impact; then perform a controlled cutover from Security Defaults to the validated policies.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> microsoft.graph</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ConditionalAccessBlade">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>id-security-defaults-on</code></p>
+        </details>
       </article>
       
       <article class="finding gap" data-status="gap" data-workload="endpoint">
@@ -596,6 +616,14 @@
         </div>
         <p>You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.</p>
         <p><strong>Suggested next step:</strong> Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> mde.api.machines, graph.subscribedSkus</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://security.microsoft.com/machines">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>mde-onboard-gap</code></p>
+        </details>
       </article>
       
       <article class="finding gap" data-status="gap" data-workload="identity">
@@ -611,6 +639,14 @@
         </div>
         <p>Your plan can periodically confirm who still needs powerful access and clean up old guest accounts. That process does not look set up yet.</p>
         <p><strong>Suggested next step:</strong> Create an Access Review for your Global Administrators and guest users (monthly or quarterly), then review the first round of results.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> microsoft.graph</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>id-access-reviews-unused</code></p>
+        </details>
       </article>
       
       <article class="finding gap" data-status="gap" data-workload="identity">
@@ -626,6 +662,14 @@
         </div>
         <p>Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.</p>
         <p><strong>Suggested next step:</strong> Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> microsoft.graph</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/SignInEventsBlade">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>id-dormant-privileged</code></p>
+        </details>
       </article>
       
       <article class="finding gap" data-status="gap" data-workload="purview">
@@ -641,6 +685,14 @@
         </div>
         <p>You appear to pay for data-leak protection that is not meaningfully enforced yet. Confirm in the Purview portal.</p>
         <p><strong>Suggested next step:</strong> Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Low confidence — verify in portal</p>
+          <p><strong>Data sources:</strong> secureScore.controlScores (proxy)</p>
+          <p><strong>Limitations:</strong> Secure Score proxy — verify DLP enforce mode in Purview portal.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.</p>
+          <p><a href="https://purview.microsoft.com/policiespage">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>pur-dlp-not-enforced</code></p>
+        </details>
       </article>
       
       <article class="finding gap" data-status="gap" data-workload="sentinel">
@@ -656,6 +708,14 @@
         </div>
         <p>Behavior analytics that learn normal patterns for people and devices still looks switched off.</p>
         <p><strong>Suggested next step:</strong> Ask your security admin to turn on behavior analytics (UEBA) in the security workspace and connect the main data sources it needs.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Medium confidence</p>
+          <p><strong>Data sources:</strong> azure.arm.securityInsights</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>sen-ueba-not-enabled</code></p>
+        </details>
       </article>
       
       <article class="finding partial" data-status="partial" data-workload="identity">
@@ -671,6 +731,14 @@
         </div>
         <p>Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.</p>
         <p><strong>Suggested next step:</strong> Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> microsoft.graph</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>id-ca-priv-gaps</code></p>
+        </details>
       </article>
       
       <article class="finding partial" data-status="partial" data-workload="sentinel">
@@ -686,6 +754,14 @@
         </div>
         <p>Some detection alarms are on, but coverage still looks light for a paid security command center.</p>
         <p><strong>Suggested next step:</strong> Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Medium confidence</p>
+          <p><strong>Data sources:</strong> azure.arm.securityInsights</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://learn.microsoft.com/azure/sentinel/detect-threats-built-in">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>sen-analytics-rule-coverage</code></p>
+        </details>
       </article>
       
       <article class="finding partial" data-status="partial" data-workload="defender">
@@ -701,6 +777,14 @@
         </div>
         <p>We could not confirm whether on-site directory attack sensors are installed. If you still run office domain controllers, ask IT to verify.</p>
         <p><strong>Suggested next step:</strong> Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Low confidence — verify in portal</p>
+          <p><strong>Data sources:</strong> secureScore.controlScores (proxy)</p>
+          <p><strong>Limitations:</strong> Secure Score proxy — verify MDI sensors in the Defender portal.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.</p>
+          <p><a href="https://security.microsoft.com/health">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>mdi-sensors-missing</code></p>
+        </details>
       </article>
       
       <article class="finding skipped" data-status="skipped" data-workload="defender">
@@ -716,6 +800,14 @@
         </div>
         <p>We cannot automatically confirm whether extra email protections (Safe Links and Safe Attachments) cover everyone. Ask IT to check Preset security policies in the Microsoft Defender portal, or run Exchange Online PowerShell (Get-ATPProtectionPolicyRule).</p>
         <p><strong>Suggested next step:</strong> Open Preset security policies in the Defender portal and turn on Standard protection for all users, or confirm with Exchange Online PowerShell.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Low confidence — verify in portal</p>
+          <p><strong>Data sources:</strong> secureScore.controlScores (proxy)</p>
+          <p><strong>Limitations:</strong> Email policy config is PowerShell-only; not verified automatically.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.</p>
+          <p><a href="https://security.microsoft.com/presetSecurityPolicies">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>mdo-p2-policies-default</code></p>
+        </details>
       </article>
       
       <article class="finding ok" data-status="ok" data-workload="identity">
@@ -731,25 +823,17 @@
         </div>
         <p>Suspicious sign-ins and risky accounts appear to trigger automatic extra checks or blocks.</p>
         <p><strong>Suggested next step:</strong> Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> microsoft.graph</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>id-idprotect-off</code></p>
+        </details>
       </article>
       
     </section>
-
-    
-    <section>
-      <h2>Recommended first steps</h2>
-      <p class="section-help">A short list you can hand to IT or your Microsoft partner.</p>
-      <ol class="steps">
-        
-        <li>Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</li>
-        
-        <li>Review and disable security defaults, then turn on Conditional Access policies that require MFA for all users and admins (start with a report-only pilot if you prefer).</li>
-        
-        <li>Create an Access Review for your Global Administrators and guest users (monthly or quarterly), then review the first round of results.</li>
-        
-      </ol>
-    </section>
-    
 
     <details class="tech">
       <summary>Technical details (product names, SKUs, check IDs)</summary>
