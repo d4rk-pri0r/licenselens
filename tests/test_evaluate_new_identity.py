@@ -23,6 +23,16 @@ def test_security_defaults_on_is_gap():
     assert result.evidence["security_defaults_enabled"] is True
 
 
+def test_security_defaults_on_records_baseline_protection():
+    result = evaluate_security_defaults_on(
+        _check("id-security-defaults-on"),
+        {"security_defaults_policy": {"id": "p", "isEnabled": True}},
+    )
+    assert result.status == FindingStatus.GAP
+    assert result.evidence["baseline_protections_active"] is True
+    assert result.evidence["conditional_access_customization_unused"] is True
+
+
 def test_security_defaults_off_is_ok():
     result = evaluate_security_defaults_on(
         _check("id-security-defaults-on"),
