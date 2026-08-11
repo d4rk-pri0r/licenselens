@@ -1,21 +1,21 @@
 id: id-security-defaults-on
 title: Security defaults enabled instead of Conditional Access
-customer_title: Switch from basic security defaults to smarter sign-in rules
+customer_title: Move from Security Defaults to customizable sign-in rules
 customer_summary: >
-  Your plan includes advanced sign-in rules (Conditional Access) that can
-  enforce multi-factor authentication for admins, block outdated sign-in
-  methods, and react to risky behavior. Right now those capabilities appear
-  unused — the tenant is still relying on the free baseline "security
-  defaults" that never prompts for MFA in high-value scenarios.
+  Security Defaults is active, so baseline multi-factor authentication and
+  legacy-authentication blocking are in place. Your plan also includes
+  Conditional Access for tailoring these protections, but that paid
+  customization remains unused.
 customer_next_step: >
-  Review and disable security defaults, then turn on Conditional Access
-  policies that require MFA for all users and admins (start with a
-  report-only pilot if you prefer).
+  Create equivalent Conditional Access policies for MFA and legacy-authentication
+  blocking in report-only mode. Validate coverage, exclusions, emergency access,
+  and sign-in impact; then perform a controlled cutover from Security Defaults
+  to the validated policies.
 description: >
-  Security defaults is a free, one-size-fits-all baseline. When the tenant
-  is licensed for Conditional Access (Entra ID P1 or P2) but still has
-  security defaults enabled, the full identity protection stack is not being
-  used.
+  Security Defaults provides baseline MFA protections and blocks legacy
+  authentication. When the tenant is licensed for Conditional Access (Entra
+  ID P1 or P2) but still has Security Defaults enabled, paid policy
+  customization is not being used.
 workload: identity
 required_capabilities:
   - conditional_access
@@ -29,10 +29,11 @@ exposure_class: none
 deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ConditionalAccessBlade
 collector: graph_security_defaults
 remediation: >
-  Disable security defaults in Entra ID → Properties → Manage security
-  defaults. Create Conditional Access policies requiring MFA for all users,
-  blocking legacy authentication, and optionally reacting to sign-in risk.
+  Create equivalent Conditional Access policies for MFA and legacy-authentication
+  blocking in report-only mode, with appropriate emergency-access exclusions.
+  Validate their coverage and sign-in impact. Only then disable Security Defaults
+  and immediately enable the validated policies in a controlled cutover.
 references:
-  - https://learn.microsoft.com/entra/fundamentals/security-defaults
+  - https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults
   - https://learn.microsoft.com/entra/identity/conditional-access/overview
 enabled: true

@@ -564,6 +564,8 @@ def evaluate_security_defaults_on(
 
     evidence_out = {
         "security_defaults_enabled": is_enabled,
+        "baseline_protections_active": is_enabled,
+        "conditional_access_customization_unused": is_enabled,
         "policy_id": policy.get("id") if isinstance(policy, dict) else None,
     }
 
@@ -584,16 +586,15 @@ def evaluate_security_defaults_on(
     return Evaluation(
         status=FindingStatus.GAP,
         summary=(
-            "Security defaults are enabled, but the tenant is licensed for "
-            "Conditional Access. MFA is required only in high-risk scenarios "
-            "and legacy auth is not blocked."
+            "Security defaults are enabled, providing baseline MFA protections "
+            "and blocking legacy authentication. Licensed Conditional Access "
+            "customization remains unused."
         ),
         evidence=evidence_out,
         customer_summary=(
-            "Your plan includes smarter sign-in rules you can customize, but "
-            "the tenant is still relying on the free baseline security "
-            "defaults. Turn them off and create Conditional Access policies "
-            "instead — especially for admins and sensitive apps."
+            "Security Defaults already includes baseline MFA protection and "
+            "blocks outdated sign-in methods. Your plan also includes smarter "
+            "sign-in rules you can customize, but that paid capability remains unused."
         ),
     )
 
