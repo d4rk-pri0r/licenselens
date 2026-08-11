@@ -81,16 +81,16 @@ def _resolve_workspace_resource_id(
 def _print_top_card(result) -> None:
     """Print the executive summary: what you own, what works, what to do first."""
     rollup = result.capability_rollup
-    exposed = (
-        f"\n[red]EXPOSED ({result.exposed_count}):[/red] high-risk gaps — fix first: "
-        f"{', '.join(result.exposed_check_ids) or 'n/a'}"
-        if result.has_exposed
-        else ""
+    exposed_titles = ", ".join(
+        finding.display_customer_title
+        for finding in result.findings if finding.check_id in result.exposed_check_ids
     )
     lines = [
-        f"Protections you own:    {rollup.you_own}",
-        f"Fully working:          {rollup.fully_working}  ({rollup.realized_percent}% realized)",
-        f"Need attention:         {rollup.needs_attention + rollup.partly_set_up}",
+        f"Licensed capabilities detected: {len(result.owned_capabilities)}",
+        f"Prioritized now ({', '.join(result.packs_scanned)}): {rollup.you_own}",
+        f"Fully working (prioritized): {rollup.fully_working}  "
+        f"({rollup.realized_percent}% realized)",
+        f"Need attention (prioritized): {rollup.needs_attention + rollup.partly_set_up}",
     ]
     if result.moves:
         lines.append("")
@@ -98,8 +98,8 @@ def _print_top_card(result) -> None:
         for move in result.moves:
             effort = f" [dim]({move.effort_label.lower()})[/dim]" if move.effort_label else ""
             lines.append(f"  • {move.title}{effort}")
-    if exposed:
-        lines.append(exposed)
+    if result.has_exposed:
+        lines.append(f"\n[red]EXPOSED ({result.exposed_count}):[/red] {exposed_titles}")
     console.print(Panel("\n".join(lines), title="Your security at a glance", border_style="cyan"))
 
 
