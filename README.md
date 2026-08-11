@@ -2,7 +2,7 @@
 
 **The security you already own (and ignore).**
 
-CLI: `licenselens` · Release: **v0.2.x**
+CLI: `licenselens` · Requires Python 3.12+
 
 Security License Lens finds **Microsoft security configuration debt**: high-value capabilities in E5, Entra ID P2, Defender, and related SKUs that stay at default or unused. It starts from **owned entitlements**, maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
@@ -27,7 +27,7 @@ other missing options. Flags and `AZURE_*` env vars always win when set.
 Non-interactive environments default to dry-run (or exit with a clear error on
 `--live` without credentials).
 
-Default packs are **identity + endpoint**. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
+Default priority packs are **identity + endpoint**. They shape the headline rollup and top actions; enabled checks still evaluate unless `--workload` filters them. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
 
 ### Live / MSP
 
