@@ -36,13 +36,26 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
     rollup = result.capability_rollup
     lines.append(f"**{rollup.realized_sentence}.**")
     lines.append("")
+    lines.append(f"- **Licensed capabilities detected:** {len(result.owned_capabilities)}")
     lines.append(
-        f"- **Protections you own:** {rollup.you_own} "
-        f"(fully working: {rollup.fully_working}, {rollup.realized_percent}% realized)"
+        f"- **Prioritized capabilities:** {rollup.you_own} "
+        f"(priority packs: {', '.join(result.packs_scanned) or 'none'})"
     )
-    lines.append(f"- **Need attention:** {rollup.needs_attention + rollup.partly_set_up}")
+    lines.append(
+        f"- **Fully working:** {rollup.fully_working} of {rollup.you_own} prioritized capabilities "
+        f"({rollup.realized_percent}% realized)"
+    )
+    lines.append(
+        f"- **Need attention:** {rollup.needs_attention + rollup.partly_set_up} "
+        f"of {rollup.you_own} prioritized capabilities"
+    )
     if result.has_exposed:
-        lines.append(f"- **Exposed (fix first):** {', '.join(result.exposed_check_ids) or 'n/a'}")
+        exposed_titles = [
+            finding.display_customer_title
+            for finding in result.findings
+            if finding.check_id in result.exposed_check_ids
+        ]
+        lines.append(f"- **High-risk priority (fix first):** {', '.join(exposed_titles)}")
     lines.append("")
     if result.moves:
         lines.extend(["### Top things to do first", ""])
@@ -74,6 +87,14 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
                 lines.append(f"- **Why it matters:** {cap.why_it_matters}")
             if cap.if_unused:
                 lines.append(f"- **If unused:** {cap.if_unused}")
+            lines.append(
+                "- **Included through license SKU(s):** "
+                f"{', '.join(cap.matched_skus) or 'Not reported'}"
+            )
+            lines.append(
+                "- **Matching service plan(s):** "
+                f"{', '.join(cap.matched_service_plans) or 'No matching service plan reported'}"
+            )
             lines.append("")
     else:
         lines.append("No licensed capabilities were resolved from entitlements.")
@@ -89,13 +110,12 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
             lines.append(f"- **In plain English:** {f.customer_summary}")
         if f.customer_next_step:
             lines.append(f"- **Suggested next step:** {f.customer_next_step}")
+        lines.append(f"- **Confidence:** {f.confidence_label or f.confidence.value}")
+        lines.append(f"- **Data sources:** {', '.join(f.data_sources) or 'Not reported'}")
+        lines.append(f"- **Limitations:** {'; '.join(f.limitations) or 'None reported'}")
+        if f.deep_link:
+            lines.append(f"- **Admin page:** [Open Microsoft admin page]({f.deep_link})")
         lines.append(f"- **Technical id:** `{f.check_id}`")
-        lines.append("")
-
-    if result.recommended_next_steps:
-        lines.extend(["## Recommended first steps", ""])
-        for i, step in enumerate(result.recommended_next_steps, start=1):
-            lines.append(f"{i}. {step}")
         lines.append("")
 
     lines.extend(
