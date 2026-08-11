@@ -83,7 +83,8 @@ def _print_top_card(result) -> None:
     rollup = result.capability_rollup
     exposed_titles = ", ".join(
         finding.display_customer_title
-        for finding in result.findings if finding.check_id in result.exposed_check_ids
+        for finding in result.findings
+        if finding.check_id in result.exposed_check_ids
     )
     lines = [
         f"Licensed capabilities detected: {len(result.owned_capabilities)}",
