@@ -37,6 +37,10 @@ from licenselens.collectors.secure_score import (
     collect_latest_secure_score,
     extract_control_scores,
 )
+from licenselens.collectors.security_defaults import (
+    DEMO_SECURITY_DEFAULTS,
+    collect_security_defaults_policy,
+)
 from licenselens.collectors.sentinel import (
     DEMO_SENTINEL_RULES,
     DEMO_SENTINEL_UEBA,
@@ -47,10 +51,6 @@ from licenselens.collectors.signins import (
     collect_recent_success_signin_user_ids,
 )
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
-from licenselens.collectors.security_defaults import (
-    DEMO_SECURITY_DEFAULTS,
-    collect_security_defaults_policy,
-)
 from licenselens.engine.evaluate import EVALUATORS, Evaluation
 from licenselens.engine.loader import load_checks
 from licenselens.engine.quality import apply_quality_policy, scan_level_limitations
@@ -613,7 +613,7 @@ def run_scan(
 
     owned = resolve_owned_capabilities(capabilities, skus)
     owned_set = set(owned)
-    summaries = capability_summaries_for(capabilities, owned)
+    summaries = capability_summaries_for(capabilities, owned, skus)
 
     checks = [c for c in load_checks() if c.enabled]
     if workloads:
