@@ -1,6 +1,6 @@
-# Lab seed checklist (demo / Contoso-style tenant)
+# Product validation tenant seed checklist
 
-Seed these **intentionally weak** settings so dry-run and live demos light up the report card. Prefer under-fire to over-fire on EXPOSED.
+Seed these **intentionally weak** settings so dry-run fixtures and live product validation exercise customer-facing findings. Prefer under-fire to over-fire on EXPOSED.
 
 ## Identity (default pack)
 
@@ -18,7 +18,7 @@ Seed these **intentionally weak** settings so dry-run and live demos light up th
 ## Email (off default packs)
 
 - [ ] **Weak MDO** — preset Standard/Strict off or pilot-only; Safe Links/Attachments not org-wide  
-  (Not verified by Graph; portal/PowerShell only. Default demo does not depend on this firing.)
+  (Not verified by Graph; portal/PowerShell only. The default dry-run does not depend on this firing.)
 
 ## Starter packs (optional contrast)
 
@@ -32,8 +32,8 @@ Seed these **intentionally weak** settings so dry-run and live demos light up th
 - [ ] One healthy CA policy that correctly protects admins with MFA (so not everything is red)
 - [ ] Friend-tenant pass: no EXPOSED on a cleanly configured control tenant
 
-## Demo checklist
+## Product validation
 
 - [ ] `licenselens demo` → identity + endpoint moves, no email top-card move
 - [ ] `licenselens quickstart` device-code path works end-to-end
-- [ ] Top card renders cleanly for screenshots
+- [ ] HTML report remains readable at desktop and mobile widths; finding filters update visible counts
