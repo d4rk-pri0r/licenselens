@@ -78,9 +78,13 @@ preview HTML output without a tenant.
 Run a scan, apply a fix, re-run, then diff the two JSON artifacts:
 
 ```bash
-licenselens scan -o reports  # baseline
-licenselens scan -o reports  # after changes (new timestamped report)
-licenselens diff reports/old.json reports/new.json -o reports/diff.md
+licenselens scan -o reports/before
+# Apply a fix, then scan into a different directory.
+licenselens scan -o reports/after
+licenselens diff \
+  reports/before/security-license-lens-report.json \
+  reports/after/security-license-lens-report.json \
+  -o reports/diff.md
 ```
 
 The diff groups checks into **new gaps**, **resolved**, **improved**, **worsened**
