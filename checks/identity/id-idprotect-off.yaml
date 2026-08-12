@@ -1,6 +1,6 @@
 id: id-idprotect-off
 title: Identity Protection policies off or report-only
-customer_title: Suspicious sign-ins may not be blocked automatically
+customer_title: Risk-based sign-in protection
 customer_summary: >
   Your plan can flag odd sign-in behavior (like a login from an unusual country
   right after one at the office). If those protections are off or "report only,"

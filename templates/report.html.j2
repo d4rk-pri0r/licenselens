@@ -214,6 +214,15 @@
       font-weight: 600;
       list-style: none;
     }
+    details.tech > summary::before {
+      content: "▸ ";
+      display: inline-block;
+      margin-right: 0.25rem;
+      transition: transform 0.15s ease;
+    }
+    details.tech[open] > summary::before {
+      content: "▾ ";
+    }
     details.tech > summary::-webkit-details-marker { display: none; }
     details.tech[open] > summary { margin-bottom: 0.75rem; color: var(--text); }
     footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--muted); font-size: 0.85rem; }
@@ -330,7 +339,7 @@
     <section>
       <h2>What you already pay for</h2>
       <p class="section-help">
-        These are protections included in the licenses we detected — described by what they do for your business, not by SKU codes.
+        These are protections included in the licenses we detected — described by what they do for your business, with licensing details shown beneath each card.
       </p>
       {% if result.capability_summaries %}
       <div class="cards">
@@ -411,7 +420,7 @@
           <summary>Evidence and Microsoft admin page</summary>
           <p><strong>Confidence:</strong> {{ f.confidence_label or f.confidence.value }}</p>
           <p><strong>Data sources:</strong> {{ f.data_sources | join(', ') or 'Not reported' }}</p>
-          <p><strong>Limitations:</strong> {{ f.limitations | join('; ') or 'None reported' }}</p>
+          <p><strong>Limitations:</strong> {% if f.limitations %}{% for limit in f.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
           {% if f.deep_link %}<p><a href="{{ f.deep_link }}">Open Microsoft admin page</a></p>{% endif %}
           <p><strong>Technical ID:</strong> <code>{{ f.check_id }}</code></p>
         </details>
