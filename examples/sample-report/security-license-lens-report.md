@@ -2,7 +2,7 @@
 
 A plain-language view of security capabilities you already pay for — and whether they are set up to help your organization.
 
-- **Version:** 0.3.0.dev1
+- **Version:** 0.3.0
 - **Scanned at:** 2026-08-12T14:20:47.915390+00:00
 - **Mode:** dry_run / dry_run
 - **Organization:** Contoso Demo (dry-run)
