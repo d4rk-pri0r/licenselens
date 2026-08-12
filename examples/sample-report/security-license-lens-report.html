@@ -214,6 +214,15 @@
       font-weight: 600;
       list-style: none;
     }
+    details.tech > summary::before {
+      content: "▸ ";
+      display: inline-block;
+      margin-right: 0.25rem;
+      transition: transform 0.15s ease;
+    }
+    details.tech[open] > summary::before {
+      content: "▾ ";
+    }
     details.tech > summary::-webkit-details-marker { display: none; }
     details.tech[open] > summary { margin-bottom: 0.75rem; color: var(--text); }
     footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--muted); font-size: 0.85rem; }
@@ -259,7 +268,7 @@
     </div>
     <div class="meta">
       <div>Version <code>0.3.0.dev1</code></div>
-      <div>Scanned <code>August 11, 2026 at 06:09 PM UTC</code></div>
+      <div>Scanned <code>August 12, 2026 at 02:20 PM UTC</code></div>
       <div>Mode <code>dry_run</code></div>
       <div>Organization <code>Contoso Demo (dry-run)</code></div>
     </div>
@@ -272,9 +281,6 @@
       <h2>Your security at a glance</h2>
       <p class="section-help">
         3 of 4 still not fully working.
-        
-        <strong>High-risk priority (fix first):</strong>
-        Powerful accounts may sign in without strong extra checks
         
       </p>
       <div class="tiles" style="margin-top: 0;">
@@ -361,7 +367,7 @@
     <section>
       <h2>What you already pay for</h2>
       <p class="section-help">
-        These are protections included in the licenses we detected — described by what they do for your business, not by SKU codes.
+        These are protections included in the licenses we detected — described by what they do for your business, with licensing details shown beneath each card.
       </p>
       
       <div class="cards">
@@ -493,7 +499,7 @@
         <li style="margin-bottom: 0.9rem;">
           <strong>Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts</strong>
           <span class="badge effort" style="margin-left: 0.5rem;">~a few hours</span>
-          <div style="color: var(--muted); margin-top: 0.25rem;">Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.</div>
+          <div style="color: var(--muted); margin-top: 0.25rem;">Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).</div>
           <div style="margin-top: 0.25rem;"><strong>Next step:</strong> Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</div>
         </li>
         
@@ -689,7 +695,7 @@
           <summary>Evidence and Microsoft admin page</summary>
           <p><strong>Confidence:</strong> Low confidence — verify in portal</p>
           <p><strong>Data sources:</strong> secureScore.controlScores (proxy)</p>
-          <p><strong>Limitations:</strong> Secure Score proxy — verify DLP enforce mode in Purview portal.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.</p>
+          <p><strong>Limitations:</strong> Secure Score proxy — verify DLP enforce mode in Purview portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive</p>
           <p><a href="https://purview.microsoft.com/policiespage">Open Microsoft admin page</a></p>
           <p><strong>Technical ID:</strong> <code>pur-dlp-not-enforced</code></p>
         </details>
@@ -729,7 +735,7 @@
           <span class="meta-item">&#x1F465; all users</span>
           <span class="meta-item">Identity</span>
         </div>
-        <p>Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.</p>
+        <p>Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).</p>
         <p><strong>Suggested next step:</strong> Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.</p>
         <details class="tech">
           <summary>Evidence and Microsoft admin page</summary>
@@ -781,7 +787,7 @@
           <summary>Evidence and Microsoft admin page</summary>
           <p><strong>Confidence:</strong> Low confidence — verify in portal</p>
           <p><strong>Data sources:</strong> secureScore.controlScores (proxy)</p>
-          <p><strong>Limitations:</strong> Secure Score proxy — verify MDI sensors in the Defender portal.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.</p>
+          <p><strong>Limitations:</strong> Secure Score proxy — verify MDI sensors in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive</p>
           <p><a href="https://security.microsoft.com/health">Open Microsoft admin page</a></p>
           <p><strong>Technical ID:</strong> <code>mdi-sensors-missing</code></p>
         </details>
@@ -803,8 +809,8 @@
         <details class="tech">
           <summary>Evidence and Microsoft admin page</summary>
           <p><strong>Confidence:</strong> Low confidence — verify in portal</p>
-          <p><strong>Data sources:</strong> secureScore.controlScores (proxy)</p>
-          <p><strong>Limitations:</strong> Email policy config is PowerShell-only; not verified automatically.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.</p>
+          <p><strong>Data sources:</strong> Not reported</p>
+          <p><strong>Limitations:</strong> Email policy config is PowerShell-only; not verified automatically</p>
           <p><a href="https://security.microsoft.com/presetSecurityPolicies">Open Microsoft admin page</a></p>
           <p><strong>Technical ID:</strong> <code>mdo-p2-policies-default</code></p>
         </details>
@@ -813,7 +819,7 @@
       <article class="finding ok" data-status="ok" data-workload="identity">
         <div class="finding-head">
           <span class="badge ok">Looking good</span>
-          <h3>Suspicious sign-ins may not be blocked automatically</h3>
+          <h3>Risk-based sign-in protection</h3>
         </div>
         <div class="finding-meta">
           <span class="meta-item">&#x25CF; High severity</span>
