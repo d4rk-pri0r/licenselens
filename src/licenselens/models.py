@@ -276,8 +276,8 @@ class CapabilitySummary(BaseModel):
     id: str
     name: str
     plain_name: str
-    matched_skus: list[str]
-    matched_service_plans: list[str]
+    matched_skus: list[str] = Field(default_factory=list)
+    matched_service_plans: list[str] = Field(default_factory=list)
     outcome: str = ""
     why_it_matters: str = ""
     if_unused: str = ""
