@@ -8,6 +8,7 @@ from tests.fake_clients import FakeGraphClient, error, ok, paginated
 # SKUs
 # ---------------------------------------------------------------------------
 
+
 def test_collect_skus_live_empty():
     from licenselens.collectors.skus import collect_subscribed_skus_live
 
@@ -70,6 +71,7 @@ def test_collect_skus_graph_error():
 # Conditional Access
 # ---------------------------------------------------------------------------
 
+
 def test_collect_ca_policies_empty():
     from licenselens.collectors.conditional_access import collect_ca_policies
 
@@ -99,9 +101,7 @@ def test_collect_ca_policies_paginated():
         }
     ]
     fake = FakeGraphClient()
-    fake.register_list(
-        "/identity/conditionalAccess/policies", paginated(page1, page2)
-    )
+    fake.register_list("/identity/conditionalAccess/policies", paginated(page1, page2))
     result = collect_ca_policies(fake)
     assert len(result) == 2
     assert result[0]["id"] == "p1"
@@ -111,6 +111,7 @@ def test_collect_ca_policies_paginated():
 # ---------------------------------------------------------------------------
 # Privileged roles
 # ---------------------------------------------------------------------------
+
 
 def test_collect_role_assignments():
     from licenselens.collectors.privileged_roles import collect_role_assignments
@@ -153,6 +154,7 @@ def test_collect_role_eligibility_empty():
 # ---------------------------------------------------------------------------
 # Secure Score
 # ---------------------------------------------------------------------------
+
 
 def test_collect_latest_secure_score():
     from licenselens.collectors.secure_score import collect_latest_secure_score
@@ -263,6 +265,7 @@ def test_secure_score_403_is_handled():
 # Sign-ins
 # ---------------------------------------------------------------------------
 
+
 def test_collect_recent_signins_empty():
     from licenselens.collectors.signins import (
         collect_recent_success_signin_user_ids,
@@ -344,6 +347,7 @@ def test_collect_directory_objects_chunks():
 # ---------------------------------------------------------------------------
 # Organization context
 # ---------------------------------------------------------------------------
+
 
 def test_fetch_organization_context():
     from licenselens.graph import fetch_organization_context

@@ -185,9 +185,7 @@ def test_live_scan_partial_collector_failures(monkeypatch):
         ),
     )
     # CA fails
-    fake.register_list(
-        "/identity/conditionalAccess/policies", error(403)
-    )
+    fake.register_list("/identity/conditionalAccess/policies", error(403))
     # Roles OK
     fake.register_list(
         "/roleManagement/directory/roleAssignments",
@@ -234,18 +232,12 @@ def test_live_scan_empty_skus_minimal_findings(monkeypatch):
     fake.register_list("/subscribedSkus", ok({"value": []}))
     fake.register_list("/identity/conditionalAccess/policies", ok({"value": []}))
     fake.register_list("/roleManagement/directory/roleAssignments", ok({"value": []}))
-    fake.register_list(
-        "/roleManagement/directory/roleEligibilitySchedules", ok({"value": []})
-    )
+    fake.register_list("/roleManagement/directory/roleEligibilitySchedules", ok({"value": []}))
     fake.register_list("/auditLogs/signIns", ok({"value": []}))
     fake.register_get(
         "/security/secureScores",
         ok(
-            {
-                "value": [
-                    {"id": "ss-1", "currentScore": 0.0, "maxScore": 100.0, "controlScores": []}
-                ]
-            }
+            {"value": [{"id": "ss-1", "currentScore": 0.0, "maxScore": 100.0, "controlScores": []}]}
         ),
     )
 

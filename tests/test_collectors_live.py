@@ -22,9 +22,7 @@ def test_mde_summary_odata_count(monkeypatch):
         "/machines",
         ok({"@odata.count": 42, "value": [{"id": "m1"}]}),
     )
-    monkeypatch.setattr(
-        "licenselens.collectors.mde.MdeClient", lambda _auth, **kw: fake
-    )
+    monkeypatch.setattr("licenselens.collectors.mde.MdeClient", lambda _auth, **kw: fake)
     from licenselens.collectors.mde import collect_mde_machine_summary
 
     result = collect_mde_machine_summary(_dry_auth())
@@ -50,9 +48,7 @@ def test_mde_summary_fallback_paged(monkeypatch):
         return {"value": []}
 
     fake.register_get("/machines", handler)
-    monkeypatch.setattr(
-        "licenselens.collectors.mde.MdeClient", lambda _auth, **kw: fake
-    )
+    monkeypatch.setattr("licenselens.collectors.mde.MdeClient", lambda _auth, **kw: fake)
     from licenselens.collectors.mde import collect_mde_machine_summary
 
     result = collect_mde_machine_summary(_dry_auth())
@@ -108,9 +104,7 @@ def test_sentinel_alert_rules_empty(monkeypatch):
         "subscriptions/",
         ok({"value": []}),
     )
-    monkeypatch.setattr(
-        "licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake
-    )
+    monkeypatch.setattr("licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake)
     from licenselens.collectors.sentinel import collect_sentinel_alert_rules
 
     result = collect_sentinel_alert_rules(
@@ -150,9 +144,7 @@ def test_sentinel_alert_rules(monkeypatch):
             }
         ),
     )
-    monkeypatch.setattr(
-        "licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake
-    )
+    monkeypatch.setattr("licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake)
     from licenselens.collectors.sentinel import collect_sentinel_alert_rules
 
     result = collect_sentinel_alert_rules(
@@ -180,9 +172,7 @@ def test_sentinel_settings_ueba(monkeypatch):
             }
         ),
     )
-    monkeypatch.setattr(
-        "licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake
-    )
+    monkeypatch.setattr("licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake)
     from licenselens.collectors.sentinel import collect_sentinel_settings
 
     result = collect_sentinel_settings(
@@ -224,9 +214,7 @@ def test_sentinel_bundle(monkeypatch):
         "subscriptions/",
         ok({"value": [{"kind": "Scheduled", "properties": {"enabled": True, "tactics": []}}]}),
     )
-    monkeypatch.setattr(
-        "licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake
-    )
+    monkeypatch.setattr("licenselens.collectors.sentinel.ArmClient", lambda _auth, **kw: fake)
     from licenselens.collectors.sentinel import collect_sentinel_bundle
 
     bundle = collect_sentinel_bundle(

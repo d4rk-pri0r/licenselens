@@ -30,9 +30,7 @@ class Evaluation:
 Evaluator = Callable[[CheckDefinition, dict[str, Any]], Evaluation]
 
 
-def _legacy_auth_exposed(
-    *, enforced: bool, report_only: bool, sd_enabled: bool = False
-) -> bool:
+def _legacy_auth_exposed(*, enforced: bool, report_only: bool, sd_enabled: bool = False) -> bool:
     """EXPOSED when legacy auth is broadly allowed with no block and no monitoring.
 
     Security Defaults, when enabled, provides baseline legacy-auth blocking
