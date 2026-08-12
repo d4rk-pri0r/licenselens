@@ -131,7 +131,8 @@ def run_batch(
             )
             index_rows.append(
                 (
-                    (0 if exposed else 1, -exposed, realized, slug),  # exposed first, most exposed, then low realized
+                    # exposed first, most exposed, then low realized
+                    (0 if exposed else 1, -exposed, realized, slug),
                     f"| {slug} | {gaps} | {exposed} | {realized}% | {worst_move} | `{out}` |",
                 )
             )
