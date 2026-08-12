@@ -21,7 +21,7 @@ from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
 from licenselens.engine.runner import run_scan
 from licenselens.errors import AuthError, GraphError, LicenseLensError
-from licenselens.models import Workload
+from licenselens.models import CheckPack, Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 
 app = typer.Typer(
@@ -340,6 +340,16 @@ def scan_cmd(
         except ValueError as exc:
             console.print(f"[red]Invalid workload:[/red] {exc}")
             raise typer.Exit(code=2) from exc
+
+    if packs:
+        valid_packs = {p.value for p in CheckPack}
+        for pack in packs:
+            if pack.lower() not in valid_packs:
+                console.print(
+                    f"[red]Invalid pack:[/red] '{pack}'. "
+                    f"Valid packs: {', '.join(sorted(valid_packs))}"
+                )
+                raise typer.Exit(code=2)
 
     workspace = _resolve_workspace_resource_id(
         workspace_resource_id, subscription_id, resource_group, workspace_name

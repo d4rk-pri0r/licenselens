@@ -74,6 +74,13 @@ def capability_summaries_for(
 ) -> list[CapabilitySummary]:
     """Build plain-language cards for capabilities the tenant owns."""
     by_id = {c.id: c for c in capabilities}
+
+    plan_to_sku: dict[str, str] = {}
+    for sku in skus:
+        for plan in sku.service_plans:
+            if _service_plan_is_active(plan):
+                plan_to_sku[plan.service_plan_name.upper()] = sku.sku_part_number
+
     summaries: list[CapabilitySummary] = []
     for cap_id in owned_ids:
         cap = by_id.get(cap_id)
@@ -81,27 +88,34 @@ def capability_summaries_for(
             continue
         service_plan_names = {name.upper() for name in cap.service_plan_names}
         sku_part_numbers = {part_number.upper() for part_number in cap.sku_part_numbers}
+
+        matched_service_plans = sorted(
+            {
+                plan.service_plan_name
+                for sku in skus
+                for plan in sku.service_plans
+                if _service_plan_is_active(plan)
+                and plan.service_plan_name.upper() in service_plan_names
+            }
+        )
+
+        matched_skus_set = {
+            sku.sku_part_number
+            for sku in skus
+            if sku.sku_part_number.upper() in sku_part_numbers
+        }
+        for plan_name in matched_service_plans:
+            parent_sku = plan_to_sku.get(plan_name.upper())
+            if parent_sku:
+                matched_skus_set.add(parent_sku)
+
         summaries.append(
             CapabilitySummary(
                 id=cap.id,
                 name=cap.name,
                 plain_name=cap.display_plain_name,
-                matched_skus=sorted(
-                    {
-                        sku.sku_part_number
-                        for sku in skus
-                        if sku.sku_part_number.upper() in sku_part_numbers
-                    }
-                ),
-                matched_service_plans=sorted(
-                    {
-                        plan.service_plan_name
-                        for sku in skus
-                        for plan in sku.service_plans
-                        if _service_plan_is_active(plan)
-                        and plan.service_plan_name.upper() in service_plan_names
-                    }
-                ),
+                matched_skus=sorted(matched_skus_set),
+                matched_service_plans=matched_service_plans,
                 outcome=cap.outcome,
                 why_it_matters=cap.why_it_matters,
                 if_unused=cap.if_unused,
