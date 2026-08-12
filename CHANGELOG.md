@@ -34,6 +34,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Batch defaults** — `tenants.yaml` top-level `defaults:` merged into each
   tenant; optional `packs` and `allow_email_proxy`
 - **HTML TAGLINE** — report now uses the product tagline in its header and footer
+- **Entitlement provenance** — every detected SKU traces back to its parent
+  SKU, so reports explain which entitlement licensed each capability; CLI
+  pack selection is validated against the catalog
+- **Doctor permission check** — required Graph permission tuples are synced
+  to collector definitions, and doctor reports any missing
+  `graphPermissions` per collector
+- **Tenant provisioning guide** — step-by-step docs for app registration,
+  permissions, and seeding a tenant for a first live assessment
+- **Credential gate** — `scripts/check_creds.py` gives a three-state verdict
+  for live validation: `CREDENTIALS_OK`, `BLOCKED` (missing `AZURE_*`
+  variables), or `CONNECTIVITY_FAILED`, never printing the client secret
 
 ### Changed
 - **Default packs** are `identity` + `endpoint` (email off by default)
@@ -44,7 +55,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   portal/PowerShell one-line fix.
 - **Live SKIPPED warnings** now separate "cannot verify via Graph" (email
   policy config) from genuinely unimplemented evaluators
+- **Reports are evidence-led** — every finding ties observed evidence to the
+  expected control and the capability it maps to, with actionable next steps
+- **CLI counts are truthful** — license priority figures reflect what was
+  actually detected, exposure rendering is consistent, and disclosure
+  markers flag degraded proxy paths
+- **Security Defaults guidance corrected** — guidance now distinguishes
+  tenants where Security Defaults is the right baseline from tenants licensed
+  for Conditional Access / Identity Protection
+- **Explicit proxy opt-outs respected** — quality policy and ranked-move
+  output honor `--allow-email-proxy` opt-outs and never present a degraded
+  path as fully working
 - **CI** now enforces `ruff format --check` and a 65% line coverage floor
+
+### Fixed
+- **Error handling hardened** — Security Defaults, Conditional Access, and
+  Access Reviews evaluators degrade to a clear per-check status instead of
+  crashing the scan on unexpected API responses
+- **Lint debt** — full Ruff lint and format cleanup across `src` and `tests`
+- **Reproducible installs** — `uv.lock` is now tracked in the repository
+- **Recurring scan instructions** — docs no longer misroute readers setting
+  up repeat assessments
+- **JSON compatibility** — `CapabilitySummary` keeps the legacy JSON shape
+  for existing consumers
 
 ### Notes
 - `diff` rank ordering mirrors engine finding priority (gap < partial <
@@ -127,4 +160,5 @@ First production-oriented release for **identity-first** Microsoft tenant assess
 
 - Initial scaffold: catalog, checks YAML, dry-run engine, HTML report, plain-language layer
 
+[0.3.0]: https://github.com/d4rk-pri0r/licenselens/releases/tag/v0.3.0
 [0.1.0]: https://github.com/d4rk-pri0r/licenselens/releases/tag/v0.1.0
