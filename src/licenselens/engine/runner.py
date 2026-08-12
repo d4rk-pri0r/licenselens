@@ -493,6 +493,20 @@ def _evaluate_check(
             return _error_finding(
                 check, owned, str(evidence["ca_policies_error"]), strict_proxy=strict_proxy
             )
+        if key == "security_defaults_policy" and evidence.get("security_defaults_policy_error"):
+            return _error_finding(
+                check,
+                owned,
+                str(evidence["security_defaults_policy_error"]),
+                strict_proxy=strict_proxy,
+            )
+        if key == "access_review_definitions" and evidence.get("access_review_definitions_error"):
+            return _error_finding(
+                check,
+                owned,
+                str(evidence["access_review_definitions_error"]),
+                strict_proxy=strict_proxy,
+            )
         if key == "role_assignments" and evidence.get("role_assignments_error"):
             return _error_finding(
                 check,

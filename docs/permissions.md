@@ -13,6 +13,7 @@ Security License Lens is designed for **read-only** access.
 | `AuditLog.Read.All` | Sign-in logs (dormant privileged) |
 | `User.Read.All` | Optional user detail |
 | `SecurityEvents.Read.All` | Secure Score (MDO / MDI / DLP proxy signals) |
+| `AccessReview.Read.All` | Access review definitions |
 
 Grant **application** permissions and **admin consent**.
 

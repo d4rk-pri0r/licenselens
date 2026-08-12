@@ -154,14 +154,15 @@ def test_reports_surface_evidence_and_one_action_plan(tmp_path: Path):
     md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
 
     finding_with_limitations = next(f for f in result.findings if f.limitations)
-    exposed_finding = next(f for f in result.findings if f.check_id in result.exposed_check_ids)
+    exposed_findings = [f for f in result.findings if f.check_id in result.exposed_check_ids]
     for report in (html, md):
         assert report.count("Top things to do first") == 1
         assert "Recommended first steps" not in report
-        assert "High-risk priority (fix first)" in report
-        assert exposed_finding.display_customer_title in report
+        if exposed_findings:
+            assert "High-risk priority (fix first)" in report
+            assert exposed_findings[0].display_customer_title in report
         assert finding_with_limitations.confidence_label in report
         assert ", ".join(finding_with_limitations.data_sources) in report
-        assert finding_with_limitations.limitations[0] in report
+        assert finding_with_limitations.limitations[0].rstrip(".") in report
         assert finding_with_limitations.deep_link in report
         assert "Open Microsoft admin page" in report

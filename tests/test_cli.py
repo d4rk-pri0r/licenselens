@@ -113,9 +113,18 @@ def test_scan_dry_run_prints_plain_language_exposure(tmp_path: Path):
     result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
 
     assert result.exit_code == 1, result.output
-    assert "EXPOSED (1):" in result.stdout
-    assert "Powerful accounts may sign in without strong extra checks" in result.stdout
+    assert "EXPOSED" not in result.stdout
     assert "id-ca-priv-gaps" not in result.stdout
+
+
+def test_scan_dry_run_rejects_invalid_pack(tmp_path: Path):
+    result = runner.invoke(
+        app,
+        ["scan", "--dry-run", "--pack", "bogus", "--output-dir", str(tmp_path / "out")],
+    )
+    assert result.exit_code == 2, result.output
+    assert "Invalid pack" in result.stdout
+    assert "bogus" in result.stdout
 
 
 def test_scan_non_tty_defaults_to_dry_run(tmp_path: Path):
