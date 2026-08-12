@@ -85,3 +85,31 @@ def test_capability_summaries_include_entitlement_provenance():
         "ENABLED_PLAN",
         "SUCCESS_PLAN",
     ]
+
+
+def test_capability_summaries_include_parent_sku_when_owned_via_service_plan():
+    """When a capability is owned through a matching service plan but the parent
+    SKU is not in the capability's sku_part_numbers list, matched_skus must still
+    include the parent SKU (no "Not reported" gap)."""
+    capabilities = [
+        Capability(
+            id="suite-owned",
+            name="Suite Owned",
+            service_plan_names=["AAD_PREMIUM_P2"],
+            sku_part_numbers=[],
+        )
+    ]
+    skus = [
+        SubscribedSku(
+            sku_part_number="SPE_E5",
+            service_plans=[
+                ServicePlan(service_plan_name="AAD_PREMIUM_P2", provisioning_status="Success"),
+            ],
+        )
+    ]
+    owned = resolve_owned_capabilities(capabilities, skus)
+    summaries = capability_summaries_for(capabilities, owned, skus)
+
+    assert len(summaries) == 1
+    assert summaries[0].matched_service_plans == ["AAD_PREMIUM_P2"]
+    assert summaries[0].matched_skus == ["SPE_E5"]
