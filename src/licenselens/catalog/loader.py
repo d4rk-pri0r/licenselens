@@ -100,9 +100,7 @@ def capability_summaries_for(
         )
 
         matched_skus_set = {
-            sku.sku_part_number
-            for sku in skus
-            if sku.sku_part_number.upper() in sku_part_numbers
+            sku.sku_part_number for sku in skus if sku.sku_part_number.upper() in sku_part_numbers
         }
         for plan_name in matched_service_plans:
             parent_sku = plan_to_sku.get(plan_name.upper())

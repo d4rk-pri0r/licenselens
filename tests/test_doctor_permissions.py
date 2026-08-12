@@ -30,15 +30,11 @@ def _base_fake() -> FakeGraphClient:
     """Routes every live probe run_doctor performs; only servicePrincipal
     routes are left for each test to register."""
     fake = FakeGraphClient()
-    fake.register_list(
-        "/organization", ok({"value": [{"id": "t1", "displayName": "Contoso"}]})
-    )
+    fake.register_list("/organization", ok({"value": [{"id": "t1", "displayName": "Contoso"}]}))
     fake.register_list("/subscribedSkus", ok({"value": []}))
     fake.register_list("/identity/conditionalAccess/policies", ok({"value": []}))
     fake.register_list("/roleManagement/directory/roleAssignments", ok({"value": []}))
-    fake.register_get(
-        "/security/secureScores", ok({"value": [{"id": "s1", "controlScores": []}]})
-    )
+    fake.register_get("/security/secureScores", ok({"value": [{"id": "s1", "controlScores": []}]}))
     return fake
 
 
@@ -52,9 +48,7 @@ def _granted(granted_permissions: list[str]) -> FakeGraphClient:
         ok(
             {
                 "id": "graph-sp",
-                "appRoles": [
-                    {"id": f"graph-role-{p}", "value": p} for p in granted_permissions
-                ],
+                "appRoles": [{"id": f"graph-role-{p}", "value": p} for p in granted_permissions],
             }
         ),
     )

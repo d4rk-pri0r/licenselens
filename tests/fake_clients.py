@@ -103,22 +103,16 @@ class FakeGraphClient:
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
         handler = self._find_route(self._get_routes, path)
         if handler is None:
-            raise GraphError(
-                f"FakeGraphClient: no GET route for {path}", status_code=500
-            )
+            raise GraphError(f"FakeGraphClient: no GET route for {path}", status_code=500)
         result = handler(path, params)
         if not isinstance(result, dict):
             raise GraphError("Fake GET handler must return a dict", status_code=500)
         return result
 
-    def get_list(
-        self, path: str, *, max_pages: int = 50
-    ) -> list[dict[str, Any]]:
+    def get_list(self, path: str, *, max_pages: int = 50) -> list[dict[str, Any]]:
         handler = self._find_route(self._list_routes, path)
         if handler is None:
-            raise GraphError(
-                f"FakeGraphClient: no LIST route for {path}", status_code=500
-            )
+            raise GraphError(f"FakeGraphClient: no LIST route for {path}", status_code=500)
         items: list[dict[str, Any]] = []
         next_path: str | None = path
         page_num = 0
@@ -145,9 +139,7 @@ class FakeGraphClient:
     ) -> dict[str, Any]:
         handler = self._find_route(self._post_routes, path)
         if handler is None:
-            raise GraphError(
-                f"FakeGraphClient: no POST route for {path}", status_code=500
-            )
+            raise GraphError(f"FakeGraphClient: no POST route for {path}", status_code=500)
         return handler(path, json_body)
 
     def request(
@@ -162,9 +154,7 @@ class FakeGraphClient:
 
     # -- helpers --------------------------------------------------------------
 
-    def _find_route(
-        self, routes: dict[str, PathHandler], path: str
-    ) -> PathHandler | None:
+    def _find_route(self, routes: dict[str, PathHandler], path: str) -> PathHandler | None:
         for prefix in sorted(routes, key=len, reverse=True):
             if path.startswith(prefix):
                 return routes[prefix]
@@ -198,9 +188,7 @@ class FakeArmClient:
         for prefix in sorted(self._routes, key=len, reverse=True):
             if path.startswith(prefix):
                 return self._routes[prefix](path, params)
-        raise GraphError(
-            f"FakeArmClient: no route for {path}", status_code=500
-        )
+        raise GraphError(f"FakeArmClient: no route for {path}", status_code=500)
 
     def get_list(self, path: str, *, max_pages: int = 30) -> list[dict[str, Any]]:
         handler = None
@@ -209,9 +197,7 @@ class FakeArmClient:
                 handler = self._routes[prefix]
                 break
         if handler is None:
-            raise GraphError(
-                f"FakeArmClient: no route for {path}", status_code=500
-            )
+            raise GraphError(f"FakeArmClient: no route for {path}", status_code=500)
         items: list[dict[str, Any]] = []
         next_url: str | None = None
         first = True
@@ -259,9 +245,7 @@ class FakeMdeClient:
         for prefix in sorted(self._routes, key=len, reverse=True):
             if path.startswith(prefix):
                 return self._routes[prefix](path, params)
-        raise GraphError(
-            f"FakeMdeClient: no route for {path}", status_code=500
-        )
+        raise GraphError(f"FakeMdeClient: no route for {path}", status_code=500)
 
     def close(self) -> None:
         pass

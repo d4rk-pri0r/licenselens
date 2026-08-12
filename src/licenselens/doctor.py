@@ -52,9 +52,7 @@ class DoctorReport:
         return all(c.ok for c in self.checks if not c.optional)
 
 
-def _read_granted_graph_app_permissions(
-    client: GraphClient, client_id: str
-) -> set[str]:
+def _read_granted_graph_app_permissions(client: GraphClient, client_id: str) -> set[str]:
     """Return the app's granted Microsoft Graph application permission names.
 
     Resolves the app's service principal from its client id, reads its
@@ -303,9 +301,7 @@ def run_doctor(
             # permissions actually granted on this app? Optional — never
             # blocks report.ready (the per-collector ✗ rows gate that).
             try:
-                granted = _read_granted_graph_app_permissions(
-                    client, auth.client_id or ""
-                )
+                granted = _read_granted_graph_app_permissions(client, auth.client_id or "")
                 missing = [p for p in REQUIRED_GRAPH_APP_PERMISSIONS if p not in granted]
                 if missing:
                     report.checks.append(
@@ -323,9 +319,7 @@ def run_doctor(
                             name="graphPermissions",
                             ok=True,
                             optional=True,
-                            detail=(
-                                "All required Graph application permissions granted."
-                            ),
+                            detail=("All required Graph application permissions granted."),
                         )
                     )
             except GraphError as exc:
