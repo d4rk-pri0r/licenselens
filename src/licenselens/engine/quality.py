@@ -25,9 +25,10 @@ def apply_quality_policy(
     customer_summary = finding.customer_summary
     summary = finding.summary
 
+    evidence_proxy = (finding.evidence or {}).get("proxy")
     is_proxy = (
-        finding.check_id in PROXY_CHECK_IDS
-        or bool((finding.evidence or {}).get("proxy"))
+        (finding.check_id in PROXY_CHECK_IDS and evidence_proxy is not False)
+        or bool(evidence_proxy)
         or any("secureScore" in s or "proxy" in s.lower() for s in data_sources)
     )
 
