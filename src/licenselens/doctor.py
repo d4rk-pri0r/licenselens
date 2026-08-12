@@ -5,10 +5,18 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import StrEnum
 
-from licenselens.auth import GRAPH_SCOPE, AuthContext, AuthMode
+from licenselens.auth import (
+    GRAPH_SCOPE,
+    REQUIRED_GRAPH_APP_PERMISSIONS,
+    AuthContext,
+    AuthMode,
+)
 from licenselens.collectors.skus import collect_subscribed_skus_live
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
+
+# Well-known Microsoft Graph resource app id (the appRoles owner).
+GRAPH_RESOURCE_APP_ID = "00000003-0000-0000-c000-000000000000"
 
 
 class DoctorProfile(StrEnum):
@@ -44,6 +52,42 @@ class DoctorReport:
         return all(c.ok for c in self.checks if not c.optional)
 
 
+def _read_granted_graph_app_permissions(
+    client: GraphClient, client_id: str
+) -> set[str]:
+    """Return the app's granted Microsoft Graph application permission names.
+
+    Resolves the app's service principal from its client id, reads its
+    appRoleAssignments, and maps the assigned role ids onto the Microsoft
+    Graph resource app's appRoles. Raises GraphError when the app id cannot
+    be resolved or the read is denied.
+
+    Note: the live read itself may require Directory.Read.All (reading
+    servicePrincipals). If it is still denied, run_doctor degrades gracefully
+    to the optional ⚠ row and never blocks report.ready.
+    """
+    if not client_id:
+        raise GraphError("no app client id available for permission introspection")
+    sp = client.get(f"/servicePrincipals(appId='{client_id}')")
+    sp_id = sp.get("id")
+    if not sp_id:
+        raise GraphError(f"service principal for app id {client_id!r} not resolvable")
+    assignments = client.get_list(f"/servicePrincipals/{sp_id}/appRoleAssignments")
+    graph_sp = client.get(f"/servicePrincipals(appId='{GRAPH_RESOURCE_APP_ID}')")
+    role_names = {
+        str(role["id"]): str(role["value"])
+        for role in graph_sp.get("appRoles") or []
+        if isinstance(role, dict) and role.get("id") and role.get("value")
+    }
+    granted: set[str] = set()
+    for assignment in assignments:
+        role_id = str(assignment.get("appRoleId") or "")
+        name = role_names.get(role_id)
+        if name:
+            granted.add(name)
+    return granted
+
+
 def run_doctor(
     auth: AuthContext,
     *,
@@ -54,6 +98,9 @@ def run_doctor(
 
     profile="basic" runs core Graph checks; profile="full" also probes the
     Defender for Endpoint API and the optional Sentinel workspace.
+
+    Always reports a graphPermissions row: granted application permissions vs
+    REQUIRED_GRAPH_APP_PERMISSIONS (optional, never blocks report.ready).
     """
     try:
         profile_value = DoctorProfile(profile)
@@ -69,6 +116,18 @@ def run_doctor(
                 detail=(
                     "Dry-run mode — no live tenant calls. "
                     f"Use --live --profile {profile_value.value} for production checks."
+                ),
+            )
+        )
+        report.checks.append(
+            DoctorCheck(
+                name="graphPermissions",
+                ok=True,
+                optional=True,
+                detail=(
+                    "Dry-run — skipped the live permission probe. "
+                    f"Use --live to verify all {len(REQUIRED_GRAPH_APP_PERMISSIONS)} "
+                    "required Graph application permissions are granted and consented."
                 ),
             )
         )
@@ -239,6 +298,49 @@ def run_doctor(
                     ),
                 )
             )
+
+            # Enforcement/reporting: are the required Graph application
+            # permissions actually granted on this app? Optional — never
+            # blocks report.ready (the per-collector ✗ rows gate that).
+            try:
+                granted = _read_granted_graph_app_permissions(
+                    client, auth.client_id or ""
+                )
+                missing = [p for p in REQUIRED_GRAPH_APP_PERMISSIONS if p not in granted]
+                if missing:
+                    report.checks.append(
+                        DoctorCheck(
+                            name="graphPermissions",
+                            ok=False,
+                            optional=True,
+                            detail=f"Missing application permission(s): {', '.join(missing)}.",
+                            fix=f"Grant {', '.join(missing)} and re-consent.",
+                        )
+                    )
+                else:
+                    report.checks.append(
+                        DoctorCheck(
+                            name="graphPermissions",
+                            ok=True,
+                            optional=True,
+                            detail=(
+                                "All required Graph application permissions granted."
+                            ),
+                        )
+                    )
+            except GraphError as exc:
+                report.checks.append(
+                    DoctorCheck(
+                        name="graphPermissions",
+                        ok=False,
+                        optional=True,
+                        detail=f"cannot verify granted permissions — {exc}",
+                        fix=(
+                            "Verify the required application permissions in Entra "
+                            "admin center and re-consent (docs/app-registration.md)."
+                        ),
+                    )
+                )
     except (AuthError, GraphError) as exc:
         report.checks.append(
             DoctorCheck(
