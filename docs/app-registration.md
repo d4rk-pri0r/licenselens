@@ -37,6 +37,7 @@ See the full matrix in [permissions.md](permissions.md).
 - `RoleManagement.Read.Directory`
 - `AuditLog.Read.All`
 - `SecurityEvents.Read.All` (Secure Score for MDO/MDI signals)
+- `AccessReview.Read.All`
 
 **Microsoft Defender for Endpoint** (optional, for `mde-onboard-gap`):
 

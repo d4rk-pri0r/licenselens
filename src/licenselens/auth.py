@@ -28,12 +28,10 @@ REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
     "Organization.Read.All",
     "Directory.Read.All",
     "Policy.Read.All",
-    "IdentityRiskyUser.Read.All",
-    "IdentityRiskEvent.Read.All",
-    "Application.Read.All",
-    "AuditLog.Read.All",
-    "User.Read.All",
     "RoleManagement.Read.Directory",
+    "AuditLog.Read.All",
+    "SecurityEvents.Read.All",
+    "AccessReview.Read.All",
 )
 
 
