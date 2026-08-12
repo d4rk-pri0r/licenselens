@@ -27,6 +27,7 @@ htmlcov/
 
 # Security License Lens outputs
 reports/
+reports-live/
 *.report.html
 *.report.json
 out/
@@ -34,3 +35,4 @@ out/
 # Local planning / tooling (not part of the public product)
 openspec/
 .opencode/
+.omo/
