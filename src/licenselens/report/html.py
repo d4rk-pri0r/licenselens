@@ -6,7 +6,13 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from licenselens.models import STATUS_PLAIN_LABELS, CAPABILITY_STATUS_LABELS, EXPOSURE_PLAIN_LABELS, TAGLINE, ScanResult
+from licenselens.models import (
+    CAPABILITY_STATUS_LABELS,
+    EXPOSURE_PLAIN_LABELS,
+    STATUS_PLAIN_LABELS,
+    TAGLINE,
+    ScanResult,
+)
 from licenselens.paths import templates_dir
 
 

@@ -1,5 +1,7 @@
 """MDE, Sentinel, and workspace-discover collector tests using fakes."""
 
+from typing import Any
+
 from licenselens.auth import AuthContext, AuthMode
 
 
@@ -241,7 +243,7 @@ def test_sentinel_bundle(monkeypatch):
 
 
 def test_workspace_discover_no_workspace(monkeypatch):
-    from tests.fake_clients import FakeArmClient, FakeGraphClient, ok
+    from tests.fake_clients import FakeArmClient, ok
 
     fake_arm = FakeArmClient()
     fake_arm.register_get(

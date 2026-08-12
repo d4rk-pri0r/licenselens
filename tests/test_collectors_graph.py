@@ -1,7 +1,8 @@
 """Collector tests using FakeGraphClient — no network calls."""
 
-from tests.fake_clients import FakeGraphClient, error, ok, paginated
+from typing import Any
 
+from tests.fake_clients import FakeGraphClient, error, ok, paginated
 
 # ---------------------------------------------------------------------------
 # SKUs

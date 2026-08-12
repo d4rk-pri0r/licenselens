@@ -112,7 +112,8 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
             lines.append(f"- **Suggested next step:** {f.customer_next_step}")
         lines.append(f"- **Confidence:** {f.confidence_label or f.confidence.value}")
         lines.append(f"- **Data sources:** {', '.join(f.data_sources) or 'Not reported'}")
-        lines.append(f"- **Limitations:** {'; '.join(lim.rstrip('.') for lim in f.limitations) or 'None reported'}")
+        limits = "; ".join(lim.rstrip(".") for lim in f.limitations)
+        lines.append(f"- **Limitations:** {limits or 'None reported'}")
         if f.deep_link:
             lines.append(f"- **Admin page:** [Open Microsoft admin page]({f.deep_link})")
         lines.append(f"- **Technical id:** `{f.check_id}`")
