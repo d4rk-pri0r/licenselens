@@ -3,7 +3,7 @@
 A plain-language view of security capabilities you already pay for — and whether they are set up to help your organization.
 
 - **Version:** 0.3.0.dev1
-- **Scanned at:** 2026-08-11T18:09:02.037290+00:00
+- **Scanned at:** 2026-08-12T14:20:47.915390+00:00
 - **Mode:** dry_run / dry_run
 - **Organization:** Contoso Demo (dry-run)
 
@@ -15,11 +15,10 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Prioritized capabilities:** 4 (priority packs: identity, endpoint)
 - **Fully working:** 1 of 4 prioritized capabilities (25% realized)
 - **Need attention:** 3 of 4 prioritized capabilities
-- **High-risk priority (fix first):** Powerful accounts may sign in without strong extra checks
 
 ### Top things to do first
 
-1. **Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts** *(~a few hours)* — Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.
+1. **Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts** *(~a few hours)* — Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).
    - Next step: Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
 2. **Create equivalent Conditional Access policies for MFA and legacy-authentication blocking in report-only mode** *(~a few hours)* — Security Defaults already includes baseline MFA protection and blocks outdated sign-in methods. Your plan also includes smarter sign-in rules you can customize, but that paid capability remains unused.
    - Next step: Create equivalent Conditional Access policies for MFA and legacy-authentication blocking in report-only mode. Validate coverage, exclusions, emergency access, and sign-in impact; then perform a controlled cutover from Security Defaults to the validated policies.
@@ -180,7 +179,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Start with a simple policy for email and cloud files that detects obvious sensitive data, then move from "test" to "enforce" after a short tuning period.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** secureScore.controlScores (proxy)
-- **Limitations:** Secure Score proxy — verify DLP enforce mode in Purview portal.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.
+- **Limitations:** Secure Score proxy — verify DLP enforce mode in Purview portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/policiespage)
 - **Technical id:** `pur-dlp-not-enforced`
 
@@ -198,7 +197,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Powerful accounts may sign in without strong extra checks
 
 - **Status:** Partly set up
-- **In plain English:** Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.
+- **In plain English:** Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).
 - **Suggested next step:** Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
@@ -224,7 +223,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Confirm whether you still use on-site directory servers; if yes, install and health-check the identity sensors on each one.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** secureScore.controlScores (proxy)
-- **Limitations:** Secure Score proxy — verify MDI sensors in the Defender portal.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.
+- **Limitations:** Secure Score proxy — verify MDI sensors in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/health)
 - **Technical id:** `mdi-sensors-missing`
 
@@ -234,12 +233,12 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **In plain English:** We cannot automatically confirm whether extra email protections (Safe Links and Safe Attachments) cover everyone. Ask IT to check Preset security policies in the Microsoft Defender portal, or run Exchange Online PowerShell (Get-ATPProtectionPolicyRule).
 - **Suggested next step:** Open Preset security policies in the Defender portal and turn on Standard protection for all users, or confirm with Exchange Online PowerShell.
 - **Confidence:** Low confidence — verify in portal
-- **Data sources:** secureScore.controlScores (proxy)
-- **Limitations:** Email policy config is PowerShell-only; not verified automatically.; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive.
+- **Data sources:** Not reported
+- **Limitations:** Email policy config is PowerShell-only; not verified automatically
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/presetSecurityPolicies)
 - **Technical id:** `mdo-p2-policies-default`
 
-### Suspicious sign-ins may not be blocked automatically
+### Risk-based sign-in protection
 
 - **Status:** Looking good
 - **In plain English:** Suspicious sign-ins and risky accounts appear to trigger automatic extra checks or blocks.

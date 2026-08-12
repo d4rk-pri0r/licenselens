@@ -7,7 +7,7 @@
   "tenant_slug": null,
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
-  "scanned_at": "2026-08-11T18:09:02.037290+00:00",
+  "scanned_at": "2026-08-12T14:20:47.915390+00:00",
   "owned_capabilities": [
     "conditional_access",
     "defender_endpoint_p2",
@@ -265,8 +265,8 @@
       "evidence": {
         "security_defaults_enabled": true,
         "baseline_protections_active": true,
-        "conditional_access_customization_unused": true,
-        "policy_id": "00000000-0000-0000-0000-000000000005"
+        "policy_id": "00000000-0000-0000-0000-000000000005",
+        "conditional_access_customization_unused": true
       },
       "entitlements_used": [
         "conditional_access"
@@ -530,7 +530,7 @@
       "effort": "hours",
       "blast_radius": "all_users",
       "pack": "identity",
-      "exposure_class": "exposed",
+      "exposure_class": "none",
       "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
       "summary": "Conditional Access is partially configured: missing enforced legacy authentication block.",
       "evidence": {
@@ -548,9 +548,7 @@
         "global_admin_standing_count": 2,
         "mfa_covers_privileged": true,
         "mfa_report_only_covers_privileged": false,
-        "exposure_flags": [
-          "legacy_auth_broadly_allowed"
-        ]
+        "exposure_flags": []
       },
       "entitlements_used": [
         "conditional_access"
@@ -561,7 +559,7 @@
         "https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication"
       ],
       "customer_title": "Powerful accounts may sign in without strong extra checks",
-      "customer_summary": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.",
+      "customer_summary": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).",
       "customer_next_step": "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts.",
       "status_label": "Partly set up",
       "confidence": "high",
@@ -694,12 +692,9 @@
       "status_label": "Check pending",
       "confidence": "low",
       "confidence_label": "Low confidence \u2014 verify in portal",
-      "data_sources": [
-        "secureScore.controlScores (proxy)"
-      ],
+      "data_sources": [],
       "limitations": [
-        "Email policy config is PowerShell-only; not verified automatically.",
-        "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
+        "Email policy config is PowerShell-only; not verified automatically."
       ]
     },
     {
@@ -734,7 +729,7 @@
       "references": [
         "https://learn.microsoft.com/entra/id-protection/overview-identity-protection"
       ],
-      "customer_title": "Suspicious sign-ins may not be blocked automatically",
+      "customer_title": "Risk-based sign-in protection",
       "customer_summary": "Suspicious sign-ins and risky accounts appear to trigger automatic extra checks or blocks.",
       "customer_next_step": "Turn on risk-based sign-in protection in stages \u2014 start by requiring extra verification when Microsoft marks a sign-in as risky.",
       "status_label": "Looking good",
@@ -772,7 +767,7 @@
   "moves": [
     {
       "title": "Require multi-factor authentication for admins and block legacy email sign-in methods that skip modern security prompts",
-      "why": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods). EXPOSED: outdated sign-in methods that skip modern security checks are broadly allowed right now.",
+      "why": "Some sign-in protections are present, but the full set is not enforced yet (multi-factor authentication and/or blocking outdated sign-in methods).",
       "effort": "hours",
       "check_ids": [
         "id-ca-priv-gaps"
@@ -895,8 +890,6 @@
       ]
     }
   ],
-  "has_exposed": true,
-  "exposed_check_ids": [
-    "id-ca-priv-gaps"
-  ]
+  "has_exposed": false,
+  "exposed_check_ids": []
 }
