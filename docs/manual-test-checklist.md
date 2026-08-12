@@ -1,4 +1,4 @@
-# Manual test checklist (v0.2.0)
+# Manual test checklist (v0.3.0)
 
 Use a Microsoft 365 Developer tenant or a non-production customer lab.
 
@@ -7,12 +7,12 @@ Use a Microsoft 365 Developer tenant or a non-production customer lab.
 - [ ] App registration created per [app-registration.md](app-registration.md)
 - [ ] Admin consent granted for identity pack permissions in [permissions.md](permissions.md)
 - [ ] `pip install -e ".[dev]"` from a clean clone
-- [ ] `pytest` and `ruff check src tests` pass offline
+- [ ] `pytest` and `ruff check` report no new issues on changed files
 
 ## Dry-run
 
-- [ ] `licenselens version` prints `0.2.0`
-- [ ] `licenselens checks` lists 10 checks
+- [ ] `licenselens version` prints a valid version
+- [ ] `licenselens checks` lists 12 checks
 - [ ] `licenselens doctor` (default) succeeds
 - [ ] `licenselens doctor --profile deep` exits `2` with a clear profile error
 - [ ] `licenselens scan -o reports` writes HTML/JSON/MD
