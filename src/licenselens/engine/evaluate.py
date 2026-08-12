@@ -30,8 +30,16 @@ class Evaluation:
 Evaluator = Callable[[CheckDefinition, dict[str, Any]], Evaluation]
 
 
-def _legacy_auth_exposed(*, enforced: bool, report_only: bool) -> bool:
-    """EXPOSED when legacy auth is broadly allowed with no block and no monitoring."""
+def _legacy_auth_exposed(
+    *, enforced: bool, report_only: bool, sd_enabled: bool = False
+) -> bool:
+    """EXPOSED when legacy auth is broadly allowed with no block and no monitoring.
+
+    Security Defaults, when enabled, provides baseline legacy-auth blocking
+    that clears this exposure flag even when CA policies are absent.
+    """
+    if sd_enabled:
+        return False
     return not enforced and not report_only
 
 
@@ -91,9 +99,16 @@ def evaluate_ca_priv_gaps(
         if str(a.get("roleDefinitionId") or "").lower() == priv.GLOBAL_ADMIN_TEMPLATE_ID.lower()
     ]
 
+    sd_policy = evidence.get("security_defaults_policy") or {}
+    sd_enabled = bool(sd_policy.get("isEnabled")) if isinstance(sd_policy, dict) else False
+
     exposure_flags: list[str] = []
     limitations: list[str] = []
-    if _legacy_auth_exposed(enforced=bool(legacy_enforced), report_only=bool(legacy_report)):
+    if _legacy_auth_exposed(
+        enforced=bool(legacy_enforced),
+        report_only=bool(legacy_report),
+        sd_enabled=sd_enabled,
+    ):
         exposure_flags.append("legacy_auth_broadly_allowed")
     if _mfa_less_privileged_exposed(
         privileged_principals=privileged_principal_count,
@@ -559,17 +574,26 @@ def evaluate_security_defaults_on(
 ) -> Evaluation:
     """Security defaults enabled while the tenant is licensed for Conditional Access."""
     del check
+
+    if evidence.get("security_defaults_policy_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Security defaults policy could not be read: "
+            + str(evidence["security_defaults_policy_error"]),
+            evidence={"error": str(evidence["security_defaults_policy_error"])},
+        )
+
     policy = evidence.get("security_defaults_policy") or {}
     is_enabled = bool(policy.get("isEnabled")) if isinstance(policy, dict) else False
 
-    evidence_out = {
+    evidence_out: dict[str, Any] = {
         "security_defaults_enabled": is_enabled,
         "baseline_protections_active": is_enabled,
-        "conditional_access_customization_unused": is_enabled,
         "policy_id": policy.get("id") if isinstance(policy, dict) else None,
     }
 
     if not is_enabled:
+        evidence_out["conditional_access_customization_unused"] = None
         return Evaluation(
             status=FindingStatus.OK,
             summary=(
@@ -578,11 +602,13 @@ def evaluate_security_defaults_on(
             ),
             evidence=evidence_out,
             customer_summary=(
-                "The one-size-fits-all security defaults are not in use — your "
-                "tenant appears ready for custom sign-in rules."
+                "The free Microsoft security defaults are not in use, which is "
+                "expected when you have Conditional Access licenses. Confirm "
+                "that sign-in policies are actually configured."
             ),
         )
 
+    evidence_out["conditional_access_customization_unused"] = True
     return Evaluation(
         status=FindingStatus.GAP,
         summary=(
@@ -605,6 +631,15 @@ def evaluate_access_reviews_unused(
 ) -> Evaluation:
     """Access reviews licensed but not configured."""
     del check
+
+    if evidence.get("access_review_definitions_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Access review definitions could not be read: "
+            + str(evidence["access_review_definitions_error"]),
+            evidence={"error": str(evidence["access_review_definitions_error"])},
+        )
+
     definitions = list(evidence.get("access_review_definitions") or [])
     count = len(definitions)
 
