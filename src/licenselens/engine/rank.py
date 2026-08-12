@@ -58,10 +58,11 @@ _MAX_TITLE_LEN = 140
 
 
 def _is_proxy(finding: Finding) -> bool:
+    evidence_proxy = (finding.evidence or {}).get("proxy")
     return (
-        finding.check_id in PROXY_CHECK_IDS
-        or bool((finding.evidence or {}).get("proxy"))
-        or any("secureScore" in s for s in finding.data_sources)
+        (finding.check_id in PROXY_CHECK_IDS and evidence_proxy is not False)
+        or bool(evidence_proxy)
+        or any("secureScore" in s or "proxy" in s.lower() for s in finding.data_sources)
     )
 
 
