@@ -1,0 +1,21 @@
+      {% if result.capability_summaries %}
+      <div class="cards">
+        {% for cap in result.capability_summaries %}
+        {% set cap_outcome = outcome_by_id.get(cap.id) %}
+        <article class="card">
+          {% if cap_outcome %}
+          <div class="cap-status {{ cap_outcome.status }}">{{ capability_status_labels.get(cap_outcome.status, cap_outcome.status) }}</div>
+          {% endif %}
+          <h3>{{ cap.plain_name }}</h3>
+          <div class="msft">Microsoft name: {{ cap.name }}</div>
+          {% if cap.outcome %}<p><span>What it does.</span> {{ cap.outcome }}</p>{% endif %}
+          {% if cap.why_it_matters %}<p><span>Why it matters.</span> {{ cap.why_it_matters }}</p>{% endif %}
+          {% if cap.if_unused %}<p><span>If it is not set up.</span> {{ cap.if_unused }}</p>{% endif %}
+          <p><span>Included through license SKU(s).</span> {{ cap.matched_skus | join(', ') or 'Not reported' }}</p>
+          <p><span>Matching service plan(s).</span> {{ cap.matched_service_plans | join(', ') or 'No matching service plan reported' }}</p>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color: var(--muted); margin: 0;">No licensed capabilities were resolved from entitlements.</p>
+      {% endif %}

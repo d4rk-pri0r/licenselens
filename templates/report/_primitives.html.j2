@@ -1,0 +1,14 @@
+{%- macro status_badge(status_value, label) -%}
+<span class="badge {{ status_value }}">{{ label }}</span>
+{%- endmacro -%}
+
+{%- macro meta_row(label, value) -%}
+<div>{{ label }} <code>{{ value }}</code></div>
+{%- endmacro -%}
+
+{%- macro metric_tile(number, label, small, n_style=None) -%}
+<div class="tile">
+          <div class="n"{% if n_style %} style="{{ n_style }}"{% endif %}>{{ number }}</div>
+          <div class="l">{{ label }}<small>{{ small }}</small></div>
+        </div>
+{%- endmacro -%}
