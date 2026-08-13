@@ -9,12 +9,12 @@
         <li style="margin-bottom: 0.9rem;">
           <strong>{{ move.title }}</strong>
           {% if move.effort_label %}<span class="badge effort" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
-          <div style="color: var(--muted); margin-top: 0.25rem;">{{ move.why }}</div>
+          <div style="color: var(--text-2); margin-top: 0.25rem;">{{ move.why }}</div>
           {% if move.customer_next_step %}<div style="margin-top: 0.25rem;"><strong>Next step:</strong> {{ move.customer_next_step }}</div>{% endif %}
         </li>
         {% endfor %}
       </ol>
-      <p style="color: var(--muted); font-size: 0.85rem; margin: 0.75rem 0 0;">
+      <p style="color: var(--text-2); font-size: 0.85rem; margin: 0.75rem 0 0;">
         Effort is a rough guide, not a quote.
       </p>
     </section>
@@ -26,11 +26,11 @@
         Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
       </p>
       <div class="filter-bar">
-        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
+        <small style="color: var(--text-2); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
         {% for s in ["all", "gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
         <button data-filter="{{ s }}"{% if s == "all" %} class="active"{% endif %}>{{ status_labels.get(s, s) if s != "all" else "All" }}</button>
         {% endfor %}
-        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
+        <small style="color: var(--text-2); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
         {% for w in ["all", "identity", "endpoint", "defender", "sentinel", "purview"] %}
         <button data-workload="{{ w }}"{% if w == "all" %} class="active"{% endif %}>{{ w if w != "all" else "All" }}</button>
         {% endfor %}
@@ -60,6 +60,6 @@
         </details>
       </article>
       {% else %}
-      <p style="color: var(--muted); margin: 0;">No findings.</p>
+      <p style="color: var(--text-2); margin: 0;">No findings.</p>
       {% endfor %}
     </section>

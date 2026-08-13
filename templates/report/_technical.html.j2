@@ -20,7 +20,7 @@
             <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
           </tr>
           {% else %}
-          <tr><td colspan="4" style="color: var(--muted);">No SKUs collected.</td></tr>
+          <tr><td colspan="4" style="color: var(--text-2);">No SKUs collected.</td></tr>
           {% endfor %}
         </tbody>
       </table>
