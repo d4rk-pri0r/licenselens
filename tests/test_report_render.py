@@ -47,6 +47,12 @@ def _by_attr(root: ET.Element, attr: str, value: str | None = None) -> list[ET.E
     ]
 
 
+def _buttons_by_attr(root: ET.Element, attr: str) -> list[ET.Element]:
+    """Filter *buttons* only — findings also carry ``data-workload``, so a bare
+    attribute scan would wrongly treat finding articles as controls."""
+    return [e for e in root.iter("button") if attr in e.attrib]
+
+
 def _by_class(root: ET.Element, cls: str) -> list[ET.Element]:
     return [e for e in root.iter() if cls in (e.attrib.get("class") or "").split()]
 
@@ -72,6 +78,7 @@ def render(result: ScanResult, tmp_path: Path) -> str:
 # ---------------------------------------------------------------------------
 
 ALL_FINDING_STATUSES = {"gap", "partial", "ok", "not_licensed", "skipped", "error"}
+ALL_WORKLOADS = {"identity", "defender", "sentinel", "purview", "endpoint", "general"}
 ALL_EXPOSURE_CLASSES = {"none", "elevated", "exposed"}
 ALL_CAPABILITY_OUTCOMES = {"fully_working", "needs_attention", "partly_set_up", "not_licensed"}
 
@@ -159,7 +166,7 @@ def test_html_presentation_status_labels(tmp_path: Path) -> None:
 
 def test_filter_controls_are_accessibly_grouped(tmp_path: Path) -> None:
     root = parse_html(render(comprehensive_report(), tmp_path))
-    buttons = _by_attr(root, "data-filter") + _by_attr(root, "data-workload")
+    buttons = _buttons_by_attr(root, "data-filter") + _buttons_by_attr(root, "data-workload")
     assert buttons, "no filter controls found"
     groups = _by_attr(root, "role", "group")
     grouped_ids: set[int] = set()
@@ -188,7 +195,7 @@ def test_live_count_region(tmp_path: Path) -> None:
 
 def test_filter_buttons_expose_aria_pressed(tmp_path: Path) -> None:
     root = parse_html(render(comprehensive_report(), tmp_path))
-    buttons = _by_attr(root, "data-filter") + _by_attr(root, "data-workload")
+    buttons = _buttons_by_attr(root, "data-filter") + _buttons_by_attr(root, "data-workload")
     assert buttons, "no filter buttons found"
     for button in buttons:
         assert "aria-pressed" in button.attrib, "filter button missing aria-pressed"
@@ -279,6 +286,9 @@ def test_dom_hooks_preserved(tmp_path: Path) -> None:
     for finding in findings:
         assert finding.attrib.get("data-status") in ALL_FINDING_STATUSES, (
             "finding missing a valid data-status"
+        )
+        assert finding.attrib.get("data-workload") in ALL_WORKLOADS, (
+            "finding missing a valid data-workload"
         )
     assert _by_attr(root, "data-filter"), "no [data-filter] buttons"
     assert _by_attr(root, "data-workload"), "no [data-workload] buttons"

@@ -4,7 +4,7 @@
         {% set cap_outcome = outcome_by_id.get(cap.id) %}
         <article class="card">
           {% if cap_outcome %}
-          <div class="cap-status {{ cap_outcome.status }}">{{ capability_status_labels.get(cap_outcome.status, cap_outcome.status) }}</div>
+          {{ prim.status_marker(cap_outcome.status) }}
           {% endif %}
           <h3>{{ cap.plain_name }}</h3>
           <div class="msft">Microsoft name: {{ cap.name }}</div>

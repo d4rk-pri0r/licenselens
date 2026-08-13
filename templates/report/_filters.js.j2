@@ -1,7 +1,6 @@
     (function() {
       var findings = document.querySelectorAll('.finding');
-      var countEl = document.querySelector('.filter-count strong');
-      var totalEl = countEl ? countEl.parentNode : null;
+      var visibleEl = document.querySelector('[data-visible-count]');
       var total = findings.length;
 
       var activeStatus = 'all';
@@ -9,7 +8,9 @@
 
       function updateButtons(selector, value) {
         document.querySelectorAll(selector).forEach(function(btn) {
-          btn.classList.toggle('active', btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value);
+          var isActive = btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         });
       }
 
@@ -23,7 +24,7 @@
           f.hidden = !match;
           if (match) visible++;
         });
-        if (totalEl) totalEl.textContent = 'Showing ' + visible + ' of ' + total;
+        if (visibleEl) visibleEl.textContent = String(visible);
       }
 
       document.querySelectorAll('[data-filter]').forEach(function(btn) {

@@ -155,7 +155,7 @@ def test_no_horizontal_overflow(page: Page, report_uri: str, width: int, height:
 
 def test_filter_keyboard_and_aria_pressed(page: Page, report_uri: str) -> None:
     page.goto(report_uri)
-    buttons = page.locator("[data-filter], [data-workload]")
+    buttons = page.locator("button[data-filter], button[data-workload]")
     assert buttons.count() > 0, "no filter controls found"
 
     # RED: every filter button must expose aria-pressed="true"|"false".
