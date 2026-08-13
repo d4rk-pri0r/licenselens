@@ -7,7 +7,7 @@
   "tenant_slug": null,
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
-  "scanned_at": "2026-08-12T14:20:47.915390+00:00",
+  "scanned_at": "2026-08-13T00:00:00+00:00",
   "owned_capabilities": [
     "conditional_access",
     "defender_endpoint_p2",
