@@ -2,15 +2,20 @@
     <section>
       <h2>Top things to do first</h2>
       <p class="section-help">
-        Ordered by what protects the most with the least effort. Each is written so you can hand it to IT.
+        Ranked by security impact, evidence confidence, and estimated effort.
       </p>
       <ol class="steps">
         {% for move in result.moves %}
-        <li style="margin-bottom: 0.9rem;">
-          <strong>{{ move.title }}</strong>
-          {% if move.effort_label %}<span class="badge effort" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
-          <div style="color: var(--text-2); margin-top: 0.25rem;">{{ move.why }}</div>
-          {% if move.customer_next_step %}<div style="margin-top: 0.25rem;"><strong>Next step:</strong> {{ move.customer_next_step }}</div>{% endif %}
+        <li class="step">
+          <span class="step-index">{{ '%02d' | format(loop.index) }}</span>
+          <div class="step-body">
+            <div class="step-head">
+              <strong class="step-title">{{ move.title }}</strong>
+              {% if move.effort_label %}<span class="step-effort">{{ move.effort_label | lower }}</span>{% endif %}
+            </div>
+            {% if move.why %}<p class="step-why">{{ move.why }}</p>{% endif %}
+            {% if move.customer_next_step %}<p class="step-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
+          </div>
         </li>
         {% endfor %}
       </ol>
@@ -23,7 +28,7 @@
     <section>
       <h2>Where you may not be getting the full benefit</h2>
       <p class="section-help">
-        Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
+        Evidence, scope, and remediation for each assessed control.
       </p>
       <div class="filter-bar">
         <div class="filter-group" role="group" aria-label="Filter by status">
@@ -51,7 +56,7 @@
           {% if f.workload %}<span class="meta-item"><span class="meta-key">Workload:</span> {{ f.workload.value | capitalize }}</span>{% endif %}
         </div>
         {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
-        {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}
+        {% if f.customer_next_step %}<p><strong>Action:</strong> {{ f.customer_next_step }}</p>{% endif %}
         <details class="tech">
           <summary>Evidence and Microsoft admin page</summary>
           <p><strong>Confidence:</strong> {{ f.confidence_label or f.confidence.value }}</p>
