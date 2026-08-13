@@ -228,7 +228,7 @@ def test_demo_command_prints_html_path(tmp_path: Path):
     assert result.exit_code == 0, result.output
     assert "offline demo scan" in result.stdout
     assert "Licensed capabilities detected: 8" in result.stdout
-    assert "security-license-lens-report.html" in result.stdout
+    assert "security-license-lens-report.html" in result.stdout.replace("\n", "")
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
 
 

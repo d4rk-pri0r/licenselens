@@ -8,9 +8,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 from licenselens.models import (
-    CAPABILITY_STATUS_LABELS,
     EXPOSURE_PLAIN_LABELS,
-    STATUS_PLAIN_LABELS,
     TAGLINE,
     CapabilityOutcome,
     CapabilitySummary,
@@ -76,10 +74,7 @@ def write_html_report(result: ScanResult, path: Path) -> Path:
         tagline=TAGLINE,
         counts=result.counts_by_status,
         findings=result.findings,
-        status_labels=STATUS_PLAIN_LABELS,
         status_order=["gap", "partial", "ok", "not_licensed", "skipped", "error"],
-        outcome_by_id=outcome_by_id,
-        capability_status_labels=CAPABILITY_STATUS_LABELS,
         exposure_labels=EXPOSURE_PLAIN_LABELS,
         capability_cards=_ordered_capability_cards(result, outcome_by_id),
     )
