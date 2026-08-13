@@ -2,50 +2,54 @@
       <summary>Technical details (product names, SKUs, check IDs)</summary>
 
       <h2 style="margin-top: 0.5rem;">Subscribed SKUs</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Part number</th>
-            <th>Status</th>
-            <th>Units</th>
-            <th>Service plans</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for sku in result.subscribed_skus %}
-          <tr>
-            <td><code>{{ sku.sku_part_number }}</code></td>
-            <td>{{ sku.capability_status or "—" }}</td>
-            <td>{{ sku.consumed_units or 0 }} / {{ sku.prepaid_units or "—" }}</td>
-            <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
-          </tr>
-          {% else %}
-          <tr><td colspan="4" style="color: var(--text-2);">No SKUs collected.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-scroll" data-table-scroll>
+        <table>
+          <thead>
+            <tr>
+              <th>Part number</th>
+              <th>Status</th>
+              <th>Units</th>
+              <th>Service plans</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sku in result.subscribed_skus %}
+            <tr>
+              <td><code>{{ sku.sku_part_number }}</code></td>
+              <td>{{ sku.capability_status or "—" }}</td>
+              <td>{{ sku.consumed_units or 0 }} / {{ sku.prepaid_units or "—" }}</td>
+              <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="color: var(--text-2);">No SKUs collected.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
 
       <h2 style="margin-top: 1.25rem;">Finding reference table</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Check ID</th>
-            <th>Technical title</th>
-            <th>Workload</th>
-            <th>Severity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for f in findings %}
-          <tr>
-            <td>{{ prim.status_badge(f.status.value, f.status.value) }}</td>
-            <td><code>{{ f.check_id }}</code></td>
-            <td>{{ f.title }}</td>
-            <td>{{ f.workload.value }}</td>
-            <td>{{ f.severity.value }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="table-scroll" data-table-scroll>
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Check ID</th>
+              <th>Technical title</th>
+              <th>Workload</th>
+              <th>Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in findings %}
+            <tr>
+              <td>{{ prim.status_badge(f.status.value, f.status.value) }}</td>
+              <td><code>{{ f.check_id }}</code></td>
+              <td>{{ f.title }}</td>
+              <td>{{ f.workload.value }}</td>
+              <td>{{ f.severity.value }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </details>
