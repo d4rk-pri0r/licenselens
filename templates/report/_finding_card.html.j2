@@ -1,0 +1,65 @@
+    {% if result.moves %}
+    <section>
+      <h2>Top things to do first</h2>
+      <p class="section-help">
+        Ordered by what protects the most with the least effort. Each is written so you can hand it to IT.
+      </p>
+      <ol class="steps">
+        {% for move in result.moves %}
+        <li style="margin-bottom: 0.9rem;">
+          <strong>{{ move.title }}</strong>
+          {% if move.effort_label %}<span class="badge effort" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
+          <div style="color: var(--muted); margin-top: 0.25rem;">{{ move.why }}</div>
+          {% if move.customer_next_step %}<div style="margin-top: 0.25rem;"><strong>Next step:</strong> {{ move.customer_next_step }}</div>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+      <p style="color: var(--muted); font-size: 0.85rem; margin: 0.75rem 0 0;">
+        Effort is a rough guide, not a quote.
+      </p>
+    </section>
+    {% endif %}
+
+    <section>
+      <h2>Where you may not be getting the full benefit</h2>
+      <p class="section-help">
+        Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
+      </p>
+      <div class="filter-bar">
+        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
+        {% for s in ["all", "gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
+        <button data-filter="{{ s }}"{% if s == "all" %} class="active"{% endif %}>{{ status_labels.get(s, s) if s != "all" else "All" }}</button>
+        {% endfor %}
+        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
+        {% for w in ["all", "identity", "endpoint", "defender", "sentinel", "purview"] %}
+        <button data-workload="{{ w }}"{% if w == "all" %} class="active"{% endif %}>{{ w if w != "all" else "All" }}</button>
+        {% endfor %}
+        <span class="filter-count">Showing <strong>{{ findings|length }}</strong> of <strong>{{ findings|length }}</strong></span>
+      </div>
+      {% for f in findings %}
+      <article class="finding {{ f.status.value }}" data-status="{{ f.status.value }}" data-workload="{{ f.workload.value }}">
+        <div class="finding-head">
+          {{ prim.status_badge(f.status.value, f.status_label or status_labels.get(f.status.value, f.status.value)) }}
+          <h3>{{ f.display_customer_title }}</h3>
+        </div>
+        <div class="finding-meta">
+          {% if f.severity %}<span class="meta-item">&#x25CF; {{ f.severity.value | capitalize }} severity</span>{% endif %}
+          {% if f.effort_label %}<span class="meta-item">&#x23F1; {{ f.effort_label }}</span>{% endif %}
+          {% if f.blast_radius %}<span class="meta-item">&#x1F465; {{ f.blast_radius.value | replace('_', ' ') }}</span>{% endif %}
+          {% if f.workload %}<span class="meta-item">{{ f.workload.value | capitalize }}</span>{% endif %}
+        </div>
+        {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
+        {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> {{ f.confidence_label or f.confidence.value }}</p>
+          <p><strong>Data sources:</strong> {{ f.data_sources | join(', ') or 'Not reported' }}</p>
+          <p><strong>Limitations:</strong> {% if f.limitations %}{% for limit in f.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
+          {% if f.deep_link %}<p><a href="{{ f.deep_link }}">Open Microsoft admin page</a></p>{% endif %}
+          <p><strong>Technical ID:</strong> <code>{{ f.check_id }}</code></p>
+        </details>
+      </article>
+      {% else %}
+      <p style="color: var(--muted); margin: 0;">No findings.</p>
+      {% endfor %}
+    </section>

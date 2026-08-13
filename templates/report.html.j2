@@ -1,3 +1,4 @@
+{%- import "report/_primitives.html.j2" as prim -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,256 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Security License Lens report</title>
   <style>
-    :root {
-      --bg: #0b1220;
-      --panel: #121a2b;
-      --text: #e8eefc;
-      --muted: #9aa8c7;
-      --accent: #5b9dff;
-      --gap: #f07178;
-      --partial: #ffcc66;
-      --ok: #7fd99a;
-      --notlic: #7a8499;
-      --skipped: #8b95a8;
-      --border: #243049;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: radial-gradient(1200px 600px at 10% -10%, #1a2744 0%, var(--bg) 55%);
-      color: var(--text);
-      line-height: 1.55;
-    }
-    header, main { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .logo-mark {
-      position: relative;
-      width: 38px; height: 38px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, transparent 38%, var(--accent) 39%, var(--accent) 52%, transparent 53%);
-      flex-shrink: 0;
-    }
-    .logo-mark::before {
-      content: "";
-      position: absolute;
-      inset: 4px;
-      border-radius: 50%;
-      border: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
-    }
-    .logo-mark::after {
-      content: "";
-      position: absolute;
-      inset: 10px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 50%, transparent 55%, color-mix(in srgb, var(--accent) 30%, transparent) 56%);
-    }
-    header h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
-    header .tagline { margin: 0; color: var(--muted); font-size: 1.05rem; }
-    .meta { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; color: var(--muted); font-size: 0.95rem; }
-    .intro {
-      background: color-mix(in srgb, var(--accent) 12%, var(--panel));
-      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin: 1.25rem 0 0.5rem;
-      color: var(--text);
-    }
-    .intro strong { color: #fff; }
-    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin: 1.25rem 0; }
-    .tile {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-    }
-    .tile .n { font-size: 1.6rem; font-weight: 700; }
-    .tile .l { color: var(--muted); font-size: 0.85rem; margin-top: 0.15rem; }
-    .tile .l small { display: block; opacity: 0.7; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
-    .donut {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .donut svg { width: 56px; height: 56px; flex-shrink: 0; }
-    .donut .donut-val { font-size: 1.6rem; font-weight: 700; line-height: 1.1; }
-    .donut .donut-label { color: var(--muted); font-size: 0.82rem; margin-top: 0.1rem; }
-    section {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1rem;
-    }
-    h2 { margin: 0 0 0.35rem; font-size: 1.15rem; }
-    .section-help { margin: 0 0 1rem; color: var(--muted); font-size: 0.95rem; }
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-    .filter-bar button {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      padding: 0.3rem 0.75rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s, border-color 0.15s;
-    }
-    .filter-bar button:hover { border-color: var(--accent); color: var(--text); }
-    .filter-bar button.active {
-      background: color-mix(in srgb, var(--accent) 20%, var(--panel));
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .filter-count {
-      margin-left: auto;
-      color: var(--muted);
-      font-size: 0.82rem;
-    }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; }
-    .card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      background: color-mix(in srgb, var(--bg) 45%, var(--panel));
-    }
-    .card h3 { margin: 0 0 0.35rem; font-size: 1.02rem; }
-    .card .msft { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.65rem; }
-    .card p { margin: 0.4rem 0; font-size: 0.92rem; }
-    .card p span { color: var(--muted); font-weight: 600; }
-    .cap-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-size: 0.78rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-    }
-    .cap-status::before {
-      content: "";
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .cap-status.needs_attention { color: var(--gap); }
-    .cap-status.needs_attention::before { background: var(--gap); }
-    .cap-status.partly_set_up { color: var(--partial); }
-    .cap-status.partly_set_up::before { background: var(--partial); }
-    .cap-status.fully_working { color: var(--ok); }
-    .cap-status.fully_working::before { background: var(--ok); }
-    .finding {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      background: color-mix(in srgb, var(--bg) 40%, var(--panel));
-    }
-    .finding:last-child { margin-bottom: 0; }
-    .finding.gap { border-left: 3px solid var(--gap); }
-    .finding.partial { border-left: 3px solid var(--partial); }
-    .finding.ok { border-left: 3px solid var(--ok); }
-    .finding.not_licensed { border-left: 3px solid var(--notlic); }
-    .finding.skipped, .finding.error { border-left: 3px solid var(--skipped); }
-    .finding-head { display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; align-items: center; margin-bottom: 0.5rem; }
-    .finding-head h3 { margin: 0; font-size: 1.02rem; flex: 1 1 220px; }
-    .finding-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem 0.75rem;
-      margin-bottom: 0.5rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-    .finding-meta .meta-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    .steps { margin: 0; padding-left: 1.2rem; }
-    .steps li { margin: 0.45rem 0; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
-    th, td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
-    .badge {
-      display: inline-block;
-      padding: 0.18rem 0.55rem;
-      border-radius: 999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-    .badge.gap { background: color-mix(in srgb, var(--gap) 25%, transparent); color: var(--gap); }
-    .badge.partial { background: color-mix(in srgb, var(--partial) 25%, transparent); color: var(--partial); }
-    .badge.ok { background: color-mix(in srgb, var(--ok) 25%, transparent); color: var(--ok); }
-    .badge.not_licensed { background: color-mix(in srgb, var(--notlic) 25%, transparent); color: var(--notlic); }
-    .badge.skipped, .badge.error { background: color-mix(in srgb, var(--skipped) 25%, transparent); color: var(--skipped); }
-    .badge.effort {
-      background: color-mix(in srgb, var(--muted) 18%, transparent);
-      color: var(--muted);
-    }
-    details.tech {
-      margin-top: 0.25rem;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-      padding: 0.75rem 1rem;
-      background: var(--panel);
-    }
-    details.tech > summary {
-      cursor: pointer;
-      color: var(--muted);
-      font-weight: 600;
-      list-style: none;
-    }
-    details.tech > summary::before {
-      content: "▸ ";
-      display: inline-block;
-      margin-right: 0.25rem;
-      transition: transform 0.15s ease;
-    }
-    details.tech[open] > summary::before {
-      content: "▾ ";
-    }
-    details.tech > summary::-webkit-details-marker { display: none; }
-    details.tech[open] > summary { margin-bottom: 0.75rem; color: var(--text); }
-    footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--muted); font-size: 0.85rem; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; }
-    .hero { break-inside: avoid; page-break-inside: avoid; }
-    @media print {
-      body {
-        background: #fff;
-        color: #111;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      header, main, footer { max-width: none; padding: 0.5rem 0; }
-      .hero {
-        border: 2px solid #243049 !important;
-        background: #f4f7fc !important;
-        break-inside: avoid;
-        page-break-inside: avoid;
-      }
-      .tile, .card, .finding, section {
-        background: #fff !important;
-        border-color: #ccc !important;
-        break-inside: avoid;
-      }
-      details.tech { display: none; }
-      footer { display: none; }
-      a { color: inherit; text-decoration: none; }
-    }
-    @media screen and (max-width: 720px) {
-      .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      header h1 { font-size: 1.4rem; }
-    }
+{% include "report/_styles.css.j2" %}
   </style>
 </head>
 <body>
@@ -267,10 +19,10 @@
       </div>
     </div>
     <div class="meta">
-      <div>Version <code>{{ result.version }}</code></div>
-      <div>Scanned <code>{{ result.display_scanned_at }}</code></div>
-      <div>Mode <code>{{ result.scan_mode }}{% if result.auth_mode and result.auth_mode != result.scan_mode %} / {{ result.auth_mode }}{% endif %}</code></div>
-      <div>Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
+      {{ prim.meta_row("Version", result.version) }}
+      {{ prim.meta_row("Scanned", result.display_scanned_at) }}
+      {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}{{ prim.meta_row("Mode", mode_str) }}
+      {{ prim.meta_row("Organization", result.tenant_display_name or result.tenant_id or "demo / dry-run") }}
     </div>
     {% if result.warnings %}
     <div class="intro" style="border-color: color-mix(in srgb, var(--partial) 50%, var(--border));">
@@ -296,22 +48,10 @@
         {% endif %}
       </p>
       <div class="tiles" style="margin-top: 0;">
-        <div class="tile">
-          <div class="n">{{ result.owned_capabilities | length }}</div>
-          <div class="l">Licensed capabilities detected<small>across all detected licenses</small></div>
-        </div>
-        <div class="tile">
-          <div class="n">{{ rollup.you_own }}</div>
-          <div class="l">Prioritized capabilities<small>{{ result.packs_scanned | join(', ') }} priority packs</small></div>
-        </div>
-        <div class="tile">
-          <div class="n" style="color: var(--ok);">{{ rollup.fully_working }}</div>
-          <div class="l">Fully working<small>{{ rollup.realized_percent }}% realized; of {{ rollup.you_own }} prioritized capabilities</small></div>
-        </div>
-        <div class="tile">
-          <div class="n" style="color: var(--partial);">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
-          <div class="l">Need attention<small>of {{ rollup.you_own }} prioritized capabilities</small></div>
-        </div>
+        {{ prim.metric_tile(result.owned_capabilities | length, "Licensed capabilities detected", "across all detected licenses") }}
+        {{ prim.metric_tile(rollup.you_own, "Prioritized capabilities", (result.packs_scanned | join(', ')) ~ ' priority packs') }}
+        {{ prim.metric_tile(rollup.fully_working, "Fully working", rollup.realized_percent ~ '% realized; of ' ~ rollup.you_own ~ ' prioritized capabilities', "color: var(--ok);") }}
+        {{ prim.metric_tile(rollup.needs_attention + rollup.partly_set_up, "Need attention", 'of ' ~ rollup.you_own ~ ' prioritized capabilities', "color: var(--partial);") }}
       </div>
     </section>
 
@@ -341,196 +81,19 @@
       <p class="section-help">
         These are protections included in the licenses we detected — described by what they do for your business, with licensing details shown beneath each card.
       </p>
-      {% if result.capability_summaries %}
-      <div class="cards">
-        {% for cap in result.capability_summaries %}
-        {% set cap_outcome = outcome_by_id.get(cap.id) %}
-        <article class="card">
-          {% if cap_outcome %}
-          <div class="cap-status {{ cap_outcome.status }}">{{ capability_status_labels.get(cap_outcome.status, cap_outcome.status) }}</div>
-          {% endif %}
-          <h3>{{ cap.plain_name }}</h3>
-          <div class="msft">Microsoft name: {{ cap.name }}</div>
-          {% if cap.outcome %}<p><span>What it does.</span> {{ cap.outcome }}</p>{% endif %}
-          {% if cap.why_it_matters %}<p><span>Why it matters.</span> {{ cap.why_it_matters }}</p>{% endif %}
-          {% if cap.if_unused %}<p><span>If it is not set up.</span> {{ cap.if_unused }}</p>{% endif %}
-          <p><span>Included through license SKU(s).</span> {{ cap.matched_skus | join(', ') or 'Not reported' }}</p>
-          <p><span>Matching service plan(s).</span> {{ cap.matched_service_plans | join(', ') or 'No matching service plan reported' }}</p>
-        </article>
-        {% endfor %}
-      </div>
-      {% else %}
-      <p style="color: var(--muted); margin: 0;">No licensed capabilities were resolved from entitlements.</p>
-      {% endif %}
+{% include "report/_capability_card.html.j2" %}
     </section>
 
-    {% if result.moves %}
-    <section>
-      <h2>Top things to do first</h2>
-      <p class="section-help">
-        Ordered by what protects the most with the least effort. Each is written so you can hand it to IT.
-      </p>
-      <ol class="steps">
-        {% for move in result.moves %}
-        <li style="margin-bottom: 0.9rem;">
-          <strong>{{ move.title }}</strong>
-          {% if move.effort_label %}<span class="badge effort" style="margin-left: 0.5rem;">{{ move.effort_label | lower }}</span>{% endif %}
-          <div style="color: var(--muted); margin-top: 0.25rem;">{{ move.why }}</div>
-          {% if move.customer_next_step %}<div style="margin-top: 0.25rem;"><strong>Next step:</strong> {{ move.customer_next_step }}</div>{% endif %}
-        </li>
-        {% endfor %}
-      </ol>
-      <p style="color: var(--muted); font-size: 0.85rem; margin: 0.75rem 0 0;">
-        Effort is a rough guide, not a quote.
-      </p>
-    </section>
-    {% endif %}
+{% include "report/_finding_card.html.j2" %}
 
-    <section>
-      <h2>Where you may not be getting the full benefit</h2>
-      <p class="section-help">
-        Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
-      </p>
-      <div class="filter-bar">
-        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
-        {% for s in ["all", "gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
-        <button data-filter="{{ s }}"{% if s == "all" %} class="active"{% endif %}>{{ status_labels.get(s, s) if s != "all" else "All" }}</button>
-        {% endfor %}
-        <small style="color: var(--muted); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
-        {% for w in ["all", "identity", "endpoint", "defender", "sentinel", "purview"] %}
-        <button data-workload="{{ w }}"{% if w == "all" %} class="active"{% endif %}>{{ w if w != "all" else "All" }}</button>
-        {% endfor %}
-        <span class="filter-count">Showing <strong>{{ findings|length }}</strong> of <strong>{{ findings|length }}</strong></span>
-      </div>
-      {% for f in findings %}
-      <article class="finding {{ f.status.value }}" data-status="{{ f.status.value }}" data-workload="{{ f.workload.value }}">
-        <div class="finding-head">
-          <span class="badge {{ f.status.value }}">{{ f.status_label or status_labels.get(f.status.value, f.status.value) }}</span>
-          <h3>{{ f.display_customer_title }}</h3>
-        </div>
-        <div class="finding-meta">
-          {% if f.severity %}<span class="meta-item">&#x25CF; {{ f.severity.value | capitalize }} severity</span>{% endif %}
-          {% if f.effort_label %}<span class="meta-item">&#x23F1; {{ f.effort_label }}</span>{% endif %}
-          {% if f.blast_radius %}<span class="meta-item">&#x1F465; {{ f.blast_radius.value | replace('_', ' ') }}</span>{% endif %}
-          {% if f.workload %}<span class="meta-item">{{ f.workload.value | capitalize }}</span>{% endif %}
-        </div>
-        {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
-        {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}
-        <details class="tech">
-          <summary>Evidence and Microsoft admin page</summary>
-          <p><strong>Confidence:</strong> {{ f.confidence_label or f.confidence.value }}</p>
-          <p><strong>Data sources:</strong> {{ f.data_sources | join(', ') or 'Not reported' }}</p>
-          <p><strong>Limitations:</strong> {% if f.limitations %}{% for limit in f.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
-          {% if f.deep_link %}<p><a href="{{ f.deep_link }}">Open Microsoft admin page</a></p>{% endif %}
-          <p><strong>Technical ID:</strong> <code>{{ f.check_id }}</code></p>
-        </details>
-      </article>
-      {% else %}
-      <p style="color: var(--muted); margin: 0;">No findings.</p>
-      {% endfor %}
-    </section>
-
-    <details class="tech">
-      <summary>Technical details (product names, SKUs, check IDs)</summary>
-
-      <h2 style="margin-top: 0.5rem;">Subscribed SKUs</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Part number</th>
-            <th>Status</th>
-            <th>Units</th>
-            <th>Service plans</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for sku in result.subscribed_skus %}
-          <tr>
-            <td><code>{{ sku.sku_part_number }}</code></td>
-            <td>{{ sku.capability_status or "—" }}</td>
-            <td>{{ sku.consumed_units or 0 }} / {{ sku.prepaid_units or "—" }}</td>
-            <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
-          </tr>
-          {% else %}
-          <tr><td colspan="4" style="color: var(--muted);">No SKUs collected.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <h2 style="margin-top: 1.25rem;">Finding reference table</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Status</th>
-            <th>Check ID</th>
-            <th>Technical title</th>
-            <th>Workload</th>
-            <th>Severity</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for f in findings %}
-          <tr>
-            <td><span class="badge {{ f.status.value }}">{{ f.status.value }}</span></td>
-            <td><code>{{ f.check_id }}</code></td>
-            <td>{{ f.title }}</td>
-            <td>{{ f.workload.value }}</td>
-            <td>{{ f.severity.value }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </details>
+{% include "report/_technical.html.j2" %}
   </main>
 
   <footer>
     {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
   </footer>
   <script>
-    (function() {
-      var findings = document.querySelectorAll('.finding');
-      var countEl = document.querySelector('.filter-count strong');
-      var totalEl = countEl ? countEl.parentNode : null;
-      var total = findings.length;
-
-      var activeStatus = 'all';
-      var activeWorkload = 'all';
-
-      function updateButtons(selector, value) {
-        document.querySelectorAll(selector).forEach(function(btn) {
-          btn.classList.toggle('active', btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value);
-        });
-      }
-
-      function applyFilters() {
-        var visible = 0;
-        findings.forEach(function(f) {
-          var s = f.getAttribute('data-status');
-          var w = f.getAttribute('data-workload');
-          var match = (activeStatus === 'all' || s === activeStatus) &&
-                      (activeWorkload === 'all' || w === activeWorkload);
-          f.hidden = !match;
-          if (match) visible++;
-        });
-        if (totalEl) totalEl.textContent = 'Showing ' + visible + ' of ' + total;
-      }
-
-      document.querySelectorAll('[data-filter]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          activeStatus = this.getAttribute('data-filter');
-          updateButtons('[data-filter]', activeStatus);
-          applyFilters();
-        });
-      });
-
-      document.querySelectorAll('[data-workload]').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          activeWorkload = this.getAttribute('data-workload');
-          updateButtons('[data-workload]', activeWorkload);
-          applyFilters();
-        });
-      });
-    })();
+{% include "report/_filters.js.j2" %}
   </script>
 </body>
 </html>
