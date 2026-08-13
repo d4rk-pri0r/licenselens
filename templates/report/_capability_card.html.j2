@@ -5,7 +5,7 @@
         <article class="card card-span-{{ card.span }}" data-variant="{{ card.status }}">
           {{ prim.status_marker(card.status) }}
           <h3>{{ cap.plain_name }}</h3>
-          <div class="msft">Microsoft name: {{ cap.name }}</div>
+          <div class="msft">Microsoft control: {{ cap.name }}</div>
           {% if card.status == 'needs_attention' %}
           {% if cap.if_unused %}<p><span>Exposure</span> {{ cap.if_unused }}</p>{% endif %}
           {% if cap.outcome %}<p><span>Control</span> {{ cap.outcome }}</p>{% endif %}
