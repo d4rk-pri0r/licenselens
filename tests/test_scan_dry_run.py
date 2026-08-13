@@ -54,7 +54,7 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     md_text = md.read_text(encoding="utf-8")
     assert "Security License Lens" in html_text
     assert "What you already pay for" in html_text
-    assert "plain English" in html_text.lower() or "What it does" in html_text
+    assert "<span>Control</span>" in html_text or "<span>Exposure</span>" in html_text
     assert html_text.count("Top things to do first") == 1
     assert "Recommended first steps" not in html_text
     assert js.is_file() and "customer_title" in js.read_text(encoding="utf-8")
