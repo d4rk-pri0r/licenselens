@@ -1,0 +1,32 @@
+      {% if capability_cards %}
+      <div class="cards">
+        {% for card in capability_cards %}
+        {% set cap = card.summary %}
+        <article class="card card-span-{{ card.span }}" data-variant="{{ card.status }}">
+          {{ prim.status_marker(card.status) }}
+          <h3>{{ cap.plain_name }}</h3>
+          <div class="msft">Microsoft control: {{ cap.name }}</div>
+          {% if card.status == 'needs_attention' %}
+          {% if cap.if_unused %}<p><span>Exposure</span> {{ cap.if_unused }}</p>{% endif %}
+          {% if cap.outcome %}<p><span>Control</span> {{ cap.outcome }}</p>{% endif %}
+          {% if cap.why_it_matters %}<p><span>Security impact</span> {{ cap.why_it_matters }}</p>{% endif %}
+          {% elif card.status == 'partly_set_up' %}
+          {% if cap.outcome %}<p><span>Control</span> {{ cap.outcome }}</p>{% endif %}
+          {% if cap.if_unused %}<p><span>Gap</span> {{ cap.if_unused }}</p>{% endif %}
+          {% if cap.why_it_matters %}<p><span>Security impact</span> {{ cap.why_it_matters }}</p>{% endif %}
+          {% elif card.status == 'fully_working' %}
+          {% if cap.outcome %}<p><span>Control</span> {{ cap.outcome }}</p>{% endif %}
+          {% if cap.why_it_matters %}<details class="tech"><summary>Security impact</summary>{{ cap.why_it_matters }}</details>{% endif %}
+          {% else %}
+          {% if cap.outcome %}<p><span>Control</span> {{ cap.outcome }}</p>{% endif %}
+          {% endif %}
+          <div class="card-provenance">
+            <span>License: {{ cap.matched_skus | join(', ') or 'Not reported' }}</span>
+            <span>Service plan: {{ cap.matched_service_plans | join(', ') or 'No matching service plan reported' }}</span>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="color: var(--text-2); margin: 0;">No licensed capabilities were resolved from entitlements.</p>
+      {% endif %}

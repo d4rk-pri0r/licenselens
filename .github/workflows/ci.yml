@@ -32,7 +32,7 @@ jobs:
         run: ruff format --check src tests
 
       - name: Pytest with coverage
-        run: pytest tests/ --cov=licenselens --cov-report=term-missing --cov-fail-under=72 -q
+        run: pytest tests/ -m "not browser" --cov=licenselens --cov-report=term-missing --cov-fail-under=72 -q
 
       - name: Dry-run scan
         # Exit 1 means gaps/partial findings (expected in demo data)
@@ -75,3 +75,33 @@ jobs:
           if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then exit "$code"; fi
           # HTML rendered means templates + catalog were packaged via licenselens/data
           test -f /tmp/wheel-reports/security-license-lens-report.html
+
+  report-browser:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install package dev extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run browser report tests
+        run: pytest tests/test_report_browser.py --browser chromium --tracing=retain-on-failure -q
+
+      - name: Upload browser test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-results
+          path: test-results/
+          if-no-files-found: ignore

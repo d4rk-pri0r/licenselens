@@ -43,8 +43,11 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "build>=1.2.0",
+  "html5lib>=1.1,<2",
+  "playwright>=1.61,<2",
   "pytest>=8.3.0",
   "pytest-cov>=5.0.0",
+  "pytest-playwright>=0.7,<1",
   "ruff>=0.6.0",
 ]
 
@@ -70,6 +73,7 @@ packages = ["src/licenselens"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = ["browser: browser tests requiring Playwright/Chromium (run by the report-browser CI job)"]
 
 [tool.ruff]
 line-length = 100
