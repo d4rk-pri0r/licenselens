@@ -26,27 +26,29 @@
         Each item is written for owners and busy admins. Use the suggested next step in a conversation with your IT partner.
       </p>
       <div class="filter-bar">
-        <small style="color: var(--text-2); font-size: 0.78rem; font-weight: 600; margin-right: 0.25rem;">Filter:</small>
-        {% for s in ["all", "gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
-        <button data-filter="{{ s }}"{% if s == "all" %} class="active"{% endif %}>{{ status_labels.get(s, s) if s != "all" else "All" }}</button>
-        {% endfor %}
-        <small style="color: var(--text-2); font-size: 0.78rem; font-weight: 600; margin-left: 0.5rem;">Workload:</small>
-        {% for w in ["all", "identity", "endpoint", "defender", "sentinel", "purview"] %}
-        <button data-workload="{{ w }}"{% if w == "all" %} class="active"{% endif %}>{{ w if w != "all" else "All" }}</button>
-        {% endfor %}
-        <span class="filter-count">Showing <strong>{{ findings|length }}</strong> of <strong>{{ findings|length }}</strong></span>
+        <div class="filter-group" role="group" aria-label="Filter by status">
+          {% for s in ["all", "gap", "partial", "ok", "not_licensed", "skipped", "error"] %}
+          <button data-filter="{{ s }}" aria-pressed="{{ 'true' if s == 'all' else 'false' }}"{% if s == 'all' %} class="active"{% endif %}>{{ 'All' if s == 'all' else prim.PRESENTATION.get(s, s) }}</button>
+          {% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by workload">
+          {% for w in ["all", "identity", "endpoint", "defender", "sentinel", "purview"] %}
+          <button data-workload="{{ w }}" aria-pressed="{{ 'true' if w == 'all' else 'false' }}"{% if w == 'all' %} class="active"{% endif %}>{{ 'All' if w == 'all' else w | capitalize }}</button>
+          {% endfor %}
+        </div>
+        <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>{{ findings|length }}</strong> of <strong data-total-count>{{ findings|length }}</strong></span>
       </div>
       {% for f in findings %}
       <article class="finding {{ f.status.value }}" data-status="{{ f.status.value }}" data-workload="{{ f.workload.value }}">
         <div class="finding-head">
-          {{ prim.status_badge(f.status.value, f.status_label or status_labels.get(f.status.value, f.status.value)) }}
+          {{ prim.status_marker(f.status.value) }}
           <h3>{{ f.display_customer_title }}</h3>
         </div>
         <div class="finding-meta">
-          {% if f.severity %}<span class="meta-item">&#x25CF; {{ f.severity.value | capitalize }} severity</span>{% endif %}
-          {% if f.effort_label %}<span class="meta-item">&#x23F1; {{ f.effort_label }}</span>{% endif %}
-          {% if f.blast_radius %}<span class="meta-item">&#x1F465; {{ f.blast_radius.value | replace('_', ' ') }}</span>{% endif %}
-          {% if f.workload %}<span class="meta-item">{{ f.workload.value | capitalize }}</span>{% endif %}
+          {% if f.severity %}<span class="meta-item"><span class="meta-key">Severity:</span> {{ f.severity.value | capitalize }}</span>{% endif %}
+          {% if f.effort_label %}<span class="meta-item"><span class="meta-key">Effort:</span> {{ f.effort_label }}</span>{% endif %}
+          {% if f.blast_radius %}<span class="meta-item"><span class="meta-key">Scope:</span> {{ f.blast_radius.value | replace('_', ' ') }}</span>{% endif %}
+          {% if f.workload %}<span class="meta-item"><span class="meta-key">Workload:</span> {{ f.workload.value | capitalize }}</span>{% endif %}
         </div>
         {% if f.customer_summary %}<p>{{ f.customer_summary }}</p>{% endif %}
         {% if f.customer_next_step %}<p><strong>Suggested next step:</strong> {{ f.customer_next_step }}</p>{% endif %}

@@ -1,3 +1,38 @@
+{%- set PRESENTATION = {
+    'gap': 'Action required',
+    'partial': 'Incomplete',
+    'ok': 'Operational',
+    'not_licensed': 'Not licensed',
+    'skipped': 'Not assessed',
+    'error': 'Verification failed',
+} -%}
+
+{%- set CAPABILITY_PRESENTATION = {
+    'needs_attention': 'Action required',
+    'partly_set_up': 'Incomplete',
+    'fully_working': 'Operational',
+    'not_licensed': 'Not licensed',
+} -%}
+
+{# Capability outcome -> finding-status variant (drives glyph geometry + color). #}
+{%- set CAPABILITY_VARIANT = {
+    'needs_attention': 'gap',
+    'partly_set_up': 'partial',
+    'fully_working': 'ok',
+    'not_licensed': 'not_licensed',
+} -%}
+
+{%- macro status_marker(status) -%}
+  {%- if status in PRESENTATION -%}
+    {%- set variant = status -%}
+    {%- set word = PRESENTATION[status] -%}
+  {%- else -%}
+    {%- set variant = CAPABILITY_VARIANT.get(status, status) -%}
+    {%- set word = CAPABILITY_PRESENTATION.get(status, status) -%}
+  {%- endif -%}
+<span class="status-marker {{ variant }}">{{ word }}</span>
+{%- endmacro -%}
+
 {%- macro status_badge(status_value, label) -%}
 <span class="badge {{ status_value }}">{{ label }}</span>
 {%- endmacro -%}
