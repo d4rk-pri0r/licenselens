@@ -243,7 +243,10 @@
       font-weight: 600;
       font-variant-numeric: tabular-nums;
     }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.85rem; }
+    .cards { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0.85rem; align-items: start; }
+    .card-span-wide { grid-column: span 8; }
+    .card-span-medium { grid-column: span 6; }
+    .card-span-compact { grid-column: span 4; }
     .card {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -254,6 +257,20 @@
     .card .msft { color: var(--text-2); font-size: 0.85rem; margin-bottom: 0.65rem; }
     .card p { margin: 0.4rem 0; font-size: 0.92rem; }
     .card p span { color: var(--text-2); font-weight: 600; }
+    .card-provenance {
+      margin-top: 0.65rem;
+      padding-top: 0.55rem;
+      border-top: 1px solid var(--border);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.72rem;
+      line-height: 1.5;
+      color: var(--text-3);
+      font-variant-numeric: tabular-nums;
+    }
+    .card-provenance span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
     .status-marker {
       display: inline-flex;
       align-items: center;
@@ -398,11 +415,15 @@
       .summary-posture { grid-column: span 12; }
       .summary-action { grid-column: span 6; }
       .summary-metrics { grid-column: span 6; }
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .card-span-wide, .card-span-medium, .card-span-compact { grid-column: span 1; }
     }
     @media screen and (max-width: 640px) {
       .summary-posture,
       .summary-action,
       .summary-metrics { grid-column: span 12; }
+      .cards { grid-template-columns: 1fr; }
+      .card-span-wide, .card-span-medium, .card-span-compact { grid-column: span 1; }
     }
     @media screen and (max-width: 720px) {
       .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
