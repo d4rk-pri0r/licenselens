@@ -219,7 +219,7 @@ def test_reduced_motion_disables_transitions(page: Page, report_uri: str) -> Non
 def test_print_status_contrast(page: Page, report_uri: str) -> None:
     page.emulate_media(media="print")
     page.goto(report_uri)
-    badges = page.locator(".finding .badge")
+    badges = page.locator(".finding .status-marker")
     assert badges.count() == 6, f"expected 6 status badges, got {badges.count()}"
     failures = []
     for index in range(badges.count()):

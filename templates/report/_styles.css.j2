@@ -409,6 +409,12 @@
       color: var(--accent);
       font-weight: 700;
     }
+    .table-scroll {
+      overflow-x: auto;
+      max-width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+    .table-scroll table { min-width: 100%; }
     table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
     th, td { text-align: left; padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--border); vertical-align: top; }
     th { color: var(--text-2); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -454,6 +460,28 @@
     details.tech[open] > summary { margin-bottom: 0.75rem; color: var(--text-1); }
     footer { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; color: var(--text-2); font-size: 0.85rem; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em; }
+    code, .table-scroll td, .table-scroll th, .card-provenance, .meta, .critical-rail-titles, .step-title {
+      overflow-wrap: anywhere;
+    }
+    /* Focus ring: 2px accent outline + 2px offset on every interactive element.
+       :focus-visible is the design-system contract; :focus is a belt-and-braces
+       fallback so a programmatic .focus() in Chromium always yields a visible ring. */
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible,
+    button:focus,
+    a:focus,
+    summary:focus {
+      outline: 2px solid var(--accent-focus);
+      outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition-duration: 0s !important;
+        animation-duration: 0s !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
     @media print {
       body {
         background: #fff;
@@ -471,6 +499,24 @@
       .tile, .card, .finding, section {
         background: #fff !important;
         border-color: #ccc !important;
+        break-inside: avoid;
+      }
+      /* Status inks: dark grayscale-safe colors, all >= 4.5:1 on white. Glyphs and
+         rails resolve through currentColor, so overriding `color` recolors them too. */
+      .status-marker.gap, .status-marker.error,
+      .badge.gap, .badge.error { color: #b3261e !important; }
+      .status-marker.partial, .badge.partial { color: #8a5a00 !important; }
+      .status-marker.ok, .badge.ok { color: #1e7a3a !important; }
+      .status-marker.not_licensed, .status-marker.skipped,
+      .badge.not_licensed, .badge.skipped { color: #57534e !important; }
+      .status-marker, .badge { background: transparent !important; }
+      .finding.gap, .finding.error { border-left-color: #b3261e !important; }
+      .finding.partial { border-left-color: #8a5a00 !important; }
+      .finding.ok { border-left-color: #1e7a3a !important; }
+      .finding.not_licensed, .finding.skipped { border-left-color: #57534e !important; }
+      .steps > li.step,
+      .summary-grid > div,
+      .filter-bar {
         break-inside: avoid;
       }
       details.tech { display: none; }
