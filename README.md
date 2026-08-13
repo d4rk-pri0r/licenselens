@@ -2,6 +2,8 @@
 
 **The security you already own (and ignore).**
 
+LicenseLens turns your Microsoft 365 entitlements into a plain-English, prioritized fix list: it checks whether the controls you already pay for are actually on, and shows you what to fix first.
+
 CLI: `licenselens` · Requires Python 3.12+
 
 Security License Lens finds **Microsoft security configuration debt**: high-value capabilities in E5, Entra ID P2, Defender, and related SKUs that stay at default or unused. It starts from **owned entitlements**, maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
@@ -36,6 +38,31 @@ licenselens doctor --live --auth client_secret
 licenselens scan --live --auth client_secret -o reports
 licenselens batch tenants.yaml -o reports
 ```
+
+## What it looks like
+
+![report hero](docs/images/report-hero.png)
+
+*The dashboard: what you own, what's working, and what to fix first.*
+
+![report findings](docs/images/report-findings.png)
+
+*Every finding shows its evidence and a direct link to the admin page.*
+
+<p align="center">
+  <img src="docs/images/report-mobile.png" width="375" alt="The report on mobile">
+  <br>
+  <em>The same report at mobile width.</em>
+</p>
+
+## A concrete example
+
+The most common finding, `id-ca-priv-gaps`:
+
+- **You pay for** Microsoft 365 E5, so Conditional Access is licensed for every user.
+- **We expect** MFA and legacy-auth blocking enforced through a CA policy.
+- **We observed** zero Conditional Access policies → the report marks the tenant `EXPOSED`.
+- **Do this** → enable an MFA CA policy (a few hours of work). The gap closes on the next scan.
 
 ## Why Security License Lens?
 
