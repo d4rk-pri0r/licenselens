@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader
 
 from licenselens.models import (
     CAPABILITY_STATUS_LABELS,
@@ -20,7 +20,7 @@ def write_html_report(result: ScanResult, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     env = Environment(
         loader=FileSystemLoader(str(templates_dir())),
-        autoescape=select_autoescape(["html", "xml"]),
+        autoescape=True,
     )
     template = env.get_template("report.html.j2")
     outcome_by_id = {o.id: o for o in result.capability_outcomes}
