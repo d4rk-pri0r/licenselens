@@ -119,7 +119,7 @@ def resolve_scan_inputs(
                     "Security License Lens only reads. It never changes policies, "
                     "users, or licenses.",
                     title="Read-only check",
-                    border_style="cyan",
+                    border_style="#88b4d8",
                 )
             )
             mode_key = _choose(

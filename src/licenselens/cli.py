@@ -27,7 +27,7 @@ from licenselens.report import write_html_report, write_json_report, write_markd
 app = typer.Typer(
     name=__cli_name__,
     help=(
-        f"{__product_name__}: the security you already own (and ignore).\n\n"
+        f"{__product_name__}: entitlements, controls, and configuration gaps.\n\n"
         "Start here:  licenselens demo\n"
         "Then:        licenselens scan   (prompts when interactive)\n"
         "MSP path:    licenselens batch tenants.yaml"
@@ -37,6 +37,10 @@ app = typer.Typer(
     rich_markup_mode="rich",
 )
 console = Console()
+
+#: Cool technical-blue identity accent — reserved for identity and
+#: informational CLI framing. Never used for semantic status outcomes.
+IDENTITY_ACCENT = "#88b4d8"
 
 
 class AuthModeOption(StrEnum):
@@ -95,13 +99,13 @@ def _print_top_card(result) -> None:
     ]
     if result.moves:
         lines.append("")
-        lines.append("Top things to do first:")
+        lines.append("Priority actions:")
         for move in result.moves:
             effort = f" [dim]({move.effort_label.lower()})[/dim]" if move.effort_label else ""
             lines.append(f"  • {move.title}{effort}")
     if result.has_exposed:
         lines.append(f"\n[red]EXPOSED ({result.exposed_count}):[/red] {exposed_titles}")
-    console.print(Panel("\n".join(lines), title="Your security at a glance", border_style="cyan"))
+    console.print(Panel("\n".join(lines), title="Security posture", border_style=IDENTITY_ACCENT))
 
 
 def _exit_for_scan(result_has_gaps: bool, *, errored: bool = False) -> None:
@@ -397,7 +401,9 @@ def scan_cmd(
             raise typer.Exit(code=2) from exc
 
     label = "live" if wizard.live else "dry-run"
-    console.print(f"[cyan]Running {__product_name__} scan ({label})…[/cyan]")
+    console.print(
+        f"[{IDENTITY_ACCENT}]Running {__product_name__} scan ({label})…[/{IDENTITY_ACCENT}]"
+    )
 
     try:
         result = run_scan(
@@ -461,7 +467,7 @@ def demo_cmd(
 ) -> None:
     """Run the offline demo scan and print the HTML report path."""
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
-    console.print("[cyan]Running offline demo scan…[/cyan]")
+    console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
     result = run_scan(auth, dry_run=True)
     output_dir.mkdir(parents=True, exist_ok=True)
     html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
@@ -502,7 +508,7 @@ def quickstart_cmd(
             "or licenses.\nYou can run it yourself against your own Microsoft "
             "tenant — here is the 2-minute version.",
             title="Read-only check, yours to run",
-            border_style="cyan",
+            border_style=IDENTITY_ACCENT,
         )
     )
     if client_secret:
@@ -619,7 +625,7 @@ def batch_cmd(
         console.print(f"[red]Config not found:[/red] {config}")
         raise typer.Exit(code=2)
 
-    console.print(f"[cyan]Running batch scan from {config}…[/cyan]")
+    console.print(f"[{IDENTITY_ACCENT}]Running batch scan from {config}…[/{IDENTITY_ACCENT}]")
     try:
         rows = run_batch(config, output_dir=output_dir, dry_run=not live)
     except (LicenseLensError, OSError, ValueError) as exc:
@@ -689,7 +695,7 @@ def discover_workspace_cmd(
     for warning in ctx.warnings:
         console.print(f"[yellow]Warning:[/yellow] {warning}")
 
-    console.print("[cyan]Discovering Sentinel workspaces…[/cyan]")
+    console.print(f"[{IDENTITY_ACCENT}]Discovering Sentinel workspaces…[/{IDENTITY_ACCENT}]")
     try:
         found = discover_sentinel_workspaces(
             ctx,

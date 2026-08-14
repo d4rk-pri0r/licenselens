@@ -127,7 +127,7 @@ EXPOSURE_PLAIN_LABELS: dict[str, str] = {
 }
 
 # Top-card tagline.
-TAGLINE = "The security you already own (and ignore)"
+TAGLINE = "Entitlements, controls, and configuration gaps."
 
 # Capability rollup statuses shown on the top card.
 CAPABILITY_STATUS_LABELS: dict[str, str] = {
