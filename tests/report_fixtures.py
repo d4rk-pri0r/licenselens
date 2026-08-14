@@ -317,3 +317,40 @@ def empty_report() -> ScanResult:
         has_exposed=False,
         exposed_check_ids=[],
     )
+
+
+def sparse_optional_fields_report() -> ScanResult:
+    """Exercise empty optional presentation fields (deep_link, data_sources, limitations, SKUs)."""
+    result = empty_report()
+    result.findings = [
+        Finding(
+            check_id="sparse-optional",
+            title="Sparse optional fields",
+            workload=Workload.IDENTITY,
+            status=FindingStatus.GAP,
+            severity=Severity.HIGH,
+            value_impact=ValueImpact.HIGH,
+            summary="Sparse optional fields for null-path coverage.",
+            deep_link=None,
+            customer_title="Sparse optional fields",
+            customer_summary="Optional meta omitted on purpose.",
+            customer_next_step="",
+            confidence_label="",
+            data_sources=[],
+            limitations=[],
+            evidence={},
+        )
+    ]
+    result.capability_summaries = [
+        CapabilitySummary(
+            id="sparse-cap",
+            name="Sparse Cap",
+            plain_name="Sparse capability",
+            matched_skus=[],
+            matched_service_plans=[],
+            outcome="needs_attention",
+            why_it_matters="Why it matters.",
+            if_unused="",
+        )
+    ]
+    return result

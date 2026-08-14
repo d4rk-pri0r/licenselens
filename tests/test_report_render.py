@@ -2,14 +2,12 @@
 
 Two groups, deliberately partitioned:
 
-* **GROUP A — RED redesign contracts**: new contracts the upcoming redesign must
-  satisfy. They *fail today* against the current template, and must fail as
-  assertion errors (never import/fixture errors).
-* **GROUP B — invariants that must PASS today**: regression guards locking the
-  current behavior so the redesign cannot silently break it.
-
-A small FIXTURE-INTEGRITY preamble asserts the fixtures themselves stay
-comprehensive; if those ever pass vacuously the RED/GREEN split loses meaning.
+* **ESTABLISHED INVARIANTS — must PASS today**: offline/autoescape/DOM/filter/
+  JSON/heading contracts that must remain green across visual redesigns.
+* **ENTERPRISE-XDR DESIGN-SIGNATURE CONTRACTS**: cool-charcoal surfaces, cool-blue
+  accent tokens, no violet/brass/navy signatures, and every declared surface
+  token consumed by a selector. These turn green as the XDR redesign lands.
+* **FIXTURE INTEGRITY**: preamble asserting fixtures stay comprehensive.
 """
 
 from __future__ import annotations
@@ -24,7 +22,7 @@ import html5lib
 from licenselens.models import STATUS_PLAIN_LABELS, ScanResult
 from licenselens.report.html import write_html_report
 from licenselens.report.json_report import write_json_report
-from tests.report_fixtures import comprehensive_report, empty_report
+from tests.report_fixtures import comprehensive_report, empty_report, sparse_optional_fields_report
 
 # ---------------------------------------------------------------------------
 # Parsing helpers (html5lib + ElementTree — no extra dependency beyond html5lib)
@@ -107,7 +105,8 @@ def test_empty_fixture_is_truly_empty() -> None:
 
 
 # ---------------------------------------------------------------------------
-# GROUP A — RED redesign contracts (must fail against the current template)
+# GROUP A — established invariants (formerly RED redesign contracts; the
+# redesign has landed and these are now green regression guards)
 # ---------------------------------------------------------------------------
 
 
@@ -220,15 +219,118 @@ def test_no_metadata_emoji(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# GROUP B — invariants that MUST PASS today (regression guards)
+# ENTERPRISE-XDR design-signature contracts (cool-charcoal + cool-blue)
 # ---------------------------------------------------------------------------
 
 SECTION_HEADINGS = [
+    "Security posture",
+    "Licensed control inventory",
+    "Priority actions",
+    "Assessment findings",
+]
+
+TAGLINE = "Entitlements, controls, and configuration gaps."
+
+LEGACY_HEADINGS = [
     "Your security at a glance",
+    "How to read this report",
     "What you already pay for",
     "Top things to do first",
     "Where you may not be getting the full benefit",
 ]
+LEGACY_TAGLINE = "The security you already own (and ignore)"
+
+VIOLET_TRIO = ("#9b8cff", "#b0a4ff", "#c7beff")
+BRASS_HEXES = ("#b9a06a", "#cbb683", "#ddcca8", "#594818")
+
+COOL_BLUE_TOKENS = (
+    "--canvas: #0f1114",
+    "--surface-1: #16191d",
+    "--surface-2: #1c2025",
+    "--surface-3: #242930",
+    "--surface-4: #2c323b",
+    "--accent: #88b4d8",
+    "--accent-hover: #a3c7e4",
+    "--accent-focus: #b8d6ee",
+    "--accent-print: #2c5a7d",
+)
+
+SURFACE_TOKENS = (
+    "--surface-1",
+    "--surface-2",
+    "--surface-3",
+    "--surface-4",
+)
+
+
+def test_no_violet_accent_trio(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for hex_value in VIOLET_TRIO:
+        assert hex_value not in html, f"violet accent {hex_value!r} leaked into the report CSS"
+
+
+def test_no_brass_accent_hexes(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for hex_value in BRASS_HEXES:
+        assert hex_value not in html, f"retired brass hex {hex_value!r} leaked into the report CSS"
+
+
+def test_no_radial_gradient_backdrop(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    assert "radial-gradient" not in html, "radial-gradient hero glow must be removed"
+
+
+def test_no_color_mix_usage(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    assert "color-mix(" not in html, "color-mix() usage must be removed"
+
+
+def test_no_pill_border_radius_values(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    assert "border-radius: 999px" not in html, "pill radius 999px must be removed"
+    assert "border-radius: 12px" not in html, "12px card radius must be removed"
+
+
+def test_no_circular_logo_mark(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    assert "border-radius: 50%" not in html, "circular logo-mark (border-radius: 50%) must go"
+    assert "border-radius:50%" not in html, "unspaced circular radius must go"
+
+
+def test_cool_blue_accent_tokens_present(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for token in COOL_BLUE_TOKENS:
+        assert token in html, f"required cool-blue/XDR token {token!r} missing from the report CSS"
+
+
+def test_every_surface_token_is_consumed(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for token in SURFACE_TOKENS:
+        assert f"{token}:" in html, f"surface token {token!r} not declared"
+        assert f"var({token})" in html, f"surface token {token!r} is declared but never consumed"
+
+
+def test_status_glyphs_are_pairwise_distinct_inline_svgs(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    shapes: dict[str, str] = {}
+    for status in ("gap", "partial", "ok", "not_licensed", "skipped", "error"):
+        match = re.search(
+            rf'class="status-marker {status}">\s*(<svg[\s\S]*?</svg>)',
+            html,
+        )
+        assert match, f"missing inline SVG glyph for status {status!r}"
+        svg = match.group(1)
+        assert 'aria-hidden="true"' in svg, f"glyph for {status!r} missing aria-hidden"
+        shapes[status] = svg
+    assert shapes["ok"] != shapes["not_licensed"], "ok and not_licensed glyphs must differ"
+    assert len(set(shapes.values())) == 6, "all six status glyphs must be pairwise distinct"
+
+
+def test_sparse_optional_fields_render_without_crash(tmp_path: Path) -> None:
+    html = render(sparse_optional_fields_report(), tmp_path)
+    assert "Sparse optional fields" in html
+    assert "Not reported" in html or "None reported" in html or "Sparse capability" in html
+    assert "Open Microsoft admin page" not in html
 
 
 def test_section_heading_order(tmp_path: Path) -> None:
@@ -238,6 +340,40 @@ def test_section_heading_order(tmp_path: Path) -> None:
         assert heading in h2_texts, f"missing section heading {heading!r}"
     positions = [h2_texts.index(h) for h in SECTION_HEADINGS]
     assert positions == sorted(positions), f"section headings out of order: {h2_texts}"
+
+
+def test_security_ledger_section_headings_exact(tmp_path: Path) -> None:
+    root = parse_html(render(comprehensive_report(), tmp_path))
+    h2_texts = [text_of(h).strip() for h in _all(root, "h2")]
+    for heading in SECTION_HEADINGS:
+        assert heading in h2_texts, f"missing security-ledger section heading {heading!r}"
+    for legacy in LEGACY_HEADINGS:
+        assert legacy not in h2_texts, f"legacy heading {legacy!r} still present in the report"
+
+
+def test_report_key_is_summary_not_heading(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    assert ">Report key<" in html, "report key summary label missing from the report"
+    root = parse_html(html)
+    h2_texts = [text_of(h).strip() for h in _all(root, "h2")]
+    assert "Report key" not in h2_texts, "Report key must be a <summary>, not an h2"
+
+
+def test_security_ledger_tagline(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    assert TAGLINE in html, "security-ledger tagline missing from the report"
+    assert LEGACY_TAGLINE not in html, "legacy tagline still rendered in the report"
+
+
+def test_legacy_dashboard_copy_absent(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for legacy in [*LEGACY_HEADINGS, LEGACY_TAGLINE]:
+        assert legacy not in html, f"legacy dashboard copy {legacy!r} still rendered"
+
+
+# ---------------------------------------------------------------------------
+# GROUP B — invariants that MUST PASS today (regression guards)
+# ---------------------------------------------------------------------------
 
 
 def test_exactly_one_main_and_heading_hierarchy(tmp_path: Path) -> None:
