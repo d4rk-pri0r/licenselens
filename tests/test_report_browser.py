@@ -4,17 +4,15 @@ The report is a single self-contained offline file opened via ``file://``, so th
 tests render the real artifact through ``write_html_report`` and navigate with
 ``Path.as_uri()`` — never a dev server, never an external request.
 
-Two groups, deliberately partitioned like ``test_report_render.py``:
+Two groups, deliberately partitioned:
 
-* **GROUP A — RED redesign contracts**: contracts the upcoming redesign must
-  satisfy. They *fail today* against the current template, and must fail as
-  assertion errors (never browser/setup errors).
-* **GROUP B — invariants that must PASS today**: regression guards locking the
-  current offline/disclosure/section behavior so the redesign cannot silently
-  break it.
-
-A small fixture-integrity test guarantees the browser-safe fixture never renders a
-raw ``<script>`` payload and still covers every status/exposure/move variant.
+* **ESTABLISHED INVARIANTS — must PASS today**: regression guards locking the
+  current offline/disclosure/section/overflow behavior. This includes the former
+  "RED redesign contracts" — the redesign has since landed, so those contracts
+  are now green invariants and are reclassified here.
+* **FIXTURE INTEGRITY**: one test guarantees the browser-safe fixture never
+  renders a raw ``<script>`` payload and still covers every status/exposure/move
+  variant.
 """
 
 from __future__ import annotations
@@ -30,13 +28,13 @@ from tests.report_fixtures import comprehensive_report
 
 pytestmark = pytest.mark.browser
 
-VIEWPORTS = [(375, 812), (768, 1024), (1280, 900)]
+VIEWPORTS = [(375, 812), (768, 1024), (1024, 768), (1280, 900), (1440, 1000)]
 
 SECTION_HEADINGS = [
-    "Your security at a glance",
-    "What you already pay for",
-    "Top things to do first",
-    "Where you may not be getting the full benefit",
+    "Security posture",
+    "Licensed control inventory",
+    "Priority actions",
+    "Assessment findings",
 ]
 
 ALL_FINDING_STATUSES = {"gap", "partial", "ok", "not_licensed", "skipped", "error"}
@@ -134,7 +132,7 @@ def test_browser_safe_fixture_has_no_script_payload(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# GROUP A — RED redesign contracts (must fail against the current template)
+# GROUP A — established browser invariants (offline, overflow, a11y, print)
 # ---------------------------------------------------------------------------
 
 
@@ -158,7 +156,7 @@ def test_filter_keyboard_and_aria_pressed(page: Page, report_uri: str) -> None:
     buttons = page.locator("button[data-filter], button[data-workload]")
     assert buttons.count() > 0, "no filter controls found"
 
-    # RED: every filter button must expose aria-pressed="true"|"false".
+    # Invariant: every filter button must expose aria-pressed="true"|"false".
     for index in range(buttons.count()):
         button = buttons.nth(index)
         pressed = button.get_attribute("aria-pressed")

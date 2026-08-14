@@ -53,9 +53,9 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     html_text = html.read_text(encoding="utf-8")
     md_text = md.read_text(encoding="utf-8")
     assert "Security License Lens" in html_text
-    assert "What you already pay for" in html_text
+    assert "Licensed control inventory" in html_text
     assert "<span>Control</span>" in html_text or "<span>Exposure</span>" in html_text
-    assert html_text.count("Top things to do first") == 1
+    assert html_text.count("Priority actions") == 1
     assert "Recommended first steps" not in html_text
     assert js.is_file() and "customer_title" in js.read_text(encoding="utf-8")
     assert md_text.startswith("# Security License Lens")
@@ -84,7 +84,7 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
     html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
 
     # Hero top card renders the rollup numbers and sentence.
-    assert "Your security at a glance" in html
+    assert "Security posture" in html
     assert "Licensed capabilities detected" in html
     assert "Prioritized capabilities" in html
     assert "Fully working" in html
@@ -93,7 +93,7 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
     assert "Need attention" in html
 
     # Prioritized moves surface with owner-voice labels.
-    assert "Top things to do first" in html
+    assert "Priority actions" in html
     for move in result.moves:
         assert move.title in html
         assert move.effort_label.lower() in html.lower()
@@ -155,8 +155,9 @@ def test_reports_surface_evidence_and_one_action_plan(tmp_path: Path):
 
     finding_with_limitations = next(f for f in result.findings if f.limitations)
     exposed_findings = [f for f in result.findings if f.check_id in result.exposed_check_ids]
+    assert html.count("Priority actions") == 1
+    assert md.count("Top things to do first") == 1
     for report in (html, md):
-        assert report.count("Top things to do first") == 1
         assert "Recommended first steps" not in report
         if exposed_findings:
             assert "High-risk priority (fix first)" in report

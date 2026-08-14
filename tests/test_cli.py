@@ -100,12 +100,12 @@ def test_scan_dry_run_prints_top_card(tmp_path: Path):
     result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
     # Dry-run has actionable gaps -> exit 1, report written, summary shown.
     assert result.exit_code == 1, result.output
-    assert "Your security at a glance" in result.stdout
+    assert "Security posture" in result.stdout
     assert "Licensed capabilities detected: 8" in result.stdout
     assert "Prioritized now (identity, endpoint): 4" in result.stdout
     assert "Fully working (prioritized): 1" in result.stdout
     assert "Need attention (prioritized): 3" in result.stdout
-    assert "Top things to do first:" in result.stdout
+    assert "Priority actions:" in result.stdout
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
 
 

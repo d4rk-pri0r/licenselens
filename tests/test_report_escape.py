@@ -72,10 +72,10 @@ INJECTED_PLAN_ESCAPED = "Plan&lt;2&gt;&amp;svc"
 LINK_WITH_QUERY = "https://admin.microsoft.com/#/Security?foo=1&bar=2"
 
 SECTION_HEADINGS = [
-    "Your security at a glance",
-    "What you already pay for",
-    "Top things to do first",
-    "Where you may not be getting the full benefit",
+    "Security posture",
+    "Licensed control inventory",
+    "Priority actions",
+    "Assessment findings",
 ]
 
 
