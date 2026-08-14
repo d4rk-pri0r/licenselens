@@ -1,48 +1,71 @@
-# Security License Lens — Design System
+# Security License Lens: Design System
 
-This file is the implementation contract for the static HTML report. Every color, type choice, spacing value, component primitive, state, and motion rule used in the report traces back to a declaration here. It is authored as an extraction of the existing report, not a greenfield proposal: the eight components below map one-to-one onto the report's rendered structure (metric tiles, status badges/markers, capability cards, the "Top things to do first" list, findings, the status/workload filter bar, the native `<details>` disclosures, and the two technical reference tables).
+This file is the implementation contract for the static HTML report. Every color, type choice, spacing value, component primitive, state, and motion rule used in the report traces back to a declaration here. The report is a layered enterprise-XDR security console: dense, cool-charcoal, instrument-like, and offline-first.
+
+**Anti-churn freeze.** After this redesign lands, future visual changes edit tokens and primitives only. Do not rewrite this contract wholesale again.
 
 ## Atmosphere & Identity
 
-Security License Lens is a **read-only security audit**, not a marketing page. The report answers one question — *which protections do you already pay for, and which are still off?* — and its surface must project the same calm, skeptical authority as a printed config ledger or a vendor security review.
+Security License Lens is a read-only security audit, not a marketing page. It answers one question: which protections do you already pay for, and which are still off?
 
-The identity is **warm, low-light, and editorial**: near-black warm-neutral surfaces with a crisp 1px border grid, and a single restrained violet accent reserved for product identity and interaction. Nothing is decorative for its own sake; every mark on the page either carries a status or explains an entitlement.
+The identity is a **layered enterprise security console**. Cool-charcoal surfaces step through five tonal levels. Depth comes from the surface ramp plus two pinned shadow tokens on raised/focused layers only. One restrained cool steel/ice-blue accent carries identity and interaction. Semantic red/amber/green/neutral remain outcome-only and never double as branding.
 
 **Rejected directions (non-negotiable):**
-- No cool-blue accent and no blue-to-violet "AI" gradient wash.
-- No frosted / backdrop-blur translucency; depth is achieved purely through tonal shift and borders.
-- No ornamental or ambient motion; motion only signals a state change or an affordance.
-- No downloaded font files and no external asset hosts; the report renders fully offline.
-- No icon library and no image/noise assets; symbols are typographic (carets, bullets, dots).
+- No pure black `#000000` canvas or surface fill.
+- No brass identity tokens (`#b9a06a`, `#cbb683`, `#ddcca8`, `#594818`).
+- No violet/purple/pink AI gradient, and no navy `#5b9dff` or saturated cyan product accent.
+- No glassmorphism, backdrop-blur, neon/cyberpunk, or decorative glow stacks.
+- No external font, CDN, icon package, image asset, data-URI, or network request.
+- No external/embedded-file SVG. Inline `<svg>` macros are allowed when they use `currentColor` and `aria-hidden="true"` beside a visible text label.
+- No blanket pill or radius above 4px. Circles and 999px pills are forbidden as component shapes.
+- No emoji iconography and no copied vendor branding, logos, product names, exact vendor tokens, or trade dress.
+- No light-mode UI feature. The screen is always dark; only print inverts to light ink.
+- Shadows are exactly the two pinned tokens below, applied only to raised/focused/interactive layers. Ordinary records stay tonal + 1px rules with no shadow.
 
 ## Color
 
-All 16 tokens are declared once here. Reference them by name elsewhere; never re-declare a value.
+All tokens are declared once here. Reference them by name elsewhere; never re-declare a value.
 
-| Token | Hex | Role |
+| Token | Hex / value | Role |
 | --- | --- | --- |
-| `--canvas` | `#11110f` | Deepest page background |
-| `--surface-1` | `#171714` | Primary surface (sections, cards, tables) |
-| `--surface-2` | `#1d1d19` | Secondary / elevated surface (raised cards, disclosures) |
-| `--surface-3` | `#24231f` | Highest elevation surface (overlays, focused panes) |
-| `--border` | `#34332d` | Default 1px border |
-| `--border-strong` | `#494840` | Strong / emphasis 1px border |
-| `--text-1` | `#f1f0ea` | Primary text |
-| `--text-2` | `#b2b0a7` | Secondary text (labels, meta, section help) |
-| `--text-3` | `#85827a` | Tertiary text (captions, placeholders, faint counts) |
-| `--accent` | `#9b8cff` | Product accent (base) |
-| `--accent-hover` | `#b0a4ff` | Product accent (hover) |
-| `--accent-focus` | `#c7beff` | Product accent (focus ring) |
-| `--state-action` | `#ff737a` | Action-required (gap) |
+| `--canvas` | `#0f1114` | Deepest cool-charcoal page stock |
+| `--surface-1` | `#16191d` | Primary surface (sections, findings, filter defaults, disclosures default) |
+| `--surface-2` | `#1c2025` | Secondary surface (cards, hero body) |
+| `--surface-3` | `#242930` | Raised surface (open disclosures, elevated panes) |
+| `--surface-4` | `#2c323b` | Highest surface (focused/active panes, header chrome) |
+| `--border` | `#2a3038` | Default 1px rule |
+| `--border-strong` | `#3a424c` | Strong / emphasis 1px rule |
+| `--text-1` | `#f2f4f7` | Primary ink |
+| `--text-2` | `#b9c0ca` | Secondary ink (labels, meta, section help) |
+| `--text-3` | `#8a919c` | Tertiary ink (captions, placeholders, faint counts) |
+| `--accent` | `#88b4d8` | Cool steel/ice-blue identity + interaction |
+| `--accent-hover` | `#a3c7e4` | Accent hover |
+| `--accent-focus` | `#b8d6ee` | Focus ring |
+| `--accent-print` | `#2c5a7d` | Print ink for links and identity figures |
+| `--state-action` | `#ff737a` | Action-required (gap) and error rail/label |
 | `--state-incomplete` | `#e2b84b` | Incomplete (partial) |
 | `--state-ok` | `#67c991` | Operational (ok) |
-| `--state-neutral` | `#96938b` | Neutral (not-licensed / skipped / error) |
+| `--state-neutral` | `#96938b` | Neutral (not-licensed / skipped) |
+| `--shadow-key` | `0 1px 2px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.18)` | Tight key elevation for focused panes / open disclosures |
+| `--shadow-soft` | `0 4px 12px rgba(0,0,0,.45), 0 2px 6px rgba(0,0,0,.25)` | Soft ambient elevation for hero rollup only |
 
-**Accent usage rule.** `--accent` (with `--accent-hover` / `--accent-focus`) is used *only* for: product identity (logo mark), active controls, links, focus indication, and the realized-percentage figure in the hero rollup. It is never used to color a semantic problem state — a gap, a partial, an ok, or a neutral result always uses its dedicated state token.
+**Accent usage rule.** `--accent` (with hover/focus/print) is identity-only. It colors the logo mark, links, focus rings, selection, and measurement emphasis in the hero. It never colors a semantic problem state.
 
-**Semantic state mapping.** `gap → --state-action`; `partial → --state-incomplete`; `ok → --state-ok`; `not_licensed`, `skipped`, and `error → --state-neutral`. The neutral token is the sole exception that also doubles as the calm background tint for not-licensed / skipped / error rows, badges, and rails.
+**Semantic state mapping.**
+- `gap` → `--state-action`
+- `partial` → `--state-incomplete`
+- `ok` → `--state-ok`
+- `not_licensed` → `--state-neutral`
+- `skipped` → `--state-neutral`
+- `error` → `--state-action` for both label and left rail on screen and in print (aligned with gap)
 
-**Depth strategy.** Elevation is a tonal ladder plus a crisp 1px border — never a drop shadow, never a frosted blur. The only permitted gradient anywhere is a single faint two-radial-gradient vignette on `--canvas` (see the depth section below).
+**Contrast floors.**
+- Screen accent `#88b4d8` on `#0f1114` ≥ 4.5:1
+- Focus `#b8d6ee` against adjacent surfaces ≥ 3:1
+- Print accent `#2c5a7d` on white ≥ 4.5:1
+- Body text ≥ 4.5:1; large text ≥ 3:1; non-text status indicators ≥ 3:1
+
+**Depth strategy.** Elevation is a five-step cool-charcoal tonal ladder plus the two pinned shadows on raised layers only. Never a generic drop-shadow card stack. Never blur. Never gradient washes.
 
 ## Typography
 
@@ -53,142 +76,159 @@ System-only, offline-safe. No font files are downloaded and no external font sta
 | Sans stack | `Segoe UI Variable Text, Segoe UI, ui-sans-serif, system-ui, -apple-system, sans-serif` |
 | Mono stack | `ui-monospace, SFMono-Regular, Menlo, Consolas, monospace` |
 
-**Mono usage.** Use the mono stack for: technical IDs (`check_id`, SKU part numbers), timestamps, service-plan names, and every numeric column. These are identifiers and measurements, not prose — mono marks them as machine data.
+Four canonical rules (locked):
 
-**Tabular numerals.** Every numeric and metric figure (rollup counts, units, percentages, effort figures) sets `font-variant-numeric: tabular-nums` so columns align and counts do not jitter on re-render.
+1. **Mono scope.** Use the mono stack for technical IDs (`check_id`, SKU part numbers), timestamps, service-plan names, and every numeric column.
+2. **Tabular numerals.** Every metric figure sets `font-variant-numeric: tabular-nums`.
+3. **Alignment.** Numbers right-align; text left-align.
+4. **No external font.** Only the two system stacks above.
 
-**Alignment.** Numbers right-align; text left-align. A numeric column in a table is right-aligned against its header; a label or title column stays left-aligned.
-
-**Scale (recommended, not a locked token).** Metric figure `1.6rem/700`; section heading `1.15rem/600`; card title `1.02rem/600`; body `0.92–0.95rem`; caption/label `0.78rem`; micro-label `0.72rem` uppercase with `0.04em` letter-spacing. Line height `1.55` for body. This scale is guidance; the four locked rules above (stacks, mono scope, tabular-nums, alignment) are canonical.
+**Scale (recommended).** Metric figure `1.6rem/700` (hero posture may use `2rem/700`); section heading `1.15rem/600`; card title `1.02rem/600`; body `0.92`–`0.95rem`; caption/label `0.78rem`; micro-label `0.72rem` uppercase with `0.04em` letter-spacing. Line height `1.55` for body.
 
 ## Spacing & Layout
 
 - **Base unit: 4px.** Every padding, gap, and inset is a multiple of 4.
 - **Desktop grid: 12 columns**, content max-width **1100px**, centered with responsive gutters.
-- **Breakpoints: 900px and 640px.** 900px collapses the 12-column grid to fewer fluid columns (cards wrap to two-up then one-up); 640px is the single-column handset layout where tiles run two-per-row.
+- **Breakpoints: 900px and 640px.** 900px collapses the 12-column grid; 640px is the single-column handset layout.
 
-**Spacing stops** (multiples of the 4px base): 4, 8, 12, 16, 20, 24, 32, 48. Canonical choices: section padding `16px 20px`, card padding `16px`, card/finding gap `12px`, section margin `16px`, filter-pill gap `8px`.
+**Spacing stops:** 4, 8, 12, 16, 20, 24, 32, 48. Canonical choices: section padding `16px 20px`, card padding `16px`, card/finding gap `12px`, section margin `16px`, filter-button gap `8px`.
 
-The metric-tile band and the capability-card band are both 12-column CSS grid layouts: tiles at `minmax(150px, 1fr)` per column, cards at `minmax(280px, 1fr)`, so both reflow on the grid rather than with bespoke media queries.
+**Radius contract (locked):**
+- **0px:** page sections, hero, tiles, cards, findings, tables, disclosures, critical rail.
+- **2px:** logo mark, status labels, effort labels, filter buttons, glyph containers.
+- **4px:** focus and active panes. Maximum radius anywhere.
+- **Forbidden:** 8px, 12px, 50% (circle), 999px (pill).
+
+**Target sizes (locked):**
+- Touch / coarse pointer: minimum interactive target **44×44px**.
+- Fine pointer (`@media (pointer: fine)`): minimum **24×24px**.
 
 ## Components
 
-Eight primitives. Each lists Structure, Variants, Spacing, States, Accessibility, Motion, and Layout.
+Eight primitives. Each lists Structure, Variants, Spacing, States, Accessibility, Motion, and Layout. Status is always **label + geometry + color**.
 
 ### 1. Summary metric
 
-- **Structure:** a large numeric figure (`.n`) above a label (`.l`) with an optional uppercase micro-sub-label. Inside a bordered surface tile.
-- **Variants:** neutral figure (default `--text-1`); accent figure (the realized-percentage figure, `--accent`); status figure (`--state-ok` / `--state-incomplete` for the rollup counts).
+- **Structure:** large numeric figure above a label, optional micro-sub-label, inside a ruled 0px-radius tile.
+- **Variants:** neutral figure (`--text-1`); accent figure (realized %, `--accent`); status figure for attention counts.
 - **Spacing:** tile padding `16px`; figure-to-label gap `4px`; tile gap `12px`.
-- **States:** static (non-interactive); no hover/active/focus behavior.
-- **Accessibility:** the number is text, not an image; the label + sub-label carry meaning, so the figure is never color-only. `tabular-nums` on the figure.
+- **States:** static.
+- **Accessibility:** number is text; label carries meaning; `tabular-nums`.
 - **Motion:** none.
-- **Layout:** one tile per grid column; 12-column grid, tiles `minmax(150px, 1fr)`.
+- **Layout:** 12-column grid, tiles `minmax(150px, 1fr)`.
 
 ### 2. Status marker
 
-- **Structure:** a compact label with a geometric glyph. Two shapes: **dot** (8px filled circle before an inline status word, used in capability cards) and **pill badge** (rounded full-width container with status text, used in findings and tables).
-- **Variants:** four status variants — action-required, incomplete, operational, neutral — each binding a label, a glyph geometry, and a state token. Neutral also covers not-licensed / skipped / error with their own words but the same visual token.
-- **Spacing:** dot-to-text gap `8px`; pill padding `4px 10px`; badge font `0.75rem/700`.
-- **States:** static label; it is never itself a control.
-- **Accessibility:** status is encoded by **label + geometry + color** — the glyph (filled dot vs. text) and the word differ, so the color is redundant, never the only channel. Grayscale-safe.
+- **Structure:** compact 2px-radius label with an inline SVG glyph + visible status word.
+- **Six named glyphs (locked geometry):**
+  - `gap` → **chevron-alert** (filled chevron/alert mark)
+  - `partial` → **half-fill** (half-filled square/ring)
+  - `ok` → **check-ring** (ring with check)
+  - `not_licensed` → **slash-circle** (circle with slash; must not match `ok`)
+  - `skipped` → **dash** (horizontal dash bar)
+  - `error` → **triangle-alert** (warning triangle)
+- **SVG rules:** inline only; single 24×24 viewBox; consistent stroke width; `fill="currentColor"` / `stroke="currentColor"`; `aria-hidden="true"` and `focusable="false"`; visible PRESENTATION word remains the accessible name.
+- **Variants:** six statuses binding label + unique glyph + state token.
+- **Spacing:** glyph-to-text gap `8px`; label padding `4px 10px`; label font `0.75rem/700`.
+- **States:** static label; never itself a control.
+- **Accessibility:** never color-only; geometry unique across all six; grayscale-safe via word + shape; forced-colors keeps glyphs via `currentColor`.
 - **Motion:** none.
-- **Layout:** inline-flex; the dot marker sits above a card title, the pill sits inline in a finding header or table cell.
+- **Layout:** inline-flex in finding headers, capability cards, and tables.
 
 ### 3. Capability card
 
-- **Structure:** `article` surface: status marker (dot) at top, plain-name title, "Microsoft name" line, then labeled rows — what it does, why it matters, if it is not set up, included-through SKU(s), matching service-plan(s).
-- **Variants:** by status — the variant is carried by the dot marker + the card's surface elevation, not by a recolored border. All statuses share one card shape.
-- **Spacing:** padding `16px`; title-to-sub `8px`; row gap `12px`; label prefix separated by a full stop and styled `--text-2/600`.
-- **States:** default surface only; the card itself is non-interactive (no hover lift).
-- **Accessibility:** SKU and service-plan names render in the mono stack; long plan names wrap safely. Label prefixes ("What it does.", "Why it matters.") are visible text, not icons.
+- **Structure:** `article` surface with 0px radius and 1px rule: status marker at top, plain-name title, Microsoft name, labeled rows (what it does, why it matters, if unused, SKUs, service plans).
+- **Variants:** by status via glyph + optional surface elevation, not recolored borders.
+- **Spacing:** padding `16px`; title-to-sub `8px`; row gap `12px`.
+- **States:** default surface only; non-interactive.
+- **Accessibility:** SKU/plan names mono; long names wrap; label prefixes are visible text.
 - **Motion:** none.
-- **Layout:** card grid `minmax(280px, 1fr)` on the 12-column grid, gap `12px`.
+- **Layout:** card grid `minmax(280px, 1fr)`, gap `12px`. Surface: `--surface-2`.
 
 ### 4. Action item
 
-- **Structure:** an ordered-list item in the ranked "Top things to do first" list: bold title, an optional effort badge, a "why" line, and a "Suggested next step" line.
-- **Variants:** none by status; ordering is by rank (the `<ol>` semantics), and the effort badge is the only modifier.
-- **Spacing:** item gap `16px`; title-to-detail `8px`; badge left margin `8px`.
-- **States:** non-interactive text; no hover/active/focus.
-- **Accessibility:** the `<ol>` preserves rank for screen readers and in print; "Next step" is bolded prose, not a button — no affordance is faked.
+- **Structure:** ordered-list item: bold title, optional effort label, why line, action line, cool-blue index.
+- **Variants:** none by status; order is rank.
+- **Spacing:** item gap `16px`; title-to-detail `8px`.
+- **States:** non-interactive text.
+- **Accessibility:** `<ol>` preserves rank; action is bolded prose, not a fake button.
 - **Motion:** none.
-- **Layout:** full content width, left-aligned list numbering.
+- **Layout:** full content width.
 
 ### 5. Finding
 
-- **Structure:** `article` with a 3px left status rail, a badge + title header, a meta row (severity, effort, blast radius, workload), a customer summary, a suggested next step, and an embedded technical disclosure.
-- **Variants:** six — gap, partial, ok, not-licensed, skipped, error — each driving the rail color and badge variant (skipped and error share the neutral rail).
+- **Structure:** full-width ruled `article` with 3px left status rail, status marker + title, meta row (severity, effort, scope, workload), customer summary, next step, native technical disclosure. 0px radius.
+- **Variants:** six statuses drive rail color and marker. Error rail uses `--state-action` on screen and in print (same as gap).
 - **Spacing:** padding `16px`; finding gap `12px`; header-to-meta gap `8px`.
-- **States:** default only; the finding is not a control (the disclosure inside is).
-- **Accessibility:** the 3px rail is geometry (width + position), the badge carries the word, and the rail carries the state token — three channels, never color-only. Meta glyphs are typographic bullets, not emoji.
+- **States:** default; disclosure inside is the control.
+- **Accessibility:** rail + word + glyph; meta is text keys, not emoji.
 - **Motion:** none on the container.
-- **Layout:** full-width stacked list, one finding per row; rail renders on the left edge.
+- **Layout:** full-width stacked list. Surface: `--surface-1`.
 
 ### 6. Filter group
 
-- **Structure:** a horizontal wrapping bar of pill buttons with a trailing "Showing N of N" count. Two groups exist: a status filter and a workload filter, each ending with an "All" reset.
-- **Variants:** status filter and workload filter (identical anatomy, different data).
-- **Spacing:** pill gap `8px`; pill padding `4px 12px`; bar margin-bottom `12px`.
-- **States:** default (`--surface-1` fill, `--text-2`); hover (`--border` → accent border, text → `--text-1`); active (accent-tinted fill, accent border, accent text); `:focus-visible` (2px accent outline, 2px offset). Keyboard-toggleable buttons.
-- **Accessibility:** active state is both the tinted fill and the border — not color-only; `aria-pressed`/selected state is exposed on the active pill.
-- **Motion:** `background`, `color`, and `border-color` transitions, ≤150ms; `transform`/`opacity` only — no layout animation.
-- **Layout:** flex-wrap row; the count is pushed right with `margin-left: auto`.
+- **Structure:** wrapping bar of segmented rectangular buttons (2px radius) with trailing "Showing N of N" count. Status and workload groups each end with All.
+- **Spacing:** button gap `8px`; button padding sized to hit 44px touch / 24px fine-pointer targets.
+- **States:** default (`--surface-1`, `--text-2`); hover (accent border/text via `--accent-hover`); active (accent rule + accent text on `--surface-2`); `:focus-visible` 2px `--accent-focus` outline, 2px offset.
+- **Accessibility:** `role="group"`; `aria-pressed`; count is `role="status"` `aria-live="polite"`. Active is never color-only.
+- **Motion:** color/border/background ≤150ms.
+- **Layout:** flex-wrap; count `margin-left: auto`.
 
 ### 7. Disclosure (native `<details>`)
 
-- **Structure:** a native `<details class="tech">` with a `<summary>` caret + label, and a body of evidence / technical tables.
-- **Variants:** inline disclosure (per finding: "Evidence and Microsoft admin page") and the full technical reference disclosure (SKU + finding tables).
-- **Spacing:** padding `12px 16px`; summary-to-body gap `12px` when open.
-- **States:** closed (dashed border, `--text-2` summary); open (solid border, `--text-1` summary); summary hover (text → `--text-1`); summary `:focus-visible` (2px accent outline, 2px offset).
-- **Accessibility:** native `<details>/<summary>` semantics give free keyboard + AT toggling; the caret is decorative typography (a rotated `▸`), and state is exposed via the element's own `open` attribute, not the glyph alone.
-- **Motion:** the caret rotates via `transform` ≤150ms; the disclosure itself does not animate open/close.
-- **Layout:** full-width; the inline variant nests inside a finding, the technical variant spans the page bottom.
+- **Structure:** native `<details class="tech">` with summary caret + label and evidence/table body. 0px radius.
+- **States:** closed (dashed border, `--surface-1`); open (solid border, `--surface-3`, `--shadow-key`); summary hover/focus-visible as above.
+- **Accessibility:** native keyboard/AT; caret decorative; state via `open`.
+- **Motion:** caret rotate via transform ≤150ms.
+- **Layout:** full-width; inline in findings or full technical section.
 
 ### 8. Technical table
 
-- **Structure:** a bordered `<table>` with a muted uppercase header row and body rows; two instances — "Subscribed SKUs" (part number, status, units, service plans) and the finding reference table (status, check ID, title, workload, severity).
-- **Variants:** by content, not by shape; the SKU table and finding table share one table style.
-- **Spacing:** cell padding `12px 8px`; `1px` bottom border per row (no vertical rules).
-- **States:** static; header row non-interactive.
-- **Accessibility:** `<th scope>` on headers; numeric columns right-aligned with `tabular-nums`; IDs, part numbers, timestamps, and plan names in the mono stack; long identifiers wrap safely.
+- **Structure:** bordered `<table>` with muted uppercase header row and body rows.
+- **Spacing:** cell padding `12px 8px`; 1px bottom rule per row.
+- **States:** static.
+- **Accessibility:** `<th scope>`; numeric columns right-aligned with `tabular-nums`; mono IDs; long identifiers wrap; status labels use PRESENTATION words, not raw enum values.
 - **Motion:** none.
-- **Layout:** full-width, `border-collapse: collapse`; on the handset breakpoint the table scrolls within its disclosure rather than squashing columns.
+- **Layout:** full-width; handset tables scroll inside the disclosure.
 
 ## Motion & Interaction
 
-Motion is **CSS-only**, **≤150ms**, and limited to `transform` and `opacity` (plus the non-layout color/border properties on filter pills). No keyframe loops, no staggered reveals, no scroll-triggered effects, no transitions on layout properties (width, height, margin, top/left).
+Motion is CSS-only, ≤150ms, limited to `transform`, `opacity`, and non-layout color/border properties.
 
-- `prefers-reduced-motion: reduce` disables **all** transitions and the caret rotation.
-- Every interactive element has **hover + active + `:focus-visible`**. The `:focus-visible` treatment is a **2px `--accent-focus` outline with a 2px offset**.
-- Minimum interactive target is **24×24px** (filter pills, disclosure summaries).
-- The only animated affordances are: filter-pill hover/active tint, disclosure caret rotation, and focus-ring fade. Each maps to a real state change — nothing animates to "look alive".
+- `prefers-reduced-motion: reduce` disables all transitions and caret rotation.
+- Every interactive element has hover + active + `:focus-visible`.
+- Minimum interactive targets follow the target-size contract above.
+- No ornamental or ambient motion.
 
 ## Depth & Surface
 
-Elevation is a **tonal ladder**, not a shadow system. Four levels, warm and near-black, each step a small lightness gain:
+Elevation ladder (cool charcoal):
 
-`--canvas` (deepest) → `--surface-1` (sections/cards) → `--surface-2` (raised cards, disclosures) → `--surface-3` (overlays, focused panes).
+`--canvas` → `--surface-1` → `--surface-2` → `--surface-3` → `--surface-4`
 
-Edges are carried by **crisp 1px borders**: `--border` for quiet separation, `--border-strong` to lift a pane. Raised emphasis (the hero rollup, an open disclosure) combines a higher surface token with a strong border — never a drop shadow, never a frosted blur.
+Every declared surface token MUST be consumed by at least one real selector. Dead surface tokens are a contract violation.
 
-The single permitted background flourish is a **faint two-radial-gradient vignette on `--canvas`**: two soft, very-low-opacity warm radial glows behind the header, giving the page a subtle lit-from-above feel without any translucency or noise. Surfaces and borders are opaque; only this vignette uses a gradient.
+**Shadow reservation (locked):**
+- `--shadow-soft`: hero rollup only.
+- `--shadow-key`: open disclosures and focused/active panes only.
+- Ordinary cards, findings, tiles, filters, tables: **no shadow**.
 
-Status rails (the finding's 3px left edge) and status badges supply all non-shadow emphasis — color is reserved for meaning, borders for structure.
+Edges use 1px rules (`--border` / `--border-strong`). Solid fills only. No gradient, blur, or glow.
 
 ## Accessibility Constraints & Accepted Debt
 
-Target is **WCAG 2.2 AA**, verified against the declared palette.
+Target is WCAG 2.2 AA, verified against the declared palette.
 
-- **Contrast floors:** body text ≥ **4.5:1**; large text (≥ `1.6rem` metrics, headings) ≥ **3:1**; non-text and status indicators ≥ **3:1**.
-- **Status is never color-only.** Every status uses label + geometry + color (word, dot/pill/rail shape, and hue together). The dot marker and the 3px rail remain distinguishable in grayscale.
-- **Print inverts to light ink.** The printed page uses a light background with dark text; status rails and status symbols must hold ≥ **4.5:1** grayscale-safe contrast on white. The technical disclosure and footer are hidden in print; tiles/cards/findings avoid page breaks.
-- **Long tokens wrap safely.** Technical IDs, SKU part numbers, and service-plan names use the mono stack with safe wrapping (`overflow-wrap: anywhere` / `word-break` on identifier cells) so a long plan name cannot overflow its card or cell.
-- **Focus is always visible.** 2px accent outline + 2px offset on every interactive element via `:focus-visible`.
-- **Reduced motion** is respected everywhere (see the motion section above).
+- **Contrast floors:** body ≥ 4.5:1; large text ≥ 3:1; non-text indicators ≥ 3:1; accent/print floors above.
+- **Status is never color-only.** Every status uses label + unique glyph geometry + color.
+- **Forced colors.** Glyphs use `currentColor` so they remain distinct under `forced-colors: active`.
+- **Print inverts to light ink.** Suppress both shadow tokens. Status-marker backgrounds transparent with contrast-safe status text on white. Links/figures use `--accent-print`. Hero/cards/actions/findings protected from page breaks. Technical disclosure and footer hidden in print.
+- **Long tokens wrap safely** with mono stack and `overflow-wrap: anywhere`.
+- **Focus is always visible.** 2px `--accent-focus` outline + 2px offset via `:focus-visible`.
+- **Reduced motion** is respected everywhere.
+- **Null/empty fields** must render without crash (omit or show "Not reported" / "None reported").
 
 **Accepted debt (deliberate, reviewed):**
-
-- (a) **English-only UI** — no i18n; all report copy is authored in English.
-- (b) **Modern-browser floor for CSS `color-mix()`** — accent-tinted fills (active pills, hero tint) rely on `color-mix(in srgb, …)`, so legacy engines that lack it degrade to flat fills rather than breaking layout.
-- (c) **No `general` workload filter** — the filter bar omits a `general` toggle because no current check uses the `general` workload; adding it would render a dead control.
+- (a) **English-only UI.** No i18n.
+- (b) **No `general` workload filter.** No current check uses `general`.
+- (c) **JSON/Markdown plain labels may differ from HTML PRESENTATION words** when machine semantics require stable `STATUS_PLAIN_LABELS`; document any intentional divergence rather than silently changing JSON enums.
