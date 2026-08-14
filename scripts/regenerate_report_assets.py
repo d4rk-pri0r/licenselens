@@ -12,8 +12,9 @@ network access.
 
 Run:  uv run python scripts/regenerate_report_assets.py
 
-Exits non-zero if the generated HTML carries a legacy navy/blue design token or a
-dropped emoji, or if the browser issues an http(s) request.
+Exits non-zero if the generated HTML carries a legacy AI-dashboard signature
+(violet accents, radial-gradient, color-mix(), pill/circular border radii, old
+headings/tagline) or a dropped emoji, or if the browser issues an http(s) request.
 """
 
 from __future__ import annotations
@@ -47,21 +48,48 @@ SCREENSHOTS: tuple[tuple[str, int, int, str], ...] = (
 
 # Tokens the redesigned report must carry (from DESIGN.md, the "Color" section).
 NEW_DESIGN_TOKENS: tuple[str, ...] = (
-    "--canvas: #11110f",
-    "--surface-1: #171714",
-    "--accent: #9b8cff",
+    "--canvas: #0f1114",
+    "--surface-1: #16191d",
+    "--surface-2: #1c2025",
+    "--surface-3: #242930",
+    "--surface-4: #2c323b",
+    "--accent: #88b4d8",
+    "--accent-hover: #a3c7e4",
+    "--accent-focus: #b8d6ee",
+    "--accent-print: #2c5a7d",
     "--state-action: #ff737a",
     "--state-ok: #67c991",
 )
 
-# Legacy navy/blue tokens the redesign removed.
-OLD_DESIGN_TOKENS: tuple[str, ...] = (
+# Legacy signatures the redesign removed: violet/navy/brass accents, warm
+# ledger stock, radial gradients, color-mix(), pill/circular radii, and old copy.
+LEGACY_SIGNATURES: tuple[str, ...] = (
+    "#9b8cff",
+    "#b0a4ff",
+    "#c7beff",
     "#0b1220",
     "#121a2b",
     "#5b9dff",
+    "#b9a06a",
+    "#cbb683",
+    "#ddcca8",
+    "#594818",
+    "--canvas: #11110f",
+    "--surface-1: #171714",
     "var(--bg)",
     "var(--panel)",
     "var(--muted)",
+    "radial-gradient",
+    "color-mix(",
+    "border-radius: 999px",
+    "border-radius: 12px",
+    "border-radius: 50%",
+    "Your security at a glance",
+    "How to read this report",
+    "What you already pay for",
+    "Top things to do first",
+    "Where you may not be getting the full benefit",
+    "The security you already own (and ignore)",
 )
 
 # Emoji the plain-language redesign dropped (U+23F1 stopwatch, U+1F465 busts).
@@ -111,9 +139,9 @@ def check_html(html: str) -> list[str]:
     for token in NEW_DESIGN_TOKENS:
         if token not in html:
             problems.append(f"missing new design token: {token!r}")
-    for token in OLD_DESIGN_TOKENS:
-        if token in html:
-            problems.append(f"legacy navy/blue token still present: {token!r}")
+    for signature in LEGACY_SIGNATURES:
+        if signature in html:
+            problems.append(f"legacy AI-dashboard signature still present: {signature!r}")
     for emoji in FORBIDDEN_EMOJI:
         if emoji in html:
             problems.append(f"forbidden emoji still present: U+{ord(emoji):04X}")
@@ -144,9 +172,7 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                 page.goto(uri, wait_until="load")
                 page.wait_for_timeout(SETTLE_MS)
                 if kind == "findings":
-                    heading = page.locator(
-                        "h2", has_text="Where you may not be getting the full benefit"
-                    ).first
+                    heading = page.locator("h2", has_text="Assessment findings").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.locator("article.finding").first.locator("details.tech > summary").click()
                     page.wait_for_timeout(SETTLE_MS)
@@ -191,7 +217,10 @@ def main() -> int:
         for problem in problems:
             print(f"  FAIL: {problem}")
     else:
-        print("\nHTML design tokens: OK (new tokens present, no legacy navy/blue, no emoji)")
+        print(
+            "\nHTML design tokens: OK"
+            " (new tokens present, no legacy AI-dashboard signatures, no emoji)"
+        )
 
     net_failures = [n for n, s in shots.items() if s["http_requests"]]
     if net_failures:
