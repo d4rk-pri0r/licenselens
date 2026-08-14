@@ -45,8 +45,8 @@
               <td>{{ prim.status_badge(f.status.value, f.status.value) }}</td>
               <td><code>{{ f.check_id }}</code></td>
               <td>{{ f.title }}</td>
-              <td>{{ f.workload.value }}</td>
-              <td>{{ f.severity.value }}</td>
+              <td>{% if f.workload %}{{ f.workload.value }}{% else %}—{% endif %}</td>
+              <td>{% if f.severity %}{{ f.severity.value }}{% else %}—{% endif %}</td>
             </tr>
             {% endfor %}
           </tbody>

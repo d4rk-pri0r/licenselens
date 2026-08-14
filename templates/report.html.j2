@@ -25,7 +25,7 @@
       {{ prim.meta_row("Organization", result.tenant_display_name or result.tenant_id or "demo / dry-run") }}
     </div>
     {% if result.warnings %}
-    <div class="intro" style="border-color: color-mix(in srgb, var(--state-incomplete) 40%, var(--border));">
+    <div class="intro" style="border-color: var(--state-incomplete);">
       <strong>Notes</strong>
       <ul style="margin: 0.5rem 0 0; padding-left: 1.2rem;">
         {% for w in result.warnings %}
@@ -39,7 +39,7 @@
     <main>
     {% set rollup = result.capability_rollup %}
     <section class="hero">
-      <h2>Your security at a glance</h2>
+      <h2>Security posture</h2>
       <div class="summary-grid">
         <div class="summary-posture">
           <div class="posture-figure">{{ rollup.realized_percent }}% realized</div>
@@ -71,16 +71,6 @@
         </div>
         {% endif %}
       </div>
-    </section>
-
-    <details class="tech" style="margin-bottom: 1rem;">
-      <summary>How to read this report</summary>
-      <p style="margin: 0.5rem 0 0; color: var(--text-1); font-size: 0.92rem;">
-        Microsoft licenses often include powerful protections with confusing product names.
-        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
-      </p>
-    </details>
 
     <div class="tiles">
       {% for status in status_order %}
@@ -93,9 +83,19 @@
       </div>
       {% endfor %}
     </div>
+    </section>
+
+    <details class="tech" style="margin-bottom: 1rem;">
+      <summary>Report key</summary>
+      <p style="margin: 0.5rem 0 0; color: var(--text-1); font-size: 0.92rem;">
+        Microsoft licenses often include powerful protections with confusing product names.
+        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
+        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
+      </p>
+    </details>
 
     <section>
-      <h2>What you already pay for</h2>
+      <h2>Licensed control inventory</h2>
       <p class="section-help">
         Licensed controls mapped to detected Microsoft entitlements. Action states appear first.
       </p>
