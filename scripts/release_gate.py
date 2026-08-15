@@ -43,6 +43,11 @@ from typing import Final
 
 REPO_ROOT: Final = Path(__file__).resolve().parent.parent
 DEFAULT_OUT: Final = REPO_ROOT / ".omo/evidence/maturity-and-check-expansion"
+DEFAULT_CONFORMANCE: Final = (
+    REPO_ROOT
+    / ".omo/evidence/licenselens-plan-conformance-and-provenance-audit/conformance.json"
+)
+DEFAULT_PROVENANCE_RECEIPT: Final = REPO_ROOT / "dist" / "provenance-receipts"
 
 # ---------------------------------------------------------------------------
 # Steps
@@ -541,6 +546,7 @@ def check_release_guards() -> StepResult:
     """Run the cross-platform release/CI workflow static guards in-process."""
     start = time.monotonic()
     sys.path.insert(0, str(REPO_ROOT / "src"))
+    from licenselens.ci_guard import ci_guards, docs_freshness_guards
     from licenselens.release_guard import (
         release_guards,
         third_party_notices_guards,
@@ -552,6 +558,8 @@ def check_release_guards() -> StepResult:
     problems = (
         release_guards(REPO_ROOT)
         + windows_ci_guards(REPO_ROOT)
+        + ci_guards(REPO_ROOT)
+        + docs_freshness_guards(REPO_ROOT)
         + third_party_notices_guards(REPO_ROOT)
     )
     version = version_from_pyproject(REPO_ROOT)
@@ -573,8 +581,163 @@ def check_release_guards() -> StepResult:
         "pass",
         0,
         duration_ms,
-        f"release_guards/windows_ci_guards/notices clean; version v{version} consistent",
+        f"release_guards/windows_ci_guards/ci_guards/notices clean; version v{version} consistent",
     )
+
+
+def check_provenance_receipt(
+    receipt: Path | None = None,
+    *,
+    require_modes: tuple[str, ...] = (),
+) -> StepResult:
+    """Require a clean provenance JSON receipt (fail closed on missing/unclean)."""
+    start = time.monotonic()
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from licenselens.release_guard import provenance_receipt_guards
+
+    target = receipt or DEFAULT_PROVENANCE_RECEIPT
+    problems = provenance_receipt_guards(target, require_modes=require_modes or None)
+    duration_ms = int((time.monotonic() - start) * 1000)
+    if problems:
+        return StepResult(
+            "provenance-receipt",
+            "Provenance JSON receipt is present and clean",
+            "fail",
+            0,
+            duration_ms,
+            "",
+            "; ".join(problems),
+        )
+    return StepResult(
+        "provenance-receipt",
+        "Provenance JSON receipt is present and clean",
+        "pass",
+        0,
+        duration_ms,
+        f"clean receipt at {target}",
+    )
+
+
+def check_conformance_freshness(matrix: Path | None = None) -> StepResult:
+    """Require conformance matrix with no partial|missing|deferred rows."""
+    start = time.monotonic()
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from licenselens.release_guard import conformance_matrix_guards
+
+    target = matrix or DEFAULT_CONFORMANCE
+    if not target.is_file():
+        duration_ms = int((time.monotonic() - start) * 1000)
+        return StepResult(
+            "conformance-freshness",
+            "Conformance matrix has no partial|missing|deferred rows",
+            "fail",
+            0,
+            duration_ms,
+            "",
+            f"missing conformance matrix: {target}",
+        )
+    problems = conformance_matrix_guards(target)
+    duration_ms = int((time.monotonic() - start) * 1000)
+    if problems:
+        return StepResult(
+            "conformance-freshness",
+            "Conformance matrix has no partial|missing|deferred rows",
+            "fail",
+            0,
+            duration_ms,
+            "",
+            f"{len(problems)} stale row(s): {problems[:8]}",
+        )
+    return StepResult(
+        "conformance-freshness",
+        "Conformance matrix has no partial|missing|deferred rows",
+        "pass",
+        0,
+        duration_ms,
+        f"fresh matrix at {target}",
+    )
+
+
+def check_provenance_artifacts() -> StepResult:
+    """Scan built wheel/sdist/zip members via the provenance scanner."""
+    start = time.monotonic()
+    proc = run_capture(
+        [
+            "uv",
+            "run",
+            "python",
+            "scripts/provenance_scan.py",
+            "--artifacts",
+            "--json",
+        ],
+        timeout=600,
+    )
+    duration_ms = int((time.monotonic() - start) * 1000)
+    output = (proc.stdout or "") + (proc.stderr or "")
+    if proc.returncode != 0:
+        return StepResult(
+            "provenance-artifacts",
+            "Artifact-member provenance scan is clean",
+            "fail",
+            proc.returncode,
+            duration_ms,
+            _tail(output),
+            f"provenance --artifacts exit {proc.returncode}",
+        )
+    try:
+        payload = json.loads(proc.stdout or "{}")
+    except json.JSONDecodeError:
+        return StepResult(
+            "provenance-artifacts",
+            "Artifact-member provenance scan is clean",
+            "fail",
+            proc.returncode,
+            duration_ms,
+            _tail(output),
+            "provenance --artifacts emitted non-JSON",
+        )
+    if payload.get("status") != "clean":
+        return StepResult(
+            "provenance-artifacts",
+            "Artifact-member provenance scan is clean",
+            "fail",
+            proc.returncode,
+            duration_ms,
+            _tail(output),
+            f"status={payload.get('status')!r} violations={payload.get('violation_count')}",
+        )
+    return StepResult(
+        "provenance-artifacts",
+        "Artifact-member provenance scan is clean",
+        "pass",
+        0,
+        duration_ms,
+        f"artifacts clean; scanned={payload.get('scanned_paths', 0)}",
+    )
+
+
+def validate_receipts_bundle(
+    receipts: Path,
+    *,
+    require_modes: tuple[str, ...] = (),
+    conformance: Path | None = None,
+    gate_ledger: Path | None = None,
+    fail_on_deferred: bool = True,
+) -> list[str]:
+    """Validate provenance receipts (+ optional conformance/ledger) fail-closed."""
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from licenselens.release_guard import (
+        conformance_matrix_guards,
+        gate_ledger_guards,
+        provenance_receipt_guards,
+    )
+
+    problems = provenance_receipt_guards(receipts, require_modes=require_modes or None)
+    if conformance is not None:
+        problems.extend(conformance_matrix_guards(conformance))
+    if gate_ledger is not None:
+        problems.extend(gate_ledger_guards(gate_ledger, fail_on_deferred=fail_on_deferred))
+    return problems
 
 
 def check_release_scripts() -> StepResult:
@@ -1018,6 +1181,32 @@ def _render_negative_ledger(entries: list[dict]) -> str:
     return "\n".join(lines)
 
 
+def run_validate_receipts(
+    receipts: Path,
+    *,
+    require_modes: tuple[str, ...] = (),
+    conformance: Path | None = None,
+    gate_ledger: Path | None = None,
+    fail_on_deferred: bool = True,
+) -> int:
+    problems = validate_receipts_bundle(
+        receipts,
+        require_modes=require_modes,
+        conformance=conformance,
+        gate_ledger=gate_ledger,
+        fail_on_deferred=fail_on_deferred,
+    )
+    if problems:
+        print("PROVENANCE_RECEIPT_REJECTED")
+        for problem in problems:
+            print(f"  - {problem}")
+        return 1
+    print("PROVENANCE_RECEIPT_CLEAN")
+    if require_modes:
+        print(f"required_modes={','.join(require_modes)}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Master LicenseLens release gate (Todo 36).")
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
@@ -1027,10 +1216,59 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="run the fail-closed negative fixture ledger instead of the happy gate",
     )
+    parser.add_argument(
+        "--validate-receipts",
+        type=Path,
+        default=None,
+        help="validate a provenance receipt file/dir (and optional conformance/ledger)",
+    )
+    parser.add_argument(
+        "--require-modes",
+        default="",
+        help="comma-separated provenance modes required under --validate-receipts",
+    )
+    parser.add_argument(
+        "--conformance",
+        type=Path,
+        default=None,
+        help="conformance matrix JSON to require fresh (no partial|missing|deferred)",
+    )
+    parser.add_argument(
+        "--gate-ledger",
+        type=Path,
+        default=None,
+        help="release-gate.json ledger to validate (deferred steps fail when set)",
+    )
+    parser.add_argument(
+        "--allow-deferred-ledger",
+        action="store_true",
+        help="with --gate-ledger, do not fail on deferred steps (default: fail)",
+    )
+    parser.add_argument(
+        "--provenance-receipt",
+        type=Path,
+        default=None,
+        help="when running the full gate, require this clean provenance receipt",
+    )
+    parser.add_argument(
+        "--skip-conformance",
+        action="store_true",
+        help="skip conformance-matrix freshness (default: require when matrix exists)",
+    )
     args = parser.parse_args(argv)
 
     if args.negative:
         return run_negative(args.out)
+
+    if args.validate_receipts is not None:
+        modes = tuple(m.strip() for m in args.require_modes.split(",") if m.strip())
+        return run_validate_receipts(
+            args.validate_receipts,
+            require_modes=modes,
+            conformance=args.conformance,
+            gate_ledger=args.gate_ledger,
+            fail_on_deferred=not args.allow_deferred_ledger,
+        )
 
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
@@ -1053,6 +1291,7 @@ def main(argv: list[str] | None = None) -> int:
         check_secret_and_path_scan,
         check_source_leakage,
         check_stray_artifacts,
+        check_provenance_artifacts,
     )
     for check in compound_checks:
         try:
@@ -1070,7 +1309,12 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
 
-    # 3) deferred (cannot run on macOS/this host)
+    if args.provenance_receipt is not None:
+        results.append(check_provenance_receipt(args.provenance_receipt))
+
+    if args.conformance is not None and not args.skip_conformance:
+        results.append(check_conformance_freshness(args.conformance))
+
     results.append(
         deferred_result(
             "windows-exe-build",
