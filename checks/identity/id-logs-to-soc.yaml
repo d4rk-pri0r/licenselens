@@ -1,0 +1,26 @@
+id: id-logs-to-soc
+title: Entra security log shipping needs manual confirmation
+customer_title: Confirm identity logs reach your security team
+customer_summary: >
+  Without sign-in and audit logs in your monitoring platform, identity attacks are harder to detect and investigate.
+customer_next_step: >
+  Confirm Entra sign-in and audit logs are exported to your SOC or SIEM.
+description: >
+  Security logs should be sent to the organization's SOC. This control is manual.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/DiagnosticSettingsMenuBlade
+collector: noop
+remediation: >
+  Export Entra sign-in and audit logs to the organization SIEM/SOC pipeline.
+references:
+  - https://learn.microsoft.com/entra/identity/monitoring-health/howto-integrate-activity-logs-with-azure-monitor-logs
+enabled: true

@@ -1,0 +1,26 @@
+id: id-idprotect-notify-high-risk
+title: High-risk user admin notifications need manual confirmation
+customer_title: Confirm high-risk account alerts reach security
+customer_summary: >
+  Automatic blocks help, but someone still needs to be notified when accounts are marked high risk.
+customer_next_step: >
+  In Identity Protection, send high-risk user alerts to a monitored security mailbox.
+description: >
+  Administrators should be notified when high-risk users are detected. This control is manual.
+workload: identity
+required_capabilities:
+  - identity_protection
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/IdentityProtectionMenuBlade
+collector: noop
+remediation: >
+  Configure Identity Protection users-at-risk detected alerts to a monitored mailbox.
+references:
+  - https://learn.microsoft.com/entra/id-protection/howto-identity-protection-configure-notifications
+enabled: true

@@ -1,0 +1,26 @@
+id: id-guest-inviter-restricted
+title: Guest invitations not limited to inviter roles
+customer_title: Stop everyone from inviting external guests
+customer_summary: >
+  When any employee can invite guests, partner sprawl and accidental data sharing grow quickly.
+customer_next_step: >
+  Allow only admins and Guest Inviter role holders to invite guests.
+description: >
+  Only users with the Guest Inviter role or admins should invite guest users.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade
+collector: graph_authorization
+remediation: >
+  Set allowInvitesFrom to adminsAndGuestInviters (or stricter).
+references:
+  - https://learn.microsoft.com/entra/external-id/external-collaboration-settings-configure
+enabled: true
