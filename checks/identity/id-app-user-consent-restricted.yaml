@@ -1,0 +1,26 @@
+id: id-app-user-consent-restricted
+title: User consent to applications not restricted
+customer_title: Stop users from approving risky app permissions
+customer_summary: >
+  Consent phishing works when users can grant apps broad access themselves. Restricting consent forces admin review.
+customer_next_step: >
+  Restrict user consent so only admins approve non-trivial permissions.
+description: >
+  User consent to applications should be restricted.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserSettingsMenuBlade
+collector: graph_authorization
+remediation: >
+  Configure authorization policy permission grant policies so users cannot consent broadly.
+references:
+  - https://learn.microsoft.com/entra/identity/enterprise-apps/configure-user-consent
+enabled: true

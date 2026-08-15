@@ -1,0 +1,26 @@
+id: id-auth-methods-migration
+title: Authentication methods migration not complete
+customer_title: Finish consolidating sign-in method settings
+customer_summary: >
+  Microsoft moved multi-factor and password-reset methods to one policy page. Leaving migration unfinished keeps two places to misconfigure.
+customer_next_step: >
+  Complete authentication methods migration to Migration Complete.
+description: >
+  Authentication methods policy migration should be complete.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade
+collector: graph_auth_methods
+remediation: >
+  Migrate MFA and SSPR methods to the Authentication methods policy and set migration state to complete.
+references:
+  - https://learn.microsoft.com/entra/identity/authentication/how-to-authentication-methods-manage
+enabled: true

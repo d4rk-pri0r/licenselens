@@ -1,0 +1,26 @@
+id: id-auth-authenticator-context
+title: Authenticator login context not fully enabled
+customer_title: Show app and location on Authenticator prompts
+customer_summary: >
+  When people approve a push without seeing which app and where it came from, they are more likely to approve a phishing prompt.
+customer_next_step: >
+  Enable application name and geographic location in Microsoft Authenticator notifications.
+description: >
+  If Microsoft Authenticator is enabled, it should show application and location context.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade
+collector: graph_auth_methods
+remediation: >
+  Enable display of application name and geographic location for Microsoft Authenticator push notifications.
+references:
+  - https://learn.microsoft.com/entra/identity/authentication/how-to-mfa-additional-context
+enabled: true
