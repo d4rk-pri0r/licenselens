@@ -14,7 +14,7 @@ def _live_results(monkeypatch, fake, workspace_resource_id=None):
         lambda _auth, **_kw: fake,
     )
     monkeypatch.setattr(
-        "licenselens.engine.runner.collect_mde_machine_summary",
+        "licenselens.collectors.runtime.collect_mde_machine_summary",
         lambda _auth: {
             "onboarded_machines": 50,
             "sample_size": 50,
@@ -23,7 +23,7 @@ def _live_results(monkeypatch, fake, workspace_resource_id=None):
         },
     )
     monkeypatch.setattr(
-        "licenselens.engine.runner.collect_sentinel_bundle",
+        "licenselens.collectors.runtime.collect_sentinel_bundle",
         lambda _auth, _wid: {
             "sentinel_rules": {"total_rules": 0},
             "sentinel_ueba": {},

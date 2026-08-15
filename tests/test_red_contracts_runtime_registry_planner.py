@@ -85,17 +85,17 @@ def test_narrow_workload_scan_skips_unrelated_collectors(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Identity-only scan must not materialize MDE/ARM/collaboration evidence."""
-    import licenselens.engine.runner as runner_mod
+    from licenselens.engine.planner import EvidencePlanner
 
     captured: list[set[str]] = []
-    real_gather = runner_mod._gather_evidence
+    original = EvidencePlanner.collect
 
-    def _tracking_gather(**kwargs: Any) -> dict[str, Any]:
-        evidence = real_gather(**kwargs)
-        captured.append(set(evidence))
-        return evidence
+    def _tracking_collect(self: Any, *args: Any, **kwargs: Any) -> Any:
+        result = original(self, *args, **kwargs)
+        captured.append({str(key) for key in result.envelopes})
+        return result
 
-    monkeypatch.setattr(runner_mod, "_gather_evidence", _tracking_gather)
+    monkeypatch.setattr(EvidencePlanner, "collect", _tracking_collect)
 
     auth = build_auth_context(mode=AuthMode.DRY_RUN, tenant_id="dry-run")
     run_scan(auth, dry_run=True, workloads=[Workload.IDENTITY])
