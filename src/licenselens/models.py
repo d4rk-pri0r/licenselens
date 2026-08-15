@@ -3,9 +3,22 @@
 from __future__ import annotations
 
 from enum import StrEnum
-from typing import Any
+from typing import Any, Self
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from licenselens.schema_contracts import (
+    CURRENT_SCHEMA_VERSION,
+    SUPPORTED_SCHEMA_MAJOR,
+    AcceptedRiskAnnotation,
+    CollectionSummary,
+    EvaluationMode,
+    ProfileId,
+    SchemaVersion,
+    SourceReference,
+    UnsupportedSchemaVersionError,
+)
+from licenselens.schema_contracts import CollectionStatus as CollectionStatus
 
 
 class FindingStatus(StrEnum):
@@ -63,6 +76,9 @@ class CheckPack(StrEnum):
     IDENTITY = "identity"
     EMAIL = "email"
     ENDPOINT = "endpoint"
+    COLLABORATION = "collaboration"
+    POWER_PLATFORM = "power-platform"
+    POWER_BI = "power-bi"
     STARTER = "starter"
 
 
@@ -80,6 +96,13 @@ class Workload(StrEnum):
     SENTINEL = "sentinel"
     PURVIEW = "purview"
     ENDPOINT = "endpoint"
+    EXCHANGE = "exchange"
+    COLLABORATION = "collaboration"
+    TEAMS = "teams"
+    POWER_PLATFORM = "power_platform"
+    POWER_BI = "power_bi"
+    INTUNE = "intune"
+    AZURE = "azure"
     GENERAL = "general"
 
 
@@ -111,6 +134,7 @@ PACK_PLAIN_LABELS: dict[str, str] = {
     "identity": "Identity",
     "email": "Email",
     "endpoint": "Endpoint",
+    "collaboration": "Collaboration",
     "starter": "Starter",
 }
 
@@ -181,11 +205,27 @@ class Capability(BaseModel):
     workloads: list[Workload] = Field(default_factory=list)
     service_plan_names: list[str] = Field(default_factory=list)
     sku_part_numbers: list[str] = Field(default_factory=list)
+    service_plan_aliases: list[str] = Field(default_factory=list)
+    sku_aliases: list[str] = Field(default_factory=list)
+    entitlement_kind: str = "included"
+    clouds: list[str] = Field(default_factory=list)
+    backends: list[str] = Field(default_factory=list)
+    source_version: str = ""
     docs_url: str | None = None
 
     @property
     def display_plain_name(self) -> str:
         return self.plain_name or self.name
+
+    @property
+    def matching_plan_names(self) -> frozenset[str]:
+        return frozenset(
+            name.upper() for name in (*self.service_plan_names, *self.service_plan_aliases)
+        )
+
+    @property
+    def matching_sku_part_numbers(self) -> frozenset[str]:
+        return frozenset(name.upper() for name in (*self.sku_part_numbers, *self.sku_aliases))
 
 
 class CheckDefinition(BaseModel):
@@ -229,6 +269,8 @@ class CheckDefinition(BaseModel):
 
 
 class Finding(BaseModel):
+    model_config = ConfigDict(extra="allow", validate_assignment=True)
+
     check_id: str
     title: str
     workload: Workload
@@ -254,6 +296,25 @@ class Finding(BaseModel):
     confidence_label: str = ""
     data_sources: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
+    evaluation_mode: EvaluationMode = EvaluationMode.DIRECT
+    source_references: list[SourceReference] = Field(default_factory=list)
+    accepted_risks: list[AcceptedRiskAnnotation] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def reject_indirect_high_confidence_ok(self) -> Self:
+        if (
+            self.evaluation_mode
+            in {
+                EvaluationMode.PROXY,
+                EvaluationMode.MANUAL,
+                EvaluationMode.UNSUPPORTED,
+            }
+            and self.status == FindingStatus.OK
+            and self.confidence == Confidence.HIGH
+        ):
+            msg = "indirect evaluations cannot be high-confidence ok"
+            raise ValueError(msg)
+        return self
 
     @property
     def display_customer_title(self) -> str:
@@ -331,6 +392,9 @@ class CapabilityOutcome(BaseModel):
 
 
 class ScanResult(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    schema_version: SchemaVersion = CURRENT_SCHEMA_VERSION
     tool: str = "security-license-lens"
     tool_display_name: str = "Security License Lens"
     version: str
@@ -344,6 +408,10 @@ class ScanResult(BaseModel):
     capability_summaries: list[CapabilitySummary] = Field(default_factory=list)
     subscribed_skus: list[SubscribedSku] = Field(default_factory=list)
     findings: list[Finding] = Field(default_factory=list)
+    profile_ids: list[ProfileId] = Field(default_factory=list)
+    collection_summaries: list[CollectionSummary] = Field(default_factory=list)
+    source_references: list[SourceReference] = Field(default_factory=list)
+    accepted_risks: list[AcceptedRiskAnnotation] = Field(default_factory=list)
     recommended_next_steps: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
@@ -356,6 +424,14 @@ class ScanResult(BaseModel):
     capability_outcomes: list[CapabilityOutcome] = Field(default_factory=list)
     has_exposed: bool = False
     exposed_check_ids: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def reject_unsupported_schema_version(self) -> Self:
+        version = str(self.schema_version)
+        major = version.split(".", maxsplit=1)[0]
+        if major != SUPPORTED_SCHEMA_MAJOR:
+            raise UnsupportedSchemaVersionError(schema_version=version)
+        return self
 
     @property
     def counts_by_status(self) -> dict[str, int]:
