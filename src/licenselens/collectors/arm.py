@@ -8,6 +8,8 @@ from urllib.parse import quote
 import httpx
 
 from licenselens.auth import AuthContext
+from licenselens.cloud_endpoints import CloudEndpoints, endpoints_for
+from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
 
 ARM_RESOURCE = "https://management.azure.com"
@@ -18,12 +20,30 @@ ARM_BASE = ARM_RESOURCE
 class ArmClient:
     """Thin ARM wrapper using the same azure-identity credential."""
 
-    def __init__(self, auth: AuthContext, *, timeout: float = 60.0) -> None:
+    def __init__(
+        self,
+        auth: AuthContext,
+        *,
+        cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+        timeout: float = 60.0,
+        base_url: str | None = None,
+    ) -> None:
         if auth.credential is None:
             raise AuthError("ARM client requires credentials.")
         self._auth = auth
+        self._cloud = cloud
+        self._endpoints: CloudEndpoints = endpoints_for(cloud)
+        self._base_url = (base_url or self._endpoints.arm_resource).rstrip("/")
         self._http = httpx.Client(timeout=timeout)
         self._token: str | None = None
+
+    @property
+    def cloud(self) -> CloudEnvironment:
+        return self._cloud
+
+    @property
+    def arm_scope(self) -> str:
+        return self._endpoints.arm_scope
 
     def close(self) -> None:
         self._http.close()
@@ -38,7 +58,7 @@ class ArmClient:
         if self._token:
             return self._token
         try:
-            token = self._auth.credential.get_token(ARM_SCOPE)
+            token = self._auth.credential.get_token(self.arm_scope)
         except Exception as exc:  # noqa: BLE001
             raise AuthError(
                 f"Failed to acquire Azure Resource Manager token: {exc}. "
@@ -48,7 +68,7 @@ class ArmClient:
         return self._token
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        url = path if path.startswith("http") else f"{ARM_BASE}/{path.lstrip('/')}"
+        url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
         headers = {
             "Authorization": f"Bearer {self._token_value()}",
             "Accept": "application/json",
@@ -130,9 +150,21 @@ def normalize_workspace_resource_id(resource_id: str) -> str:
 def encode_resource_path(resource_id: str) -> str:
     """Return ARM path without leading slash doubling."""
     rid = normalize_workspace_resource_id(resource_id)
-    # Keep slashes; only encode unsafe segments if needed — ARM IDs are path-safe.
     return rid.lstrip("/")
 
 
 def quote_segment(value: str) -> str:
     return quote(value, safe="")
+
+
+def subscription_id_from_resource_id(resource_id: str) -> str | None:
+    """Extract the Azure subscription GUID from a full ARM resource ID."""
+    rid = normalize_workspace_resource_id(resource_id)
+    parts = [part for part in rid.split("/") if part]
+    try:
+        index = parts.index("subscriptions")
+    except ValueError:
+        return None
+    if index + 1 >= len(parts):
+        return None
+    return parts[index + 1]

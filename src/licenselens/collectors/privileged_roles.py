@@ -23,6 +23,21 @@ PRIVILEGED_ROLE_TEMPLATE_IDS: frozenset[str] = frozenset(
         "fdd7a751-b60b-444a-984c-02652fe8fa1c",  # Groups Administrator
         "fe930be7-5e62-47db-91af-98c3a49a38b1",  # User Administrator
         "3a2c62db-5318-420d-8d74-23affee5d9d5",  # Intune Administrator
+        "8ac3fc64-6eca-42ea-9e69-59f4c7b60eb2",  # Hybrid Identity Administrator
+    }
+)
+
+# CISA SCuBA highly privileged role set (subset used for phishing-resistant / PIM rules).
+HIGHLY_PRIVILEGED_ROLE_TEMPLATE_IDS: frozenset[str] = frozenset(
+    {
+        "62e90394-69f5-4237-9190-012177145e10",  # Global Administrator
+        "e8611ab8-c189-46e8-94e1-60213ab1f814",  # Privileged Role Administrator
+        "fe930be7-5e62-47db-91af-98c3a49a38b1",  # User Administrator
+        "f28a1f50-f6e7-4571-818b-6a12f2af6b6c",  # SharePoint Administrator
+        "29232cdf-9323-42fd-ade2-1d097af3e4de",  # Exchange Administrator
+        "8ac3fc64-6eca-42ea-9e69-59f4c7b60eb2",  # Hybrid Identity Administrator
+        "9b895d92-2cd3-44c7-9d02-a6ac2d5ea5c3",  # Application Administrator
+        "158c047a-c907-4556-b7ef-446551a6b5f7",  # Cloud Application Administrator
     }
 )
 
@@ -43,7 +58,24 @@ ROLE_DISPLAY_NAMES: dict[str, str] = {
     "fdd7a751-b60b-444a-984c-02652fe8fa1c": "Groups Administrator",
     "fe930be7-5e62-47db-91af-98c3a49a38b1": "User Administrator",
     "3a2c62db-5318-420d-8d74-23affee5d9d5": "Intune Administrator",
+    "8ac3fc64-6eca-42ea-9e69-59f4c7b60eb2": "Hybrid Identity Administrator",
 }
+
+
+def is_highly_privileged_role_definition(role_definition_id: str | None) -> bool:
+    if not role_definition_id:
+        return False
+    return role_definition_id.lower() in {r.lower() for r in HIGHLY_PRIVILEGED_ROLE_TEMPLATE_IDS}
+
+
+def filter_highly_privileged_assignments(
+    assignments: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    return [
+        a
+        for a in assignments
+        if is_highly_privileged_role_definition(str(a.get("roleDefinitionId") or ""))
+    ]
 
 
 def is_privileged_role_definition(role_definition_id: str | None) -> bool:

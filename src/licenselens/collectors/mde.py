@@ -7,6 +7,8 @@ from typing import Any
 import httpx
 
 from licenselens.auth import AuthContext
+from licenselens.cloud_endpoints import CloudEndpoints, UnsupportedCloudError, endpoints_for
+from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
 from licenselens.models import SubscribedSku
 
@@ -14,7 +16,6 @@ MDE_RESOURCE = "https://api.securitycenter.microsoft.com"
 MDE_SCOPE = f"{MDE_RESOURCE}/.default"
 MDE_BASE = f"{MDE_RESOURCE}/api"
 
-# Service plan names that indicate MDE P2-style licensing
 MDE_PLAN_HINTS: tuple[str, ...] = (
     "DEFENDER_ENDPOINT_P2",
     "MDATP_XPLAT",
@@ -32,7 +33,6 @@ def mde_licensed_units(skus: list[SubscribedSku]) -> int | None:
             name = (plan.service_plan_name or "").upper()
             if any(h in name for h in MDE_PLAN_HINTS):
                 found = True
-                # Prefer sku prepaid when plan is present on that sku
                 if sku.prepaid_units is not None:
                     total += int(sku.prepaid_units)
                 break
@@ -44,12 +44,32 @@ def mde_licensed_units(skus: list[SubscribedSku]) -> int | None:
 class MdeClient:
     """Minimal client for Defender for Endpoint API."""
 
-    def __init__(self, auth: AuthContext, *, timeout: float = 60.0) -> None:
+    def __init__(
+        self,
+        auth: AuthContext,
+        *,
+        cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+        timeout: float = 60.0,
+        base_url: str | None = None,
+    ) -> None:
         if auth.credential is None:
             raise AuthError("MDE client requires credentials.")
         self._auth = auth
+        self._cloud = cloud
+        self._endpoints: CloudEndpoints = endpoints_for(cloud)
+        if not self._endpoints.mde_supported:
+            raise UnsupportedCloudError(cloud=cloud, service="mde")
+        self._base_url = (base_url or self._endpoints.mde_base).rstrip("/")
         self._http = httpx.Client(timeout=timeout)
         self._token: str | None = None
+
+    @property
+    def cloud(self) -> CloudEnvironment:
+        return self._cloud
+
+    @property
+    def mde_scope(self) -> str:
+        return self._endpoints.mde_scope
 
     def close(self) -> None:
         self._http.close()
@@ -64,7 +84,7 @@ class MdeClient:
         if self._token:
             return self._token
         try:
-            token = self._auth.credential.get_token(MDE_SCOPE)
+            token = self._auth.credential.get_token(self.mde_scope)
         except Exception as exc:  # noqa: BLE001
             raise AuthError(
                 f"Failed to acquire Defender for Endpoint token: {exc}. "
@@ -75,7 +95,7 @@ class MdeClient:
         return self._token
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
-        url = path if path.startswith("http") else f"{MDE_BASE}/{path.lstrip('/')}"
+        url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
         headers = {
             "Authorization": f"Bearer {self._token_value()}",
             "Accept": "application/json",
@@ -103,16 +123,18 @@ class MdeClient:
         return data
 
 
-def collect_mde_machine_summary(auth: AuthContext) -> dict[str, Any]:
+def collect_mde_machine_summary(
+    auth: AuthContext,
+    *,
+    cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+    client: MdeClient | None = None,
+) -> dict[str, Any]:
     """Return onboarded machine counts from MDE API (bounded sample)."""
-    with MdeClient(auth) as client:
-        # Prefer OData count when supported
+    owns = client is None
+    mde = client if client is not None else MdeClient(auth, cloud=cloud)
+    try:
         try:
-            data = client.get(
-                "/machines",
-                params={"$top": "1", "$count": "true"},
-            )
-            # @odata.count may be present
+            data = mde.get("/machines", params={"$top": "1", "$count": "true"})
             count = data.get("@odata.count")
             if count is not None:
                 return {
@@ -123,14 +145,13 @@ def collect_mde_machine_summary(auth: AuthContext) -> dict[str, Any]:
         except GraphError:
             pass
 
-        # Fallback: page through a capped sample and report sample size
         total = 0
         top = 200
         skip = 0
         pages = 0
         max_pages = 10
         while pages < max_pages:
-            data = client.get("/machines", params={"$top": str(top), "$skip": str(skip)})
+            data = mde.get("/machines", params={"$top": str(top), "$skip": str(skip)})
             value = data.get("value") or []
             if not isinstance(value, list) or not value:
                 break
@@ -146,9 +167,11 @@ def collect_mde_machine_summary(auth: AuthContext) -> dict[str, Any]:
             "count_method": "paged_sample",
             "truncated": truncated,
         }
+    finally:
+        if owns:
+            mde.close()
 
 
-# Dry-run: 40 onboarded of 100 licensed
 DEMO_MDE_SUMMARY: dict[str, Any] = {
     "onboarded_machines": 40,
     "sample_size": 40,
