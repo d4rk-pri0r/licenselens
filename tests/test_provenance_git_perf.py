@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import time
@@ -12,6 +13,12 @@ from licenselens.provenance import ScanMode, run_scan
 ROOT = Path(__file__).resolve().parents[1]
 _PERF_BUDGET_S = 20.0
 _COMMIT_COUNT = 300
+_GIT_IDENTITY_ENV = {
+    "GIT_AUTHOR_NAME": "ci",
+    "GIT_AUTHOR_EMAIL": "ci@example.com",
+    "GIT_COMMITTER_NAME": "ci",
+    "GIT_COMMITTER_EMAIL": "ci@example.com",
+}
 
 
 def _token() -> str:
@@ -35,7 +42,26 @@ def _token() -> str:
 
 
 def _git(repo: Path, *args: str) -> None:
-    subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+    env = os.environ.copy()
+    env.update(_GIT_IDENTITY_ENV)
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=ci",
+            "-c",
+            "user.email=ci@example.com",
+            "-c",
+            "commit.gpgsign=false",
+            "-c",
+            "gc.auto=0",
+            *args,
+        ],
+        cwd=repo,
+        check=True,
+        capture_output=True,
+        env=env,
+    )
 
 
 def _build_history_repo(base: Path) -> Path:
@@ -44,8 +70,8 @@ def _build_history_repo(base: Path) -> Path:
     repo = base / "perf-repo"
     repo.mkdir(parents=True)
     _git(repo, "init")
-    _git(repo, "config", "user.email", "perf@example.com")
-    _git(repo, "config", "user.name", "Perf")
+    _git(repo, "config", "user.email", "ci@example.com")
+    _git(repo, "config", "user.name", "ci")
 
     (repo / "README.md").write_text(
         "# Product\n\n| Tool | Optimizes for |\n|------|----------------|\n"
