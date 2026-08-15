@@ -1,0 +1,26 @@
+id: spo-domain-restrictions
+title: External sharing is not limited to approved domains
+customer_title: Limit external sharing to approved partner domains
+customer_summary: >
+  Without a domain allowlist, users can share with any external organization.
+customer_next_step: >
+  Turn on domain allowlisting and add only your approved partner domains.
+description: >
+  External sharing should be restricted to an approved domain allowlist from the assessment profile.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Enable 'Limit external sharing by domain' and add only profile-approved partner domains.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true

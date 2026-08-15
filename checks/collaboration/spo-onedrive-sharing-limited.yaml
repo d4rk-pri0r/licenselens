@@ -1,0 +1,26 @@
+id: spo-onedrive-sharing-limited
+title: OneDrive external sharing is broader than existing guests
+customer_title: Restrict OneDrive sharing to existing guests
+customer_summary: >
+  OneDrive lets people share files broadly with external users, which can leak personal work files.
+customer_next_step: >
+  Set OneDrive sharing to existing guests or internal-only.
+description: >
+  OneDrive sharing should be limited to existing guests or internal users only.
+workload: collaboration
+required_capabilities:
+  - onedrive_for_business
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Set the OneDrive external sharing slider to Existing guests or Only people in your organization.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true

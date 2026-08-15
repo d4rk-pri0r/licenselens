@@ -1,0 +1,26 @@
+id: spo-default-link-view
+title: Default sharing links grant edit permission
+customer_title: Default new links to view-only
+customer_summary: >
+  New links default to edit permission, letting recipients modify files unexpectedly.
+customer_next_step: >
+  Set the default sharing link permission to view.
+description: >
+  Default sharing links should grant view-only permission.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Set the default sharing link permission to View.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true
