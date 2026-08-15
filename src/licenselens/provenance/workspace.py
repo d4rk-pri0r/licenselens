@@ -80,15 +80,17 @@ def _scan_readme_text(
             allow_start = allow_end = -1
 
     for start, end, matched in text_matches(policy, text):
-        if allow_start >= 0 and start >= allow_start and end <= allow_end:
+        b_start = len(text[:start].encode("utf-8"))
+        b_end = len(text[:end].encode("utf-8"))
+        if allow_start >= 0 and b_start >= allow_start and b_end <= allow_end:
             continue
         violations.append(
             Violation(
                 kind=ViolationKind.CONTENT,
                 path=relative,
-                detail=f"token variant outside allowed README row at offset {start}",
+                detail=f"token variant outside allowed README row at offset {b_start}",
                 mode=mode,
-                offset=start,
+                offset=b_start,
                 snippet_hex=matched.encode("utf-8", errors="replace")[:24].hex(),
             )
         )
