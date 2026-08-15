@@ -32,7 +32,11 @@ reports-live/
 *.report.json
 out/
 
+# Docs site build output
+site/
+
 # Local planning / tooling (not part of the public product)
 openspec/
 .opencode/
 .omo/
+.playwright-mcp/
