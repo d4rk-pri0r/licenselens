@@ -52,6 +52,7 @@ class PinnedIcon:
     media_type: str
     sha256: str
 
+
 # Path segments / tokens that must never appear in allowlisted assets.
 _FORBIDDEN_PATH_TOKENS: Final = frozenset(
     {
@@ -96,9 +97,11 @@ def _entry_path(entry: Mapping[str, Any]) -> str:
 
 
 def _entry_sha(entry: Mapping[str, Any]) -> str:
-    return str(
-        entry.get("sha256") or entry.get("sha256_hex") or entry.get("digest") or ""
-    ).strip().lower()
+    return (
+        str(entry.get("sha256") or entry.get("sha256_hex") or entry.get("digest") or "")
+        .strip()
+        .lower()
+    )
 
 
 def _entry_commit(entry: Mapping[str, Any], default: str | None) -> str | None:
@@ -107,11 +110,7 @@ def _entry_commit(entry: Mapping[str, Any], default: str | None) -> str | None:
 
 
 def _upstream_commit(data: Mapping[str, Any]) -> str | None:
-    upstream = (
-        data.get("upstream_commit")
-        or data.get("source_commit")
-        or data.get("commit")
-    )
+    upstream = data.get("upstream_commit") or data.get("source_commit") or data.get("commit")
     if upstream is None:
         nested = data.get("upstream")
         if isinstance(nested, Mapping):
@@ -161,8 +160,7 @@ def validate_manifest(
 
     if len(assets) != EXPECTED_ASSET_COUNT:
         problems.append(
-            f"logo manifest must pin exactly {EXPECTED_ASSET_COUNT} assets, "
-            f"got {len(assets)}"
+            f"logo manifest must pin exactly {EXPECTED_ASSET_COUNT} assets, got {len(assets)}"
         )
 
     seen_paths: set[str] = set()
@@ -185,9 +183,7 @@ def validate_manifest(
 
         entry_commit = _entry_commit(entry, upstream)
         if entry_commit != PINNED_UPSTREAM_COMMIT:
-            problems.append(
-                f"asset {rel!r} must pin upstream commit {PINNED_UPSTREAM_COMMIT}"
-            )
+            problems.append(f"asset {rel!r} must pin upstream commit {PINNED_UPSTREAM_COMMIT}")
 
         blob = " ".join(str(v).lower() for v in entry.values())
         if "unofficial" in blob:
@@ -200,9 +196,7 @@ def validate_manifest(
             else:
                 actual = _sha256_file(on_disk)
                 if actual != sha:
-                    problems.append(
-                        f"checksum drift for {rel}: manifest={sha} disk={actual}"
-                    )
+                    problems.append(f"checksum drift for {rel}: manifest={sha} disk={actual}")
 
     if check_disk and root is not None:
         on_disk_files = sorted(
@@ -254,9 +248,7 @@ def load_pinned_icons(repo_root: Path | None = None) -> tuple[PinnedIcon, ...]:
     """Load the 12 allowlisted icons after fail-closed manifest verification."""
     problems = verify_assets(repo_root=repo_root)
     if problems:
-        raise FileNotFoundError(
-            "vendor workload icons failed verification: " + "; ".join(problems)
-        )
+        raise FileNotFoundError("vendor workload icons failed verification: " + "; ".join(problems))
     data = load_manifest(repo_root)
     root = vendor_root(repo_root)
     icons: list[PinnedIcon] = []

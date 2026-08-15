@@ -52,9 +52,7 @@ class _CapabilityCard:
     workload: str | None
 
 
-def _primary_workload(
-    result: ScanResult, outcome: CapabilityOutcome | None
-) -> str | None:
+def _primary_workload(result: ScanResult, outcome: CapabilityOutcome | None) -> str | None:
     """Pick the dominant related-finding workload for a capability header icon."""
     if outcome is None or not outcome.related_check_ids:
         return None
