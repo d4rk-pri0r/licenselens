@@ -14,14 +14,21 @@ from rich.table import Table
 from licenselens import __cli_name__, __product_name__, __version__
 from licenselens.auth import AuthMode, build_auth_context
 from licenselens.batch import run_batch
+from licenselens.cli_profile_info import checks_listing_rows, profile_requirement_report
+from licenselens.cli_scan_config import (
+    ScanConfigError,
+    resolve_scan_profile,
+    write_report_archive,
+)
 from licenselens.collectors.arm import build_workspace_resource_id
 from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
 from licenselens.diff_report import write_diff_report
 from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
+from licenselens.engine.profiles import ResolvedProfile
 from licenselens.engine.runner import run_scan
 from licenselens.errors import AuthError, GraphError, LicenseLensError
-from licenselens.models import CheckPack, Workload
+from licenselens.models import CheckPack, ScanResult, Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 
 app = typer.Typer(
@@ -116,6 +123,50 @@ def _exit_for_scan(result_has_gaps: bool, *, errored: bool = False) -> None:
     raise typer.Exit(code=0)
 
 
+def _resolve_profile_or_exit(
+    *,
+    profile: str | None,
+    config: Path | None,
+    rules: Path | None,
+    backend: list[str] | None,
+) -> ResolvedProfile | None:
+    """Resolve assessment profile flags before auth; exit 2 on invalid config."""
+    try:
+        return resolve_scan_profile(
+            profile_id=profile,
+            config_path=config,
+            rules_path=rules,
+            backends=backend,
+        )
+    except ScanConfigError as exc:
+        console.print(f"[red]Configuration error:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+
+
+def _write_scan_artifacts(
+    result: ScanResult,
+    output_dir: Path,
+    *,
+    report_archive: bool,
+) -> tuple[Path, Path, Path, Path | None]:
+    """Write HTML/JSON/Markdown reports and optional deterministic ZIP archive."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
+    json_path = write_json_report(result, output_dir / "security-license-lens-report.json")
+    md_path = write_markdown_report(result, output_dir / "security-license-lens-report.md")
+    archive_path: Path | None = None
+    if report_archive:
+        try:
+            archive_path = write_report_archive(
+                output_dir=output_dir,
+                result=result,
+            )
+        except ScanConfigError as exc:
+            console.print(f"[red]Report archive failed:[/red] {exc}")
+            raise typer.Exit(code=2) from exc
+    return html_path, json_path, md_path, archive_path
+
+
 @app.command("version")
 def version_cmd() -> None:
     """Print the Security License Lens version."""
@@ -124,7 +175,7 @@ def version_cmd() -> None:
 
 @app.command("checks")
 def checks_cmd() -> None:
-    """List registered checks from the checks/ tree."""
+    """List registered checks with profile, backend, mode, and state."""
     checks = load_checks()
     if not checks:
         console.print("[yellow]No checks found.[/yellow]")
@@ -134,16 +185,12 @@ def checks_cmd() -> None:
     table.add_column("ID")
     table.add_column("Workload")
     table.add_column("Severity")
-    table.add_column("Value")
-    table.add_column("Title")
-    for c in checks:
-        table.add_row(
-            c.id,
-            c.workload.value,
-            c.severity.value,
-            c.value_impact.value,
-            c.title,
-        )
+    table.add_column("Profiles")
+    table.add_column("Backend")
+    table.add_column("Mode")
+    table.add_column("State")
+    for row in checks_listing_rows(checks):
+        table.add_row(*row)
     console.print(table)
 
 
@@ -163,6 +210,15 @@ def doctor_cmd(
         "basic",
         "--profile",
         help="Probe depth: basic (core Graph) | full (also MDE API + Sentinel).",
+    ),
+    assessment_profile: list[str] | None = typer.Option(
+        None,
+        "--assessment-profile",
+        help=(
+            "Assessment profile id (e.g. identity, full). Prints required "
+            "capabilities, permissions, and modules. Repeatable. "
+            "Validated before any token request."
+        ),
     ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
@@ -194,6 +250,30 @@ def doctor_cmd(
     ),
 ) -> None:
     """Preflight credentials and core Graph / optional Sentinel permissions."""
+    if assessment_profile:
+        for profile_id in assessment_profile:
+            try:
+                req = profile_requirement_report(profile_id)
+            except ScanConfigError as exc:
+                console.print(f"[red]Configuration error:[/red] {exc}")
+                raise typer.Exit(code=2) from exc
+            console.print(
+                Panel(
+                    "\n".join(
+                        [
+                            f"Profile: {req.profile_id} ({req.profile_name})",
+                            f"Checks ({len(req.check_ids)}): {', '.join(req.check_ids) or '—'}",
+                            f"Capabilities: {', '.join(req.capabilities) or '—'}",
+                            f"Permissions: {', '.join(req.permissions) or '—'}",
+                            f"Backends: {', '.join(req.backends) or '—'}",
+                            f"Modules: {', '.join(req.modules) or '—'}",
+                        ]
+                    ),
+                    title="Assessment profile requirements",
+                    border_style=IDENTITY_ACCENT,
+                )
+            )
+
     mode = _to_auth_mode(auth, live=live)
     workspace = _resolve_workspace_resource_id(
         workspace_resource_id, subscription_id, resource_group, workspace_name
@@ -265,7 +345,10 @@ def scan_cmd(
         None,
         "--workload",
         "-w",
-        help="Limit to workload(s): identity, defender, sentinel, purview, endpoint.",
+        help=(
+            "Limit to workload(s): identity, email, collaboration, defender, sentinel, "
+            "purview, endpoint."
+        ),
     ),
     live: bool | None = typer.Option(
         None,
@@ -329,6 +412,32 @@ def scan_cmd(
         "--open/--no-open",
         help="Open the generated HTML report in your browser.",
     ),
+    profile: str | None = typer.Option(
+        None,
+        "--profile",
+        help="Assessment profile id (core, identity, full, …). Omit for legacy scope.",
+    ),
+    config: Path | None = typer.Option(
+        None,
+        "--config",
+        help="Organization assessment profile YAML overlay (validated before auth).",
+    ),
+    rules: Path | None = typer.Option(
+        None,
+        "--rules",
+        help="Custom rules YAML (list or {custom_rules: [...]}); validated before auth.",
+    ),
+    backend: list[str] | None = typer.Option(
+        None,
+        "--backend",
+        help="Preferred collection backend(s): graph, arm, exchange_online, defender, "
+        "secure_score, manual. Repeatable.",
+    ),
+    report_archive: bool = typer.Option(
+        False,
+        "--report-archive/--no-report-archive",
+        help="Also write a deterministic offline report ZIP beside HTML/JSON.",
+    ),
 ) -> None:
     """Run entitlement-aware checks and write a static HTML dashboard.
 
@@ -336,6 +445,10 @@ def scan_cmd(
     always win when already set.
     """
     from licenselens.cli_prompts import resolve_scan_inputs
+
+    resolved_profile = _resolve_profile_or_exit(
+        profile=profile, config=config, rules=rules, backend=backend
+    )
 
     workloads: list[Workload] | None = None
     if workload:
@@ -404,6 +517,11 @@ def scan_cmd(
     console.print(
         f"[{IDENTITY_ACCENT}]Running {__product_name__} scan ({label})…[/{IDENTITY_ACCENT}]"
     )
+    if resolved_profile is not None:
+        console.print(
+            f"[dim]Profile: {', '.join(resolved_profile.profile_ids)} "
+            f"({len(resolved_profile.selected_check_ids)} checks)[/dim]"
+        )
 
     try:
         result = run_scan(
@@ -413,6 +531,7 @@ def scan_cmd(
             workspace_resource_id=wizard.workspace_resource_id,
             packs=packs,
             allow_email_proxy=allow_email_proxy,
+            profile=resolved_profile,
         )
     except (AuthError, GraphError) as exc:
         if wizard.live:
@@ -424,11 +543,9 @@ def scan_cmd(
         if warning not in auth_ctx.warnings:
             console.print(f"[yellow]Warning:[/yellow] {warning}")
 
-    out = wizard.output_dir
-    out.mkdir(parents=True, exist_ok=True)
-    html_path = write_html_report(result, out / "security-license-lens-report.html")
-    json_path = write_json_report(result, out / "security-license-lens-report.json")
-    md_path = write_markdown_report(result, out / "security-license-lens-report.md")
+    html_path, json_path, md_path, archive_path = _write_scan_artifacts(
+        result, wizard.output_dir, report_archive=report_archive
+    )
 
     counts = result.counts_by_status
     org = result.tenant_display_name or result.tenant_id or "n/a"
@@ -442,6 +559,8 @@ def scan_cmd(
     console.print(f"  HTML  {html_path}")
     console.print(f"  JSON  {json_path}")
     console.print(f"  MD    {md_path}")
+    if archive_path is not None:
+        console.print(f"  ZIP   {archive_path}")
 
     if wizard.open_browser:
         import webbrowser
@@ -464,15 +583,46 @@ def demo_cmd(
         "--open/--no-open",
         help="Open the generated HTML report in your browser.",
     ),
+    profile: str | None = typer.Option(
+        None,
+        "--profile",
+        help="Assessment profile id (core, identity, full, …).",
+    ),
+    config: Path | None = typer.Option(
+        None,
+        "--config",
+        help="Organization assessment profile YAML overlay.",
+    ),
+    rules: Path | None = typer.Option(
+        None,
+        "--rules",
+        help="Custom rules YAML file.",
+    ),
+    backend: list[str] | None = typer.Option(
+        None,
+        "--backend",
+        help="Preferred collection backend(s). Repeatable.",
+    ),
+    report_archive: bool = typer.Option(
+        False,
+        "--report-archive/--no-report-archive",
+        help="Also write a deterministic offline report ZIP.",
+    ),
 ) -> None:
     """Run the offline demo scan and print the HTML report path."""
+    resolved_profile = _resolve_profile_or_exit(
+        profile=profile, config=config, rules=rules, backend=backend
+    )
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
     console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
-    result = run_scan(auth, dry_run=True)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
+    result = run_scan(auth, dry_run=True, profile=resolved_profile)
+    html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
+        result, output_dir, report_archive=report_archive
+    )
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
+    if archive_path is not None:
+        console.print(f"  ZIP   {archive_path}")
     console.print(
         "[green]Demo complete.[/green] This is a sample report from curated demo data — "
         "it is not a real tenant."
@@ -500,8 +650,36 @@ def quickstart_cmd(
         envvar="AZURE_CLIENT_SECRET",
         help="Optional app-only secret (prefer interactive device code).",
     ),
+    profile: str | None = typer.Option(
+        None,
+        "--profile",
+        help="Assessment profile id (core, identity, full, …).",
+    ),
+    config: Path | None = typer.Option(
+        None,
+        "--config",
+        help="Organization assessment profile YAML overlay.",
+    ),
+    rules: Path | None = typer.Option(
+        None,
+        "--rules",
+        help="Custom rules YAML file.",
+    ),
+    backend: list[str] | None = typer.Option(
+        None,
+        "--backend",
+        help="Preferred collection backend(s). Repeatable.",
+    ),
+    report_archive: bool = typer.Option(
+        False,
+        "--report-archive/--no-report-archive",
+        help="Also write a deterministic offline report ZIP.",
+    ),
 ) -> None:
     """Walk through a read-only scan against your own tenant (no code needed)."""
+    resolved_profile = _resolve_profile_or_exit(
+        profile=profile, config=config, rules=rules, backend=backend
+    )
     console.print(
         Panel(
             "Security License Lens only reads. It never changes policies, users, "
@@ -543,16 +721,24 @@ def quickstart_cmd(
         raise typer.Exit(code=0)
 
     try:
-        result = run_scan(auth, dry_run=False, workspace_resource_id=None)
+        result = run_scan(
+            auth,
+            dry_run=False,
+            workspace_resource_id=None,
+            profile=resolved_profile,
+        )
     except (AuthError, GraphError) as exc:
         _print_device_code_rail()
         console.print(f"[red]Scan failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
 
-    output_dir.mkdir(parents=True, exist_ok=True)
-    html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
+    html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
+        result, output_dir, report_archive=report_archive
+    )
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
+    if archive_path is not None:
+        console.print(f"  ZIP   {archive_path}")
     console.print(
         "[green]Done.[/green] Open the HTML report and use the top-card list as your "
         "conversation starter with IT."
@@ -619,16 +805,46 @@ def batch_cmd(
         "--live/--dry-run",
         help="Run live scans (default: dry-run demo data per tenant).",
     ),
+    profile: str | None = typer.Option(
+        None,
+        "--profile",
+        help="Default assessment profile for tenants that omit profile.",
+    ),
+    rules: Path | None = typer.Option(
+        None,
+        "--rules",
+        help="Default custom rules YAML for the batch.",
+    ),
+    backend: list[str] | None = typer.Option(
+        None,
+        "--backend",
+        help="Default preferred backend(s) for the batch. Repeatable.",
+    ),
+    report_archive: bool = typer.Option(
+        False,
+        "--report-archive/--no-report-archive",
+        help="Write a deterministic offline report ZIP per tenant.",
+    ),
 ) -> None:
     """Run scans for every tenant listed in a tenants.yaml config."""
     if not config.is_file():
         console.print(f"[red]Config not found:[/red] {config}")
         raise typer.Exit(code=2)
 
+    _resolve_profile_or_exit(profile=profile, config=None, rules=rules, backend=backend)
+
     console.print(f"[{IDENTITY_ACCENT}]Running batch scan from {config}…[/{IDENTITY_ACCENT}]")
     try:
-        rows = run_batch(config, output_dir=output_dir, dry_run=not live)
-    except (LicenseLensError, OSError, ValueError) as exc:
+        rows = run_batch(
+            config,
+            output_dir=output_dir,
+            dry_run=not live,
+            profile_id=profile,
+            rules_path=rules,
+            backends=backend,
+            report_archive=report_archive,
+        )
+    except (LicenseLensError, OSError, ValueError, ScanConfigError) as exc:
         console.print(f"[red]Batch failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
 
