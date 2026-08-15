@@ -14,7 +14,7 @@ from licenselens.collectors.power_data_models import (
 from licenselens.collectors.power_data_normalize import coverage_evidence_for_bundle
 from licenselens.engine.loader import load_checks
 from licenselens.engine.runner import _evaluate_check
-from licenselens.evaluators import (
+from licenselens.evaluators.power_bi import (
     evaluate_pbi_external_invite_disabled,
     evaluate_pbi_guest_access_disabled,
     evaluate_pbi_publish_to_web_disabled,
@@ -23,11 +23,15 @@ from licenselens.evaluators import (
     evaluate_pbi_sensitivity_labels_enabled,
     evaluate_pbi_sp_api_restricted,
     evaluate_pbi_sp_profiles_disabled,
+)
+from licenselens.evaluators.power_platform_env import (
     evaluate_pp_dlp_all_environments,
+    evaluate_pp_tenant_isolation_enabled,
+)
+from licenselens.evaluators.power_platform_tenant import (
     evaluate_pp_env_creation_admin_only,
     evaluate_pp_pages_creation_admin_only,
     evaluate_pp_share_with_everyone_disabled,
-    evaluate_pp_tenant_isolation_enabled,
     evaluate_pp_trial_creation_admin_only,
 )
 from licenselens.models import CheckDefinition, FindingStatus, Workload
