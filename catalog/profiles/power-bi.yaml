@@ -1,0 +1,18 @@
+schema_version: "1.0"
+id: power-bi
+name: Power BI assessment
+description: Power BI tenant and workspace governance controls.
+packs:
+  - power-bi
+backend_preferences:
+  preferred:
+    - graph
+    - manual
+  allow_proxy: false
+  allow_manual: true
+redaction:
+  enabled: true
+  redact_tenant_ids: true
+  redact_user_principals: true
+  redact_domains: true
+  replacement: "[redacted]"

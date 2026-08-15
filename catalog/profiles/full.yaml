@@ -1,0 +1,96 @@
+schema_version: "1.0"
+id: full
+name: Full assessment
+description: All declarative assessment areas currently modeled by LicenseLens profiles.
+packs:
+  - identity
+  - email
+  - collaboration
+  - endpoint
+  - data-protection
+  - secops
+  - power-platform
+  - power-bi
+check_ids:
+  - id-ca-priv-gaps
+  - id-idprotect-off
+  - id-pim-unused
+  - id-dormant-privileged
+  - id-security-defaults-on
+  - id-access-reviews-unused
+  - mdo-p2-policies-default
+  - exo-forwarding-external-disabled
+  - exo-spf-published
+  - exo-dkim-enabled
+  - exo-dmarc-published
+  - exo-dmarc-reject
+  - exo-dmarc-agency-contact
+  - exo-dmarc-federal-contact
+  - exo-smtp-auth-disabled
+  - exo-sharing-contact-not-all-domains
+  - exo-sharing-calendar-not-all-domains
+  - exo-external-sender-warnings
+  - exo-mailbox-audit-enabled
+  - mdo-malware-file-filter
+  - mdo-malware-zap
+  - mdo-safe-attachments-block
+  - mdo-safe-attachments-spo-teams
+  - mdo-safe-links-block-list
+  - mdo-safe-links-real-time-scan
+  - mdo-safe-links-click-tracking
+  - mdo-impersonation-users-protected
+  - mdo-impersonation-domains-owned
+  - mdo-impersonation-partner-domains
+  - mdo-safety-tips-enabled
+  - mdo-spam-phish-not-inbox
+  - mdo-anti-spam-no-allowed-domains
+  - mdo-connection-filter-no-ip-allow
+  - mdo-connection-filter-no-safe-list
+  - mdo-alert-policies-enabled
+  - mdo-audit-retention
+  - mdo-unified-audit-enabled
+  - pur-dlp-policy-present
+  - pur-dlp-locations-complete
+  - pur-dlp-enforcement-block
+  - pur-dlp-notifications
+  - pur-sensitivity-labels-published
+  - pur-sensitivity-auto-labeling
+  - pur-retention-policy-coverage
+  - pur-insider-risk-readiness
+  - pur-communication-compliance-readiness
+  - pur-ediscovery-readiness
+  - mde-onboard-gap
+  - mdi-sensors-missing
+  - sen-analytics-rule-coverage
+  - sen-ueba-not-enabled
+  - pur-dlp-not-enforced
+backend_preferences:
+  preferred:
+    - graph
+    - arm
+    - exchange_online
+    - defender
+    - secure_score
+    - manual
+  allow_proxy: true
+  allow_manual: true
+sensitive_users:
+  - breakglass@example.com
+sensitive_domains:
+  - example.com
+allowed_forwarding_domains: []
+dmarc_agency_contact: reports@example.com
+dmarc_federal_contact: ""
+exclusions:
+  - id: exclude-lab-tenant
+    check_id: mdo-p2-policies-default
+    owner: security@example.com
+    reason: Lab tenant does not route production mail.
+    expires_on: "2099-12-31"
+custom_rules:
+  - id: full-gap-count
+    title: Full profile gap count threshold
+    selector: finding.status
+    operator: gte
+    value: 1
+    collection: count

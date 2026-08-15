@@ -1,0 +1,75 @@
+schema_version: "1.0"
+id: identity
+name: Identity maturity assessment
+description: Entra ID controls, privileged access, and identity protection.
+packs:
+  - identity
+check_ids:
+  - id-ca-priv-gaps
+  - id-ca-legacy-auth-block
+  - id-ca-mfa-all-users
+  - id-ca-phishing-resistant-all
+  - id-ca-phishing-resistant-privileged
+  - id-ca-high-risk-users
+  - id-ca-high-risk-signins
+  - id-ca-managed-devices
+  - id-ca-mfa-registration-managed
+  - id-ca-device-code-block
+  - id-auth-methods-migration
+  - id-auth-weak-methods-disabled
+  - id-auth-authenticator-context
+  - id-idprotect-off
+  - id-idprotect-notify-high-risk
+  - id-pim-unused
+  - id-pim-no-permanent-privileged
+  - id-pim-no-outside-pam
+  - id-pim-ga-activation-approval
+  - id-pim-privileged-assignment-alert
+  - id-pim-ga-activation-alert
+  - id-pim-other-activation-alert
+  - id-ga-count-bounds
+  - id-ga-finer-roles
+  - id-priv-cloud-only
+  - id-dormant-privileged
+  - id-security-defaults-on
+  - id-access-reviews-unused
+  - id-app-registration-admin-only
+  - id-app-user-consent-restricted
+  - id-app-admin-consent-workflow
+  - id-app-password-addition-blocked
+  - id-app-password-lifetime
+  - id-app-certificate-lifetime
+  - id-app-ownerless-or-stale
+  - id-app-expiring-credentials
+  - id-app-risky-delegated-consent
+  - id-password-never-expire
+  - id-guest-directory-access-limited
+  - id-guest-inviter-restricted
+  - id-guest-invite-domains
+  - id-cross-tenant-defaults
+  - id-logs-to-soc
+  - id-ai-agents-risky-block
+backend_preferences:
+  preferred:
+    - graph
+  allow_proxy: false
+  allow_manual: true
+exclusions:
+  - id: break-glass-example
+    check_id: id-ca-mfa-all-users
+    owner: security@example.com
+    reason: Named emergency access accounts excluded from all-user MFA by design.
+    kind: break_glass
+    principal_ids:
+      - break-glass-1
+      - break-glass-2
+custom_rules:
+  - id: identity-high-gaps
+    title: Identity high severity gaps
+    selector: finding.severity
+    operator: in
+    value:
+      - critical
+      - high
+    references:
+      - https://learn.microsoft.com/security/zero-trust/deploy/identity
