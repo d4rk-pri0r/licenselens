@@ -163,9 +163,10 @@ def test_workload_icons_are_hashed_and_mapped(tmp_path: Path) -> None:
     assert "window.LICENSELENS_WORKLOAD_ICONS" in data
     assert "identity" in data
     assert ASSET_DIRNAME in data
-    assert "general" not in data.split("LICENSELENS_WORKLOAD_ICONS", 1)[1].split(
-        "LICENSELENS_REPORT_JSON", 1
-    )[0]
+    assert (
+        "general"
+        not in data.split("LICENSELENS_WORKLOAD_ICONS", 1)[1].split("LICENSELENS_REPORT_JSON", 1)[0]
+    )
 
 
 def test_data_js_is_escaped_and_global_named(tmp_path: Path) -> None:

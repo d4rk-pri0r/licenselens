@@ -30,9 +30,7 @@ def _asset_entries(data: dict[str, Any]) -> list[dict[str, Any]]:
         value = data.get(key)
         if isinstance(value, list):
             return [item for item in value if isinstance(item, dict)]
-    raise AssertionError(
-        "logo manifest must contain an assets/files list of pinned file entries"
-    )
+    raise AssertionError("logo manifest must contain an assets/files list of pinned file entries")
 
 
 def test_logo_manifest_pins_exactly_twelve_allowlisted_assets() -> None:

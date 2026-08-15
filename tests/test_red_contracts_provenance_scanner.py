@@ -68,9 +68,7 @@ def _scan_api(scanner: Any) -> Any:
         func = getattr(scanner, name, None)
         if callable(func):
             return func
-    raise AssertionError(
-        "provenance scanner must expose scan_workspace/run_scan/scan callable"
-    )
+    raise AssertionError("provenance scanner must expose scan_workspace/run_scan/scan callable")
 
 
 def _findings(result: Any) -> list[Any]:
@@ -156,9 +154,7 @@ def test_provenance_scanner_rejects_contamination_allows_readme_row_only(
 
     dirty_bin = tmp_path / "dirty_bin"
     dirty_bin.mkdir()
-    (dirty_bin / "payload.bin").write_bytes(
-        b"header\x00" + token.encode("utf-8") + b"\x00trailer"
-    )
+    (dirty_bin / "payload.bin").write_bytes(b"header\x00" + token.encode("utf-8") + b"\x00trailer")
     assert _findings(scan(dirty_bin)), "binary string contamination must be rejected"
 
     dirty_git = tmp_path / "dirty_git"
