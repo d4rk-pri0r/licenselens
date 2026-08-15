@@ -33,7 +33,7 @@ tenants:
     workspace_resource_id: "/subscriptions/.../workspaces/..."
 ```
 
-Full example: [examples/tenants.yaml](../examples/tenants.yaml).
+Full example: [examples/tenants.yaml](https://github.com/d4rk-pri0r/licenselens/blob/main/examples/tenants.yaml).
 
 Email is **off by default** (no Graph API for MDO policy config). Only set `allow_email_proxy: true` when the customer accepts a labeled Secure Score degraded path.
 
