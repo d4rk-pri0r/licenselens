@@ -1,0 +1,32 @@
+id: az-cspm-out-of-scope
+title: Generic Azure CSPM posture requires manual review
+customer_title: Review Azure resource posture in Defender for Cloud
+customer_summary: >
+  Full cloud security posture management across every Azure resource is out of
+  scope for this assessment. Use Defender for Cloud to review and remediate
+  posture recommendations for your resources.
+customer_next_step: >
+  Open Defender for Cloud recommendations and triage posture findings for your
+  Azure resources with your cloud team.
+description: >
+  Generic Azure CSPM posture (VMs, storage, SQL, networking) is intentionally
+  out of scope; only entitlement-linked Sentinel and Defender for Cloud plan
+  settings are assessed here.
+workload: azure
+required_capabilities:
+  - defender_for_cloud_cspm
+severity: info
+value_impact: low
+impact: low
+effort: days
+blast_radius: data
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/defender-for-cloud/secure-score-security-controls
+collector: noop
+remediation: >
+  Review Azure resource posture recommendations in Microsoft Defender for
+  Cloud; this tool intentionally does not perform generic Azure CSPM scans.
+references:
+  - https://learn.microsoft.com/azure/defender-for-cloud/secure-score-security-controls
+enabled: true

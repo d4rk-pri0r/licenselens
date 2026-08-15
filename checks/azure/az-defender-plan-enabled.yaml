@@ -1,0 +1,32 @@
+id: az-defender-plan-enabled
+title: Defender for Cloud plan not enabled on the subscription
+customer_title: Turn on Defender for Cloud protection for your subscription
+customer_summary: >
+  Your plan can add threat protection to Azure resources, but the paid plan
+  often stays at the free tier after sign-up. Free tier means fewer alerts
+  and fewer hardening recommendations.
+customer_next_step: >
+  Enable the Defender for Cloud plan (Standard tier) on the subscription that
+  hosts your security workspace.
+description: >
+  Defender for Cloud plans remain at the free pricing tier unless explicitly
+  enabled, leaving owned cloud protection unused.
+workload: azure
+required_capabilities:
+  - defender_for_cloud_cspm
+  - defender_for_cloud_servers
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security
+collector: defender_pricings_collector
+remediation: >
+  Enable the Defender for Cloud plan (Standard tier) on the subscription and
+  confirm continuous export of security findings.
+references:
+  - https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security
+enabled: true
