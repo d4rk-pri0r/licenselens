@@ -1,16 +1,25 @@
-"""Minimal Microsoft Graph HTTP client (pagination + retries)."""
+"""Minimal Microsoft Graph HTTP client (pagination + retries + cloud roots)."""
 
 from __future__ import annotations
 
 import time
-from typing import Any
+from typing import Any, Final
 
 import httpx
 
-from licenselens.auth import GRAPH_SCOPE, AuthContext
+from licenselens.auth import AuthContext
+from licenselens.cloud_endpoints import CloudEndpoints, endpoints_for, graph_base_url
+from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
+from licenselens.graph_list import GraphListResult
 
-DEFAULT_GRAPH_BASE = "https://graph.microsoft.com/v1.0"
+DEFAULT_GRAPH_BASE: Final = "https://graph.microsoft.com/v1.0"
+_WRITE_METHODS: Final = frozenset({"POST", "PUT", "PATCH", "DELETE"})
+_ALLOWED_WRITE_PATH_PREFIXES: Final = frozenset(
+    {
+        "/directoryObjects/getByIds",
+    }
+)
 
 
 class GraphClient:
@@ -20,18 +29,41 @@ class GraphClient:
         self,
         auth: AuthContext,
         *,
-        base_url: str = DEFAULT_GRAPH_BASE,
+        cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+        base_url: str | None = None,
         timeout: float = 60.0,
         max_retries: int = 4,
+        allow_preview: bool = False,
+        sleep: Any = time.sleep,
     ) -> None:
         if auth.credential is None:
             raise AuthError("GraphClient requires an AuthContext with a credential.")
         self._auth = auth
-        self._base_url = base_url.rstrip("/")
+        self._cloud = cloud
+        self._endpoints: CloudEndpoints = endpoints_for(cloud)
+        self._base_url = (base_url or graph_base_url(cloud)).rstrip("/")
         self._timeout = timeout
         self._max_retries = max_retries
+        self._allow_preview = allow_preview
+        self._sleep = sleep
         self._http = httpx.Client(timeout=timeout)
         self._token: str | None = None
+
+    @property
+    def cloud(self) -> CloudEnvironment:
+        return self._cloud
+
+    @property
+    def allow_preview(self) -> bool:
+        return self._allow_preview
+
+    @property
+    def base_url(self) -> str:
+        return self._base_url
+
+    @property
+    def graph_scope(self) -> str:
+        return self._endpoints.graph_scope
 
     def close(self) -> None:
         self._http.close()
@@ -46,11 +78,42 @@ class GraphClient:
         if self._token:
             return self._token
         try:
-            token = self._auth.credential.get_token(GRAPH_SCOPE)
+            token = self._auth.credential.get_token(self.graph_scope)
         except Exception as exc:  # noqa: BLE001 - surface as AuthError
             raise AuthError(f"Failed to acquire Graph token: {exc}") from exc
         self._token = token.token
         return self._token
+
+    def _assert_path_allowed(self, method: str, path: str) -> None:
+        normalized = path if path.startswith("http") else f"/{path.lstrip('/')}"
+        upper = method.upper()
+        if "/beta/" in normalized or normalized.startswith("beta/") or "/beta?" in normalized:
+            if not self._allow_preview:
+                raise GraphError(
+                    f"Graph beta endpoint blocked unless allow_preview=True (path={normalized})",
+                    status_code=400,
+                )
+        if upper in _WRITE_METHODS and upper != "POST":
+            raise GraphError(
+                f"Graph write method {upper} is not permitted (read-only client)",
+                status_code=405,
+            )
+        if upper == "POST":
+            relative = normalized
+            if relative.startswith("http"):
+                # Strip scheme/host for allowlist check
+                marker = "/v1.0/"
+                beta_marker = "/beta/"
+                if marker in relative:
+                    relative = "/" + relative.split(marker, 1)[1]
+                elif beta_marker in relative:
+                    relative = "/" + relative.split(beta_marker, 1)[1]
+            path_only = relative.split("?", 1)[0]
+            if not any(path_only.startswith(prefix) for prefix in _ALLOWED_WRITE_PATH_PREFIXES):
+                raise GraphError(
+                    f"Graph POST not allowlisted for read-only client: {path_only}",
+                    status_code=405,
+                )
 
     def request(
         self,
@@ -60,6 +123,7 @@ class GraphClient:
         params: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[Any]:
+        self._assert_path_allowed(method, path)
         url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
         last_error: Exception | None = None
 
@@ -82,13 +146,16 @@ class GraphClient:
                 last_error = exc
                 if attempt >= self._max_retries:
                     raise GraphError(f"Graph network error: {exc}") from exc
-                time.sleep(min(2**attempt, 8))
+                self._sleep(min(2**attempt, 8))
                 continue
 
             if response.status_code == 401 and attempt == 0:
                 # Force token refresh once
                 self._token = None
                 continue
+
+            if response.status_code == 401 and attempt > 0:
+                raise self._error_from_response(response)
 
             if response.status_code == 429 or response.status_code >= 500:
                 if attempt >= self._max_retries:
@@ -99,7 +166,7 @@ class GraphClient:
                     if retry_after and retry_after.isdigit()
                     else min(2**attempt, 8)
                 )
-                time.sleep(delay)
+                self._sleep(delay)
                 continue
 
             if response.status_code >= 400:
@@ -138,6 +205,16 @@ class GraphClient:
         max_pages: int = 50,
     ) -> list[dict[str, Any]]:
         """GET a collection, following @odata.nextLink up to max_pages."""
+        return list(self.get_list_result(path, params=params, max_pages=max_pages).items)
+
+    def get_list_result(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        max_pages: int = 50,
+    ) -> GraphListResult:
+        """GET a collection with explicit truncation metadata."""
         items: list[dict[str, Any]] = []
         next_path: str | None = path
         next_params = params
@@ -156,7 +233,12 @@ class GraphClient:
                 next_path = None
             pages += 1
 
-        return items
+        return GraphListResult(
+            items=tuple(items),
+            pages_read=pages,
+            max_pages=max_pages,
+            next_link_seen=next_path is not None,
+        )
 
     @staticmethod
     def _error_from_response(response: httpx.Response) -> GraphError:
