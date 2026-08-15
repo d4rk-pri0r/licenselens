@@ -297,11 +297,13 @@ def scan_readme_blob(
     violations: list[Violation] = []
     allowed = policy.allowed_row
     for start, end, matched in text_matches(policy, text):
-        if start >= allowed.byte_start and end <= allowed.byte_end:
+        b_start = len(text[:start].encode("utf-8"))
+        b_end = len(text[:end].encode("utf-8"))
+        if b_start >= allowed.byte_start and b_end <= allowed.byte_end:
             continue
         try:
             local = parse_allowed_row(text)
-            if start >= local.byte_start and end <= local.byte_end:
+            if b_start >= local.byte_start and b_end <= local.byte_end:
                 continue
         except TokenPolicyError:
             pass
@@ -309,10 +311,10 @@ def scan_readme_blob(
             Violation(
                 kind=ViolationKind.GIT_OBJECT,
                 path=path,
-                detail=f"token variant outside allowed README row at offset {start}",
+                detail=f"token variant outside allowed README row at offset {b_start}",
                 mode=mode,
                 object_id=object_id,
-                offset=start,
+                offset=b_start,
                 snippet_hex=matched.encode("utf-8", errors="replace")[:24].hex(),
             )
         )
