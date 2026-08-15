@@ -95,14 +95,10 @@ def scan_git_reachable(root: Path, policy: TokenPolicy) -> list[Violation]:
                 continue
             if is_policy_readme_path(path, policy):
                 violations.extend(
-                    scan_readme_blob(
-                        policy, blob, path=path, mode=mode, object_id=obj_id
-                    )
+                    scan_readme_blob(policy, blob, path=path, mode=mode, object_id=obj_id)
                 )
             else:
-                violations.extend(
-                    scan_blob(policy, blob, path=path, mode=mode, object_id=obj_id)
-                )
+                violations.extend(scan_blob(policy, blob, path=path, mode=mode, object_id=obj_id))
     return dedupe_violations(violations)
 
 
@@ -156,9 +152,7 @@ def scan_git_all_objects(root: Path, policy: TokenPolicy) -> list[Violation]:
     return dedupe_violations(violations)
 
 
-def _scan_all_blob(
-    root: Path, policy: TokenPolicy, mode: ScanMode, obj_id: str
-) -> list[Violation]:
+def _scan_all_blob(root: Path, policy: TokenPolicy, mode: ScanMode, obj_id: str) -> list[Violation]:
     data = cat_file_blob(root, obj_id)
     if data is None:
         return [
@@ -189,9 +183,7 @@ def _scan_all_commit_or_tag(
     text = cat_file_text(root, obj_id)
     if text is None:
         return []
-    kind = (
-        ViolationKind.GIT_MESSAGE if obj_type == "commit" else ViolationKind.GIT_METADATA
-    )
+    kind = ViolationKind.GIT_MESSAGE if obj_type == "commit" else ViolationKind.GIT_METADATA
     return scan_text_field(
         policy,
         text,
@@ -202,9 +194,7 @@ def _scan_all_commit_or_tag(
     )
 
 
-def _scan_all_tree(
-    root: Path, policy: TokenPolicy, mode: ScanMode, obj_id: str
-) -> list[Violation]:
+def _scan_all_tree(root: Path, policy: TokenPolicy, mode: ScanMode, obj_id: str) -> list[Violation]:
     text = cat_file_text(root, obj_id)
     if text is None:
         return []

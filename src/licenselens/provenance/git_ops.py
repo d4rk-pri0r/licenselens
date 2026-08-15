@@ -148,9 +148,7 @@ def scan_blob(
         )
         return violations
     if _blob_looks_like_readme(data):
-        return scan_readme_blob(
-            policy, data, path=path, mode=mode, object_id=object_id
-        )
+        return scan_readme_blob(policy, data, path=path, mode=mode, object_id=object_id)
     violations.extend(
         scan_bytes_for_token(
             policy,

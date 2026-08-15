@@ -205,9 +205,7 @@ def scan_artifacts(
             relative = path.resolve().relative_to(root_path).as_posix()
         except ValueError:
             relative = path.name
-        violations.extend(
-            scan_archive_file(policy, path, relative=relative, mode=mode)
-        )
+        violations.extend(scan_archive_file(policy, path, relative=relative, mode=mode))
     return _result(
         mode=mode,
         root=root_path,
