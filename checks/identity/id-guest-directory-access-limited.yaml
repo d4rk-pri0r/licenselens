@@ -1,0 +1,26 @@
+id: id-guest-directory-access-limited
+title: Guest directory access not limited
+customer_title: Limit what guests can see in your directory
+customer_summary: >
+  Guests with member-like directory rights can enumerate users and groups they should not need.
+customer_next_step: >
+  Set guest user access to limited or restricted in Entra external collaboration settings.
+description: >
+  Guest users should have limited or restricted access to directory objects.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade
+collector: graph_authorization
+remediation: >
+  Set guestUserRoleId to Guest User or Restricted Guest in authorization policy.
+references:
+  - https://learn.microsoft.com/entra/external-id/user-properties
+enabled: true

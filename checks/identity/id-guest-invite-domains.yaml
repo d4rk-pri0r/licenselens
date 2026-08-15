@@ -1,0 +1,26 @@
+id: id-guest-invite-domains
+title: Guest invite domains need profile allowlist review
+customer_title: Limit guest invites to approved partner domains
+customer_summary: >
+  Open guest invites to any domain make it easy to bring untrusted external identities into your tenant.
+customer_next_step: >
+  List approved partner domains in the assessment profile and mirror them in Entra B2B allowlists.
+description: >
+  Guest invites should be limited to organization-approved external domains from the assessment profile.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: days
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade
+collector: graph_guests
+remediation: >
+  Configure B2B collaboration allowlists from profile-approved domains; do not guess defaults.
+references:
+  - https://learn.microsoft.com/entra/external-id/allow-deny-list
+enabled: true

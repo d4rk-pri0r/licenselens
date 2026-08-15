@@ -1,0 +1,26 @@
+id: id-ga-finer-roles
+title: Privileged work over-concentrated in Global Administrator
+customer_title: Use narrower admin roles instead of Global Admin
+customer_summary: >
+  When most admin work uses Global Admin, every admin task carries maximum risk.
+customer_next_step: >
+  Move routine admin duties to finer-grained directory roles and keep Global Admin rare.
+description: >
+  Privileged users should use finer-grained roles instead of standing Global Administrator.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: medium
+value_impact: medium
+impact: medium
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim
+remediation: >
+  Assign least-privilege directory roles and convert standing GA where possible.
+references:
+  - https://learn.microsoft.com/entra/identity/role-based-access-control/best-practices
+enabled: true
