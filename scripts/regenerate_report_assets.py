@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import hashlib
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from licenselens.auth import AuthMode, build_auth_context
@@ -100,16 +101,10 @@ SETTLE_MS = 300
 
 
 def build_result() -> ScanResult:
-    """Run the offline dry-run scan and pin the wall-clock timestamp.
-
-    Mirrors ``cli.demo_cmd`` / ``cli.scan_cmd``: ``AuthMode.DRY_RUN`` with no
-    tenant id, so ``run_scan`` falls through to the demo's zero-GUID tenant and
-    the committed sample JSON stays byte-identical except for ``scanned_at``.
-    """
+    """Run the offline dry-run scan pinned to the frozen sample timestamp."""
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
-    result = run_scan(auth, dry_run=True)
-    result.scanned_at = SAMPLE_SCANNED_AT
-    return result
+    scanned_at = datetime.fromisoformat(SAMPLE_SCANNED_AT)
+    return run_scan(auth, dry_run=True, scanned_at=scanned_at)
 
 
 def write_reports(result: ScanResult) -> tuple[Path, Path, Path]:
