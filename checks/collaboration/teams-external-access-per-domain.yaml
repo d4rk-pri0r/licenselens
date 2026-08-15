@@ -1,0 +1,26 @@
+id: teams-external-access-per-domain
+title: Teams external access is open to all domains
+customer_title: Allow external access only for specific domains
+customer_summary: >
+  Open federation lets users communicate with any external organization.
+customer_next_step: >
+  Allow only specific external domains, not all.
+description: >
+  External access should be enabled on a per-domain basis only.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  Set external access to 'Allow only specific external domains' and add approved domains.
+references:
+  - https://learn.microsoft.com/microsoftteams/manage-external-access
+enabled: true
