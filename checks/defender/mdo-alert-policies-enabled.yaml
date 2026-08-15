@@ -1,0 +1,26 @@
+id: mdo-alert-policies-enabled
+title: Required Defender alert policies need manual confirmation
+customer_title: Confirm suspicious-email alerts are enabled
+customer_summary: >
+  Without alert policies, suspicious sending and forwarding may go unnoticed.
+customer_next_step: >
+  Enable the required suspicious email and connector alert policies in Defender.
+description: >
+  Required Defender alert policies need manual confirmation.
+workload: defender
+required_capabilities:
+  - defender_office_p1
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/alertpoliciesv2
+collector: noop
+remediation: >
+  Enable the required suspicious email and connector alert policies in Defender.
+references:
+  - https://learn.microsoft.com/purview/alert-policies
+enabled: true

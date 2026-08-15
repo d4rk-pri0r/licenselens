@@ -1,0 +1,26 @@
+id: mdo-anti-spam-no-allowed-domains
+title: Anti-spam allow lists bypass filtering
+customer_title: Remove broad anti-spam allow lists
+customer_summary: >
+  Allowed senders and domains skip important spam protections.
+customer_next_step: >
+  Clear AllowedSenders and AllowedSenderDomains from anti-spam policies.
+description: >
+  Anti-spam allow lists bypass filtering.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antispam
+collector: exchange_collector
+remediation: >
+  Clear AllowedSenders and AllowedSenderDomains from anti-spam policies.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-spam-policies-configure
+enabled: true

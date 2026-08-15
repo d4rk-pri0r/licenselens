@@ -1,0 +1,26 @@
+id: mdo-audit-retention
+title: Audit log retention needs manual confirmation
+customer_title: Confirm audit logs are retained long enough
+customer_summary: >
+  Short retention leaves gaps when investigating older incidents.
+customer_next_step: >
+  Confirm at least 3 months searchable and 12 months retrievable audit retention.
+description: >
+  Audit log retention needs manual confirmation.
+workload: defender
+required_capabilities:
+  - purview_audit
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://compliance.microsoft.com/auditlogsearch
+collector: noop
+remediation: >
+  Confirm at least 3 months searchable and 12 months retrievable audit retention.
+references:
+  - https://learn.microsoft.com/purview/audit-log-retention-policies
+enabled: true
