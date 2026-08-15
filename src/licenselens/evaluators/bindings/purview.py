@@ -1,4 +1,5 @@
 """Typed evaluator registrations for purview."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -15,11 +16,10 @@ def register_purview(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="pur-dlp-not-enforced",
             evaluate=evaluate_purview_dlp,
-            input_models=('purview_dlp',),
+            input_models=("purview_dlp",),
             collector_id="purview_dlp_collector",
             evaluation_mode=EvaluationMode.PROXY,
             backend=Backend.PROXY,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.purview")
-
