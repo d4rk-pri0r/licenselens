@@ -5,6 +5,50 @@ All notable changes to Security License Lens are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Hardened release pipeline** — the single PyPI publish job is replaced with a
+  gated build-once/promote workflow: distributions are built once from the
+  release tag, then checksum-verified, scanned into SPDX + CycloneDX SBOMs,
+  provenance/SBOM-attested, optionally signed with Microsoft Artifact Signing
+  (OIDC), and only then promoted to PyPI (trusted publishing) and GitHub
+  Releases. Unsigned Windows artifacts cannot enter the production channel when
+  signing is required.
+- **Release trust gates** — version-consistency check (tag == package version),
+  byte-binding SHA-256 checksums, SHA-pinned actions, least-privilege
+  permissions, and a dependency/license inventory (`license-inventory.json`)
+  shipped with every release.
+- **Support & compatibility policy** — `SUPPORT.md`, `docs/support.md`, and a
+  `THIRD_PARTY_NOTICES.md` dependency/license inventory.
+- **Master release gate** — `scripts/release_gate.py` runs every Linux/macOS
+  quality command (Ruff, full pytest with a 72% coverage floor, Playwright
+  Chromium report suite, coverage-manifest validator, MkDocs strict + codespell
+  + lychee, wheel/sdist build, installed-wheel smoke, Pester bridge + installer
+  suites, release/CI workflow static guards, deterministic two-run reference
+  docs and sample report, and a secret/host-path/source-leakage/stray-artifact
+  scan) and writes a fail-closed ledger. `--negative` exercises the rejection
+  of malformed input, stale generated state, a dirty worktree, misleading
+  success output, tampered artifacts, secret fixtures, and external-network
+  report requests.
+
+### Changed
+- `SECURITY.md` / `docs/security.md` supported-versions table now reflects the
+  `0.3.x` release line.
+
+### Fixed
+- **PowerShell bridge accepts hashtable params** — `Invoke-LicenseLensCollectorAdapter`
+  now normalizes hashtable `params` to an object, so the Pester contract smoke
+  (fixture mode + `fake_echo`) passes both on Windows and on non-Windows hosts
+  where the JSON bridge produces object params.
+- **Installer no longer pollutes non-Windows worktrees** — safe archive
+  extraction creates the destination from the platform-native path instead of
+  the backslash-normalized comparison path, so the per-user installer no longer
+  leaves literal-backslash directories behind on macOS/Linux.
+- **Source distribution hygiene** — `.playwright-mcp/` (local Playwright session
+  state) is now gitignored and a stray `.debug-journal.md` was removed, so the
+  sdist no longer ships local scratch files or build-host paths.
+
 ## [0.3.0] — 2026-08-12
 
 ### Added
