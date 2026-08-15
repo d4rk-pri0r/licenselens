@@ -1,0 +1,3 @@
+# Checksum-pinned vendor icons must keep exact on-disk bytes on every OS.
+# Without this, Windows autocrlf rewrites SVG newlines and fails manifest verify.
+assets/vendor/microsoft-cloud/** -text
