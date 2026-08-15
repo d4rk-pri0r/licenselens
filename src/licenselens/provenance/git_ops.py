@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import subprocess
+from collections.abc import Iterable, Sequence
 from pathlib import Path
 
 from licenselens.provenance.archive_scan import (
@@ -76,6 +77,111 @@ def cat_file_text(root: Path, obj_id: str) -> str | None:
     if data.returncode != 0:
         return None
     return data.stdout
+
+
+def cat_file_batch(root: Path, object_ids: Sequence[str] | Iterable[str]) -> dict[str, bytes]:
+    """Read many git objects in one ``git cat-file --batch`` subprocess.
+
+    Returns a mapping of object id -> raw bytes for objects that were present and
+    well-formed. Missing, ambiguous, or malformed entries are omitted rather than
+    failing the whole batch.
+    """
+    unique_ids = list(dict.fromkeys(object_ids))
+    if not unique_ids:
+        return {}
+
+    payload = "".join(f"{oid}\n" for oid in unique_ids).encode("ascii")
+    result = subprocess.run(
+        ["git", "cat-file", "--batch"],
+        cwd=root,
+        check=False,
+        input=payload,
+        capture_output=True,
+    )
+    if result.returncode != 0 and not result.stdout:
+        return {}
+    return _parse_cat_file_batch(result.stdout)
+
+
+def cat_file_batch_types(
+    root: Path, object_ids: Sequence[str] | Iterable[str]
+) -> dict[str, str]:
+    """Return object id -> type via one ``git cat-file --batch-check`` call."""
+    unique_ids = list(dict.fromkeys(object_ids))
+    if not unique_ids:
+        return {}
+
+    payload = "".join(f"{oid}\n" for oid in unique_ids)
+    result = subprocess.run(
+        ["git", "cat-file", "--batch-check"],
+        cwd=root,
+        check=False,
+        input=payload,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0 and not result.stdout:
+        return {}
+
+    types: dict[str, str] = {}
+    for line in result.stdout.splitlines():
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        oid, status = parts[0], parts[1]
+        if status in {"missing", "ambiguous"}:
+            continue
+        types[oid] = status
+    return types
+
+
+def _parse_cat_file_batch(data: bytes) -> dict[str, bytes]:
+    out: dict[str, bytes] = {}
+    index = 0
+    length = len(data)
+    while index < length:
+        newline = data.find(b"\n", index)
+        if newline < 0:
+            break
+        header = data[index:newline].decode("ascii", errors="replace")
+        index = newline + 1
+        parts = header.split()
+        if len(parts) == 2 and parts[1] in {"missing", "ambiguous"}:
+            continue
+        if len(parts) < 3:
+            continue
+        oid = parts[0]
+        try:
+            size = int(parts[2])
+        except ValueError:
+            continue
+        if size < 0 or index + size > length:
+            break
+        content = data[index : index + size]
+        index += size
+        if index < length and data[index : index + 1] == b"\n":
+            index += 1
+        out[oid] = content
+    return out
+
+
+def parse_raw_tree_names(data: bytes, *, hash_size: int) -> list[str]:
+    names: list[str] = []
+    index = 0
+    length = len(data)
+    while index < length:
+        space = data.find(b" ", index)
+        if space < 0:
+            break
+        nul = data.find(b"\0", space + 1)
+        if nul < 0:
+            break
+        name = data[space + 1 : nul].decode("utf-8", errors="replace")
+        names.append(name)
+        index = nul + 1 + hash_size
+        if index > length:
+            break
+    return names
 
 
 def zip_magic(data: bytes) -> bool:
