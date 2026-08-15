@@ -27,10 +27,22 @@ def test_mdo_demo_is_partial_or_gap():
     controls = extract_control_scores(DEMO_SECURE_SCORE)
     result = evaluate_mdo_p2_policies(
         _check("mdo-p2-policies-default"),
-        {"secure_score_controls": controls},
+        {"secure_score_controls": controls, "exchange_threat_usable": False},
     )
     assert result.status in {FindingStatus.PARTIAL, FindingStatus.GAP}
     assert result.evidence["matched_controls"] >= 1
+
+
+def test_mdo_direct_exchange_demo_is_ok_or_partial():
+    from licenselens.collectors.exchange import demo_exchange_evidence
+
+    result = evaluate_mdo_p2_policies(
+        _check("mdo-p2-policies-default"),
+        demo_exchange_evidence(),
+    )
+    assert result.status in {FindingStatus.OK, FindingStatus.PARTIAL}
+    assert result.evidence.get("proxy") is False
+    assert result.evidence.get("exchange_direct") is True
 
 
 def test_mde_demo_is_gap():
