@@ -161,9 +161,7 @@ def validate_receipt(
         if not _SHA1_RE.fullmatch(expected):
             problems.append("expected_commit_sha must be a 40-char lowercase hex git SHA")
         elif commit_sha is not None and commit_sha != expected:
-            problems.append(
-                f"commit_sha mismatch: receipt={commit_sha} expected={expected}"
-            )
+            problems.append(f"commit_sha mismatch: receipt={commit_sha} expected={expected}")
 
     proof = data.get("proof")
     if isinstance(proof, str) and proof.strip().lower() in CONFIG_ONLY_PROOFS:
@@ -227,9 +225,7 @@ def validate_receipts(
         if receipts.is_dir():
             files = sorted(p for p in receipts.rglob("*.json") if p.is_file())
             if not files:
-                return ReceiptValidation(
-                    ok=False, problems=[f"no receipt JSON under {receipts}"]
-                )
+                return ReceiptValidation(ok=False, problems=[f"no receipt JSON under {receipts}"])
             items = list(files)
         elif receipts.is_file():
             items = [receipts]

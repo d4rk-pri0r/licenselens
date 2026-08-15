@@ -188,14 +188,10 @@ def windows_ci_guards(repo_root: Path) -> list[str]:
 
     # --- provenance scans (tracked sources + built Windows artifacts) -----
     python_job = jobs.get("python", {}) if isinstance(jobs.get("python"), dict) else {}
-    pyinstaller = (
-        jobs.get("pyinstaller", {}) if isinstance(jobs.get("pyinstaller"), dict) else {}
-    )
+    pyinstaller = jobs.get("pyinstaller", {}) if isinstance(jobs.get("pyinstaller"), dict) else {}
     if not _job_runs(python_job, PROVENANCE_SCAN) or not _job_runs(python_job, "--workspace"):
         problems.append("job 'python': must run provenance_scan --workspace")
-    if not _job_runs(pyinstaller, PROVENANCE_SCAN) or not _job_runs(
-        pyinstaller, "--artifacts"
-    ):
+    if not _job_runs(pyinstaller, PROVENANCE_SCAN) or not _job_runs(pyinstaller, "--artifacts"):
         problems.append("job 'pyinstaller': must run provenance_scan --artifacts")
 
     return problems
