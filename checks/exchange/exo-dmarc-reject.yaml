@@ -1,0 +1,26 @@
+id: exo-dmarc-reject
+title: DMARC policy is weaker than reject
+customer_title: Set DMARC policy to reject
+customer_summary: >
+  Weaker DMARC policies still let spoofed mail reach inboxes.
+customer_next_step: >
+  Set p=reject on every domain DMARC record.
+description: >
+  DMARC policy is weaker than reject.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.microsoft.com/#/Domains
+collector: exchange_collector
+remediation: >
+  Set p=reject on every domain DMARC record.
+references:
+  - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
+enabled: true

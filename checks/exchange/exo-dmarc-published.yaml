@@ -1,0 +1,26 @@
+id: exo-dmarc-published
+title: DMARC is not published for every domain
+customer_title: Publish a DMARC record for every domain
+customer_summary: >
+  Without DMARC, receivers do not know what to do with failed authentication.
+customer_next_step: >
+  Publish a DMARC TXT record at _dmarc for each second-level domain.
+description: >
+  DMARC is not published for every domain.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.microsoft.com/#/Domains
+collector: exchange_collector
+remediation: >
+  Publish a DMARC TXT record at _dmarc for each second-level domain.
+references:
+  - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
+enabled: true

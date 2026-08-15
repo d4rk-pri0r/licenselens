@@ -1,0 +1,26 @@
+id: exo-external-sender-warnings
+title: External sender warnings are not configured
+customer_title: Flag mail that comes from outside
+customer_summary: >
+  Users need a clear cue when mail originates outside the organization.
+customer_next_step: >
+  Enable external sender mail tips or an [External] transport rule.
+description: >
+  External sender warnings are not configured.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.exchange.microsoft.com/#/transportrules
+collector: exchange_collector
+remediation: >
+  Enable external sender mail tips or an [External] transport rule.
+references:
+  - https://learn.microsoft.com/exchange/security-and-compliance/mail-flow-rules/mail-flow-rules
+enabled: true
