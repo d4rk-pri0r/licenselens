@@ -1,0 +1,26 @@
+id: spo-sharing-capability-limited
+title: SharePoint external sharing is broader than existing guests
+customer_title: Restrict SharePoint sharing to existing guests
+customer_summary: >
+  SharePoint lets people share with anyone or any external user, which can leak files.
+customer_next_step: >
+  Set SharePoint sharing to existing guests or internal-only.
+description: >
+  SharePoint sharing should be limited to existing guests or internal users only.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Set the SharePoint external sharing slider to Existing guests or Only people in your organization.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true

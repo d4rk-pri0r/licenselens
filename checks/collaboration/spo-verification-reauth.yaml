@@ -1,0 +1,26 @@
+id: spo-verification-reauth
+title: Verification-code users are not required to reauthenticate
+customer_title: Require verification-code reauthentication within 30 days
+customer_summary: >
+  Verification-code access that never reauthenticates can stay open indefinitely.
+customer_next_step: >
+  Require verification-code users to reauthenticate within 30 days.
+description: >
+  Verification-code users should reauthenticate within 30 days or less.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Enable verification-code reauthentication and set it to 30 days or fewer.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true

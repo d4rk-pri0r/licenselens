@@ -1,0 +1,26 @@
+id: teams-anonymous-lobby
+title: Anonymous and dial-in callers are auto-admitted to meetings
+customer_title: Hold anonymous and dial-in callers in the lobby
+customer_summary: >
+  Auto-admitting unauthenticated callers weakens control over meeting participation.
+customer_next_step: >
+  Keep 'Who can bypass the lobby' away from Everyone.
+description: >
+  Anonymous users and dial-in callers should not be admitted automatically.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  Set 'Who can bypass the lobby' to People in my org, not Everyone.
+references:
+  - https://learn.microsoft.com/microsoftteams/settings-policies-reference
+enabled: true
