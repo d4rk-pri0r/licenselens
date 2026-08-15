@@ -1,0 +1,26 @@
+id: id-app-risky-delegated-consent
+title: Risky tenant-wide delegated app consent present
+customer_title: Review apps with broad permissions for everyone
+customer_summary: >
+  Some apps hold mail, files, or directory permissions for the whole tenant. Those grants are high-impact if the app is abused.
+customer_next_step: >
+  Review and remove high-impact AllPrincipals OAuth grants that are not required.
+description: >
+  Tenant-wide delegated grants with high-impact scopes indicate risky consent.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+collector: graph_applications
+remediation: >
+  Audit oauth2PermissionGrants with AllPrincipals and high-impact scopes; remove unused grants.
+references:
+  - https://learn.microsoft.com/entra/identity/enterprise-apps/manage-application-permissions
+enabled: true

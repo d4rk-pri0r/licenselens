@@ -1,0 +1,26 @@
+id: id-app-registration-admin-only
+title: Non-admin users can register applications
+customer_title: Stop regular users from creating apps
+customer_summary: >
+  If anyone can register an application, it is easier for a compromised account to plant a persistent backdoor app.
+customer_next_step: >
+  Disable user application registration in Entra user settings.
+description: >
+  Only administrators should be allowed to register applications.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserSettingsMenuBlade
+collector: graph_authorization
+remediation: >
+  Set Users can register applications to No in Entra user settings / authorization policy.
+references:
+  - https://learn.microsoft.com/entra/identity/enterprise-apps/configure-user-consent
+enabled: true
