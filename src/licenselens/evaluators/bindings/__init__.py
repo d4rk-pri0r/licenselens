@@ -1,4 +1,5 @@
 """Bootstrap all evaluator bindings into a registration catalog."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -93,4 +94,3 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_security_suite_threat(catalog)
     register_sentinel(catalog)
     register_sentinel_extended(catalog)
-
