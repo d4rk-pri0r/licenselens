@@ -1,4 +1,5 @@
 """Typed evaluator registrations for identity_manual."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -16,24 +17,23 @@ def register_identity_manual(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="id-ai-agents-risky-block",
             evaluate=evaluate_ai_agents_risky_block,
-            input_models=('ca_policies',),
+            input_models=("ca_policies",),
             collector_id="graph_ca",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="id-idprotect-notify-high-risk",
             evaluate=evaluate_idprotect_notify_high_risk,
-            input_models=('break_glass_principal_ids',),
+            input_models=("break_glass_principal_ids",),
             collector_id="manual_identity",
             evaluation_mode=EvaluationMode.MANUAL,
         )
         catalog.add_evaluator(
             check_id="id-logs-to-soc",
             evaluate=evaluate_logs_to_soc,
-            input_models=('break_glass_principal_ids',),
+            input_models=("break_glass_principal_ids",),
             collector_id="manual_identity",
             evaluation_mode=EvaluationMode.MANUAL,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.identity_manual")
-

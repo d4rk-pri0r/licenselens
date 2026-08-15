@@ -1,4 +1,5 @@
 """Typed evaluator registrations for identity_governance."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -15,17 +16,16 @@ def register_identity_governance(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="id-access-reviews-unused",
             evaluate=evaluate_access_reviews_unused,
-            input_models=('access_review_definitions',),
+            input_models=("access_review_definitions",),
             collector_id="graph_access_reviews",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="id-security-defaults-on",
             evaluate=evaluate_security_defaults_on,
-            input_models=('security_defaults_policy',),
+            input_models=("security_defaults_policy",),
             collector_id="graph_security_defaults",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.identity_governance")
-
