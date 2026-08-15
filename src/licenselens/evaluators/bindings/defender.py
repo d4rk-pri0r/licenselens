@@ -1,4 +1,5 @@
 """Typed evaluator registrations for defender."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -15,11 +16,10 @@ def register_defender(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="mdi-sensors-missing",
             evaluate=evaluate_mdi_sensors,
-            input_models=('secure_score_controls',),
+            input_models=("secure_score_controls",),
             collector_id="mdi_sensors",
             evaluation_mode=EvaluationMode.PROXY,
             backend=Backend.PROXY,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.defender")
-
