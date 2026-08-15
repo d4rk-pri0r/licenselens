@@ -1,0 +1,30 @@
+id: pur-communication-compliance-readiness
+title: Communication compliance needs manual confirmation
+customer_title: Confirm communication compliance is set up
+customer_summary: >
+  Communication compliance detects harassment, threats, and risky sharing in
+  email and Teams. It is portal-configured and needs a specialist to confirm.
+customer_next_step: >
+  Confirm communication compliance policies cover the channels that matter and
+  route matches to the right reviewers in the Purview portal.
+description: >
+  Communication compliance policies are portal-configured and not fully
+  readable automatically; readiness requires manual verification.
+workload: purview
+required_capabilities:
+  - purview_communication_compliance
+severity: medium
+value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/communicationcompliance
+collector: noop
+remediation: >
+  Verify communication compliance policies are scoped to the channels that
+  matter and route detected matches to reviewers.
+references:
+  - https://learn.microsoft.com/purview/communication-compliance
+enabled: true

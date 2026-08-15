@@ -1,0 +1,26 @@
+id: pur-dlp-enforcement-block
+title: DLP does not block sharing sensitive information
+customer_title: Block sharing of sensitive information with DLP
+customer_summary: >
+  Warn-only DLP still allows sensitive data to leave.
+customer_next_step: >
+  Set DLP rule actions to block access for sensitive information.
+description: >
+  DLP does not block sharing sensitive information.
+workload: purview
+required_capabilities:
+  - purview_dlp
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://compliance.microsoft.com/datalossprevention
+collector: exchange_collector
+remediation: >
+  Set DLP rule actions to block access for sensitive information.
+references:
+  - https://learn.microsoft.com/purview/dlp-learn-about-dlp
+enabled: true
