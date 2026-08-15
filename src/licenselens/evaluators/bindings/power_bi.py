@@ -1,4 +1,5 @@
 """Typed evaluator registrations for power_bi."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -29,59 +30,58 @@ def register_power_bi(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="pbi-external-invite-disabled",
             evaluate=evaluate_pbi_external_invite_disabled,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-guest-access-disabled",
             evaluate=evaluate_pbi_guest_access_disabled,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-publish-to-web-disabled",
             evaluate=evaluate_pbi_publish_to_web_disabled,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-python-r-visuals-disabled",
             evaluate=evaluate_pbi_python_r_visuals_disabled,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-resource-key-auth-blocked",
             evaluate=evaluate_pbi_resource_key_auth_blocked,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-sensitivity-labels-enabled",
             evaluate=evaluate_pbi_sensitivity_labels_enabled,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-sp-api-restricted",
             evaluate=evaluate_pbi_sp_api_restricted,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="pbi-sp-profiles-disabled",
             evaluate=evaluate_pbi_sp_profiles_disabled,
-            input_models=('power_data_bundle',),
+            input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.power_bi")
-
