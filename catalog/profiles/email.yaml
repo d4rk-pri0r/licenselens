@@ -1,0 +1,61 @@
+schema_version: "1.0"
+id: email
+name: Email protection assessment
+description: Exchange Online and Defender for Office posture with explicit proxy handling.
+packs:
+  - email
+check_ids:
+  - mdo-p2-policies-default
+  - exo-forwarding-external-disabled
+  - exo-spf-published
+  - exo-dkim-enabled
+  - exo-dmarc-published
+  - exo-dmarc-reject
+  - exo-dmarc-agency-contact
+  - exo-dmarc-federal-contact
+  - exo-smtp-auth-disabled
+  - exo-sharing-contact-not-all-domains
+  - exo-sharing-calendar-not-all-domains
+  - exo-external-sender-warnings
+  - exo-mailbox-audit-enabled
+  - mdo-malware-file-filter
+  - mdo-malware-zap
+  - mdo-safe-attachments-block
+  - mdo-safe-attachments-spo-teams
+  - mdo-safe-links-block-list
+  - mdo-safe-links-real-time-scan
+  - mdo-safe-links-click-tracking
+  - mdo-impersonation-users-protected
+  - mdo-impersonation-domains-owned
+  - mdo-impersonation-partner-domains
+  - mdo-safety-tips-enabled
+  - mdo-spam-phish-not-inbox
+  - mdo-anti-spam-no-allowed-domains
+  - mdo-connection-filter-no-ip-allow
+  - mdo-connection-filter-no-safe-list
+  - mdo-alert-policies-enabled
+  - mdo-audit-retention
+  - mdo-unified-audit-enabled
+  - pur-dlp-policy-present
+  - pur-dlp-locations-complete
+  - pur-dlp-enforcement-block
+  - pur-dlp-notifications
+backend_preferences:
+  preferred:
+    - exchange_online
+    - secure_score
+  allow_proxy: true
+  allow_manual: true
+sensitive_users:
+  - ceo@example.com
+sensitive_domains:
+  - partner.example.com
+allowed_forwarding_domains: []
+dmarc_agency_contact: reports@example.com
+dmarc_federal_contact: ""
+redaction:
+  enabled: true
+  redact_tenant_ids: true
+  redact_user_principals: true
+  redact_domains: true
+  replacement: "[redacted]"

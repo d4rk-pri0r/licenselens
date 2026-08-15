@@ -1,0 +1,31 @@
+schema_version: "1.0"
+id: data-protection
+name: Data protection assessment
+description: Purview and data loss prevention control posture.
+packs:
+  - data-protection
+check_ids:
+  - pur-dlp-not-enforced
+  - pur-dlp-policy-present
+  - pur-dlp-locations-complete
+  - pur-dlp-enforcement-block
+  - pur-dlp-notifications
+  - mdo-unified-audit-enabled
+  - pur-sensitivity-labels-published
+  - pur-sensitivity-auto-labeling
+  - pur-retention-policy-coverage
+  - pur-insider-risk-readiness
+  - pur-communication-compliance-readiness
+  - pur-ediscovery-readiness
+backend_preferences:
+  preferred:
+    - graph
+    - secure_score
+  allow_proxy: true
+  allow_manual: true
+custom_rules:
+  - id: data-protection-proxy-evidence
+    title: Data protection proxy evidence
+    selector: finding.evaluation_mode
+    operator: ne
+    value: unsupported

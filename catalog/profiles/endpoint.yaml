@@ -1,0 +1,15 @@
+schema_version: "1.0"
+id: endpoint
+name: Endpoint protection assessment
+description: Defender for Endpoint onboarding and sensor coverage.
+packs:
+  - endpoint
+check_ids:
+  - mde-onboard-gap
+  - mdi-sensors-missing
+backend_preferences:
+  preferred:
+    - defender
+    - secure_score
+  allow_proxy: true
+  allow_manual: true
