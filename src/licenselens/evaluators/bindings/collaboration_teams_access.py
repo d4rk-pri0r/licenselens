@@ -1,4 +1,5 @@
 """Typed evaluator registrations for collaboration_teams_access."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -17,31 +18,30 @@ def register_collaboration_teams_access(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="teams-email-integration-disabled",
             evaluate=evaluate_teams_email_integration_disabled,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="teams-external-access-per-domain",
             evaluate=evaluate_teams_external_access_per_domain,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="teams-unmanaged-inbound-blocked",
             evaluate=evaluate_teams_unmanaged_inbound_blocked,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="teams-unmanaged-outbound-blocked",
             evaluate=evaluate_teams_unmanaged_outbound_blocked,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.collaboration_teams_access")
-

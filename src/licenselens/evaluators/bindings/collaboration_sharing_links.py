@@ -1,4 +1,5 @@
 """Typed evaluator registrations for collaboration_sharing_links."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -18,38 +19,37 @@ def register_collaboration_sharing_links(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="spo-anyone-link-expiration",
             evaluate=evaluate_spo_anyone_link_expiration,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="spo-anyone-link-view",
             evaluate=evaluate_spo_anyone_link_view,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="spo-default-link-specific",
             evaluate=evaluate_spo_default_link_specific,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="spo-default-link-view",
             evaluate=evaluate_spo_default_link_view,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="spo-verification-reauth",
             evaluate=evaluate_spo_verification_reauth,
-            input_models=('collaboration_bundle',),
+            input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.collaboration_sharing_links")
-
