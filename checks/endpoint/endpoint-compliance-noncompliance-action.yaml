@@ -1,0 +1,30 @@
+id: endpoint-compliance-noncompliance-action
+title: Intune compliance noncompliance actions configured
+customer_title: Nothing may happen when a device falls out of compliance
+customer_summary: >
+  Compliance checks are only useful if something happens when a device fails
+  them. Without an action, an unhealthy device can keep accessing work data.
+customer_next_step: >
+  Configure a noncompliance action (such as notify or block access) on each
+  compliance policy.
+description: >
+  Compliance policies without a scheduled action for noncompliance detect but
+  never respond, so unhealthy devices retain access.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: medium
+value_impact: high
+impact: medium
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies
+collector: intune_collector
+remediation: >
+  Add a scheduled action for each compliance policy so noncompliant devices
+  are flagged or blocked within your chosen grace period.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/actions-for-noncompliance
+enabled: true

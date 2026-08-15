@@ -1,0 +1,30 @@
+id: endpoint-compliance-policy-assigned
+title: Intune compliance policies defined and assigned
+customer_title: Device compliance rules may be missing or not assigned
+customer_summary: >
+  Device compliance rules flag unhealthy devices and gate access to work data.
+  Rules that exist but are never assigned do nothing.
+customer_next_step: >
+  Confirm compliance policies exist and are assigned to the right user or
+  device groups, and that every managed device platform is covered.
+description: >
+  Compliance policies that are unassigned or missing leave unhealthy devices
+  undetected, undermining the device-health gate for conditional access.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies
+collector: intune_collector
+remediation: >
+  Create and assign compliance policies for each managed platform; confirm
+  assignment covers all in-scope users and devices.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/device-compliance-get-started
+enabled: true
