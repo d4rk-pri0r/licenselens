@@ -1,4 +1,5 @@
 """Typed evaluator registrations for security_suite_spam."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -20,52 +21,51 @@ def register_security_suite_spam(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="mdo-alert-policies-enabled",
             evaluate=evaluate_mdo_alert_policies_manual,
-            input_models=('break_glass_principal_ids',),
+            input_models=("break_glass_principal_ids",),
             collector_id="manual_identity",
             evaluation_mode=EvaluationMode.MANUAL,
         )
         catalog.add_evaluator(
             check_id="mdo-anti-spam-no-allowed-domains",
             evaluate=evaluate_mdo_anti_spam_no_allowed_domains,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-audit-retention",
             evaluate=evaluate_mdo_audit_retention_manual,
-            input_models=('break_glass_principal_ids',),
+            input_models=("break_glass_principal_ids",),
             collector_id="manual_identity",
             evaluation_mode=EvaluationMode.MANUAL,
         )
         catalog.add_evaluator(
             check_id="mdo-connection-filter-no-ip-allow",
             evaluate=evaluate_mdo_connection_filter_no_ip_allow,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-connection-filter-no-safe-list",
             evaluate=evaluate_mdo_connection_filter_no_safe_list,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-safe-attachments-spo-teams",
             evaluate=evaluate_mdo_safe_attachments_spo_teams,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-spam-phish-not-inbox",
             evaluate=evaluate_mdo_spam_phish_not_inbox,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.security_suite_spam")
-
