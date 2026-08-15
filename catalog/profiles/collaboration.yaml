@@ -1,0 +1,23 @@
+schema_version: "1.0"
+id: collaboration
+name: Collaboration assessment
+description: SharePoint, OneDrive, Teams, and collaboration controls.
+packs:
+  - collaboration
+backend_preferences:
+  preferred:
+    - graph
+    - manual
+  allow_proxy: false
+  allow_manual: true
+thresholds:
+  fail_at_or_above: 1
+  warn_at_or_above: 1
+  minimum_confidence: medium
+custom_rules:
+  - id: collaboration-all-findings-reviewed
+    title: Collaboration findings reviewed
+    selector: finding.status
+    operator: ne
+    value: error
+    collection: all

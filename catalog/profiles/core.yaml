@@ -1,0 +1,19 @@
+schema_version: "1.0"
+id: core
+name: Core default assessment
+description: Current default priority packs used by LicenseLens.
+packs:
+  - identity
+  - endpoint
+backend_preferences:
+  preferred:
+    - graph
+    - defender
+  allow_proxy: false
+  allow_manual: true
+redaction:
+  enabled: true
+  redact_tenant_ids: true
+  redact_user_principals: true
+  redact_domains: false
+  replacement: "[redacted]"

@@ -1,0 +1,465 @@
+{
+  "$defs": {
+    "AcceptedRiskWaiver": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "title": "Check Id",
+          "type": "string"
+        },
+        "expires_on": {
+          "format": "date",
+          "title": "Expires On",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "owner": {
+          "title": "Owner",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "source": {
+          "default": "profile",
+          "title": "Source",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "check_id",
+        "owner",
+        "reason",
+        "expires_on"
+      ],
+      "title": "AcceptedRiskWaiver",
+      "type": "object"
+    },
+    "BackendPreference": {
+      "enum": [
+        "graph",
+        "arm",
+        "exchange_online",
+        "defender",
+        "secure_score",
+        "manual"
+      ],
+      "title": "BackendPreference",
+      "type": "string"
+    },
+    "BackendPreferences": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_manual": {
+          "default": true,
+          "title": "Allow Manual",
+          "type": "boolean"
+        },
+        "allow_proxy": {
+          "default": false,
+          "title": "Allow Proxy",
+          "type": "boolean"
+        },
+        "preferred": {
+          "items": {
+            "$ref": "#/$defs/BackendPreference"
+          },
+          "title": "Preferred",
+          "type": "array"
+        }
+      },
+      "title": "BackendPreferences",
+      "type": "object"
+    },
+    "CollectionComparator": {
+      "enum": [
+        "any",
+        "all",
+        "count"
+      ],
+      "title": "CollectionComparator",
+      "type": "string"
+    },
+    "CustomRule": {
+      "additionalProperties": false,
+      "properties": {
+        "collection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CollectionComparator"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "conditions": {
+          "items": {
+            "$ref": "#/$defs/CustomRuleCondition"
+          },
+          "title": "Conditions",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "operator": {
+          "$ref": "#/$defs/RuleOperator"
+        },
+        "rationale": {
+          "default": "",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "references": {
+          "items": {
+            "type": "string"
+          },
+          "title": "References",
+          "type": "array"
+        },
+        "selector": {
+          "$ref": "#/$defs/RuleSelector"
+        },
+        "title": {
+          "default": "",
+          "title": "Title",
+          "type": "string"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue",
+          "default": null
+        }
+      },
+      "required": [
+        "id",
+        "selector",
+        "operator"
+      ],
+      "title": "CustomRule",
+      "type": "object"
+    },
+    "CustomRuleCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "collection": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CollectionComparator"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "operator": {
+          "$ref": "#/$defs/RuleOperator"
+        },
+        "selector": {
+          "$ref": "#/$defs/RuleSelector"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue",
+          "default": null
+        }
+      },
+      "required": [
+        "selector",
+        "operator"
+      ],
+      "title": "CustomRuleCondition",
+      "type": "object"
+    },
+    "Exclusion": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "title": "Check Id",
+          "type": "string"
+        },
+        "expires_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expires On"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "default": "general",
+          "title": "Kind",
+          "type": "string"
+        },
+        "owner": {
+          "title": "Owner",
+          "type": "string"
+        },
+        "principal_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Principal Ids",
+          "type": "array"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "check_id",
+        "reason",
+        "owner"
+      ],
+      "title": "Exclusion",
+      "type": "object"
+    },
+    "JsonValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "RedactionSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "default": true,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "redact_domains": {
+          "default": false,
+          "title": "Redact Domains",
+          "type": "boolean"
+        },
+        "redact_tenant_ids": {
+          "default": true,
+          "title": "Redact Tenant Ids",
+          "type": "boolean"
+        },
+        "redact_user_principals": {
+          "default": true,
+          "title": "Redact User Principals",
+          "type": "boolean"
+        },
+        "replacement": {
+          "default": "[redacted]",
+          "title": "Replacement",
+          "type": "string"
+        }
+      },
+      "title": "RedactionSettings",
+      "type": "object"
+    },
+    "RuleOperator": {
+      "enum": [
+        "eq",
+        "ne",
+        "in",
+        "not_in",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "exists"
+      ],
+      "title": "RuleOperator",
+      "type": "string"
+    },
+    "RuleSelector": {
+      "enum": [
+        "finding.status",
+        "finding.severity",
+        "finding.pack",
+        "finding.workload",
+        "finding.check_id",
+        "finding.confidence",
+        "finding.evaluation_mode",
+        "finding.entitlements_used",
+        "tenant.domains",
+        "tenant.sensitive_users",
+        "collection.status"
+      ],
+      "title": "RuleSelector",
+      "type": "string"
+    },
+    "ThresholdSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "fail_at_or_above": {
+          "default": 1,
+          "minimum": 0,
+          "title": "Fail At Or Above",
+          "type": "integer"
+        },
+        "minimum_confidence": {
+          "default": "medium",
+          "title": "Minimum Confidence",
+          "type": "string"
+        },
+        "warn_at_or_above": {
+          "default": 1,
+          "minimum": 0,
+          "title": "Warn At Or Above",
+          "type": "integer"
+        }
+      },
+      "title": "ThresholdSettings",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "accepted_risks": {
+      "items": {
+        "$ref": "#/$defs/AcceptedRiskWaiver"
+      },
+      "title": "Accepted Risks",
+      "type": "array",
+      "x-licenselens-mergeable": true
+    },
+    "allowed_forwarding_domains": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Allowed Forwarding Domains",
+      "type": "array"
+    },
+    "backend_preferences": {
+      "$ref": "#/$defs/BackendPreferences"
+    },
+    "check_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Check Ids",
+      "type": "array"
+    },
+    "custom_rules": {
+      "items": {
+        "$ref": "#/$defs/CustomRule"
+      },
+      "title": "Custom Rules",
+      "type": "array",
+      "x-licenselens-mergeable": true
+    },
+    "description": {
+      "default": "",
+      "title": "Description",
+      "type": "string"
+    },
+    "dmarc_agency_contact": {
+      "default": "",
+      "title": "Dmarc Agency Contact",
+      "type": "string"
+    },
+    "dmarc_federal_contact": {
+      "default": "",
+      "title": "Dmarc Federal Contact",
+      "type": "string"
+    },
+    "exclusions": {
+      "items": {
+        "$ref": "#/$defs/Exclusion"
+      },
+      "title": "Exclusions",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "packs": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Packs",
+      "type": "array"
+    },
+    "redaction": {
+      "$ref": "#/$defs/RedactionSettings"
+    },
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sensitive_domains": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Sensitive Domains",
+      "type": "array"
+    },
+    "sensitive_users": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Sensitive Users",
+      "type": "array"
+    },
+    "thresholds": {
+      "$ref": "#/$defs/ThresholdSettings"
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ],
+  "title": "AssessmentProfile",
+  "type": "object"
+}
