@@ -1,0 +1,30 @@
+id: pur-insider-risk-readiness
+title: Insider risk management needs manual confirmation
+customer_title: Confirm insider risk management is set up
+customer_summary: >
+  Insider risk policies spot risky activity by people who already have access.
+  They are portal-configured and need a specialist to confirm they are live.
+customer_next_step: >
+  Confirm an insider risk policy is created, scoped to the right users, and
+  analytics is enabled in the Purview portal.
+description: >
+  Insider risk policies and analytics are portal-configured and not fully
+  readable automatically; readiness requires manual verification.
+workload: purview
+required_capabilities:
+  - purview_insider_risk
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/insiderriskmgmt
+collector: noop
+remediation: >
+  Verify an insider risk policy exists, is scoped appropriately, and that
+  analytics is enabled in Microsoft Purview Insider Risk Management.
+references:
+  - https://learn.microsoft.com/purview/insider-risk-management
+enabled: true

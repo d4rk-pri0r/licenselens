@@ -1,0 +1,30 @@
+id: pur-retention-policy-coverage
+title: Retention policies do not govern content
+customer_title: Apply retention policies to email and files
+customer_summary: >
+  Without retention policies, content is either deleted too early or kept
+  forever, which creates both legal risk and storage cost.
+customer_next_step: >
+  Create retention policies with retention rules for Exchange, SharePoint,
+  OneDrive, and Teams, then confirm the durations match your requirements.
+description: >
+  Retention policies and rules may be absent, so nothing governs how long
+  content is kept or when it is removed.
+workload: purview
+required_capabilities:
+  - purview_retention
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/datalifecyclemanagement/retentionpolicies
+collector: power_data_collector
+remediation: >
+  Create retention policies with retention rules that keep content for the
+  required period and delete it afterward across mail and file workloads.
+references:
+  - https://learn.microsoft.com/purview/retention
+enabled: true

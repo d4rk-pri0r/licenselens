@@ -1,0 +1,30 @@
+id: pur-sensitivity-auto-labeling
+title: Sensitivity labels are not auto-applied
+customer_title: Turn on auto-labeling for sensitive content
+customer_summary: >
+  Manual labeling is easy to skip, so sensitive files stay unprotected.
+  Auto-labeling classifies content consistently without relying on people.
+customer_next_step: >
+  Configure auto-labeling policies or default labels so new and existing
+  content is classified automatically, then monitor the results.
+description: >
+  Sensitivity labels may be published but never auto-applied, leaving sensitive
+  content unclassified until someone labels it by hand.
+workload: purview
+required_capabilities:
+  - purview_sensitivity_labels
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/informationprotection/autolabeling
+collector: power_data_collector
+remediation: >
+  Configure auto-labeling (default labels or auto-labeling policies) so that
+  sensitive content is classified automatically and consistently.
+references:
+  - https://learn.microsoft.com/purview/apply-sensitivity-label-automatically
+enabled: true
