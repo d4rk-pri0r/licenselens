@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "licenselens"
 version = "0.3.0"
 description = "Security License Lens — detect Microsoft security configuration debt: capabilities you pay for but leave unused."
-readme = "README.md"
+readme = "docs/package-readme.md"
 license = "MIT"
 requires-python = ">=3.12"
 authors = [{ name = "d4rk-pri0r" }]
@@ -32,6 +32,7 @@ classifiers = [
 ]
 dependencies = [
   "azure-identity>=1.19.0",
+  "dnspython>=2.6,<3",
   "httpx>=0.27.0",
   "jinja2>=3.1.4",
   "pydantic>=2.9.0",
@@ -50,14 +51,30 @@ dev = [
   "pytest-playwright>=0.7,<1",
   "ruff>=0.6.0",
 ]
+docs = [
+  "codespell==2.4.3",
+  "mkdocs==1.6.1",
+  "mkdocs-material==9.7.7",
+]
+build-windows = [
+  "pyinstaller==6.22.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/d4rk-pri0r/licenselens"
+Documentation = "https://d4rk-pri0r.github.io/licenselens/"
 Repository = "https://github.com/d4rk-pri0r/licenselens"
 Issues = "https://github.com/d4rk-pri0r/licenselens/issues"
 
 [project.scripts]
 licenselens = "licenselens.cli:app"
+
+[tool.hatch.build.targets.sdist]
+# Package long description comes from docs/package-readme.md (see project.readme).
+# Exclude the root README so the comparison-table exception never ships in sdist.
+exclude = [
+  "/README.md",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/licenselens"]
