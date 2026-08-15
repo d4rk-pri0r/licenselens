@@ -1,0 +1,26 @@
+id: exo-dmarc-agency-contact
+title: DMARC agency report contact is missing
+customer_title: Add your mailbox to DMARC reports
+customer_summary: >
+  Spoofing attempts stay invisible if nobody receives DMARC reports.
+customer_next_step: >
+  Add an internal rua/ruf contact from your assessment profile to DMARC.
+description: >
+  DMARC agency report contact is missing.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.microsoft.com/#/Domains
+collector: exchange_collector
+remediation: >
+  Add an internal rua/ruf contact from your assessment profile to DMARC.
+references:
+  - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
+enabled: true

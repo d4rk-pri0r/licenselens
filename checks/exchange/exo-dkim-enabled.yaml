@@ -1,0 +1,26 @@
+id: exo-dkim-enabled
+title: DKIM signing is not enabled for all domains
+customer_title: Turn on DKIM signing for every domain
+customer_summary: >
+  Unsigned mail is easier to spoof and harder for receivers to trust.
+customer_next_step: >
+  Enable DKIM signing for each accepted domain in Defender.
+description: >
+  DKIM signing is not enabled for all domains.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/authentication?viewid=DKIM
+collector: exchange_collector
+remediation: >
+  Enable DKIM signing for each accepted domain in Defender.
+references:
+  - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dkim-configure
+enabled: true

@@ -1,0 +1,26 @@
+id: exo-dmarc-federal-contact
+title: DMARC federal report contact is missing
+customer_title: Add the federal DMARC report mailbox when required
+customer_summary: >
+  Federal tenants must share aggregate DMARC reports with CISA.
+customer_next_step: >
+  When your profile sets a federal contact, include it in every DMARC rua field.
+description: >
+  DMARC federal report contact is missing.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.microsoft.com/#/Domains
+collector: exchange_collector
+remediation: >
+  When your profile sets a federal contact, include it in every DMARC rua field.
+references:
+  - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
+enabled: true
