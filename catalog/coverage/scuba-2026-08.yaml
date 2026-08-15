@@ -1,0 +1,1335 @@
+manifest_version: 1
+source: SCuBA markdown baselines
+policies:
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.1.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L79
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-legacy-auth-block
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.2.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L136
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-high-risk-users
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.2.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L153
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.2.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L166
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-high-risk-signins
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L240
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-phishing-resistant-all
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.2v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L261
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-mfa-all-users
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.3v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L280
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-auth-authenticator-context
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.4v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L298
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-auth-methods-migration
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.5v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L312
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-auth-weak-methods-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.6v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L327
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-phishing-resistant-privileged
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.7v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L347
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-managed-devices
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.8v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L362
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-mfa-registration-managed
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.3.9v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L379
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ca-device-code-block
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.4.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L549
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.5.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L587
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-app-registration-admin-only
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.5.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L603
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-app-user-consent-restricted
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.5.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L619
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-app-admin-consent-workflow
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.5.5v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L635
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-app-password-addition-blocked
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.5.6v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L650
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-app-password-lifetime
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.5.7v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L666
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-app-certificate-lifetime
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.6.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L799
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-password-never-expire
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L870
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ga-count-bounds
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L885
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ga-finer-roles
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L903
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-priv-cloud-only
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.4v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L918
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-pim-no-permanent-privileged
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.5v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L938
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-pim-no-outside-pam
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.6v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L952
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-pim-ga-activation-approval
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.7v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L967
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-pim-privileged-assignment-alert
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.8v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L982
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-pim-ga-activation-alert
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.7.9v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L998
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-pim-other-activation-alert
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.8.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L1153
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-guest-directory-access-limited
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.8.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L1168
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-guest-inviter-restricted
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.8.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L1181
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: aad
+    product_name: Microsoft Entra ID
+    policy_id: MS.AAD.9.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/aad.md#L1238
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - id-ai-agents-risky-block
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Graph evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.1.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L90
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-malware-file-filter
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.1.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L108
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-malware-zap
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.1.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L122
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-attachments-block
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.1.4v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L140
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-attachments-spo-teams
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.2.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L276
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-impersonation-users-protected
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.2.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L295
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-impersonation-domains-owned
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.2.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L311
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-impersonation-partner-domains
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.2.4v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L328
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safety-tips-enabled
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.3.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L467
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-policy-present
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.3.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L485
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-locations-complete
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.3.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L502
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-enforcement-block
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.3.4v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L518
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-notifications
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.3.5v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L533
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.4.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L723
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+
+    disposition: manual
+    rationale: Manual review tracked; LicenseLens emits manual/skipped guidance.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.4.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L751
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.5.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L839
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-unified-audit-enabled
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.5.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L853
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+
+    disposition: manual
+    rationale: Manual review tracked; LicenseLens emits manual/skipped guidance.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.6.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L939
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-spam-phish-not-inbox
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.6.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L953
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-anti-spam-no-allowed-domains
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.7.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L1088
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-links-block-list
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.7.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L1101
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-links-real-time-scan
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.7.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L1116
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-links-click-tracking
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.8.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L1225
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-connection-filter-no-ip-allow
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.8.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L1238
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-connection-filter-no-safe-list
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.1.1v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L71
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-forwarding-external-disabled
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.2.2v3
+    policy_version: v3
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L140
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-spf-published
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.3.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L214
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-dkim-enabled
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.4.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L270
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-dmarc-published
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.4.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L289
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-dmarc-reject
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.4.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L307
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-dmarc-federal-contact
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.4.4v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L325
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-dmarc-agency-contact
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.5.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L416
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-smtp-auth-disabled
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.6.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L459
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-sharing-contact-not-all-domains
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.6.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L476
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-sharing-calendar-not-all-domains
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.7.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L535
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-external-sender-warnings
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: exo
+    product_name: Exchange Online
+    policy_id: MS.EXO.13.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/exo.md#L614
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - exo-mailbox-audit-enabled
+
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.1.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L36
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-sharing-capability-limited
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.1.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L51
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-onedrive-sharing-limited
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.1.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L67
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-domain-restrictions
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.2.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L146
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-default-link-specific
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.2.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L163
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-default-link-view
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.3.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L216
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-anyone-link-expiration
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.3.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L233
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-anyone-link-view
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.3.3v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L249
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-verification-reauth
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L72
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-external-control-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.2v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L85
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-anonymous-start-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L100
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-anonymous-lobby
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.4v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L113
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-internal-auto-admit
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.5v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L126
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-dialin-lobby
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.6v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L139
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-recording-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.1.7v2
+    policy_version: v2
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L152
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-broadcast-not-always-record
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.2.1v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L305
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-external-access-per-domain
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.2.2v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L320
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-unmanaged-inbound-blocked
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.2.3v2
+    policy_version: v2
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L335
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-unmanaged-outbound-blocked
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.4.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L424
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-email-integration-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.5.1v2
+    policy_version: v2
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L475
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-microsoft-apps-governed
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.5.2v2
+    policy_version: v2
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L488
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-third-party-apps-governed
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.5.3v2
+    policy_version: v2
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L502
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-custom-apps-governed
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.1.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L85
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pp-env-creation-admin-only
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform PowerShell evaluation.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.1.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L101
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pp-trial-creation-admin-only
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform PowerShell evaluation.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.2.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L180
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pp-dlp-all-environments
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform PowerShell evaluation.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.2.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L195
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Connector classification is portal-only; no read-only connector cmdlet in the pinned adapter.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.3.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L290
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pp-tenant-isolation-enabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform PowerShell evaluation.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.3.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L305
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.4.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L361
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual review tracked; no automated LicenseLens claim.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.5.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L407
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pp-pages-creation-admin-only
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform PowerShell evaluation.
+  - product: powerplatform
+    product_name: Microsoft Power Platform
+    policy_id: MS.POWERPLATFORM.6.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L447
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pp-share-with-everyone-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.1.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L66
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-publish-to-web-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.2.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L107
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-guest-access-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.3.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L173
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-external-invite-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.4.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L246
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-sp-api-restricted
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.4.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L259
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-sp-profiles-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.5.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L353
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-resource-key-auth-blocked
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.6.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L404
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-python-r-visuals-disabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+  - product: powerbi
+    product_name: Microsoft Power BI
+    policy_id: MS.POWERBI.7.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerbi.md#L457
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pbi-sensitivity-labels-enabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
