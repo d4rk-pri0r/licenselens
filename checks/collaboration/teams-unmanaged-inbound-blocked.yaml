@@ -1,0 +1,26 @@
+id: teams-unmanaged-inbound-blocked
+title: Unmanaged users can initiate contact with internal users
+customer_title: Block unmanaged users from contacting you first
+customer_summary: >
+  Allowing unmanaged accounts to contact your team enables address harvesting and phishing.
+customer_next_step: >
+  Block inbound contact from unmanaged Teams accounts.
+description: >
+  Unmanaged users should not be able to initiate contact with internal users.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  Turn off inbound communication from unmanaged Teams accounts.
+references:
+  - https://learn.microsoft.com/microsoftteams/manage-external-access
+enabled: true

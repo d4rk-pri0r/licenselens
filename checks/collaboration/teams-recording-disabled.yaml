@@ -1,0 +1,26 @@
+id: teams-recording-disabled
+title: Meeting recording is enabled
+customer_title: Disable meeting recording by default
+customer_summary: >
+  Recording meetings can expose audio, video, and shared screens without authorization.
+customer_next_step: >
+  Turn off 'Meeting recording' unless a specific group needs it.
+description: >
+  Meeting recording should be disabled by default.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  In meeting policies, set 'Meeting recording' to Off.
+references:
+  - https://learn.microsoft.com/microsoftteams/settings-policies-reference
+enabled: true
