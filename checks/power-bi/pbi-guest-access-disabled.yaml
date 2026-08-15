@@ -1,0 +1,27 @@
+id: pbi-guest-access-disabled
+title: Power BI guest access is enabled
+customer_title: Turn off Power BI guest access
+customer_summary: >
+  Azure AD guests can access Power BI content, extending report access beyond
+  your organization.
+customer_next_step: >
+  Disable guest user access in the Power BI admin portal.
+description: >
+  Power BI guest user access should be disabled.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Disable guest user access in the Power BI admin portal tenant settings.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
+enabled: true

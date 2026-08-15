@@ -1,0 +1,27 @@
+id: pbi-publish-to-web-disabled
+title: Power BI publish to web is enabled
+customer_title: Turn off Power BI publish to web
+customer_summary: >
+  Publish to web is on, which can expose reports to the public internet without
+  authentication.
+customer_next_step: >
+  Disable publish to web in the Power BI admin portal.
+description: >
+  Power BI publish to web should be disabled.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: high
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Disable publish to web in the Power BI admin portal tenant settings.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
+enabled: true

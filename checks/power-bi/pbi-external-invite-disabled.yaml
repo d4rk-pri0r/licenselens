@@ -1,0 +1,27 @@
+id: pbi-external-invite-disabled
+title: External users can be invited to Power BI
+customer_title: Turn off external Power BI invitations
+customer_summary: >
+  Users can invite external people to collaborate on Power BI content, widening
+  distribution beyond the organization.
+customer_next_step: >
+  Disable external invitations in the Power BI admin portal.
+description: >
+  Inviting external users to collaborate on Power BI content should be disabled.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Disable external user invitations in the Power BI admin portal tenant settings.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
+enabled: true
