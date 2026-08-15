@@ -1,0 +1,26 @@
+id: id-pim-ga-activation-alert
+title: No alert on Global Administrator activation
+customer_title: Alert when Global Admin is turned on
+customer_summary: >
+  Global Admin activation is a critical event and should never be silent.
+customer_next_step: >
+  Enable notifications for Global Administrator activation.
+description: >
+  User activation of Global Administrator should trigger an alert.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim_policies
+remediation: >
+  Configure PIM notifications for Global Administrator activation.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+enabled: true

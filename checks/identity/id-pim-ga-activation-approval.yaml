@@ -1,0 +1,26 @@
+id: id-pim-ga-activation-approval
+title: Global Administrator activation does not require approval
+customer_title: Require approval to turn on Global Admin
+customer_summary: >
+  A second person approving Global Admin activation makes solo account takeover harder.
+customer_next_step: >
+  Require approval on Global Administrator PIM activation.
+description: >
+  Activation of Global Administrator should require approval.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim_policies
+remediation: >
+  Configure PIM role settings so Global Administrator activation requires approval.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+enabled: true
