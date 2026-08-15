@@ -1,0 +1,31 @@
+id: endpoint-mde-connector
+title: Intune to Defender for Endpoint connector active
+customer_title: Devices may not be flowing into advanced protection
+customer_summary: >
+  Connecting Intune to Defender for Endpoint lets you enforce machine risk
+  scores in access policy and see devices in advanced protection. Without it,
+  enrolled devices may stay invisible to EDR.
+customer_next_step: >
+  Enable the Intune to Defender for Endpoint connector and confirm devices
+  appear onboarded.
+description: >
+  The Intune-MDE connector proves enrolled devices are onboarded to Defender
+  for Endpoint, unlocking machine-risk-based conditional access and EDR.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://security.microsoft.com/securitysettings/endpoints/integration
+collector: intune_collector
+remediation: >
+  Enable the Intune to Microsoft Defender for Endpoint connector, verify
+  device onboarding state, and remediate any unhealthy or unknown devices.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/advanced-threat-protection
+enabled: true

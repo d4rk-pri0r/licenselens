@@ -1,0 +1,32 @@
+id: endpoint-security-policy-coverage
+title: Antivirus, firewall, disk-encryption, and ASR policy coverage
+customer_title: Core endpoint protections may be partially configured
+customer_summary: >
+  Antivirus, firewall, disk encryption, and attack surface reduction are the
+  core endpoint protections. Missing any of them leaves devices exposed to
+  common attacks.
+customer_next_step: >
+  Confirm endpoint-security policies exist for antivirus, firewall, disk
+  encryption, and attack surface reduction, and that they are assigned.
+description: >
+  Coverage of the four core endpoint-security template families (antivirus,
+  firewall, disk encryption, attack surface reduction) indicates whether
+  baseline device protections are actually configured.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview
+collector: intune_collector
+remediation: >
+  Create endpoint-security policies for each missing family (antivirus,
+  firewall, disk encryption, attack surface reduction) and assign them.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/endpoint-security
+enabled: true

@@ -1,0 +1,31 @@
+id: endpoint-security-baseline
+title: Intune endpoint-security baseline applied
+customer_title: No security baseline may be applied to devices
+customer_summary: >
+  Security baselines bundle proven hardening settings for Windows and other
+  platforms. Without one, devices may run with weaker-than-recommended
+  security settings.
+customer_next_step: >
+  Deploy a Microsoft security baseline profile to your managed devices and
+  monitor its adoption.
+description: >
+  An endpoint-security baseline profile proves standardized hardening settings
+  are being pushed to managed devices.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: medium
+value_impact: high
+impact: medium
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview
+collector: intune_collector
+remediation: >
+  Create and assign an endpoint-security security-baseline profile for each
+  managed platform and resolve any device conflicts.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/security-baselines
+enabled: true
