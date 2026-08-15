@@ -146,6 +146,16 @@ def _validate_capabilities(
             f"unknown_capability:{check.id}:{capability_id}"
             for capability_id in sorted(set(check.required_capabilities) - capability_ids)
         )
+    required_by: dict[str, list[str]] = {capability_id: [] for capability_id in capability_ids}
+    for check in checks:
+        for capability_id in check.required_capabilities:
+            if capability_id in required_by:
+                required_by[capability_id].append(check.id)
+    errors.extend(
+        f"empty_required_by_checks:{capability_id}"
+        for capability_id, mapped in sorted(required_by.items())
+        if not mapped
+    )
     return errors
 
 

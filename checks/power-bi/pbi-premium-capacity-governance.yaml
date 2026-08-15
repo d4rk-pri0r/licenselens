@@ -1,0 +1,34 @@
+id: pbi-premium-capacity-governance
+title: Power BI Premium capacity governance needs manual confirmation
+customer_title: Confirm Premium capacity governance and entitlement use
+customer_summary: >
+  Power BI Premium seats and capacity change how widely reports scale.
+  Entitlement assignment, capacity admins, and workspace governance are not
+  fully readable here and need a specialist review.
+customer_next_step: >
+  Confirm Premium per-user or capacity entitlements are assigned intentionally,
+  capacity admins are limited, and workspace provenance matches your policy.
+description: >
+  Power BI Premium capacity and per-user governance (entitlement provenance,
+  capacity admin scope, and workspace placement) require manual verification.
+  This check never auto-passes.
+workload: power_bi
+required_capabilities:
+  - power_bi_premium
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/capacities
+collector: noop
+remediation: >
+  Review Premium capacity settings and per-user assignments in the Power BI
+  admin portal. Limit capacity admins, confirm workspace-to-capacity mapping,
+  and document entitlement provenance for licensed seats.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-premium-what-is
+  - https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq
+enabled: true

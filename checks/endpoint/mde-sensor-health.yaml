@@ -1,0 +1,32 @@
+id: mde-sensor-health
+title: Defender for Endpoint sensor health
+customer_title: Some device-protection sensors may be inactive or unhealthy
+customer_summary: >
+  Advanced device protection only works when its sensor is active on each
+  device. Inactive or unhealthy sensors leave devices partly invisible to
+  attack detection.
+customer_next_step: >
+  Review inactive and unhealthy sensors and remediate them (reinstall,
+  connectivity, or policy) so every licensed device reports health.
+description: >
+  MDE sensor health coverage: inactive, impaired, or missing sensor data on
+  licensed devices means EDR coverage is not fully realized.
+workload: endpoint
+required_capabilities:
+  - defender_endpoint_p2
+  - defender_endpoint_p1
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://security.microsoft.com/machines
+collector: mde_health_collector
+remediation: >
+  Investigate and remediate inactive or unhealthy MDE sensors; confirm
+  onboarding and network connectivity for each affected device.
+references:
+  - https://learn.microsoft.com/defender-endpoint/troubleshoot-onboarding
+enabled: true

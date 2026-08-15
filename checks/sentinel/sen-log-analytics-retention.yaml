@@ -1,0 +1,31 @@
+id: sen-log-analytics-retention
+title: Sentinel workspace retention below recommended window
+customer_title: Keep security logs long enough to investigate
+customer_summary: >
+  Security investigations often need weeks or months of history. A short
+  retention window can erase the evidence before your team gets to it.
+customer_next_step: >
+  Raise the workspace data retention to at least 90 days (and consider
+  archive tiers for long-term storage).
+description: >
+  Log Analytics workspace retention is often left at the default, which may
+  be too short for incident investigations.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+  - log_analytics
+severity: medium
+value_impact: medium
+impact: medium
+effort: half_day
+blast_radius: data
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive
+collector: sentinel_workspace_collector
+remediation: >
+  Increase interactive retention to at least 90 days and configure archive
+  tiers where long-term storage is required.
+references:
+  - https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive
+enabled: true

@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from licenselens.collectors.collaboration_demo import demo_collaboration_evidence
-from licenselens.evaluators import (
+from licenselens.evaluators.collaboration_teams_apps import (
     evaluate_teams_custom_apps_governed,
     evaluate_teams_microsoft_apps_governed,
     evaluate_teams_third_party_apps_governed,

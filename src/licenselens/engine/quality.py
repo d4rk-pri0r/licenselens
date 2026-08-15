@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from licenselens.evaluators.limitations_policy import apply_required_evidence_policy
 from licenselens.models import (
     CONFIDENCE_PLAIN_LABELS,
     PROXY_CHECK_IDS,
@@ -93,7 +94,7 @@ def apply_quality_policy(
     # Defaults for direct checks that didn't set sources
     if not data_sources and finding.check_id.startswith("id-"):
         data_sources.append("microsoft.graph")
-        if confidence == Confidence.MEDIUM and finding.status in {
+        if confidence == Confidence.MEDIUM and status in {
             FindingStatus.GAP,
             FindingStatus.PARTIAL,
             FindingStatus.OK,
@@ -107,6 +108,25 @@ def apply_quality_policy(
     if finding.check_id == "mde-onboard-gap" and not any("mde" in s for s in data_sources):
         data_sources.append("mde.api.machines")
         data_sources.append("graph.subscribedSkus")
+
+    if status is not FindingStatus.NOT_LICENSED and status is not FindingStatus.ERROR:
+        status, confidence = apply_required_evidence_policy(
+            status=status,
+            confidence=confidence,
+            limitations=limitations,
+            required_surface_incomplete=bool(evidence.get("required_surface_incomplete")),
+        )
+        if (
+            status is FindingStatus.PARTIAL
+            and finding.status is FindingStatus.OK
+            and "not marked fully OK" not in summary
+            and "partial:" not in summary.lower()
+            and "capped at partial" not in summary
+        ):
+            summary = (
+                f"{summary.rstrip('.')} "
+                "(not marked fully OK because required evidence is incomplete)."
+            )
 
     finding.status = status
     finding.summary = summary

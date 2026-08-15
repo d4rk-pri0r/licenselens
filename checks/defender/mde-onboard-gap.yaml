@@ -14,6 +14,7 @@ description: >
 workload: endpoint
 required_capabilities:
   - defender_endpoint_p2
+  - defender_endpoint_p1
 severity: high
 value_impact: high
 impact: high

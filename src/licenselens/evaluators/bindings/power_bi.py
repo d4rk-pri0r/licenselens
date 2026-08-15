@@ -5,6 +5,7 @@ from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.power_bi import (
     evaluate_pbi_external_invite_disabled,
     evaluate_pbi_guest_access_disabled,
+    evaluate_pbi_premium_capacity_governance,
     evaluate_pbi_publish_to_web_disabled,
     evaluate_pbi_python_r_visuals_disabled,
     evaluate_pbi_resource_key_auth_blocked,
@@ -18,6 +19,13 @@ from licenselens.schema_contracts import EvaluationMode
 def register_power_bi(catalog: RegistrationCatalog) -> None:
     catalog.enter_module("licenselens.evaluators.bindings.power_bi")
     try:
+        catalog.add_evaluator(
+            check_id="pbi-premium-capacity-governance",
+            evaluate=evaluate_pbi_premium_capacity_governance,
+            input_models=("break_glass_principal_ids",),
+            collector_id="manual_identity",
+            evaluation_mode=EvaluationMode.MANUAL,
+        )
         catalog.add_evaluator(
             check_id="pbi-external-invite-disabled",
             evaluate=evaluate_pbi_external_invite_disabled,

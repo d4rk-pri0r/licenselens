@@ -20,6 +20,10 @@ from licenselens.models import CheckDefinition, Confidence, FindingStatus
 _TEAMS_APPS: Final = "teams_apps"
 _APPS_SURFACE: Final = "app_permission_policies"
 _V2_SURFACE: Final = "app_settings_v2"
+_V2_LIMITATION: Final = (
+    "Org-wide app settings (v2) were not readable; only legacy permission policies "
+    "were evaluated."
+)
 
 
 def _apps_state(
@@ -58,10 +62,16 @@ def _apps_result(
 ) -> Evaluation:
     limitations: list[str] = []
     if v2_unreadable:
-        limitations.append(
-            "Org-wide app settings (v2) were not readable; only legacy permission policies "
-            "were evaluated."
-        )
+        limitations.append(_V2_LIMITATION)
+        evidence = {
+            **evidence,
+            "v2_readable": False,
+            "required_surface_incomplete": True,
+            "required_surface": _V2_SURFACE,
+        }
+    else:
+        evidence = {**evidence, "v2_readable": True, "required_surface_incomplete": False}
+
     if state == "unavailable":
         return unavailable(
             f"{label} app permission policies could not be read; treated as unresolved.",
@@ -80,19 +90,44 @@ def _apps_result(
         )
     if state == "gap":
         evidence["weak_policies"] = weak_names
+        meta = direct_meta()
+        # Real gaps stay gaps even when v2 is unreadable; never claim high confidence
+        # without the required org-wide surface.
+        confidence = Confidence.MEDIUM if v2_unreadable else meta["confidence"]
         return Evaluation(
             status=FindingStatus.GAP,
             summary=f"{gap_summary} ({', '.join(weak_names)}).",
             evidence=evidence,
             customer_summary=customer_gap,
-            **{**direct_meta(), "limitations": limitations},
+            confidence=confidence,
+            data_sources=list(meta["data_sources"]),
+            limitations=limitations,
         )
+
+    # Compliant legacy policies alone are not enough when required v2 is unreadable.
+    if v2_unreadable:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"{ok_summary.rstrip('.')} "
+                "(partial: org-wide app settings v2 were not readable)."
+            ),
+            evidence=evidence,
+            customer_summary=(
+                f"{customer_ok.rstrip('.')} "
+                "Org-wide app settings could not be confirmed automatically."
+            ),
+            confidence=Confidence.MEDIUM,
+            data_sources=list(direct_meta()["data_sources"]),
+            limitations=limitations,
+        )
+
     return Evaluation(
         status=FindingStatus.OK,
         summary=ok_summary,
         evidence=evidence,
         customer_summary=customer_ok,
-        **{**direct_meta(), "limitations": limitations},
+        **direct_meta(),
     )
 
 

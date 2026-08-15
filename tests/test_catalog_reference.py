@@ -56,8 +56,8 @@ def test_reference_model_includes_current_catalog_and_is_deterministic() -> None
     assert any(check.id.startswith("id-ca-") for check in model.checks)
 
 
-def test_reference_model_allows_catalog_first_capability_without_checks(tmp_path: Path) -> None:
-    # Given: a copied source tree with one unused capability (catalog-first expansion).
+def test_reference_model_rejects_capability_without_checks(tmp_path: Path) -> None:
+    # Given: a copied source tree with one unused capability (orphan mapping).
     paths = _copy_reference_inputs(tmp_path)
     capability_data = yaml.safe_load(paths.capabilities_path.read_text(encoding="utf-8"))
     capability_data["capabilities"].append(
@@ -71,11 +71,10 @@ def test_reference_model_allows_catalog_first_capability_without_checks(tmp_path
     )
     paths.capabilities_path.write_text(yaml.safe_dump(capability_data), encoding="utf-8")
 
-    # When: the reference model is built.
-    model = build_reference_model(paths)
-
-    # Then: unused catalog entries are retained for future check families.
-    assert "unused_capability" in {cap.id for cap in model.capabilities}
+    # When / Then: empty required_by_checks fails closed (AF-D).
+    with pytest.raises(ReferenceCatalogError) as exc_info:
+        build_reference_model(paths)
+    assert "empty_required_by_checks:unused_capability" in exc_info.value.diagnostics
 
 
 def test_reference_model_rejects_unknown_capability_on_check(tmp_path: Path) -> None:

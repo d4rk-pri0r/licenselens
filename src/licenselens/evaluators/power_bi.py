@@ -211,9 +211,39 @@ def evaluate_pbi_sensitivity_labels_enabled(
     )
 
 
+def evaluate_pbi_premium_capacity_governance(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check, evidence
+    return Evaluation(
+        status=FindingStatus.SKIPPED,
+        summary=(
+            "Power BI Premium capacity admins, workspace placement, and entitlement "
+            "provenance are portal-configured and not automatically readable here."
+        ),
+        evidence={
+            "manual": True,
+            "evaluation_mode": "manual",
+            "auto_pass": False,
+            "required_surface_incomplete": True,
+        },
+        customer_summary=(
+            "Confirm Premium capacity governance: limited capacity admins, intentional "
+            "seat assignment, and workspace-to-capacity mapping."
+        ),
+        confidence=Confidence.LOW,
+        limitations=[
+            "Manual verification required in the Power BI admin portal; "
+            "this check never auto-passes."
+        ],
+    )
+
+
 __all__ = [
     "evaluate_pbi_external_invite_disabled",
     "evaluate_pbi_guest_access_disabled",
+    "evaluate_pbi_premium_capacity_governance",
     "evaluate_pbi_publish_to_web_disabled",
     "evaluate_pbi_python_r_visuals_disabled",
     "evaluate_pbi_resource_key_auth_blocked",
