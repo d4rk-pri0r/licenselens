@@ -1,0 +1,26 @@
+id: teams-internal-auto-admit
+title: Internal users are not auto-admitted to meetings
+customer_title: Auto-admit internal users to meetings
+customer_summary: >
+  Forcing internal users through the lobby causes admission fatigue for routine meetings.
+customer_next_step: >
+  Set 'Who can bypass the lobby' to People in my org.
+description: >
+  Internal users should be admitted automatically to meetings.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: low
+value_impact: low
+impact: low
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  Set 'Who can bypass the lobby' to People in my org.
+references:
+  - https://learn.microsoft.com/microsoftteams/settings-policies-reference
+enabled: true

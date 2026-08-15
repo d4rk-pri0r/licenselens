@@ -1,0 +1,26 @@
+id: teams-microsoft-apps-governed
+title: Microsoft app installation is not governed
+customer_title: Restrict Microsoft apps to approved ones
+customer_summary: >
+  Letting users install any Microsoft app widens the attack surface without review.
+customer_next_step: >
+  Block all Microsoft apps or allow only approved ones.
+description: >
+  Microsoft app installation should be limited to agency-approved apps.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  Set Microsoft apps to 'Allow specific apps and block all others' or 'Block all apps'.
+references:
+  - https://learn.microsoft.com/microsoftteams/teams-app-permission-policies
+enabled: true

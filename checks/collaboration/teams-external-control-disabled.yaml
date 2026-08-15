@@ -1,0 +1,26 @@
+id: teams-external-control-disabled
+title: External meeting participants can request control of shared content
+customer_title: Block external participants from taking control
+customer_summary: >
+  An external participant with screen control could act on the shared desktop or window.
+customer_next_step: >
+  Turn off 'External participants can give or request control'.
+description: >
+  External meeting participants should not be able to request control of shared content.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  In meeting policies, turn off 'External participants can give or request control'.
+references:
+  - https://learn.microsoft.com/microsoftteams/settings-policies-reference
+enabled: true
