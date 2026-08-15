@@ -134,7 +134,8 @@ families:
     downgraded_manual:
       - mdo-alert-policies-enabled
       - mdo-audit-retention
-    proxy:
+    proxy: []
+    direct_with_proxy_fallback:
       - mdo-p2-policies-default
     proof: tests/test_evaluate_email_wave3.py
     pass_case:
