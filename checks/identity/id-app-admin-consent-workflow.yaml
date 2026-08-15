@@ -1,0 +1,26 @@
+id: id-app-admin-consent-workflow
+title: Admin consent workflow not enabled
+customer_title: Turn on admin approval requests for apps
+customer_summary: >
+  Without a request workflow, users either get blocked with no path forward or find unsafe workarounds.
+customer_next_step: >
+  Enable the admin consent request workflow with monitored reviewers.
+description: >
+  An admin consent request workflow should be configured.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+collector: graph_authorization
+remediation: >
+  Enable admin consent requests and assign reviewers who monitor the queue.
+references:
+  - https://learn.microsoft.com/entra/identity/enterprise-apps/configure-admin-consent-workflow
+enabled: true

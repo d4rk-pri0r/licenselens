@@ -1,0 +1,26 @@
+id: id-app-certificate-lifetime
+title: Application certificates last too long
+customer_title: Shorten long-lived app certificates
+customer_summary: >
+  Certificates that stay valid for years are hard to revoke cleanly after a leak.
+customer_next_step: >
+  Keep application certificate lifetimes at 365 days or less and rotate on schedule.
+description: >
+  Application certificate credentials should not exceed 365 days.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+collector: graph_applications
+remediation: >
+  Inventory app certificates and enforce lifetimes of 365 days or less.
+references:
+  - https://learn.microsoft.com/entra/identity-platform/security-best-practices-for-app-registration
+enabled: true
