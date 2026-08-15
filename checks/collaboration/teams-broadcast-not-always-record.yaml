@@ -1,0 +1,26 @@
+id: teams-broadcast-not-always-record
+title: Live events are set to always record
+customer_title: Stop live events from always recording
+customer_summary: >
+  Always-on event recording removes the organizer's discretion and can leak content.
+customer_next_step: >
+  Set 'Record an event' to organizer can record or never record.
+description: >
+  Live events should not be set to always record.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  In live events policies, set 'Record an event' to organizer can record or never record.
+references:
+  - https://learn.microsoft.com/microsoftteams/settings-policies-reference
+enabled: true
