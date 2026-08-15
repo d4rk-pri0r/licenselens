@@ -1,0 +1,26 @@
+id: id-ca-device-code-block
+title: Device code authentication flow not blocked
+customer_title: Block device-code phishing sign-ins
+customer_summary: >
+  The device-code sign-in flow is popular with phishing kits. Most organizations do not need it day to day.
+customer_next_step: >
+  Enforce a Conditional Access policy that blocks device code flow.
+description: >
+  Conditional Access should block the device code authentication flow.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
+collector: graph_ca
+remediation: >
+  Create an enforced Conditional Access policy blocking authentication flow Device code flow for all users.
+references:
+  - https://learn.microsoft.com/entra/identity/conditional-access/concept-authentication-flows
+enabled: true

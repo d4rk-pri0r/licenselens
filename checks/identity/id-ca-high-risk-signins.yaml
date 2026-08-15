@@ -1,0 +1,26 @@
+id: id-ca-high-risk-signins
+title: High-risk sign-ins not blocked by Conditional Access
+customer_title: Block suspicious high-risk sign-ins
+customer_summary: >
+  Odd sign-ins can be stopped automatically when Microsoft marks them high risk. Without enforcement, those logins may still succeed.
+customer_next_step: >
+  Enforce a Conditional Access policy that blocks high sign-in risk.
+description: >
+  Identity Protection high sign-in risk should be blocked through Conditional Access.
+workload: identity
+required_capabilities:
+  - identity_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
+collector: graph_identity_protection
+remediation: >
+  Create an enforced Conditional Access policy blocking sign-in risk level High for all users.
+references:
+  - https://learn.microsoft.com/entra/id-protection/howto-identity-protection-configure-risk-policies
+enabled: true
