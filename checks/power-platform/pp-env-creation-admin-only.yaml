@@ -1,0 +1,28 @@
+id: pp-env-creation-admin-only
+title: Anyone can create Power Platform environments
+customer_title: Restrict environment creation to admins
+customer_summary: >
+  Non-admin users can create Power Platform environments, which can spread data
+  across unmanaged containers and bypass governance.
+customer_next_step: >
+  Turn off environment creation by non-admin users in the Power Platform admin center.
+description: >
+  Environment creation should be restricted to admins so every environment is
+  provisioned under tenant governance.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: high
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: all_users
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  In the Power Platform admin center, disable environment creation by non-admin users.
+references:
+  - https://learn.microsoft.com/power-platform/admin/control-environment-creation
+enabled: true

@@ -1,0 +1,28 @@
+id: pp-dlp-all-environments
+title: Some Power Platform environments have no DLP policy
+customer_title: Apply a DLP policy to every environment
+customer_summary: >
+  One or more environments are not covered by a data loss prevention policy,
+  leaving those makers free to connect business data to personal connectors.
+customer_next_step: >
+  Assign a DLP policy that covers every environment, including the default environment.
+description: >
+  Every Power Platform environment should be covered by at least one data loss
+  prevention policy.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  Create or update DLP policies so every environment, including the default, is covered.
+references:
+  - https://learn.microsoft.com/power-platform/admin/wp-data-loss-prevention
+enabled: true

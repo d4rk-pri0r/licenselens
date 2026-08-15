@@ -1,0 +1,27 @@
+id: pp-pages-creation-admin-only
+title: Anyone can create Power Pages sites
+customer_title: Restrict Power Pages creation to admins
+customer_summary: >
+  Non-admin users can create public Power Pages sites, exposing tenant data to
+  the internet without review.
+customer_next_step: >
+  Turn off Power Pages creation by non-admin users in the Power Platform admin center.
+description: >
+  Power Pages site creation should be restricted to admins.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: high
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: data
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  In the Power Platform admin center, disable Power Pages creation by non-admin users.
+references:
+  - https://learn.microsoft.com/power-pages/admin/power-pages-site-creation
+enabled: true
