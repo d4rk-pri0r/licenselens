@@ -1,0 +1,27 @@
+id: id-ca-mfa-registration-managed
+title: MFA registration not limited to managed devices
+customer_title: Only allow multi-factor setup from managed devices
+customer_summary: >
+  If anyone can register a second factor from a personal phone after stealing a password, attackers can lock the real user out.
+customer_next_step: >
+  Require a managed device when users register security information.
+description: >
+  Conditional Access should require managed devices for Register security information.
+workload: identity
+required_capabilities:
+  - conditional_access
+  - intune
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
+collector: graph_ca
+remediation: >
+  Create an enforced Conditional Access policy targeting user action Register security information with managed device grants.
+references:
+  - https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-registration
+enabled: true

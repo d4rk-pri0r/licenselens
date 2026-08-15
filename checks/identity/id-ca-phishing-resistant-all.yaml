@@ -1,0 +1,26 @@
+id: id-ca-phishing-resistant-all
+title: Phishing-resistant MFA not enforced for all users
+customer_title: Require strong phishing-resistant sign-in for everyone
+customer_summary: >
+  Ordinary multi-factor methods can still be phished. Stronger methods such as FIDO2 or certificate-based auth close that gap.
+customer_next_step: >
+  Enforce phishing-resistant authentication strength for all users where feasible.
+description: >
+  Conditional Access should require phishing-resistant MFA for all users.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
+collector: graph_ca
+remediation: >
+  Create a Conditional Access policy requiring the Phishing-resistant MFA authentication strength for all users.
+references:
+  - https://learn.microsoft.com/entra/identity/authentication/concept-authentication-strengths
+enabled: true
