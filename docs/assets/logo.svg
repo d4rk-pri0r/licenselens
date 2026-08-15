@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Security License Lens">
+  <rect width="48" height="48" rx="6" fill="#0f1114"/>
+  <circle cx="21" cy="21" r="11" fill="none" stroke="#88b4d8" stroke-width="4"/>
+  <circle cx="21" cy="21" r="4.5" fill="#88b4d8"/>
+  <line x1="29" y1="29" x2="40" y2="40" stroke="#88b4d8" stroke-width="5" stroke-linecap="round"/>
+</svg>

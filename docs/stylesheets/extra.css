@@ -1,0 +1,74 @@
+/* Security License Lens — branded Material overrides.
+   Cool-charcoal surfaces + a single steel/ice-blue accent (DESIGN.md).
+   All values are local; no external fonts, CDN, or analytics. */
+
+:root {
+  --md-primary-fg-color: #16191d;
+  --md-primary-fg-color--light: #242930;
+  --md-primary-fg-color--dark: #0f1114;
+
+  --md-accent-fg-color: #88b4d8;
+  --md-accent-fg-color--transparent: rgba(136, 180, 216, 0.12);
+  --md-accent-bg-color: #1c2025;
+  --md-accent-bg-color--light: rgba(136, 180, 216, 0.12);
+
+  --md-default-bg-color: #0f1114;
+  --md-default-fg-color: #f2f4f7;
+  --md-default-fg-color--light: #b9c0ca;
+  --md-default-fg-color--lighter: #8a919c;
+  --md-default-fg-color--lightest: #8a919c;
+
+  --md-typeset-color: #f2f4f7;
+  --md-typeset-a-color: #88b4d8;
+
+  --md-code-bg-color: #16191d;
+  --md-code-fg-color: #d6dae0;
+
+  --md-footer-bg-color: #0f1114;
+  --md-footer-bg-color--dark: #0f1114;
+}
+
+.md-header {
+  background-color: #16191d;
+  box-shadow: 0 1px 0 #2a3038;
+}
+
+.md-tabs {
+  background-color: #16191d;
+}
+
+.md-main {
+  background-color: #0f1114;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+  color: #f2f4f7;
+  font-weight: 600;
+}
+
+.md-typeset h1 {
+  font-weight: 700;
+}
+
+.md-typeset code {
+  border-radius: 2px;
+}
+
+.md-typeset table:not([class]) {
+  border: 1px solid #2a3038;
+  border-radius: 2px;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: #16191d;
+}
+
+.md-nav__link--active {
+  color: #88b4d8;
+}
+
+.md-content__inner {
+  padding-top: 1.5rem;
+}

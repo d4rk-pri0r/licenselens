@@ -1,0 +1,113 @@
+site_name: Security License Lens
+site_description: Detect Microsoft security configuration debt — the paid capabilities you leave unused.
+site_url: https://d4rk-pri0r.github.io/licenselens/
+repo_url: https://github.com/d4rk-pri0r/licenselens
+repo_name: d4rk-pri0r/licenselens
+edit_uri: ""
+
+# Fail the build on any warning (broken links, missing anchors, etc.).
+strict: true
+
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Quick start: getting-started.md
+  - Concepts:
+      - Overview: concepts.md
+      - How it compares: comparison.md
+  - Authentication:
+      - App registration: app-registration.md
+      - MSP batch auth: msp-batch.md
+  - Profiles & custom rules: profiles.md
+  - Collectors & backends: collectors.md
+  - Report & export: report.md
+  - Checks: checks.md
+  - Permissions: permissions.md
+  - Reference:
+      - Overview: reference/index.md
+      - Checks: reference/checks.md
+      - Capabilities: reference/capabilities.md
+      - Profiles: reference/profiles.md
+      - Permissions: reference/permissions.md
+      - Coverage: reference/coverage.md
+  - Windows: windows.md
+  - Limitations: limitations.md
+  - Architecture: architecture.md
+  - Contributing:
+      - Overview: contributing.md
+      - Adding a check: adding-a-check.md
+  - Security: security.md
+  - Support & compatibility: support.md
+  - Releases: releases.md
+
+theme:
+  name: material
+  font: false
+  language: en
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.tracking
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - def_list
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+      permalink_title: Link to this section
+
+plugins:
+  - search
+
+# Fail the build when internal links or anchors are broken. The `strict` flag
+# above promotes every `warn` to an error, so a broken internal link, an
+# unrecognized link, or a dangling anchor fails `mkdocs build`.
+validation:
+  nav:
+    omitted_files: warn
+  links:
+    not_found: warn
+    absolute_links: warn
+    unrecognized_links: warn
+    anchors: warn
+
+# Internal validation checklists stay out of the public site (and out of the
+# "pages not in nav" warning surface).
+exclude_docs: |
+  lab-seed-checklist.md
+  manual-test-checklist.md
+  tenant-provisioning-guide.md
+
+extra_css:
+  - stylesheets/extra.css
+
+copyright: "Security License Lens is an independent open-source project, not affiliated with Microsoft."
