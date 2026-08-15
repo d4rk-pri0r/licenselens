@@ -224,7 +224,11 @@ def validate_matrix(matrix: Matrix) -> Problems:
                 if expected not in {"ok", "gap", "partial", "error", "skipped", "not_licensed"}:
                     problems.append(f"{fid}.{case_key}: bad expected status {expected!r}")
 
-        for mode, key in (("manual", "downgraded_manual"), ("proxy", "proxy")):
+        for mode, key in (
+            ("manual", "downgraded_manual"),
+            ("proxy", "proxy"),
+            ("direct_with_proxy_fallback", "direct_with_proxy_fallback"),
+        ):
             declared = family.get(key) or []
             for cid in declared:
                 if cid not in known_ids:
@@ -529,12 +533,12 @@ def _run_fake_scan(
     )
     fake.register_list("/identityGovernance/accessReviews/definitions", ok({"value": []}))
 
-    import licenselens.engine.runner as runner_mod
-
-    monkeypatch_patch.setattr(runner_mod, "GraphClient", lambda _auth, **_kw: fake)
     monkeypatch_patch.setattr(
-        runner_mod,
-        "collect_mde_machine_summary",
+        "licenselens.engine.runner.GraphClient",
+        lambda _auth, **_kw: fake,
+    )
+    monkeypatch_patch.setattr(
+        "licenselens.collectors.runtime.collect_mde_machine_summary",
         lambda _auth: {
             "onboarded_machines": 1,
             "sample_size": 1,
@@ -543,8 +547,7 @@ def _run_fake_scan(
         },
     )
     monkeypatch_patch.setattr(
-        runner_mod,
-        "collect_sentinel_bundle",
+        "licenselens.collectors.runtime.collect_sentinel_bundle",
         lambda _auth, _wid: {
             "sentinel_rules": {"total_rules": 0},
             "sentinel_ueba": {},
