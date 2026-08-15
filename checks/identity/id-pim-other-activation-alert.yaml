@@ -1,0 +1,26 @@
+id: id-pim-other-activation-alert
+title: Privileged role activation alerts incomplete
+customer_title: Alert when other powerful admin roles activate
+customer_summary: >
+  Roles short of Global Admin can still cause major damage and deserve activation alerts.
+customer_next_step: >
+  Enable PIM activation notifications for other highly privileged roles.
+description: >
+  Activation of other highly privileged roles should trigger alerts.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim_policies
+remediation: >
+  Configure PIM notification rules for highly privileged role activations.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+enabled: true

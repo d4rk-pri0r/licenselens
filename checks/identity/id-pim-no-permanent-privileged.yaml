@@ -1,0 +1,26 @@
+id: id-pim-no-permanent-privileged
+title: Permanent highly privileged role assignments present
+customer_title: Remove always-on powerful admin assignments
+customer_summary: >
+  Permanent high-power roles stay dangerous even when unused. Just-in-time access shrinks that window.
+customer_next_step: >
+  Convert highly privileged standing assignments to PIM-eligible where possible.
+description: >
+  Permanent active assignments should not remain for highly privileged roles.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim
+remediation: >
+  Remove standing highly privileged assignments and prefer eligible PIM activation.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+enabled: true

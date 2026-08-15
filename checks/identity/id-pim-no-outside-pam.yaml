@@ -1,0 +1,26 @@
+id: id-pim-no-outside-pam
+title: Privileged provisioning appears outside PIM
+customer_title: Provision admin access only through just-in-time tools
+customer_summary: >
+  If powerful roles are granted permanently outside PIM, your paid privileged-access controls are bypassed.
+customer_next_step: >
+  Stop direct permanent privileged assignments and route access through PIM.
+description: >
+  Provisioning users to highly privileged roles should occur through PIM rather than standing assignments alone.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim
+remediation: >
+  Require PIM eligibility for highly privileged roles and remove standing bypass paths.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+enabled: true
