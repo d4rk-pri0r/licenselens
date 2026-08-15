@@ -103,9 +103,7 @@ def cat_file_batch(root: Path, object_ids: Sequence[str] | Iterable[str]) -> dic
     return _parse_cat_file_batch(result.stdout)
 
 
-def cat_file_batch_types(
-    root: Path, object_ids: Sequence[str] | Iterable[str]
-) -> dict[str, str]:
+def cat_file_batch_types(root: Path, object_ids: Sequence[str] | Iterable[str]) -> dict[str, str]:
     """Return object id -> type via one ``git cat-file --batch-check`` call."""
     unique_ids = list(dict.fromkeys(object_ids))
     if not unique_ids:

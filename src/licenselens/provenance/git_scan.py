@@ -148,9 +148,7 @@ def scan_git_all_objects(root: Path, policy: TokenPolicy) -> list[Violation]:
     return dedupe_violations(violations)
 
 
-def _scan_reachable_commits(
-    root: Path, policy: TokenPolicy, mode: ScanMode
-) -> list[Violation]:
+def _scan_reachable_commits(root: Path, policy: TokenPolicy, mode: ScanMode) -> list[Violation]:
     log = run_git(root, "log", "--all", f"--format={_COMMIT_LOG_FORMAT}", check=False)
     if log.returncode != 0 or not log.stdout.strip():
         return []
@@ -234,9 +232,7 @@ def _scan_reachable_blobs(root: Path, policy: TokenPolicy, mode: ScanMode) -> li
                     scan_readme_blob(policy, blob, path=path, mode=mode, object_id=obj_id)
                 )
             else:
-                violations.extend(
-                    scan_blob(policy, blob, path=path, mode=mode, object_id=obj_id)
-                )
+                violations.extend(scan_blob(policy, blob, path=path, mode=mode, object_id=obj_id))
     return violations
 
 

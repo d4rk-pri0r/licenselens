@@ -89,9 +89,7 @@ def test_git_scans_finish_under_budget_and_find_seeded_hit(tmp_path: Path) -> No
     assert any(v.kind.value == "git_object" for v in reachable.violations)
 
     started = time.perf_counter()
-    all_objects = run_scan(
-        repo, mode=ScanMode.GIT_ALL_OBJECTS, policy_readme=ROOT / "README.md"
-    )
+    all_objects = run_scan(repo, mode=ScanMode.GIT_ALL_OBJECTS, policy_readme=ROOT / "README.md")
     all_objects_s = time.perf_counter() - started
     assert all_objects_s < _PERF_BUDGET_S, f"git-all-objects took {all_objects_s:.2f}s"
     assert all_objects.status == "violations"
