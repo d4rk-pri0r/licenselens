@@ -23,8 +23,9 @@ from licenselens.catalog.loader import load_capabilities
 from licenselens.config_models import AssessmentProfile
 from licenselens.engine.loader import load_checks
 from licenselens.engine.registry import AssessmentRegistry, default_registry
-from licenselens.models import PROXY_CHECK_IDS, CheckDefinition, CheckPack
+from licenselens.models import CheckDefinition, CheckPack
 from licenselens.paths import catalog_dir, checks_dir
+from licenselens.schema_contracts import EvaluationMode
 
 type JsonValue = str | int | float | bool | None | list["JsonValue"] | dict[str, "JsonValue"]
 type JsonObject = dict[str, JsonValue]
@@ -204,8 +205,17 @@ def _reference_check(
         evaluator_registered=entry is not None and entry.evaluate is not None,
         required_capabilities=tuple(sorted(check.required_capabilities)),
         source_path=check.source_path or "",
-        support_state=SupportState.PROXY if check.id in PROXY_CHECK_IDS else SupportState.DIRECT,
+        support_state=_support_state_from_registry(entry.evaluation_mode if entry else None),
     )
+
+
+def _support_state_from_registry(mode: EvaluationMode | None) -> SupportState:
+    if mode is None:
+        raise ReferenceCatalogError(("missing_evaluation_mode",))
+    try:
+        return SupportState(mode.value)
+    except ValueError as exc:
+        raise ReferenceCatalogError((f"unknown_evaluation_mode:{mode.value}",)) from exc
 
 
 def _reference_profile(
