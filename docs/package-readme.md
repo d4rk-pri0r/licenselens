@@ -43,6 +43,10 @@ licenselens batch tenants.yaml -o reports
 
 ## What it looks like
 
+The report is a dark, premium console — "Ink and Verdigris" — that reads top to
+bottom: where you stand, what you're paying for, what matters most, and why
+LicenseLens believes each finding.
+
 ![report hero](images/report-hero.png)
 
 *The dashboard: what you own, what's working, and what to fix first.*

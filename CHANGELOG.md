@@ -48,10 +48,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
 - **SCuBA coverage reference** — 109 pinned coverage rows
   (`docs/reference/coverage.md`).
+- **Report redesign (v2, "Ink and Verdigris")** — the HTML report is rebuilt as
+  a dark-first, offline-first dashboard: a data-driven posture figure bound to
+  `capability_rollup.realized_percent` (never hardcoded), a signature capability
+  constellation (deterministic, status-colored, workload-grouped), a five-section
+  narrative (Where you stand → What you're paying for → What matters most → Why
+  LicenseLens believes this → Explore everything), and a six-slot per-finding
+  "belief block" (Expected / Observed / Why it matters / Recommended action /
+  Evidence / Admin destination). The report renders fully server-side and is
+  readable with JavaScript disabled; motion honors `prefers-reduced-motion`.
 
 ### Changed
 - `SECURITY.md` / `docs/security.md` supported-versions table now reflects the
   `0.3.x` release line.
+- Report visuals moved to the v2 "Ink and Verdigris" palette (verdigris accent
+  on a deep green-ink charcoal canvas); the v1 workload `<img>` icon allowlist is
+  retired — workloads are named with visible text labels only.
 
 ### Fixed
 - **PowerShell bridge accepts hashtable params** — `Invoke-LicenseLensCollectorAdapter`

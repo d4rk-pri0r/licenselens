@@ -68,12 +68,29 @@ The HTML report may also embed report JSON for offline interactivity
 
 ## The HTML report
 
-- **Top card** — capability rollup (% realized), ranked moves by impact/exposure/effort, and an `EXPOSED` chip for legacy auth / MFA-less global admin.
-- **Findings** — every finding ties observed evidence to the expected control and the capability it maps to, with plain-language next steps.
-- **Evidence drawers** — provenance, collection health, limitations, entitlement explanation, waiver state, and remediation.
-- **Charts** — local SVG with equivalent tables and text for assistive tech.
-- **Export** — filtered findings to JSON or CSV, and print without network or third-party runtime.
-- **Offline** — no CDN, external fonts, icon packages, or network requests at view time.
+The report is a dark-first, offline-first dashboard — "Ink and Verdigris": a deep
+green-ink charcoal canvas with a verdigris accent. It reads top to bottom in five
+sections:
+
+- **Where you stand** — a signature opening line ("Your security investment
+  coming into focus"), the data-driven posture figure (`<percent>% realized`,
+  bound to `capability_rollup.realized_percent` — never hardcoded), a rollup of
+  licensed vs. working vs. gap capabilities, and per-status counts.
+- **What you're paying for** — your owned SKUs and a capability **constellation**:
+  a deterministic, labeled field of every owned capability grouped by workload
+  and colored by status, followed by the capability detail cards.
+- **What matters most** — the top ranked moves: title, effort, why it matters,
+  and the concrete next step with a link to the admin page.
+- **Why LicenseLens believes this** — every finding as a six-slot "belief block"
+  (Expected, Observed, Why it matters, Recommended action, Evidence, Admin
+  destination) with a technical evidence drawer.
+- **Explore everything** — search, multi-facet filters, sort, pagination, and
+  CSV/JSON export over every assessed control (interactive view).
+
+- **Offline** — no CDN, external fonts, icon packages, images, or network
+  requests at view time; styling, glyphs, and the constellation are inline.
+- **Print** — inverts to light ink; export filtered findings to JSON or CSV, or
+  print to PDF, without any network or third-party runtime.
 
 ## Diffing two scans
 
@@ -100,7 +117,7 @@ tenants first.
 ## Offline and privacy-safe
 
 The report loads **no external font, CDN, icon package, image, or network
-request**. Charts, icons, and styling are all local; a Content-Security-Policy
+request**. Visualizations, glyphs, and styling are all local; a Content-Security-Policy
 blocks injected scripts without blocking the app's own assets. Offline rendering
 does not mean the JSON is free of tenant data — see [Sensitivity](#sensitivity)
 above. See [Limitations](limitations.md) for what the report can and cannot tell
