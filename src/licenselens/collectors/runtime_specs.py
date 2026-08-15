@@ -6,6 +6,14 @@ from collections.abc import Sequence
 from typing import Any
 
 from licenselens.collectors.contracts import CheckId, CollectorId, EvidenceEnvelope, EvidenceKey
+from licenselens.collectors.runtime_collect_endpoint import (
+    collect_intune_bundle_runtime,
+    collect_mde_health_runtime,
+    collect_mde_summary_runtime,
+    collect_purview_dlp_runtime,
+    collect_secure_score_controls_runtime,
+    collect_security_alerts_runtime,
+)
 from licenselens.collectors.runtime_collect_identity_apps import (
     collect_admin_consent_policy_runtime,
     collect_applications_runtime,
@@ -31,14 +39,6 @@ from licenselens.collectors.runtime_collect_mail import (
     collect_dns_runtime,
     collect_exchange_runtime,
     collect_power_data_runtime,
-)
-from licenselens.collectors.runtime_collect_endpoint import (
-    collect_intune_bundle_runtime,
-    collect_mde_health_runtime,
-    collect_mde_summary_runtime,
-    collect_purview_dlp_runtime,
-    collect_secure_score_controls_runtime,
-    collect_security_alerts_runtime,
 )
 from licenselens.collectors.runtime_collect_sentinel import (
     collect_defender_pricings_runtime,

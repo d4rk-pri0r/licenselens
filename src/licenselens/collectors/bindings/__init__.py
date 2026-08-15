@@ -1,4 +1,5 @@
 """Typed collector registrations binding CollectorSpec factories."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -55,241 +56,241 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
     try:
         _register_one(
             catalog,
-            collector_id='collaboration_collector',
+            collector_id="collaboration_collector",
             backend=Backend.NOOP,
             permissions=(),
-            dependencies=('collaboration_bundle',),
+            dependencies=("collaboration_bundle",),
             timeout_seconds=120,
         )
         _register_one(
             catalog,
-            collector_id='defender_pricings_collector',
+            collector_id="defender_pricings_collector",
             backend=Backend.ARM,
             permissions=(),
-            dependencies=('defender_for_cloud_pricings',),
+            dependencies=("defender_for_cloud_pricings",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='exchange_collector',
+            collector_id="exchange_collector",
             backend=Backend.NOOP,
             permissions=(),
-            dependencies=('exchange_bundle', 'dns_records'),
+            dependencies=("exchange_bundle", "dns_records"),
             timeout_seconds=120,
         )
         _register_one(
             catalog,
-            collector_id='graph_access_reviews',
+            collector_id="graph_access_reviews",
             backend=Backend.GRAPH,
-            permissions=('AccessReview.Read.All',),
-            dependencies=('access_review_definitions',),
+            permissions=("AccessReview.Read.All",),
+            dependencies=("access_review_definitions",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_applications',
+            collector_id="graph_applications",
             backend=Backend.GRAPH,
-            permissions=('Application.Read.All', 'Directory.Read.All'),
-            dependencies=('applications_bundle',),
+            permissions=("Application.Read.All", "Directory.Read.All"),
+            dependencies=("applications_bundle",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='graph_auth_methods',
+            collector_id="graph_auth_methods",
             backend=Backend.GRAPH,
-            permissions=('Policy.Read.All',),
-            dependencies=('auth_methods_bundle',),
+            permissions=("Policy.Read.All",),
+            dependencies=("auth_methods_bundle",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_authorization',
+            collector_id="graph_authorization",
             backend=Backend.GRAPH,
-            permissions=('Policy.Read.All',),
-            dependencies=('authorization_policy', 'admin_consent_request_policy'),
+            permissions=("Policy.Read.All",),
+            dependencies=("authorization_policy", "admin_consent_request_policy"),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_ca',
+            collector_id="graph_ca",
             backend=Backend.GRAPH,
-            permissions=('Policy.Read.All',),
-            dependencies=('ca_policies', 'break_glass_principal_ids'),
+            permissions=("Policy.Read.All",),
+            dependencies=("ca_policies", "break_glass_principal_ids"),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_domains',
+            collector_id="graph_domains",
             backend=Backend.GRAPH,
-            permissions=('Domain.Read.All', 'Directory.Read.All'),
-            dependencies=('domains',),
+            permissions=("Domain.Read.All", "Directory.Read.All"),
+            dependencies=("domains",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_guests',
+            collector_id="graph_guests",
             backend=Backend.GRAPH,
-            permissions=('Policy.Read.All', 'User.Read.All'),
-            dependencies=('guests_bundle', 'approved_guest_domains', 'authorization_policy'),
+            permissions=("Policy.Read.All", "User.Read.All"),
+            dependencies=("guests_bundle", "approved_guest_domains", "authorization_policy"),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='graph_identity_protection',
+            collector_id="graph_identity_protection",
             backend=Backend.GRAPH,
-            permissions=('Policy.Read.All',),
-            dependencies=('ca_policies', 'break_glass_principal_ids'),
+            permissions=("Policy.Read.All",),
+            dependencies=("ca_policies", "break_glass_principal_ids"),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_mdo',
+            collector_id="graph_mdo",
             backend=Backend.NOOP,
             permissions=(),
-            dependencies=('secure_score_controls',),
+            dependencies=("secure_score_controls",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_pim',
+            collector_id="graph_pim",
             backend=Backend.GRAPH,
-            permissions=('RoleManagement.Read.Directory',),
-            dependencies=('role_assignments', 'role_eligibilities'),
+            permissions=("RoleManagement.Read.Directory",),
+            dependencies=("role_assignments", "role_eligibilities"),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_pim_policies',
+            collector_id="graph_pim_policies",
             backend=Backend.GRAPH,
-            permissions=('RoleManagement.Read.Directory',),
-            dependencies=('pim_policies_bundle',),
+            permissions=("RoleManagement.Read.Directory",),
+            dependencies=("pim_policies_bundle",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_security_defaults',
+            collector_id="graph_security_defaults",
             backend=Backend.GRAPH,
-            permissions=('Policy.Read.All',),
-            dependencies=('security_defaults_policy',),
+            permissions=("Policy.Read.All",),
+            dependencies=("security_defaults_policy",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='graph_signins_roles',
+            collector_id="graph_signins_roles",
             backend=Backend.GRAPH,
             permissions=(
-                'Directory.Read.All',
-                'AuditLog.Read.All',
-                'RoleManagement.Read.Directory',
+                "Directory.Read.All",
+                "AuditLog.Read.All",
+                "RoleManagement.Read.Directory",
             ),
-            dependencies=('role_assignments', 'recent_signin_user_ids', 'principal_directory'),
+            dependencies=("role_assignments", "recent_signin_user_ids", "principal_directory"),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='intune_collector',
+            collector_id="intune_collector",
             backend=Backend.GRAPH,
             permissions=(
-                'DeviceManagementConfiguration.Read.All',
-                'DeviceManagementManagedDevices.Read.All',
+                "DeviceManagementConfiguration.Read.All",
+                "DeviceManagementManagedDevices.Read.All",
             ),
-            dependencies=('intune_bundle',),
+            dependencies=("intune_bundle",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='manual_identity',
+            collector_id="manual_identity",
             backend=Backend.NOOP,
             permissions=(),
-            dependencies=('break_glass_principal_ids',),
+            dependencies=("break_glass_principal_ids",),
             timeout_seconds=5,
         )
         _register_one(
             catalog,
-            collector_id='mde_health_collector',
+            collector_id="mde_health_collector",
             backend=Backend.MDE,
             permissions=(),
-            dependencies=('mde_health',),
+            dependencies=("mde_health",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='mde_onboarding',
+            collector_id="mde_onboarding",
             backend=Backend.MDE,
             permissions=(),
-            dependencies=('mde_summary',),
+            dependencies=("mde_summary",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='mdi_sensors',
+            collector_id="mdi_sensors",
             backend=Backend.PROXY,
-            permissions=('SecurityEvents.Read.All',),
-            dependencies=('secure_score_controls',),
+            permissions=("SecurityEvents.Read.All",),
+            dependencies=("secure_score_controls",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='power_data_collector',
+            collector_id="power_data_collector",
             backend=Backend.NOOP,
             permissions=(),
-            dependencies=('power_data_bundle',),
+            dependencies=("power_data_bundle",),
             timeout_seconds=120,
         )
         _register_one(
             catalog,
-            collector_id='purview_dlp_collector',
+            collector_id="purview_dlp_collector",
             backend=Backend.PROXY,
-            permissions=('SecurityEvents.Read.All',),
-            dependencies=('purview_dlp',),
+            permissions=("SecurityEvents.Read.All",),
+            dependencies=("purview_dlp",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='security_alerts_collector',
+            collector_id="security_alerts_collector",
             backend=Backend.GRAPH,
-            permissions=('SecurityIncident.Read.All', 'SecurityAlert.Read.All'),
-            dependencies=('security_alerts_bundle',),
+            permissions=("SecurityIncident.Read.All", "SecurityAlert.Read.All"),
+            dependencies=("security_alerts_bundle",),
             timeout_seconds=30,
         )
         _register_one(
             catalog,
-            collector_id='sentinel_analytics',
+            collector_id="sentinel_analytics",
             backend=Backend.ARM,
             permissions=(),
-            dependencies=('sentinel_rules',),
+            dependencies=("sentinel_rules",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='sentinel_automation_rules_collector',
+            collector_id="sentinel_automation_rules_collector",
             backend=Backend.ARM,
             permissions=(),
-            dependencies=('sentinel_automation_rules',),
+            dependencies=("sentinel_automation_rules",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='sentinel_data_connectors_collector',
+            collector_id="sentinel_data_connectors_collector",
             backend=Backend.ARM,
             permissions=(),
-            dependencies=('sentinel_data_connectors',),
+            dependencies=("sentinel_data_connectors",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='sentinel_ueba_collector',
+            collector_id="sentinel_ueba_collector",
             backend=Backend.ARM,
             permissions=(),
-            dependencies=('sentinel_ueba',),
+            dependencies=("sentinel_ueba",),
             timeout_seconds=45,
         )
         _register_one(
             catalog,
-            collector_id='sentinel_workspace_collector',
+            collector_id="sentinel_workspace_collector",
             backend=Backend.ARM,
             permissions=(),
-            dependencies=('sentinel_workspace',),
+            dependencies=("sentinel_workspace",),
             timeout_seconds=45,
         )
     finally:
@@ -316,4 +317,3 @@ def _register_one(
         timeout_seconds=timeout_seconds,
         dependencies=dependencies,
     )
-

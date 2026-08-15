@@ -11,12 +11,14 @@ from licenselens.collectors.dns_records import (
 )
 from licenselens.collectors.exchange_demo import demo_exchange_evidence
 from licenselens.collectors.power_data_demo import demo_power_data_evidence
-from licenselens.collectors.runtime_envelopes import envelope_value, error, graph_failure, ok
+from licenselens.collectors.runtime_envelopes import envelope_value, error, ok
 from licenselens.engine.collection_context import ScanCollectionContext
 from licenselens.engine.planner import CollectionContext
 
 
-def collect_exchange_runtime(ctx: ScanCollectionContext, _pc: CollectionContext) -> EvidenceEnvelope:
+def collect_exchange_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
     key = "exchange_bundle"
     if ctx.is_dry_run:
         payload = demo_exchange_evidence()
