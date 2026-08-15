@@ -31,6 +31,7 @@ import argparse
 import hashlib
 import json
 import os
+import platform
 import re
 import subprocess
 import sys
@@ -1374,7 +1375,7 @@ def _render_ledger(results: list[StepResult]) -> str:
     lines = [
         "# Todo 36 — Master release gate ledger",
         "",
-        f"Generator: scripts/release_gate.py · Host: {os.uname().sysname} ({os.uname().machine})",
+        f"Generator: scripts/release_gate.py · Host: {platform.system()} ({platform.machine()})",
         f"Generated: {time.strftime('%Y-%m-%d %H:%M:%S %Z')}",
         "",
         "| Status | Step | Detail |",
