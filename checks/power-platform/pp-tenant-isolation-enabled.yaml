@@ -1,0 +1,27 @@
+id: pp-tenant-isolation-enabled
+title: Power Platform tenant isolation is not enforced
+customer_title: Turn on Power Platform tenant isolation
+customer_summary: >
+  Tenant isolation is off, so connections can reach other tenants unless explicitly
+  blocked by an inbound/outbound allowlist.
+customer_next_step: >
+  Enable tenant isolation in the Power Platform admin center and review allowlist exceptions.
+description: >
+  Power Platform tenant isolation should be enabled to prevent cross-tenant connections.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  Enable tenant isolation and configure an explicit inbound/outbound allowlist.
+references:
+  - https://learn.microsoft.com/power-platform/admin/cross-tenant-restrictions
+enabled: true

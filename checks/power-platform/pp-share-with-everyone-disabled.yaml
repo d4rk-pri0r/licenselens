@@ -1,0 +1,27 @@
+id: pp-share-with-everyone-disabled
+title: Power Apps can be shared with everyone
+customer_title: Block sharing apps with everyone
+customer_summary: >
+  Makers can share apps with everyone in the organization, broadening exposure
+  beyond intended audiences.
+customer_next_step: >
+  Disable share-with-everyone in the Power Platform admin center.
+description: >
+  Sharing apps with everyone should be disabled so access stays scoped.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: data
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  In the Power Platform admin center, disable share-with-everyone for Power Apps.
+references:
+  - https://learn.microsoft.com/power-platform/admin/powerapps-powershell
+enabled: true
