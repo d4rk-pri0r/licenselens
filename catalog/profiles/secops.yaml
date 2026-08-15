@@ -1,0 +1,15 @@
+schema_version: "1.0"
+id: secops
+name: Security operations assessment
+description: Sentinel analytics, UEBA, and operations readiness.
+packs:
+  - secops
+check_ids:
+  - sen-analytics-rule-coverage
+  - sen-ueba-not-enabled
+backend_preferences:
+  preferred:
+    - arm
+    - graph
+  allow_proxy: false
+  allow_manual: true

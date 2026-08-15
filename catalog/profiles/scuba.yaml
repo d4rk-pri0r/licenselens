@@ -1,0 +1,37 @@
+schema_version: "1.0"
+id: scuba
+name: SCuBA-aligned assessment
+description: Declarative profile for SCuBA coverage mapping and manual gaps.
+packs:
+  - identity
+  - email
+  - collaboration
+  - endpoint
+  - data-protection
+  - secops
+  - power-platform
+  - power-bi
+backend_preferences:
+  preferred:
+    - graph
+    - arm
+    - exchange_online
+    - defender
+    - manual
+  allow_proxy: true
+  allow_manual: true
+accepted_risks:
+  - id: risk-scuba-transition
+    check_id: sen-ueba-not-enabled
+    owner: security@example.com
+    reason: Sentinel onboarding accepted during migration.
+    expires_on: "2099-12-31"
+custom_rules:
+  - id: scuba-manual-or-direct
+    title: SCuBA evidence is present
+    selector: finding.evaluation_mode
+    operator: in
+    value:
+      - direct
+      - manual
+      - proxy

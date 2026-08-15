@@ -1,0 +1,18 @@
+schema_version: "1.0"
+id: power-platform
+name: Power Platform assessment
+description: Power Platform governance and tenant controls.
+packs:
+  - power-platform
+backend_preferences:
+  preferred:
+    - graph
+    - manual
+  allow_proxy: false
+  allow_manual: true
+custom_rules:
+  - id: power-platform-manual-coverage
+    title: Power Platform manual evidence coverage
+    selector: collection.status
+    operator: exists
+    collection: any
