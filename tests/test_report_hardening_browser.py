@@ -314,9 +314,7 @@ def test_workload_icons_are_restrained_decorative_and_print_hidden(
         assert item["ariaHidden"] == "true", f"icon must be aria-hidden: {item}"
         w_attr = int(item["widthAttr"] or 0)
         h_attr = int(item["heightAttr"] or 0)
-        assert 16 <= w_attr <= 20 and 16 <= h_attr <= 20, (
-            f"attr size out of 16–20px: {item}"
-        )
+        assert 16 <= w_attr <= 20 and 16 <= h_attr <= 20, f"attr size out of 16–20px: {item}"
         assert 16 <= item["cssW"] <= 20 and 16 <= item["cssH"] <= 20, (
             f"css size out of band: {item}"
         )
