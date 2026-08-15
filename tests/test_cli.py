@@ -470,7 +470,7 @@ def test_checks_lists_profile_backend_mode_state():
     assert "Backend" in result.stdout
     assert "Mode" in result.stdout
     assert "State" in result.stdout
-    assert "id-ca-pri…" in result.stdout
+    assert "id-ca-pr…" in result.stdout
     assert "identity" in result.stdout
     assert "enabled" in result.stdout
     assert "direct" in result.stdout

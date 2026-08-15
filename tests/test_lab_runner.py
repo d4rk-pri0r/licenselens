@@ -58,6 +58,8 @@ def test_downgrades_and_proxies_match_registry(mod) -> None:
             assert modes[cid] == "manual", cid
         for cid in family.get("proxy") or []:
             assert modes[cid] == "proxy", cid
+        for cid in family.get("direct_with_proxy_fallback") or []:
+            assert modes[cid] == "direct_with_proxy_fallback", cid
 
 
 def test_pass_probes_all_ok(mod) -> None:
