@@ -171,9 +171,7 @@ def scan_workspace_tree(root: Path, policy: TokenPolicy) -> tuple[list[Violation
             continue
 
         if is_archive_path(path):
-            violations.extend(
-                scan_archive_file(policy, path, relative=relative, mode=mode)
-            )
+            violations.extend(scan_archive_file(policy, path, relative=relative, mode=mode))
             continue
 
         try:
@@ -191,9 +189,7 @@ def scan_workspace_tree(root: Path, policy: TokenPolicy) -> tuple[list[Violation
 
         if path.name.casefold() == "readme.md":
             text = data.decode("utf-8", errors="replace")
-            violations.extend(
-                _scan_readme_text(policy, text, relative=relative, mode=mode)
-            )
+            violations.extend(_scan_readme_text(policy, text, relative=relative, mode=mode))
             continue
 
         violations.extend(

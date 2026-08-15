@@ -181,9 +181,7 @@ def parse_allowed_row(readme_text: str, *, require_expected_digest: bool = False
     digest = _row_digest(line)
     matches = digest == EXPECTED_ALLOWED_ROW_SHA256
     if require_expected_digest and not matches:
-        raise TokenPolicyError(
-            f"allowed row sha256 {digest} does not match pinned expected digest"
-        )
+        raise TokenPolicyError(f"allowed row sha256 {digest} does not match pinned expected digest")
     return AllowedRow(
         display_name=display,
         url=url,
