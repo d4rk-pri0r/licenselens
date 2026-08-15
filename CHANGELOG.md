@@ -31,6 +31,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   of malformed input, stale generated state, a dirty worktree, misleading
   success output, tampered artifacts, secret fixtures, and external-network
   report requests.
+- **140-check pack** — the declarative check set grew from the 12 checks at
+  the 0.3.0 tag to 140 checks across identity, collaboration, defender,
+  exchange, purview, endpoint, power-bi, power-platform, sentinel, and azure
+  (regenerated reference: `docs/reference/checks.md`).
+- **Assessment profiles** — 11 built-in profiles under `catalog/profiles/`
+  plus scan `--profile` / `--config` / `--rules` / `--backend` and doctor
+  `--assessment-profile`.
+- **Report archive** — `--report-archive` writes a deterministic offline ZIP
+  beside the HTML/JSON/Markdown report.
+- **PowerShell collector bridge** — allowlisted read-only adapters under
+  `powershell/LicenseLens.Collectors`.
+- **Windows distribution** — per-user installer + PyInstaller one-folder
+  build (`packaging/windows/`).
+- **MkDocs documentation site** — public docs at
+  https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
+- **SCuBA coverage reference** — 109 pinned coverage rows
+  (`docs/reference/coverage.md`).
 
 ### Changed
 - `SECURITY.md` / `docs/security.md` supported-versions table now reflects the

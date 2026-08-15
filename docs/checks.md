@@ -1,10 +1,21 @@
 # Checks
 
-Security License Lens ships **139 declarative checks** across ten workloads.
-Each check is a single YAML file under `checks/<workload>/` and evaluates only
-when its required capabilities are licensed.
+Security License Lens ships **140 declarative checks** across ten workload
+directories. Each check is a single YAML file under `checks/<workload>/` and
+evaluates only when its required capabilities are licensed.
+
+The authoritative per-check catalog (collector, support state, evaluator,
+capabilities, evidence keys) is generated — do not maintain a full check table
+here:
+
+- [Check reference](reference/checks.md)
+- Machine-readable: [reference.json](reference/reference.json) ·
+  [manifest.json](reference/manifest.json)
 
 ## Workloads
+
+Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
+140):
 
 | Workload | Checks | Examples |
 |----------|-------:|----------|
@@ -13,11 +24,13 @@ when its required capabilities are licensed.
 | defender | 21 | Safe Links / Safe Attachments, anti-spam, alert policies |
 | exchange | 12 | SPF/DKIM/DMARC, forwarding, SMTP auth, mailbox audit |
 | purview | 11 | DLP policy presence/enforcement, sensitivity labels, retention |
+| power-bi | 9 | Tenant settings, sharing |
 | endpoint | 8 | MDE onboard gaps, Intune policy |
-| power-bi | 8 | Tenant settings, sharing |
 | power-platform | 6 | DLP policies, environment isolation |
 | sentinel | 5 | Analytics rule coverage, UEBA |
 | azure | 2 | Azure resource hygiene |
+
+Email is a **priority pack**, not a workload directory under `checks/`.
 
 ## Check anatomy
 

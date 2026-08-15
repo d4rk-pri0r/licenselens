@@ -28,8 +28,9 @@ Delegated equivalents (device-code / interactive) are declared per operation in
 `src/licenselens/graph_ops.py` and are always read-only (`*.Read.*` / `*.Read.All`).
 
 National clouds: Graph/ARM/MDE base URLs are modeled in
-`src/licenselens/cloud_endpoints.py` (`public`, `us_gov`, `china`). Collectors
-mark unsupported cloud+operation pairs instead of calling the wrong root.
+`src/licenselens/cloud_endpoints.py` (`public`, `us_gov`, `china`) but there is
+no CLI cloud flag — national-cloud selection is modeled in code, not user-selectable.
+Collectors mark unsupported cloud+operation pairs instead of calling the wrong root.
 
 ## Defender for Endpoint API (separate resource)
 
@@ -74,7 +75,10 @@ benchmark-style CSPM.
 
 ## Purview DLP
 
-v0.2 uses **Secure Score** DLP/information-protection controls as a proxy (`SecurityEvents.Read.All`). Direct Purview policy APIs are attempted best-effort and may not be available to app-only auth. PowerShell bridge adapters also collect readable Purview surfaces when modules are present.
+Purview DLP uses **Secure Score** DLP/information-protection controls as a proxy
+(`SecurityEvents.Read.All`). Direct Purview policy APIs are attempted best-effort
+and may not be available to app-only auth. PowerShell bridge adapters also collect
+readable Purview surfaces when modules are present.
 
 ## Exchange Online / Security & Compliance (PowerShell bridge)
 

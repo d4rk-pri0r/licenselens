@@ -1,6 +1,6 @@
 # Known limitations (proud honesty)
 
-Security License Lens is **advisory**. Confirm every finding in the Microsoft admin portals before you change production.
+Security License Lens is **advisory**. Confirm every finding in the Microsoft admin portals before you change production. It does **not** certify compliance.
 
 ## Evidence boundaries
 
@@ -23,17 +23,30 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 
 - Proxy findings are capped: they do not emit a clean “fully working” outcome under strict proxy mode.
 - Always re-check labeled proxy items in the portal.
+- Manual checks require operator confirmation; they are not silent auto-pass.
 
 ## Sampling
 
 - Sign-in lookbacks are paged (default ~90 days, page budget). Large tenants may truncate; findings note when the sample looks truncated.
 - MDE machine counts may truncate on very large estates.
+- Intune managed-device inventories are bounded and may truncate on very large estates.
 
 ## Auth / permissions
 
 - Device code can be blocked by Conditional Access → use app-only (see MSP docs).
 - Missing permissions produce **partial cards** with limitations, not silent empty success.
 - Doctor marks optional probes (MDE, email unreadability, Secure Score) as warnings so identity-ready still means ready.
+- Sentinel needs a **workspace ARM resource ID** (or subscription + resource group + workspace name) plus Azure RBAC (typically Microsoft Sentinel Reader on the workspace).
+
+## Reports and redaction
+
+- JSON and ZIP report artifacts contain **tenant identifiers** and finding **evidence samples**. Treat them as sensitive; do not commit live reports.
+- Profile `RedactionSettings` flags (`redact_tenant_ids`, `redact_user_principals`, `redact_domains`) are accepted on the profile schema but are **not applied** to HTML/JSON/MD reports today.
+- The only live UPN redaction is dormant-privileged local-part masking in identity evidence.
+
+## PowerShell bridge cloud
+
+- The allowlisted PowerShell bridge (`SUPPORTED_BRIDGE_CLOUDS`) supports the **public** cloud only. National-cloud Graph/ARM/MDE endpoints may be modeled elsewhere, but EXO/Teams/SPO bridge adapters are not multi-cloud today.
 
 ## What this tool is not
 

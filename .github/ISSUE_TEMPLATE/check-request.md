@@ -19,11 +19,16 @@ How do we detect default / unused / partial configuration?
 
 ## Workload
 
-- [ ] Identity / Entra
-- [ ] Defender / XDR
+- [ ] Identity
+- [ ] Defender
 - [ ] Sentinel
 - [ ] Purview
 - [ ] Endpoint
+- [ ] Exchange
+- [ ] Collaboration
+- [ ] Power BI
+- [ ] Power Platform
+- [ ] Azure
 - [ ] Other
 
 ## References

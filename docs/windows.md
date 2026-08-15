@@ -76,7 +76,7 @@ Per-user lifecycle scripts live in `packaging/windows/` and install under
     -ManifestPath .\release-manifest.json -AddToPath
 
 # Update to a newer verified version (previous version is kept for rollback)
-.\Update-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-0.4.0.zip `
+.\Update-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-<version>.zip `
     -ManifestPath .\release-manifest.json
 
 # Roll back to the previously installed version after a failed update

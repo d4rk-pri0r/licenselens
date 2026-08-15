@@ -22,7 +22,7 @@ Examples of unacceptable behavior:
 
 ## Enforcement
 
-Report unacceptable behavior to the maintainer via GitHub Security advisories or a private maintainer contact channel listed in SECURITY.md.
+Report unacceptable behavior via GitHub Security Advisories on this repository.
 
 Maintainers may remove, edit, or reject contributions that do not align with this Code of Conduct.
 

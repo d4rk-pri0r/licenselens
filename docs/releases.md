@@ -15,6 +15,22 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
   docs/report regeneration, and a secret/host-path/source-leakage scan). Its
   ledger records what ran and what is deferred to Windows CI (the PyInstaller
   exe) and to the operator (live tenants).
+- **140-check pack** — 12 checks at the 0.3.0 tag grew to 140 across identity,
+  collaboration, defender, exchange, purview, endpoint, power-bi,
+  power-platform, sentinel, and azure (`docs/reference/checks.md`).
+- **Assessment profiles** — 11 built-in profiles under `catalog/profiles/`
+  plus scan `--profile` / `--config` / `--rules` / `--backend` and doctor
+  `--assessment-profile`.
+- **Report archive** — `--report-archive` writes a deterministic offline ZIP
+  beside the HTML/JSON/Markdown report.
+- **PowerShell collector bridge** — allowlisted read-only adapters under
+  `powershell/LicenseLens.Collectors`.
+- **Windows distribution** — per-user installer + PyInstaller one-folder
+  build (`packaging/windows/`).
+- **MkDocs documentation site** — public docs at
+  https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
+- **SCuBA coverage reference** — 109 pinned coverage rows
+  (`docs/reference/coverage.md`).
 - **Fixes** — the PowerShell bridge now accepts hashtable params (Pester contract
   passes cross-platform), the installer no longer leaves literal-backslash
   directories on non-Windows hosts, and `.playwright-mcp/` plus a stray debug

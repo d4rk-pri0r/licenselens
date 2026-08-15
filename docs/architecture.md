@@ -3,28 +3,76 @@
 ## Pipeline
 
 ```
-Auth → Collectors → Entitlement resolution → Check selection → Findings → Reports
+Auth → collect_scan_state → evaluate licensed checks
+     → profile / custom rules → rank / rollup → HTML / JSON / MD (+ optional ZIP)
 ```
 
-1. **Auth** — device code, client credentials, or Azure CLI (live mode TBD)
-2. **Collectors** — Graph subscribed SKUs, then workload-specific config APIs
-3. **Catalog** — maps service plans / SKU part numbers → capability IDs
-4. **Engine** — loads YAML checks; marks `not_licensed` when capabilities missing
-5. **Reports** — static HTML dashboard, JSON, Markdown, scan diff, batch index
+1. **Auth** — implemented modes: device code (`device` / `device_code`), client
+   secret (`client_secret`), and Azure CLI (`azure_cli`). Dry-run uses curated
+   sample data without a live credential. See [CLI reference](cli.md) for flags
+   and env vars.
+2. **`collect_scan_state`** — resolves owned SKUs / service plans, then runs the
+   collectors selected for the scan (workload filters, profile backend
+   preferences, and optional `--backend` order). Evidence is keyed for
+   evaluators; collection summaries record what succeeded or was skipped.
+3. **Evaluate licensed checks** — YAML checks under `checks/<workload>/` run only
+   when required capabilities are owned. Missing entitlements yield
+   `not_licensed` instead of a false gap.
+4. **Profile / custom rules** — optional assessment profile overlays and custom
+   rules adjust findings after the base evaluation (accepted risk, pack scope,
+   backend preferences). Profile `RedactionSettings` are accepted on the schema
+   and merged into the resolved profile, but are **not** applied to HTML/JSON/MD
+   report bodies today.
+5. **Rank / rollup** — priority packs (default identity + endpoint) shape the
+   top-card moves and capability rollup; findings stay ranked by status and
+   severity.
+6. **Reports** — static HTML dashboard, portable JSON, and Markdown. Optional
+   `--report-archive` adds a ZIP beside those files.
+
+There is no hosted SaaS control plane: the CLI runs locally (or in your CI),
+talks to Microsoft APIs with your credentials, and writes artifacts to disk.
 
 ## Output layout
+
+**`scan` / `demo` / `quickstart`** write report files **flat** into `-o` /
+`--output-dir` (default `reports`):
+
+```
+reports/
+  security-license-lens-report.html
+  security-license-lens-report.json
+  security-license-lens-report.md
+  security-license-lens-report.zip   # only with --report-archive
+```
+
+**Only `batch`** nests per tenant under slug and UTC timestamp, plus a batch
+index:
 
 ```
 reports/
   <tenant-slug>/<timestamp UTC>/
     security-license-lens-report.{html,json,md}
-  index.md              # batch run summary
+  index.md
 ```
 
-`scan` writes the three report formats next to each other. `batch` uses the
-slug/timestamp layout per tenant and writes a top-level `index.md`. The
-`diff` command compares two `*.json` artifacts by `check_id` and emits
-Markdown or JSON.
+`diff` compares two `*.json` artifacts by `check_id` and emits Markdown or JSON.
+
+## Collector families
+
+Collectors are read-only. Families include:
+
+| Family | Role |
+|--------|------|
+| Microsoft Graph | SKUs, Conditional Access, roles/PIM, sign-ins, guests, apps, Intune, Secure Score, and related directory/security reads |
+| Defender for Endpoint (MDE) | Machine inventory / onboard signals |
+| Azure Resource Manager (ARM) | Sentinel alert rules, settings, workspace discovery |
+| Public DNS | SPF / DKIM / DMARC and related mail-auth records |
+| PowerShell bridge | Allowlisted read-only adapters (`powershell/LicenseLens.Collectors`) for surfaces without a Graph read API |
+
+Operator-facing backend tokens and the bridge contract are documented in
+[Collectors](collectors.md). Full command and flag surface: [CLI reference](cli.md).
+Contributor registry metadata lives in
+`src/licenselens/engine/_registry_source_meta.py`.
 
 ## Workspace discovery
 
@@ -55,18 +103,3 @@ Markdown or JSON.
 - Implement collectors named in check `collector` fields
 - Register pure evaluators in `engine/evaluate.py` (`EVALUATORS`)
 - Keep reporting format stable so MSPs can archive JSON over time
-
-## Data plane (v0.2)
-
-| Evidence | API |
-|----------|-----|
-| SKUs | Graph `GET /subscribedSkus` |
-| CA policies | Graph `GET /identity/conditionalAccess/policies` |
-| Role assignments | Graph `GET /roleManagement/directory/roleAssignments` |
-| PIM eligibility | Graph `GET /roleManagement/directory/roleEligibilitySchedules` |
-| Sign-ins (bounded) | Graph `GET /auditLogs/signIns` |
-| Principals | Graph `POST /directoryObjects/getByIds` |
-| Secure Score | Graph `GET /security/secureScores` |
-| MDE machines | `https://api.securitycenter.microsoft.com/api/machines` |
-| Sentinel rules | ARM `.../Microsoft.SecurityInsights/alertRules` |
-| Sentinel settings | ARM `.../Microsoft.SecurityInsights/settings` |

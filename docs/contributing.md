@@ -13,14 +13,40 @@ configuration.
 
 ## Development setup
 
+This is the same pip + venv path CI uses:
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
-ruff check src tests
-pytest
-licenselens scan -o reports
 ```
+
+## Quality checks
+
+These match CI (`.github/workflows/ci.yml`). Run them before opening a PR:
+
+```bash
+ruff check src tests
+ruff format --check src tests
+pytest tests/ -m "not browser" --cov=licenselens --cov-fail-under=72
+licenselens scan --dry-run -o reports
+```
+
+`licenselens scan --dry-run` exits 0 or 1 when the demo catalog has gaps or
+partial findings; both are expected. Any other exit code is a failure.
+
+## Optional checks
+
+Not required for every PR:
+
+- Playwright report tests: `python -m playwright install --with-deps chromium`
+  then `pytest tests/test_report_browser.py --browser chromium`
+- Pester suites (Windows): adapter contracts in
+  `powershell/LicenseLens.Collectors/tests/` and installer tests in
+  `packaging/windows/tests/`
+- Regenerated reference docs: `python scripts/generate_reference_docs.py`
+- Docs site: `mkdocs build --strict` or `scripts/docs-check.sh` (that script
+  invokes `uv run` for mkdocs and codespell)
 
 ## Adding a check
 
@@ -37,7 +63,7 @@ Minimum bar for a new check PR:
 ## Code style
 
 - Python 3.12+, type hints preferred
-- `ruff` for lint
+- `ruff` for lint and format
 - Do not commit secrets, tenant IDs from real customers, or unredacted reports
 
 ## Public docs and releases
@@ -45,9 +71,9 @@ Minimum bar for a new check PR:
 This repo is a standalone product. Keep GitHub-facing material
 presentation-neutral:
 
-- Do **not** mention conference talks, CFPs, slide decks, "talk-ready"
-  milestones, or event names in README, CHANGELOG, docs, CLI help, release
-  notes, or commit messages meant for GitHub.
+- Do **not** mention talks, slide decks, event-tied milestones, or event names
+  in README, CHANGELOG, docs, CLI help, release notes, or commit messages
+  meant for GitHub.
 - Describe features in product terms (quick start, default packs, demo command).
 - Local planning tools (OpenSpec changes, editor agent config) stay out of the
   repo — see `.gitignore`.

@@ -1,14 +1,31 @@
 # Getting started
 
-## Install (dev)
+## Install
+
+### Operators (recommended)
+
+```bash
+pipx install licenselens
+licenselens demo
+```
+
+Open the HTML report written under `reports/` (default output directory).
+
+### Contributors
+
+Matches CI (`.github/workflows/ci.yml`):
 
 ```bash
 git clone https://github.com/d4rk-pri0r/licenselens.git
 cd licenselens
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # Windows: .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
 ```
+
+Optional docs/release helpers (not required for day-to-day use) may be run with
+`uv run` when those tools are installed — for example `scripts/docs-check.sh` and
+`scripts/release_gate.py`.
 
 ## Dry-run scan
 
@@ -20,7 +37,9 @@ licenselens scan --dry-run -o reports
 licenselens scan
 ```
 
-Open `reports/security-license-lens-report.html` in a browser.
+Open `reports/security-license-lens-report.html` in a browser. Single-tenant
+`scan` / `demo` / `quickstart` write report files **flat** into `-o` (default
+`reports`).
 
 ## Interactive scan (prompts)
 
@@ -124,7 +143,7 @@ licenselens batch tenants.yaml -o reports
 
 Per-tenant reports land under `reports/<slug>/<timestamp>/` and a summary
 `index.md` is written next to them. A failing tenant is recorded in the index
-and the batch continues.
+and the batch continues. See [MSP batch](msp-batch.md) for the full key set.
 
 ## Live scan (identity pack)
 
@@ -138,6 +157,7 @@ export AZURE_CLIENT_SECRET=...
 licenselens doctor --live --auth client_secret
 ```
 
+On `doctor`, `--profile` is **probe depth** (`basic` default, or `full`).
 `--profile full` also probes the Defender for Endpoint API and, when you pass
 `--workspace-resource-id`, the Sentinel workspace:
 
@@ -146,10 +166,13 @@ licenselens doctor --live --auth client_secret --profile full \
   --workspace-resource-id "/subscriptions/.../resourceGroups/.../providers/Microsoft.OperationalInsights/workspaces/..."
 ```
 
-3. Scan:
+Assessment profile ids on doctor use `--assessment-profile` (repeatable), not
+`--profile`.
+
+3. Scan (on `scan` / `demo` / `quickstart`, `--profile` is an **assessment profile id**):
 
 ```bash
-licenselens scan --live --auth client_secret -o reports
+licenselens scan --live --auth client_secret --profile identity -o reports
 ```
 
 Interactive alternative:
@@ -168,3 +191,8 @@ licenselens scan --live --auth device \
 | 0 | Success (no gap/partial findings) |
 | 1 | Completed with gap or partial findings |
 | 2 | Auth/config/Graph error |
+
+## Full flag catalog
+
+Every command, flag, auth mode, and environment variable is listed in the
+[CLI reference](cli.md).

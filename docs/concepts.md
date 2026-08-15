@@ -7,7 +7,7 @@ capabilities, checks, findings, and the exit codes you'll see in CI.
 
 ```
 Owned SKUs → capability catalog → eligible checks
-        → collectors (Graph / MDE / ARM) → findings → reports
+        → collectors → findings → reports
 ```
 
 1. **Entitlements.** The tenant's `subscribedSkus` and service plans are read
@@ -20,12 +20,17 @@ Owned SKUs → capability catalog → eligible checks
    capabilities a check needs and how to evaluate them. A check whose
    capabilities are not licensed reports `not_licensed` instead of a false gap.
 4. **Collectors.** Read-only data sources (Graph, Defender for Endpoint, ARM,
-   Secure Score, and the Exchange Online PowerShell bridge) gather evidence.
+   public DNS, Secure Score, and the Exchange Online PowerShell bridge) gather
+   evidence. See [Collectors](collectors.md).
 5. **Findings.** Each check yields a status plus customer-facing copy and an
    actionable next step.
-6. **Reports.** Static HTML, JSON, and Markdown are written next to each other.
+6. **Reports.** Static HTML, JSON, and Markdown are written next to each other
+   (flat under `-o` for `scan` / `demo` / `quickstart`; nested only for
+   `batch`). See [CLI reference](cli.md).
 
 ## Finding statuses
+
+Statuses match `FindingStatus` in the package models:
 
 | Status | Meaning |
 |--------|---------|
@@ -33,8 +38,22 @@ Owned SKUs → capability catalog → eligible checks
 | `partial` | Partially configured; some of the expected control is missing. |
 | `ok` | The expected control is in place. |
 | `not_licensed` | You don't pay for the capability, so there is no gap. |
-| `skipped` | Genuinely not evaluable with the available backend (not a false pass). |
 | `error` | The collector or evaluator failed; surfaced per-check, never silent. |
+| `skipped` | Genuinely not evaluable with the available backend (not a false pass). |
+
+## Evaluation modes
+
+How a check obtains evidence (from the registry / schema contracts):
+
+| Mode | Meaning |
+|------|---------|
+| `direct` | Reads the control itself from the preferred backend. |
+| `proxy` | Infers from a neighboring signal (for example Secure Score); labeled and never treated as fully authoritative. |
+| `manual` | Operator-confirmed; not fully automated. |
+| `direct_with_proxy_fallback` | Tries direct evidence first; falls back to a labeled proxy only when direct is unavailable. |
+
+Per-finding report rows still serialize the observed mode (`direct` or `proxy`)
+when a dynamic check runs. Full flag catalog: [CLI reference](cli.md).
 
 ## Severity, impact, and effort
 
@@ -45,14 +64,16 @@ first. Findings are **advisory** — they are not a compliance certification.
 
 ## Priority packs
 
-Packs group checks by theme (identity, email, endpoint, collaboration,
-data-protection, and so on). The default priority packs are **identity +
-endpoint**; they shape the headline rollup and top actions. Enabled checks still
-evaluate unless `--workload` filters them.
+Packs group checks by theme for ranking and the top card (`CheckPack`: identity,
+email, endpoint, collaboration, power-platform, power-bi, starter). The default
+priority packs are **identity + endpoint** (`DEFAULT_PACKS`); they shape the
+headline rollup and top actions. Enabled checks still evaluate unless
+`--workload` filters them.
 
-Email policy config is not readable via Graph (PowerShell-only). Use
-`--allow-email-proxy` only if you explicitly want a labeled Secure Score
-degraded path — it never rolls up to "fully working".
+Email is a **pack**, not a workload directory. Email policy config is not
+readable via Graph (PowerShell-only). Use `--allow-email-proxy` only if you
+explicitly want a labeled Secure Score degraded path — it never rolls up to
+"fully working".
 
 ## Exit codes
 
@@ -63,10 +84,12 @@ degraded path — it never rolls up to "fully working".
 | 2 | Auth / configuration / API error |
 
 These make `licenselens scan` safe to gate a pipeline on: exit `1` means "there
-is work to do", not "the tool failed".
+is work to do", not "the tool failed". Command-level detail:
+[CLI reference](cli.md).
 
 ## Where to go next
 
 - [Quick start](getting-started.md) — first report in minutes
+- [CLI reference](cli.md) — every command, flag, and env var
 - [Checks](checks.md) — the full check pack
 - [Architecture](architecture.md) — how the pieces fit together

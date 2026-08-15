@@ -19,11 +19,17 @@ customer_next_step: >
   A concrete action they can ask IT to take.
 description: >
   What paid capability should be realized, and what gap looks like.
-workload: identity   # identity | defender | sentinel | purview | endpoint
+workload: identity   # identity | defender | sentinel | purview | endpoint | exchange | collaboration | teams | power_platform | power_bi | intune | azure | general
 required_capabilities:
   - entra_id_p2
 severity: high       # critical | high | medium | low | info
 value_impact: high   # high | medium | low
+# Required when enabled: true (loader rejects the check if any are missing)
+impact: high         # high | medium | low
+effort: hours        # minutes | hours | half_day | days
+blast_radius: all_users  # admin | all_users | devices | data
+pack: identity       # identity | email | endpoint | collaboration | power-platform | power-bi | starter
+exposure_class: none # none | elevated | exposed
 collector: graph_example
 remediation: >
   Concrete next steps for an admin or consultant.

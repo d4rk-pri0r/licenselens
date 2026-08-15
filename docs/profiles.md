@@ -1,8 +1,8 @@
 # Profiles and custom rules
 
 Assessment profiles are declarative YAML files that shape *what* a scan looks
-at, *which* backends it prefers, and *what* it is allowed to redact or waive.
-They live under `catalog/profiles/` and validate against a JSON schema
+at, *which* backends it prefers, and *what* redaction settings the schema
+accepts. They live under `catalog/profiles/` and validate against a JSON schema
 (`catalog/profiles/assessment-profile.schema.json`) before any network call.
 
 ## Built-in profiles
@@ -12,14 +12,44 @@ They live under `catalog/profiles/` and validate against a JSON schema
 | `core` | Default priority packs (identity + endpoint), no proxy. |
 | `identity` | Entra ID controls, privileged access, and identity protection. |
 | `full` | Every declarative area currently modeled by LicenseLens. |
-| `email`, `collaboration`, `endpoint`, `data-protection`, `secops`, `power-platform`, `power-bi`, `scuba` | Themed subsets. |
+| `email` | Exchange Online / MDO themed pack. |
+| `collaboration` | SharePoint, OneDrive, and Teams sharing controls. |
+| `endpoint` | Intune compliance, MDE onboarding, and endpoint baselines. |
+| `data-protection` | Purview DLP, labels, retention, and related readiness checks. |
+| `secops` | Sentinel analytics and UEBA-oriented checks. |
+| `power-platform` | Power Platform tenant isolation and environment governance. |
+| `power-bi` | Power BI external sharing and capacity governance. |
+| `scuba` | Broad pack set aligned with SCuBA-oriented coverage. |
 
-Pass one with `--assessment-profile <id>` (or `--profile` on `doctor`), or drop
-a custom file with `--config`:
+Authoritative pack/check expansion: [Profile reference](reference/profiles.md).
+
+## Selecting a profile (`--profile` collision)
+
+!!! warning "`--profile` means different things on `scan` vs `doctor`"
+
+    On **`scan`**, **`demo`**, **`quickstart`**, and **`batch`**, `--profile`
+    is an **assessment profile id** (`core`, `identity`, `full`, …).
+
+    On **`doctor`**, `--profile` is **probe depth** only: `basic` (default,
+    core Graph) or `full` (also MDE API + Sentinel). Assessment profiles on
+    doctor use the separate, repeatable flag **`--assessment-profile`**.
 
 ```bash
-licenselens scan --assessment-profile identity -o reports
+# Assessment profile on scan
+licenselens scan --profile identity -o reports
+licenselens scan --live --auth client_secret --profile full -o reports
+
+# Doctor: probe depth vs assessment requirements
 licenselens doctor --live --profile full --auth client_secret
+licenselens doctor --assessment-profile identity --assessment-profile full
+```
+
+Organization overlay or standalone rules without replacing the built-in id:
+
+```bash
+licenselens scan --config org-profile.yaml -o reports
+licenselens scan --rules rules.yaml -o reports
+licenselens scan --profile identity --config org-overlay.yaml --rules rules.yaml -o reports
 ```
 
 ## What a profile declares
@@ -33,8 +63,8 @@ licenselens doctor --live --profile full --auth client_secret
   `expires_on`, and an optional `kind: break_glass` with `principal_ids` for
   named emergency-access accounts.
 - **`custom_rules`** — post-evaluation assertions over findings (see below).
-- **`redaction`** — `redact_tenant_ids`, `redact_user_principals`,
-  `redact_domains`, and a `replacement` token.
+- **`redaction`** — schema fields `redact_tenant_ids`, `redact_user_principals`,
+  `redact_domains`, and a `replacement` token (see [Redaction](#redaction)).
 
 ## Custom rules
 
@@ -69,5 +99,19 @@ Exclusions let you document an accepted risk instead of pretending a finding is
 that are *meant* to skip all-user MFA, so the check can account for them rather
 than flagging them as a gap.
 
+## Redaction
+
+`RedactionSettings` on the profile schema accepts `redact_tenant_ids`,
+`redact_user_principals`, and `redact_domains` (plus `enabled` and
+`replacement`). Those fields are validated and merged into the resolved profile,
+but they are **NOT applied** to HTML, JSON, or Markdown reports today.
+
+The only live UPN redaction in report evidence is the dormant-privileged
+evaluator's local-part masking (`user@contoso.com` → `u***@contoso.com` in
+dormant samples). Do not assume tenant IDs, domains, or other principals are
+stripped from reports when profile redaction flags are true. Treat JSON/ZIP
+artifacts as sensitive tenant data.
+
 See [Permissions](permissions.md) for what each collector needs, and
 [Architecture](architecture.md) for how profiles flow through the engine.
+See [CLI reference](cli.md) for the full flag catalog.

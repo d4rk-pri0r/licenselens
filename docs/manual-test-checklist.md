@@ -12,9 +12,9 @@ Use a Microsoft 365 Developer tenant or a non-production customer lab.
 ## Dry-run
 
 - [ ] `licenselens version` prints a valid version
-- [ ] `licenselens checks` lists 12 checks
+- [ ] `licenselens checks` lists 140 checks
 - [ ] `licenselens doctor` (default) succeeds
-- [ ] `licenselens doctor --profile deep` exits `2` with a clear profile error
+- [ ] `licenselens doctor --profile full` succeeds
 - [ ] `licenselens scan -o reports` writes HTML/JSON/MD
 - [ ] HTML opens and shows “What you already pay for” + plain-language findings
 - [ ] Exit code is `1` when demo data contains gaps (expected)

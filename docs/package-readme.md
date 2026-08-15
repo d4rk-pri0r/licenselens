@@ -72,6 +72,7 @@ The most common finding, `id-ca-priv-gaps`:
 |------|----------------|
 | [ScubaGear](https://github.com/cisagov/ScubaGear) | CISA baseline compliance |
 | [Maester](https://github.com/maester365/maester) | Continuous config tests (Pester) |
+| [Monkey365](https://github.com/silverhack/monkey365) | Broad CSPM / CIS-style assessment |
 | Microsoft Secure Score | Score + recommendations (not SKU-gated) |
 | License waste scripts | Seat assignment efficiency |
 | **Security License Lens** | **Owned SKUs → expected high-value controls → unused/default gaps** |
@@ -91,29 +92,24 @@ licenselens batch tenants.yaml -o reports
 
 ## Full check pack (v0.3.0)
 
-| Check ID | Workload | Live evaluation |
-|----------|----------|-----------------|
-| `id-ca-priv-gaps` | Identity | Conditional Access MFA + legacy auth |
-| `id-idprotect-off` | Identity | Risk-based CA |
-| `id-pim-unused` | Identity | Standing roles vs PIM eligibility |
-| `id-dormant-privileged` | Identity | Unused privileged users |
-| `id-security-defaults-on` | Identity | Security defaults ON despite CA licenses |
-| `id-access-reviews-unused` | Identity | Access Reviews licensed but never configured |
-| `mdo-p2-policies-default` | Defender | Off default packs; opt-in `--allow-email-proxy` only |
-| `mde-onboard-gap` | Endpoint | MDE API vs licensed units |
-| `mdi-sensors-missing` | Defender | Secure Score proxy |
-| `sen-analytics-rule-coverage` | Sentinel | ARM analytics rules (workspace required) |
-| `sen-ueba-not-enabled` | Sentinel | ARM UEBA/entity analytics settings |
-| `pur-dlp-not-enforced` | Purview | Secure Score DLP proxy |
+**140 checks** · **29 capabilities** · **11 profiles** · **109** pinned SCuBA coverage rows · package/sample **0.3.0**
+
+Evaluation modes (from the registry): **direct**, **proxy**, **manual** (operator-confirmed), and **dynamic** (`direct_with_proxy_fallback` — direct evidence first, Secure Score only when direct is unavailable). Per-finding report rows still serialize the observed mode (`direct` or `proxy`) when a dynamic check runs.
+
+The authoritative pack lives in the generated reference (do not maintain a partial public table here):
+
+- [Check reference](reference/checks.md) — collector, support state, evaluator, capabilities, evidence keys
+- [Capabilities](reference/capabilities.md) · [Profiles](reference/profiles.md) · [Permissions](reference/permissions.md) · [Coverage](reference/coverage.md)
+- Machine-readable: [reference/reference.json](reference/reference.json) · [manifest.json](reference/manifest.json)
 
 Unlicensed capabilities report `not_licensed` instead of false gaps.
 
 ### Known limitations
 
-See [limitations](limitations.md) for the full list. Short version:
+See [limitations.md](limitations.md) for the full list. Short version:
 
-- **Email pack off by default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled
-- MDI / Purview may still use **Secure Score proxies** (starter packs)
+- **Email pack off by default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled (dynamic / Secure Score path)
+- Some surfaces are **manual** (operator-confirmed) or **proxy** (Secure Score); see the check reference for per-check state
 - Sentinel needs a **workspace ARM ID** + Azure RBAC
 - Sign-in / MDE inventories may **truncate** on huge tenants
 - Findings are **advisory**, not a compliance certification
@@ -128,7 +124,7 @@ SKUs / service plans → capability catalog → eligible checks
 
 ## Permissions
 
-See [permissions](permissions.md) and [app registration](app-registration.md).
+See [permissions.md](permissions.md) and [app-registration.md](app-registration.md).
 
 ### Exit codes
 
@@ -140,11 +136,11 @@ See [permissions](permissions.md) and [app registration](app-registration.md).
 
 ## Contributing
 
-See [Contributing](contributing.md) and [adding a check](adding-a-check.md).
+See [contributing.md](contributing.md) and [adding-a-check.md](adding-a-check.md).
 
 ## Security
 
-[Security](security.md) — read-only, no telemetry by default.
+[security.md](security.md) — read-only, no telemetry by default.
 
 ## License
 

@@ -13,6 +13,7 @@
 ## Checklist
 
 - [ ] `ruff check src tests` passes
-- [ ] `pytest` passes
+- [ ] `ruff format --check src tests` passes
+- [ ] `pytest tests/ -m "not browser"` passes
 - [ ] `licenselens scan --dry-run` still works
 - [ ] No secrets or customer tenant data included

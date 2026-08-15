@@ -173,6 +173,6 @@
     "checks/sentinel/sen-data-connectors.yaml": "8930da23f74bad16641e85e0143fbf015b13f5a76e3a8b2cf53c4cb031c35f6a",
     "checks/sentinel/sen-log-analytics-retention.yaml": "c0c6d8462ce8ae4164c6f916176eb5bf77a671a4b14af8da9aa087b5e46a1f9a",
     "checks/sentinel/sen-ueba-not-enabled.yaml": "ed073a20c73a8553add0cbbb5d046355e024ad5d5311c783e836d5eaf764557d",
-    "docs/permissions.md": "6deefb1f1f170617b78032405c4449a8fce96308e402525b6f75f127ad344587"
+    "docs/permissions.md": "4b7f3785c1b3d97855455b1ac131785a5e9710745c66f9c9e11df60a20877023"
   }
 }

@@ -30,6 +30,17 @@ Only the latest release line receives fixes.
   remain functional for one full minor release.
 - Removal happens only in a major release.
 
+## Getting help
+
+Search or open an issue on the
+[GitHub repository](https://github.com/d4rk-pri0r/licenselens/issues).
+Never paste tokens, client secrets, or tenant identifiers.
+
+## Reporting security issues
+
+Do **not** open a public issue for vulnerabilities. Use GitHub Security
+Advisories. See [Security](security.md).
+
 ## Third-party licenses
 
 Direct-dependency licenses are listed in the repository root file

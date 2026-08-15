@@ -14,6 +14,7 @@ nav:
   - Home: index.md
   - Package README: package-readme.md
   - Quick start: getting-started.md
+  - CLI reference: cli.md
   - Concepts:
       - Overview: concepts.md
       - How it compares: comparison.md
