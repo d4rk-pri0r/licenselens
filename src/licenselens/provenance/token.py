@@ -155,6 +155,23 @@ def _select_row(
     return fallback
 
 
+def _line_byte_span(text: str, line_index: int) -> tuple[int, int]:
+    """Return UTF-8 byte ``[start, end)`` of line *content* at ``line_index``.
+
+    Uses the original text's line endings (LF, CRLF, or CR) so allowed-row
+    ranges stay aligned with match offsets on Windows checkouts that rewrite
+    newlines. ``end`` excludes the trailing line-break bytes.
+    """
+    with_ends = text.splitlines(keepends=True)
+    if line_index < 0 or line_index >= len(with_ends):
+        raise TokenPolicyError(f"comparison row line index {line_index} out of range")
+    prefix = "".join(with_ends[:line_index])
+    content = with_ends[line_index].rstrip("\r\n")
+    byte_start = len(prefix.encode("utf-8"))
+    byte_end = byte_start + len(content.encode("utf-8"))
+    return byte_start, byte_end
+
+
 def parse_allowed_row(readme_text: str, *, require_expected_digest: bool = False) -> AllowedRow:
     """Locate the sole allowed comparison-table row inside README text."""
     lines = readme_text.splitlines()
@@ -174,10 +191,7 @@ def parse_allowed_row(readme_text: str, *, require_expected_digest: bool = False
             "comparison row display name and URL basename do not normalize equal"
         )
 
-    # Byte range of this exact line within the original text (LF-normalized join).
-    prefix = "\n".join(lines[:line_index])
-    byte_start = len(prefix.encode("utf-8")) + (1 if line_index else 0)
-    byte_end = byte_start + len(line.encode("utf-8"))
+    byte_start, byte_end = _line_byte_span(readme_text, line_index)
     digest = _row_digest(line)
     matches = digest == EXPECTED_ALLOWED_ROW_SHA256
     if require_expected_digest and not matches:
