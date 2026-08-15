@@ -11,10 +11,14 @@ def test_load_capabilities():
     ids = {c.id for c in caps}
     assert "entra_id_p2" in ids
     assert "microsoft_sentinel" in ids
+    assert "exchange_online" in ids
+    assert "defender_for_cloud_cspm" in ids
     entra = next(c for c in caps if c.id == "entra_id_p2")
     assert "admin" in entra.plain_name.lower()
     assert entra.outcome
     assert entra.why_it_matters
+    assert entra.entitlement_kind
+    assert entra.source_version
 
 
 def test_resolve_owned_capabilities_from_demo_plans():

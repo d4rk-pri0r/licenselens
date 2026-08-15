@@ -32,7 +32,15 @@ def test_all_enabled_checks_have_pack_metadata():
         assert check.impact.value in {"high", "medium", "low"}, check.id
         assert check.effort.value in {"minutes", "hours", "half_day", "days"}, check.id
         assert check.blast_radius.value in {"admin", "all_users", "devices", "data"}, check.id
-        assert check.pack.value in {"identity", "email", "endpoint", "starter"}, check.id
+        assert check.pack.value in {
+            "identity",
+            "email",
+            "endpoint",
+            "collaboration",
+            "power-platform",
+            "power-bi",
+            "starter",
+        }, check.id
         assert check.exposure_class.value in {"none", "elevated", "exposed"}, check.id
 
 
