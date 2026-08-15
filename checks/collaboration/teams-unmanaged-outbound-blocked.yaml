@@ -1,0 +1,26 @@
+id: teams-unmanaged-outbound-blocked
+title: Internal users can initiate contact with unmanaged users
+customer_title: Block internal users from contacting unmanaged accounts
+customer_summary: >
+  Outbound contact with unmanaged accounts can leak data through consumer chat.
+customer_next_step: >
+  Block outbound contact to unmanaged Teams accounts.
+description: >
+  Internal users should not initiate contact with unmanaged users.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com
+collector: collaboration_collector
+remediation: >
+  Turn off 'People in my organization can communicate with unmanaged Teams accounts'.
+references:
+  - https://learn.microsoft.com/microsoftteams/manage-external-access
+enabled: true
