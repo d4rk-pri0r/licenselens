@@ -1,0 +1,26 @@
+id: exo-smtp-auth-disabled
+title: SMTP AUTH is still enabled organization-wide
+customer_title: Turn off SMTP AUTH for the organization
+customer_summary: >
+  Basic-auth email submission can bypass modern sign-in protections.
+customer_next_step: >
+  Disable SMTP AUTH at the organization level unless a legacy app truly needs it.
+description: >
+  SMTP AUTH is still enabled organization-wide.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.exchange.microsoft.com/#/settings
+collector: exchange_collector
+remediation: >
+  Disable SMTP AUTH at the organization level unless a legacy app truly needs it.
+references:
+  - https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission
+enabled: true

@@ -1,0 +1,26 @@
+id: exo-spf-published
+title: SPF is missing or does not fail unapproved senders
+customer_title: Publish a strict SPF record for every domain
+customer_summary: >
+  Without SPF, receivers cannot tell which servers may send mail as you.
+customer_next_step: >
+  Publish SPF TXT records that end in -all or ~all for each custom domain.
+description: >
+  SPF is missing or does not fail unapproved senders.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.microsoft.com/#/Domains
+collector: exchange_collector
+remediation: >
+  Publish SPF TXT records that end in -all or ~all for each custom domain.
+references:
+  - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-spf-configure
+enabled: true
