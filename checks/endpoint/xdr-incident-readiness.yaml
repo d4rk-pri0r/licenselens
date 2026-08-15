@@ -1,0 +1,31 @@
+id: xdr-incident-readiness
+title: Defender XDR correlation actively in use
+customer_title: Cross-product incident correlation may not be active
+customer_summary: >
+  Defender XDR ties identity, email, endpoint, and cloud signals into one
+  incident story. If no incidents ever appear, that correlation may not be
+  turned on or may not be receiving signals.
+customer_next_step: >
+  Confirm XDR is enabled and that identity, email, and endpoint signals are
+  connected in the Microsoft Defender portal.
+description: >
+  Active XDR incidents or alerts prove cross-product correlation is operating.
+  Absence is not a failure: it cannot prove the integration is configured.
+workload: defender
+required_capabilities:
+  - defender_xdr
+severity: medium
+value_impact: high
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: endpoint
+exposure_class: none
+deep_link: https://security.microsoft.com/incidents
+collector: security_alerts_collector
+remediation: >
+  Verify Defender XDR integration is enabled and that Defender for Endpoint,
+  Defender for Identity, and Defender for Office 365 are connected.
+references:
+  - https://learn.microsoft.com/defender-xdr/microsoft-365-defender
+enabled: true
