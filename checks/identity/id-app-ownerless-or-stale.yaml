@@ -1,0 +1,26 @@
+id: id-app-ownerless-or-stale
+title: Ownerless or stale applications present
+customer_title: Clean up abandoned apps
+customer_summary: >
+  Apps with no owner or expired credentials often keep broad permissions long after the project ends.
+customer_next_step: >
+  Assign owners to critical apps and remove abandoned registrations.
+description: >
+  Applications should have owners and not remain stale with dead credentials.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade
+collector: graph_applications
+remediation: >
+  Review ownerless and stale app registrations; assign owners or delete unused apps.
+references:
+  - https://learn.microsoft.com/entra/identity/enterprise-apps/manage-application-permissions
+enabled: true
