@@ -202,9 +202,7 @@ def release_guards(repo_root: Path) -> list[str]:
                 f"job 'checksums': needs must include '{upstream}' "
                 "(final SHA256SUMS after every promoted artifact is assembled)"
             )
-    checksums_runs = "\n".join(
-        _run_text(step) for _, step in _all_steps({"checksums": checksums})
-    )
+    checksums_runs = "\n".join(_run_text(step) for _, step in _all_steps({"checksums": checksums}))
     if ASSEMBLE_BUNDLE_SCRIPT not in checksums_runs:
         problems.append(
             f"job 'checksums': must run {ASSEMBLE_BUNDLE_SCRIPT} so final "
@@ -279,33 +277,26 @@ def release_guards(repo_root: Path) -> list[str]:
         )
     if not _step_runs(promote, VERIFY_ATTESTATION_SCRIPT):
         problems.append(
-            "job 'promote': must run the attestation/receipt gate "
-            f"({VERIFY_ATTESTATION_SCRIPT})"
+            f"job 'promote': must run the attestation/receipt gate ({VERIFY_ATTESTATION_SCRIPT})"
         )
     if not (
         _step_runs(promote, VALIDATE_RECEIPTS_SCRIPT)
         or _step_runs(promote, "validate_receipts")
         or _step_runs(promote, VERIFY_ATTESTATION_SCRIPT)
     ):
-        problems.append(
-            "job 'promote': must validate trust receipts before publish"
-        )
+        problems.append("job 'promote': must validate trust receipts before publish")
     if not (
         _step_runs(promote, "validate-receipts")
         or _step_runs(promote, PROVENANCE_SCAN_SCRIPT)
         or _step_runs(promote, "provenance-receipts")
     ):
-        problems.append(
-            "job 'promote': must enforce a clean provenance receipt before publish"
-        )
+        problems.append("job 'promote': must enforce a clean provenance receipt before publish")
     if not (
         _step_runs(promote, FINAL_CHECKSUMS_MARKER)
         or _step_runs(promote, "sha256sum")
         or _step_runs(promote, VERIFY_ATTESTATION_SCRIPT)
     ):
-        problems.append(
-            "job 'promote': must verify final SHA256SUMS before publish (no rebuild)"
-        )
+        problems.append("job 'promote': must verify final SHA256SUMS before publish (no rebuild)")
     promote_runs = "\n".join(_run_text(step) for _, step in _all_steps({"promote": promote}))
     if "python -m build" in promote_runs or "pyinstaller" in promote_runs:
         problems.append("job 'promote': must not rebuild artifacts")
@@ -458,9 +449,7 @@ def provenance_receipt_guards(
             if not files:
                 return [f"missing provenance receipt JSON under {receipt}"]
             for path in files:
-                problems.extend(
-                    provenance_receipt_guards(path, require_modes=required or None)
-                )
+                problems.extend(provenance_receipt_guards(path, require_modes=required or None))
             if required:
                 modes_seen: set[str] = set()
                 for path in files:
@@ -493,9 +482,7 @@ def provenance_receipt_guards(
 
     mode = data.get("mode")
     if required and mode is not None and len(required) == 1 and mode != required[0]:
-        problems.append(
-            f"provenance mode mismatch: got {mode!r}, want {required[0]!r}: {label}"
-        )
+        problems.append(f"provenance mode mismatch: got {mode!r}, want {required[0]!r}: {label}")
 
     violations = data.get("violations")
     if isinstance(violations, list) and violations:

@@ -350,4 +350,3 @@ __all__ = [
     "evaluate_sen_data_connectors",
     "evaluate_sen_log_analytics_retention",
 ]
-

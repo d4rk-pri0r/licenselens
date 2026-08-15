@@ -165,7 +165,11 @@ def docs_freshness_guards(repo_root: Path) -> list[str]:
             problems.append(f"docs-freshness job '{jname}': unpinned action '{uses}'")
 
     joined = "\n".join(
-        _run_text(step) for job in jobs.values() if isinstance(job, dict) for step in job.get("steps", []) if isinstance(step, dict)
+        _run_text(step)
+        for job in jobs.values()
+        if isinstance(job, dict)
+        for step in job.get("steps", [])
+        if isinstance(step, dict)
     )
     if PROVENANCE_SCAN not in joined or "--workspace" not in joined:
         problems.append("docs-freshness: must run provenance_scan --workspace on generated docs")
