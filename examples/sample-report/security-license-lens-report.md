@@ -28,9 +28,9 @@ A plain-language view of security capabilities you already pay for — and wheth
 *Effort is a rough guide, not a quote.*
 
 - **Needs attention** (`gap`): 40
-- **Not in your plan** (`not_licensed`): 2
-- **Looking good** (`ok`): 73
-- **Partly set up** (`partial`): 10
+- **Not in your plan** (`not_licensed`): 3
+- **Looking good** (`ok`): 71
+- **Partly set up** (`partial`): 12
 - **Check pending** (`skipped`): 14
 
 ## What you already pay for
@@ -700,7 +700,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Status:** Needs attention
 - **In plain English:** Some users can install any Microsoft app. Restrict to approved apps.
 - **Suggested next step:** Block all Microsoft apps or allow only approved ones.
-- **Confidence:** High confidence
+- **Confidence:** Medium confidence
 - **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
 - **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
 - **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
@@ -837,6 +837,28 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** Secure Score proxy — verify MDI sensors in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/health)
 - **Technical id:** `mdi-sensors-missing`
+
+### Restrict custom apps to approved ones
+
+- **Status:** Partly set up
+- **In plain English:** Custom apps are governed by policy Org-wide app settings could not be confirmed automatically.
+- **Suggested next step:** Block all custom apps or allow only approved ones.
+- **Confidence:** Medium confidence
+- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
+- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
+- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
+- **Technical id:** `teams-custom-apps-governed`
+
+### Restrict third-party apps to approved ones
+
+- **Status:** Partly set up
+- **In plain English:** Third-party apps are governed by policy Org-wide app settings could not be confirmed automatically.
+- **Suggested next step:** Block all third-party apps or allow only approved ones.
+- **Confidence:** Medium confidence
+- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
+- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
+- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
+- **Technical id:** `teams-third-party-apps-governed`
 
 ### Add your mailbox to DMARC reports
 
@@ -1707,17 +1729,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
 - **Technical id:** `teams-anonymous-lobby`
 
-### Restrict custom apps to approved ones
-
-- **Status:** Looking good
-- **In plain English:** Custom apps are governed by policy.
-- **Suggested next step:** Block all custom apps or allow only approved ones.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-custom-apps-governed`
-
 ### Keep dial-in callers in the lobby
 
 - **Status:** Looking good
@@ -1750,17 +1761,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
 - **Technical id:** `teams-external-control-disabled`
-
-### Restrict third-party apps to approved ones
-
-- **Status:** Looking good
-- **In plain English:** Third-party apps are governed by policy.
-- **Suggested next step:** Block all third-party apps or allow only approved ones.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-third-party-apps-governed`
 
 ### Block internal users from contacting unmanaged accounts
 
@@ -1805,6 +1805,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security)
 - **Technical id:** `az-defender-plan-enabled`
+
+### Confirm Premium capacity governance and entitlement use
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/capacities)
+- **Technical id:** `pbi-premium-capacity-governance`
 
 ### Review Azure resource posture in Defender for Cloud
 

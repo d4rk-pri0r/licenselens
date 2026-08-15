@@ -699,7 +699,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">10</div>
+        <div class="n">12</div>
         <div class="l">
           Incomplete
           <small>partial</small>
@@ -707,7 +707,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">73</div>
+        <div class="n">71</div>
         <div class="l">
           Operational
           <small>ok</small>
@@ -715,7 +715,7 @@
       </div>
       
       <div class="tile">
-        <div class="n">2</div>
+        <div class="n">3</div>
         <div class="l">
           Not licensed
           <small>not_licensed</small>
@@ -926,6 +926,25 @@
           <div class="card-provenance">
             <span>License: SPE_E5</span>
             <span>Service plan: AAD_PREMIUM_P2</span>
+          </div>
+        </article>
+        
+        
+        <article class="card card-span-medium" data-variant="needs_attention" data-workload="sentinel">
+          <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
+          <h3 class="card-title">
+            
+            <span>The log store behind security analytics</span>
+          </h3>
+          <div class="msft">Microsoft control: Azure Log Analytics</div>
+          
+          <p><span>Exposure</span> Workspaces may exist while critical tables are missing, short-retained, or never connected.</p>
+          <p><span>Control</span> Land security and operational logs in a workspace that detections and investigations can query.</p>
+          <p><span>Security impact</span> Sentinel without healthy log ingestion is an empty command center.</p>
+          
+          <div class="card-provenance">
+            <span>License: MICROSOFT_SENTINEL</span>
+            <span>Service plan: No matching service plan reported</span>
           </div>
         </article>
         
@@ -1208,23 +1227,6 @@
           </div>
         </article>
         
-        
-        <article class="card card-span-compact" data-variant="not_licensed">
-          <span class="status-marker not_licensed"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M8 8l8 8"/></svg>Not licensed</span>
-          <h3 class="card-title">
-            
-            <span>The log store behind security analytics</span>
-          </h3>
-          <div class="msft">Microsoft control: Azure Log Analytics</div>
-          
-          <p><span>Control</span> Land security and operational logs in a workspace that detections and investigations can query.</p>
-          
-          <div class="card-provenance">
-            <span>License: MICROSOFT_SENTINEL</span>
-            <span>Service plan: No matching service plan reported</span>
-          </div>
-        </article>
-        
       </div>
       
     </section>
@@ -1318,7 +1320,7 @@
           <button data-workload="purview" aria-pressed="false">Purview</button>
           
         </div>
-        <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>139</strong> of <strong data-total-count>139</strong></span>
+        <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>140</strong> of <strong data-total-count>140</strong></span>
       </div>
       
       <article class="finding gap" data-status="gap" data-workload="identity">
@@ -2187,7 +2189,7 @@
         <p><strong>Action:</strong> Block all Microsoft apps or allow only approved ones.</p>
         <details class="tech">
           <summary>Evidence and Microsoft admin page</summary>
-          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Confidence:</strong> Medium confidence</p>
           <p><strong>Data sources:</strong> Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)</p>
           <p><strong>Limitations:</strong> Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated</p>
           <p><a href="https://admin.teams.microsoft.com">Open Microsoft admin page</a></p>
@@ -2468,6 +2470,52 @@
           <p><strong>Limitations:</strong> Secure Score proxy — verify MDI sensors in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive</p>
           <p><a href="https://security.microsoft.com/health">Open Microsoft admin page</a></p>
           <p><strong>Technical ID:</strong> <code>mdi-sensors-missing</code></p>
+        </details>
+      </article>
+      
+      <article class="finding partial" data-status="partial" data-workload="collaboration">
+        <div class="finding-head">
+          <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+          <h3>Restrict custom apps to approved ones</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item"><span class="meta-key">Severity:</span> Medium</span>
+          <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
+          <span class="meta-item"><span class="meta-key">Scope:</span> all users</span>
+          <span class="meta-item"><span class="meta-key">Workload:</span> Collaboration</span>
+        </div>
+        <p>Custom apps are governed by policy Org-wide app settings could not be confirmed automatically.</p>
+        <p><strong>Action:</strong> Block all custom apps or allow only approved ones.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Medium confidence</p>
+          <p><strong>Data sources:</strong> Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)</p>
+          <p><strong>Limitations:</strong> Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated</p>
+          <p><a href="https://admin.teams.microsoft.com">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>teams-custom-apps-governed</code></p>
+        </details>
+      </article>
+      
+      <article class="finding partial" data-status="partial" data-workload="collaboration">
+        <div class="finding-head">
+          <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+          <h3>Restrict third-party apps to approved ones</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item"><span class="meta-key">Severity:</span> Medium</span>
+          <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
+          <span class="meta-item"><span class="meta-key">Scope:</span> all users</span>
+          <span class="meta-item"><span class="meta-key">Workload:</span> Collaboration</span>
+        </div>
+        <p>Third-party apps are governed by policy Org-wide app settings could not be confirmed automatically.</p>
+        <p><strong>Action:</strong> Block all third-party apps or allow only approved ones.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> Medium confidence</p>
+          <p><strong>Data sources:</strong> Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)</p>
+          <p><strong>Limitations:</strong> Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated</p>
+          <p><a href="https://admin.teams.microsoft.com">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>teams-third-party-apps-governed</code></p>
         </details>
       </article>
       
@@ -4291,29 +4339,6 @@
       <article class="finding ok" data-status="ok" data-workload="collaboration">
         <div class="finding-head">
           <span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
-          <h3>Restrict custom apps to approved ones</h3>
-        </div>
-        <div class="finding-meta">
-          <span class="meta-item"><span class="meta-key">Severity:</span> Medium</span>
-          <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
-          <span class="meta-item"><span class="meta-key">Scope:</span> all users</span>
-          <span class="meta-item"><span class="meta-key">Workload:</span> Collaboration</span>
-        </div>
-        <p>Custom apps are governed by policy.</p>
-        <p><strong>Action:</strong> Block all custom apps or allow only approved ones.</p>
-        <details class="tech">
-          <summary>Evidence and Microsoft admin page</summary>
-          <p><strong>Confidence:</strong> High confidence</p>
-          <p><strong>Data sources:</strong> Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)</p>
-          <p><strong>Limitations:</strong> Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated</p>
-          <p><a href="https://admin.teams.microsoft.com">Open Microsoft admin page</a></p>
-          <p><strong>Technical ID:</strong> <code>teams-custom-apps-governed</code></p>
-        </details>
-      </article>
-      
-      <article class="finding ok" data-status="ok" data-workload="collaboration">
-        <div class="finding-head">
-          <span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
           <h3>Keep dial-in callers in the lobby</h3>
         </div>
         <div class="finding-meta">
@@ -4377,29 +4402,6 @@
           <p><strong>Limitations:</strong> None reported</p>
           <p><a href="https://admin.teams.microsoft.com">Open Microsoft admin page</a></p>
           <p><strong>Technical ID:</strong> <code>teams-external-control-disabled</code></p>
-        </details>
-      </article>
-      
-      <article class="finding ok" data-status="ok" data-workload="collaboration">
-        <div class="finding-head">
-          <span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
-          <h3>Restrict third-party apps to approved ones</h3>
-        </div>
-        <div class="finding-meta">
-          <span class="meta-item"><span class="meta-key">Severity:</span> Medium</span>
-          <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
-          <span class="meta-item"><span class="meta-key">Scope:</span> all users</span>
-          <span class="meta-item"><span class="meta-key">Workload:</span> Collaboration</span>
-        </div>
-        <p>Third-party apps are governed by policy.</p>
-        <p><strong>Action:</strong> Block all third-party apps or allow only approved ones.</p>
-        <details class="tech">
-          <summary>Evidence and Microsoft admin page</summary>
-          <p><strong>Confidence:</strong> High confidence</p>
-          <p><strong>Data sources:</strong> Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)</p>
-          <p><strong>Limitations:</strong> Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated</p>
-          <p><a href="https://admin.teams.microsoft.com">Open Microsoft admin page</a></p>
-          <p><strong>Technical ID:</strong> <code>teams-third-party-apps-governed</code></p>
         </details>
       </article>
       
@@ -4492,6 +4494,29 @@
           <p><strong>Limitations:</strong> None reported</p>
           <p><a href="https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security">Open Microsoft admin page</a></p>
           <p><strong>Technical ID:</strong> <code>az-defender-plan-enabled</code></p>
+        </details>
+      </article>
+      
+      <article class="finding not_licensed" data-status="not_licensed" data-workload="power_bi">
+        <div class="finding-head">
+          <span class="status-marker not_licensed"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M8 8l8 8"/></svg>Not licensed</span>
+          <h3>Confirm Premium capacity governance and entitlement use</h3>
+        </div>
+        <div class="finding-meta">
+          <span class="meta-item"><span class="meta-key">Severity:</span> Medium</span>
+          <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
+          <span class="meta-item"><span class="meta-key">Scope:</span> data</span>
+          <span class="meta-item"><span class="meta-key">Workload:</span> Power_bi</span>
+        </div>
+        <p>This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.</p>
+        <p><strong>Action:</strong> If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.</p>
+        <details class="tech">
+          <summary>Evidence and Microsoft admin page</summary>
+          <p><strong>Confidence:</strong> High confidence</p>
+          <p><strong>Data sources:</strong> graph.subscribedSkus</p>
+          <p><strong>Limitations:</strong> None reported</p>
+          <p><a href="https://app.powerbi.com/admin-portal/capacities">Open Microsoft admin page</a></p>
+          <p><strong>Technical ID:</strong> <code>pbi-premium-capacity-governance</code></p>
         </details>
       </article>
       
@@ -4965,6 +4990,22 @@
               <td><code>mdi-sensors-missing</code></td>
               <td>Defender for Identity licensed but sensors missing or unhealthy</td>
               <td>defender</td>
+              <td>medium</td>
+            </tr>
+            
+            <tr>
+              <td><span class="badge partial">Incomplete</span></td>
+              <td><code>teams-custom-apps-governed</code></td>
+              <td>Custom app installation is not governed</td>
+              <td>collaboration</td>
+              <td>medium</td>
+            </tr>
+            
+            <tr>
+              <td><span class="badge partial">Incomplete</span></td>
+              <td><code>teams-third-party-apps-governed</code></td>
+              <td>Third-party app installation is not governed</td>
+              <td>collaboration</td>
               <td>medium</td>
             </tr>
             
@@ -5602,14 +5643,6 @@
             
             <tr>
               <td><span class="badge ok">Operational</span></td>
-              <td><code>teams-custom-apps-governed</code></td>
-              <td>Custom app installation is not governed</td>
-              <td>collaboration</td>
-              <td>medium</td>
-            </tr>
-            
-            <tr>
-              <td><span class="badge ok">Operational</span></td>
               <td><code>teams-dialin-lobby</code></td>
               <td>Dial-in callers can bypass the meeting lobby</td>
               <td>collaboration</td>
@@ -5628,14 +5661,6 @@
               <td><span class="badge ok">Operational</span></td>
               <td><code>teams-external-control-disabled</code></td>
               <td>External meeting participants can request control of shared content</td>
-              <td>collaboration</td>
-              <td>medium</td>
-            </tr>
-            
-            <tr>
-              <td><span class="badge ok">Operational</span></td>
-              <td><code>teams-third-party-apps-governed</code></td>
-              <td>Third-party app installation is not governed</td>
               <td>collaboration</td>
               <td>medium</td>
             </tr>
@@ -5670,6 +5695,14 @@
               <td>Defender for Cloud plan not enabled on the subscription</td>
               <td>azure</td>
               <td>high</td>
+            </tr>
+            
+            <tr>
+              <td><span class="badge not_licensed">Not licensed</span></td>
+              <td><code>pbi-premium-capacity-governance</code></td>
+              <td>Power BI Premium capacity governance needs manual confirmation</td>
+              <td>power_bi</td>
+              <td>medium</td>
             </tr>
             
             <tr>

@@ -1908,7 +1908,8 @@
         "workspace_resource_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
       },
       "entitlements_used": [
-        "microsoft_sentinel"
+        "microsoft_sentinel",
+        "log_analytics"
       ],
       "remediation": "Increase interactive retention to at least 90 days and configure archive tiers where long-term storage is required.",
       "references": [
@@ -2039,6 +2040,9 @@
           "Global": "blockedapplist",
           "PowerUsers": "allowedapplist"
         },
+        "v2_readable": false,
+        "required_surface_incomplete": true,
+        "required_surface": "app_settings_v2",
         "weak_policies": [
           "PowerUsers"
         ]
@@ -2054,8 +2058,8 @@
       "customer_summary": "Some users can install any Microsoft app. Restrict to approved apps.",
       "customer_next_step": "Block all Microsoft apps or allow only approved ones.",
       "status_label": "Needs attention",
-      "confidence": "high",
-      "confidence_label": "High confidence",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
       "data_sources": [
         "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
       ],
@@ -2603,6 +2607,98 @@
         "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
       ],
       "evaluation_mode": "proxy",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "teams-custom-apps-governed",
+      "title": "Custom app installation is not governed",
+      "workload": "collaboration",
+      "status": "partial",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "collaboration",
+      "exposure_class": "none",
+      "deep_link": "https://admin.teams.microsoft.com",
+      "summary": "Custom app installation is not open to all (partial: org-wide app settings v2 were not readable).",
+      "evidence": {
+        "catalog_types": {
+          "Global": "blockedapplist",
+          "PowerUsers": "blockedapplist"
+        },
+        "v2_readable": false,
+        "required_surface_incomplete": true,
+        "required_surface": "app_settings_v2"
+      },
+      "entitlements_used": [
+        "teams"
+      ],
+      "remediation": "Set custom apps to 'Block all apps' or 'Allow specific apps and block all others'.",
+      "references": [
+        "https://learn.microsoft.com/microsoftteams/teams-app-permission-policies"
+      ],
+      "customer_title": "Restrict custom apps to approved ones",
+      "customer_summary": "Custom apps are governed by policy Org-wide app settings could not be confirmed automatically.",
+      "customer_next_step": "Block all custom apps or allow only approved ones.",
+      "status_label": "Partly set up",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
+      "data_sources": [
+        "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
+      ],
+      "limitations": [
+        "Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "teams-third-party-apps-governed",
+      "title": "Third-party app installation is not governed",
+      "workload": "collaboration",
+      "status": "partial",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "collaboration",
+      "exposure_class": "none",
+      "deep_link": "https://admin.teams.microsoft.com",
+      "summary": "Third-party app installation is not open to all (partial: org-wide app settings v2 were not readable).",
+      "evidence": {
+        "catalog_types": {
+          "Global": "blockedapplist",
+          "PowerUsers": "blockedapplist"
+        },
+        "v2_readable": false,
+        "required_surface_incomplete": true,
+        "required_surface": "app_settings_v2"
+      },
+      "entitlements_used": [
+        "teams"
+      ],
+      "remediation": "Set third-party apps to 'Block all apps' or 'Allow specific apps and block all others'.",
+      "references": [
+        "https://learn.microsoft.com/microsoftteams/teams-app-permission-policies"
+      ],
+      "customer_title": "Restrict third-party apps to approved ones",
+      "customer_summary": "Third-party apps are governed by policy Org-wide app settings could not be confirmed automatically.",
+      "customer_next_step": "Block all third-party apps or allow only approved ones.",
+      "status_label": "Partly set up",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
+      "data_sources": [
+        "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
+      ],
+      "limitations": [
+        "Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated."
+      ],
+      "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": []
     },
@@ -5872,49 +5968,6 @@
       "accepted_risks": []
     },
     {
-      "check_id": "teams-custom-apps-governed",
-      "title": "Custom app installation is not governed",
-      "workload": "collaboration",
-      "status": "ok",
-      "severity": "medium",
-      "value_impact": "medium",
-      "impact": "medium",
-      "effort": "hours",
-      "blast_radius": "all_users",
-      "pack": "collaboration",
-      "exposure_class": "none",
-      "deep_link": "https://admin.teams.microsoft.com",
-      "summary": "Custom app installation is not open to all.",
-      "evidence": {
-        "catalog_types": {
-          "Global": "blockedapplist",
-          "PowerUsers": "blockedapplist"
-        }
-      },
-      "entitlements_used": [
-        "teams"
-      ],
-      "remediation": "Set custom apps to 'Block all apps' or 'Allow specific apps and block all others'.",
-      "references": [
-        "https://learn.microsoft.com/microsoftteams/teams-app-permission-policies"
-      ],
-      "customer_title": "Restrict custom apps to approved ones",
-      "customer_summary": "Custom apps are governed by policy.",
-      "customer_next_step": "Block all custom apps or allow only approved ones.",
-      "status_label": "Looking good",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
-      ],
-      "limitations": [
-        "Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated."
-      ],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": []
-    },
-    {
       "check_id": "teams-dialin-lobby",
       "title": "Dial-in callers can bypass the meeting lobby",
       "workload": "collaboration",
@@ -6054,49 +6107,6 @@
         "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
       ],
       "limitations": [],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": []
-    },
-    {
-      "check_id": "teams-third-party-apps-governed",
-      "title": "Third-party app installation is not governed",
-      "workload": "collaboration",
-      "status": "ok",
-      "severity": "medium",
-      "value_impact": "medium",
-      "impact": "medium",
-      "effort": "hours",
-      "blast_radius": "all_users",
-      "pack": "collaboration",
-      "exposure_class": "none",
-      "deep_link": "https://admin.teams.microsoft.com",
-      "summary": "Third-party app installation is not open to all.",
-      "evidence": {
-        "catalog_types": {
-          "Global": "blockedapplist",
-          "PowerUsers": "blockedapplist"
-        }
-      },
-      "entitlements_used": [
-        "teams"
-      ],
-      "remediation": "Set third-party apps to 'Block all apps' or 'Allow specific apps and block all others'.",
-      "references": [
-        "https://learn.microsoft.com/microsoftteams/teams-app-permission-policies"
-      ],
-      "customer_title": "Restrict third-party apps to approved ones",
-      "customer_summary": "Third-party apps are governed by policy.",
-      "customer_next_step": "Block all third-party apps or allow only approved ones.",
-      "status_label": "Looking good",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
-      ],
-      "limitations": [
-        "Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated."
-      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": []
@@ -6263,6 +6273,41 @@
       ],
       "limitations": [],
       "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pbi-premium-capacity-governance",
+      "title": "Power BI Premium capacity governance needs manual confirmation",
+      "workload": "power_bi",
+      "status": "not_licensed",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "power-bi",
+      "exposure_class": "none",
+      "deep_link": "https://app.powerbi.com/admin-portal/capacities",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "Review Premium capacity settings and per-user assignments in the Power BI admin portal. Limit capacity admins, confirm workspace-to-capacity mapping, and document entitlement provenance for licensed seats.",
+      "references": [
+        "https://learn.microsoft.com/power-bi/enterprise/service-premium-what-is",
+        "https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq"
+      ],
+      "customer_title": "Confirm Premium capacity governance and entitlement use",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "manual",
       "source_references": [],
       "accepted_risks": []
     },
@@ -6633,7 +6678,7 @@
     "fully_working": 1,
     "needs_attention": 5,
     "partly_set_up": 0,
-    "not_licensed": 0,
+    "not_licensed": 1,
     "realized_percent": 17
   },
   "capability_outcomes": [
@@ -6796,6 +6841,16 @@
         "id-pim-privileged-assignment-alert",
         "id-pim-unused",
         "id-priv-cloud-only"
+      ]
+    },
+    {
+      "id": "log_analytics",
+      "name": "Azure Log Analytics",
+      "plain_name": "The log store behind security analytics",
+      "status": "needs_attention",
+      "status_label": "Needs attention",
+      "related_check_ids": [
+        "sen-log-analytics-retention"
       ]
     },
     {
