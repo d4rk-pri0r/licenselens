@@ -22,9 +22,12 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
         FindingStatus.GAP,
         FindingStatus.PARTIAL,
     }
-    # Email pack off default path (no Graph API for MDO policy config).
-    assert by_id["mdo-p2-policies-default"].status == FindingStatus.SKIPPED
-    assert by_id["mdo-p2-policies-default"].evidence.get("email_proxy_enabled") is False
+    # Direct EXO fixture supersedes Secure Score; proxy stays opt-in fallback only.
+    mdo = by_id["mdo-p2-policies-default"]
+    assert mdo.status in {FindingStatus.OK, FindingStatus.PARTIAL, FindingStatus.GAP}
+    assert mdo.evidence.get("proxy") is False
+    assert mdo.evidence.get("exchange_direct") is True
+    assert mdo.evidence.get("email_proxy_enabled") is False
     assert by_id["mde-onboard-gap"].status == FindingStatus.GAP
     assert by_id["mdi-sensors-missing"].status in {
         FindingStatus.GAP,
@@ -63,7 +66,30 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert "In plain English" in md_text
 
 
-def test_email_proxy_opt_in_uses_secure_score():
+def test_dry_run_serializes_correct_evaluation_modes():
+    from licenselens.schema_contracts import EvaluationMode
+
+    auth = build_auth_context(mode=AuthMode.DRY_RUN)
+    result = run_scan(auth, dry_run=True)
+    by_id = {f.check_id: f for f in result.findings}
+
+    assert by_id["mdi-sensors-missing"].evaluation_mode is EvaluationMode.PROXY
+    assert by_id["pur-dlp-not-enforced"].evaluation_mode is EvaluationMode.PROXY
+    assert by_id["id-logs-to-soc"].evaluation_mode is EvaluationMode.MANUAL
+    assert by_id["id-idprotect-notify-high-risk"].evaluation_mode is EvaluationMode.MANUAL
+    # MDO is evaluated directly in dry-run because the EXO fixture supersedes Secure Score.
+    assert by_id["mdo-p2-policies-default"].evaluation_mode is EvaluationMode.DIRECT
+
+    dumped = result.model_dump(mode="json")
+    serialized = {f["check_id"]: f["evaluation_mode"] for f in dumped["findings"]}
+    assert serialized["mdi-sensors-missing"] == "proxy"
+    assert serialized["pur-dlp-not-enforced"] == "proxy"
+    assert serialized["id-logs-to-soc"] == "manual"
+    assert serialized["id-idprotect-notify-high-risk"] == "manual"
+
+
+def test_email_proxy_opt_in_does_not_override_direct_exchange():
+    """When direct EXO threat reads are usable, they supersede Secure Score proxy."""
     auth = build_auth_context(mode=AuthMode.DRY_RUN, tenant_id="dry-run")
     result = run_scan(
         auth,
@@ -73,9 +99,30 @@ def test_email_proxy_opt_in_uses_secure_score():
     )
     by_id = {f.check_id: f for f in result.findings}
     mdo = by_id["mdo-p2-policies-default"]
-    assert mdo.status in {FindingStatus.GAP, FindingStatus.PARTIAL}
-    assert mdo.evidence.get("proxy") is True
+    assert mdo.evidence.get("proxy") is False
+    assert mdo.evidence.get("exchange_direct") is True
     assert "email" in result.packs_scanned
+
+
+def test_email_proxy_used_only_when_direct_unusable():
+    from licenselens.collectors.secure_score import DEMO_SECURE_SCORE, extract_control_scores
+    from licenselens.engine.evaluate import evaluate_mdo_p2_policies
+    from licenselens.models import CheckDefinition, Workload
+
+    check = CheckDefinition(
+        id="mdo-p2-policies-default",
+        title="mdo",
+        workload=Workload.DEFENDER,
+    )
+    result = evaluate_mdo_p2_policies(
+        check,
+        {
+            "exchange_threat_usable": False,
+            "secure_score_controls": extract_control_scores(DEMO_SECURE_SCORE),
+        },
+    )
+    assert result.status in {FindingStatus.GAP, FindingStatus.PARTIAL}
+    assert result.evidence.get("proxy") is True
 
 
 def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
