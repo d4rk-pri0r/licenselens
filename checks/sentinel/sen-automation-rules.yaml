@@ -1,0 +1,30 @@
+id: sen-automation-rules
+title: Sentinel automation rules / playbooks not configured
+customer_title: Automate part of the incident response
+customer_summary: >
+  The security workspace can react to alerts automatically, but that is often
+  left off. Without automation, every alert waits for a person to act.
+customer_next_step: >
+  Add automation rules that trigger playbooks for common alerts, so response
+  starts without waiting for a person.
+description: >
+  Sentinel automation rules and Logic App playbooks (SOAR) are frequently
+  left unconfigured after workspace creation.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks
+collector: sentinel_automation_rules_collector
+remediation: >
+  Configure automation rules that trigger playbooks for high-value alerts
+  and confirm at least one runbook-style playbook is enabled.
+references:
+  - https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks
+enabled: true

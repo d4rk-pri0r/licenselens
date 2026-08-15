@@ -1,0 +1,31 @@
+id: sen-data-connectors
+title: Sentinel workspace with thin data connectors
+customer_title: Feed your security command center with real signals
+customer_summary: >
+  A security workspace only helps if data actually flows into it. With few or
+  no data connectors, you pay for a command center that is mostly watching
+  empty screens.
+customer_next_step: >
+  Connect the main data sources (Entra ID, Microsoft 365, and Defender) to the
+  security workspace, then confirm logs start arriving.
+description: >
+  A Sentinel workspace with few or no data connectors has no signals to
+  correlate, leaving SIEM spend without detection value.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/sentinel/connect-data-sources
+collector: sentinel_data_connectors_collector
+remediation: >
+  Connect high-value data sources (Entra ID sign-ins, Microsoft 365 activity,
+  and Defender XDR signals) to the Sentinel workspace and verify ingestion.
+references:
+  - https://learn.microsoft.com/azure/sentinel/connect-data-sources
+enabled: true
