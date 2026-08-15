@@ -569,6 +569,8 @@ summary:focus {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
+  /* Decorative vendor marks: hide in print to save ink; text labels remain. */
+  .workload-icon { display: none !important; }
   header, main, footer { max-width: none; padding: 0.5rem 0; }
   header, .hero, .tile, .card, .finding, .print-finding, section, details.tech, details.tech[open] {
     box-shadow: none !important;

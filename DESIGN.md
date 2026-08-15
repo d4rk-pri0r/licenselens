@@ -226,6 +226,7 @@ Narrow exception to both the **no image asset / no icon package** ban and the **
 - **No image for `general`.** Missing mapping → text only.
 - **States:** decorative; never conveys status or severity.
 - **Accessibility:** adjacent visible text names the workload; icons never become accessible names or status indicators.
+- **Print:** hide `.workload-icon` (`display: none`) so decorative vendor marks do not waste ink; adjacent text labels remain.
 - **Motion:** none.
 - **Packaging:** wheel `force-include` and PyInstaller `DATA_DIRS` ship `assets/vendor/microsoft-cloud` → `licenselens/data/vendor/microsoft-cloud`.
 
