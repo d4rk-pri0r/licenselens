@@ -130,9 +130,35 @@ def test_scan_wheel_flags_source_leakage(gate, tmp_path) -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_stray_artifacts_flags_backslash_dirs(gate, tmp_path) -> None:
-    stray = tmp_path / "\\private\\tmp\\Pester_abc\\LicenseLens"
-    stray.mkdir(parents=True, exist_ok=True)
+def test_stray_artifacts_flags_backslash_dirs(
+    gate, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    marker = r"\private\tmp\Pester_abc\LicenseLens"
+    if sys.platform == "win32":
+        (tmp_path / "seed").mkdir()
+        original_rglob = Path.rglob
+
+        class _SyntheticPath:
+            name = marker
+            parts = (*tmp_path.parts, marker)
+
+            def is_symlink(self) -> bool:
+                return False
+
+            def __str__(self) -> str:
+                return f"{tmp_path}{marker}"
+
+        def _rglob(self: Path, pattern: str):
+            yield from original_rglob(self, pattern)
+            if self.resolve() == tmp_path.resolve():
+                yield _SyntheticPath()
+
+        monkeypatch.setattr(Path, "rglob", _rglob)
+    else:
+        stray = tmp_path / marker
+        stray.mkdir(parents=True, exist_ok=True)
+        assert "\\" in stray.name
+
     problems = gate.stray_artifact_problems(tmp_path)
     assert any(p.startswith("stray_backslash_path") for p in problems)
 

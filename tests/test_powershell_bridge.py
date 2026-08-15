@@ -175,10 +175,11 @@ def test_happy_path_fake_adapter_parses_json_envelope() -> None:
     )
 
     # When: the bridge is invoked
+    pwsh = Path("/usr/bin/pwsh")
     envelope = invoke_powershell_adapter(
         _request(),
         runner=runner,
-        executable=Path("/usr/bin/pwsh"),
+        executable=pwsh,
     )
 
     # Then: usable OK evidence with parsed data
@@ -189,7 +190,7 @@ def test_happy_path_fake_adapter_parses_json_envelope() -> None:
     call = runner.calls[0]
     argv = call["argv"]
     assert isinstance(argv, list)
-    assert argv[0] == "/usr/bin/pwsh"
+    assert argv[0] == str(pwsh)
     assert "-File" in argv
     assert all(isinstance(part, str) for part in argv)
     assert call["shell"] is False
