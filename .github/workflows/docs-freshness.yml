@@ -1,0 +1,47 @@
+name: Reference freshness
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: freshness-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  freshness:
+    name: Regenerate and diff
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Regenerate reference docs and sanitized sample
+        run: python scripts/generate_reference_docs.py
+
+      - name: Provenance scan (generated docs/sample before accept)
+        run: |
+          python scripts/provenance_scan.py --workspace --json \
+            -o provenance-docs-freshness.json
+
+      - name: Fail on any drift
+        run: |
+          git diff --exit-code -- \
+            docs/reference \
+            examples/sample-report/security-license-lens-report.json

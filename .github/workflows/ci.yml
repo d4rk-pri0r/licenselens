@@ -1,22 +1,35 @@
 name: CI
 
+# Trust posture (locked by licenselens.ci_guard / release_gate):
+#   * every action is pinned by full commit SHA (no floating tags),
+#   * least privilege: top-level `contents: read`, no secret expressions,
+#   * provenance scan of the workspace before build, and of wheel/sdist after,
+#   * fork PRs never receive secrets (no secrets.* references on this path).
 on:
   push:
     branches: [main, master]
   pull_request:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         python-version: ["3.12", "3.13"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -24,6 +37,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+
+      - name: Provenance scan (workspace / tracked sources)
+        run: |
+          python scripts/provenance_scan.py --workspace --json \
+            -o provenance-workspace.json
 
       - name: Ruff lint
         run: ruff check src tests
@@ -44,21 +62,37 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
         with:
           python-version: "3.12"
 
-      - name: Build wheel + sdist
+      - name: Install package (scanner + build deps)
         run: |
           python -m pip install --upgrade pip
-          pip install build
+          pip install -e ".[dev]" build
+
+      - name: Provenance scan (workspace before build)
+        run: |
+          python scripts/provenance_scan.py --workspace --json \
+            -o provenance-workspace-pre-build.json
+
+      - name: Build wheel + sdist
+        run: |
           python -m build
           ls -la dist/
+
+      - name: Provenance scan (built wheel/sdist artifacts)
+        # Root stays the repo so the README-row policy loads; the scanner walks
+        # archive members under dist/ recursively.
+        run: |
+          python scripts/provenance_scan.py --artifacts --json \
+            -o provenance-artifacts.json
 
       - name: Smoke-test installed wheel
         run: |
@@ -76,14 +110,26 @@ jobs:
           # HTML rendered means templates + catalog were packaged via licenselens/data
           test -f /tmp/wheel-reports/security-license-lens-report.html
 
+      - name: Upload provenance receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-provenance-receipts
+          path: |
+            provenance-workspace-pre-build.json
+            provenance-artifacts.json
+          if-no-files-found: ignore
+          retention-days: 14
+
   report-browser:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
         with:
           python-version: "3.13"
 
@@ -100,8 +146,9 @@ jobs:
 
       - name: Upload browser test artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: browser-test-results
           path: test-results/
           if-no-files-found: ignore
+          retention-days: 7

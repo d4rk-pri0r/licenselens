@@ -1,4 +1,24 @@
-name: Publish to PyPI
+name: Release
+
+# Gated release pipeline (Todo 34). Builds each artifact exactly once from the
+# release tag, then runs trust gates (checksums, SBOM, provenance/SBOM
+# attestation, Windows signing) before a single promote job publishes to PyPI
+# (trusted publishing / OIDC) and creates the GitHub Release.
+#
+# Trust posture (locked by tests/test_release_guard.py):
+#   * tag-only trigger (build once from the release tag; forks cannot push tags),
+#   * every action pinned by full commit SHA (no floating tags),
+#   * least privilege: top-level `contents: read`; `id-token`/`attestations`
+#     write only on the attest / sign / promote jobs that need OIDC,
+#   * version consistency checked in `build` (tag == pyproject version),
+#   * unsigned Windows artifacts cannot promote: `promote` runs
+#     scripts/release/verify_signing.py and hard-fails when signing is required
+#     but absent (the Windows ZIP is only ever signed via OIDC when
+#     `vars.ARTIFACT_SIGNING == 'enabled'`).
+#
+# Requires two protected environments in repository settings:
+#   * `signing`     — grants the Azure federated-credential OIDC + signing vars,
+#   * `production`  — grants PyPI trusted publishing + GitHub Release write.
 
 on:
   push:
@@ -6,21 +26,354 @@ on:
       - "v*"
 
 permissions:
-  id-token: write
   contents: read
 
 jobs:
-  pypi-publish:
-    name: Build and publish
+  build:
+    name: Build once (wheel + sdist + inventory + checksums)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Check out repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
         with:
           python-version: "3.12"
-      - name: Build distributions
+
+      - name: Verify tag version == package version
+        # A mis-tagged release must fail before any artifact is published.
+        run: python scripts/release/verify_version.py "${{ github.ref_name }}"
+
+      - name: Install package (scanner + build deps)
         run: |
-          python -m pip install --upgrade build
+          python -m pip install --upgrade pip build
+          pip install -e .
+
+      - name: Provenance scan (git-reachable history before build)
+        # Release promotion cannot proceed without a clean provenance receipt.
+        run: |
+          mkdir -p dist-receipts
+          python scripts/provenance_scan.py --git-reachable --json \
+            -o dist-receipts/provenance-git-reachable.json
+
+      - name: Build sdist + wheel
+        run: |
           python -m build
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Provenance scan (built wheel/sdist members)
+        run: |
+          mkdir -p dist-receipts
+          python scripts/provenance_scan.py --artifacts --json \
+            -o dist-receipts/provenance-artifacts.json
+
+      - name: Generate dependency/license inventory
+        run: python scripts/release/license_inventory.py --output dist/license-inventory.json
+
+      - name: Compute SHA-256 checksums (bind exact bytes)
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Upload distributions (wheel/sdist/inventory/checksums)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-dist
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+            dist/license-inventory.*
+            dist/SHA256SUMS
+          if-no-files-found: error
+
+      - name: Upload provenance receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-provenance
+          path: dist-receipts/
+          if-no-files-found: error
+
+      - name: Upload report sample bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-sample
+          path: examples/sample-report/
+          if-no-files-found: error
+
+  build-windows:
+    name: Build Windows one-folder (unsigned)
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Install build-windows deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[build-windows]"
+
+      - name: Build one-folder distribution (unsigned at this stage)
+        run: pyinstaller --clean --noconfirm packaging/windows/licenselens.spec
+
+      - name: Upload unsigned one-folder (never promoted directly)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-windows
+          path: dist/licenselens/
+          if-no-files-found: error
+
+  checksums:
+    name: Verify checksums bind exact bytes
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-dist
+          path: dist
+
+      - name: Recompute and compare SHA-256 (no rebuild)
+        run: |
+          cd dist
+          sha256sum -c SHA256SUMS
+
+  sbom:
+    name: Generate SPDX + CycloneDX SBOM
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-dist
+          path: dist
+
+      - name: Generate SPDX SBOM (from built distributions)
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        with:
+          path: dist
+          format: spdx-json
+          output-file: sbom.spdx.json
+          upload-artifact: false
+
+      - name: Generate CycloneDX SBOM (from built distributions)
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610
+        with:
+          path: dist
+          format: cyclonedx-json
+          output-file: sbom.cyclonedx.json
+          upload-artifact: false
+
+      - name: Upload SBOMs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-sboms
+          path: |
+            sbom.spdx.json
+            sbom.cyclonedx.json
+          if-no-files-found: error
+
+  sign-windows:
+    name: Sign Windows ZIP (Microsoft Artifact Signing, OIDC)
+    needs: build-windows
+    runs-on: windows-latest
+    timeout-minutes: 20
+    permissions:
+      id-token: write
+      contents: read
+    environment: signing
+    steps:
+      - name: Download unsigned one-folder
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-windows
+          path: windows-dist/licenselens
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Install package (for deterministic re-zip helper)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Sign licenselens.exe (Microsoft Artifact Signing, OIDC)
+        # Only signs when configured; otherwise the artifact stays unsigned and
+        # the promote gate below will hard-fail under the required policy.
+        if: ${{ vars.ARTIFACT_SIGNING == 'enabled' }}
+        uses: Azure/trusted-signing-action@48da903ca5e2d362da62c631a42d77c02ec7eadb
+        with:
+          endpoint: https://eus.codesigning.azure.net/
+          trusted-signing-account-name: ${{ vars.TRUSTED_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.TRUSTED_SIGNING_PROFILE }}
+          files-folder: windows-dist/licenselens
+          files-folder-filter: exe
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Package and record signing status
+        shell: pwsh
+        run: |
+          $sig = Get-AuthenticodeSignature windows-dist/licenselens/licenselens.exe
+          $signed = ($sig.Status -eq 'Valid')
+          $version = (python -c "from licenselens import __version__; print(__version__)").Trim()
+          $label = if ($signed) { '' } else { '-test-only' }
+          $zipName = "licenselens-windows-x64-$version$label.zip"
+          python -c "import sys; from pathlib import Path; from licenselens.windows_dist import write_deterministic_zip; write_deterministic_zip(Path('windows-dist/licenselens'), Path('windows-dist') / sys.argv[1])" "$zipName"
+          $sha = (Get-FileHash -Algorithm SHA256 "windows-dist/$zipName").Hash.ToLower()
+          $status = @{ signed = $signed; artifact = $zipName; sha256 = $sha; policy = 'required' } | ConvertTo-Json
+          Set-Content -Path windows-dist/signing-status.json -Value $status
+          "signed=$signed  artifact=$zipName  sha256=$sha"
+
+      - name: Upload signed-or-unsigned Windows artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: release-windows-signed
+          path: |
+            windows-dist/*.zip
+            windows-dist/signing-status.json
+          if-no-files-found: error
+
+  attest:
+    name: Attest provenance and SBOM
+    needs: [build, sign-windows, sbom]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      id-token: write
+      attestations: write
+      contents: read
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-dist
+          path: dist
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-windows-signed
+          path: windows-dist
+
+      - name: Download SBOMs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-sboms
+          path: sboms
+
+      - name: Attest build provenance (bind exact bytes)
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8
+        with:
+          subject-path: |
+            dist/*.whl
+            dist/*.tar.gz
+            windows-dist/*.zip
+
+      - name: Attest SBOM
+        uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e
+        with:
+          subject-path: |
+            dist/*.whl
+            dist/*.tar.gz
+            windows-dist/*.zip
+          sbom-path: |
+            sboms/sbom.spdx.json
+            sboms/sbom.cyclonedx.json
+
+  promote:
+    name: Promote to production release
+    needs: [build, build-windows, checksums, sbom, attest, sign-windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      id-token: write
+    environment: production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Install package (receipt validators)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Download distributions
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-dist
+          path: dist
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-windows-signed
+          path: release-assets
+
+      - name: Download SBOMs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-sboms
+          path: sboms
+
+      - name: Download report sample
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-sample
+          path: sample
+
+      - name: Download provenance receipts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: release-provenance
+          path: provenance-receipts
+
+      - name: Enforce clean provenance receipts (promotion gate)
+        run: |
+          python scripts/release_gate.py --validate-receipts provenance-receipts \
+            --require-modes git-reachable,artifacts
+
+      - name: Re-scan release artifacts before promote
+        run: |
+          python scripts/provenance_scan.py --artifacts --json \
+            -o provenance-receipts/provenance-artifacts-promote.json
+
+      - name: Enforce signing policy (unsigned cannot promote)
+        run: python scripts/release/verify_signing.py --policy required --assets release-assets
+
+      - name: Publish to PyPI (trusted publishing / OIDC)
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        with:
+          packages-dir: dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
+        with:
+          generate_release_notes: true
+          files: |
+            dist/*
+            release-assets/*
+            sample/*
+            sboms/*
+            provenance-receipts/*
