@@ -46,3 +46,23 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 ## Stability note
 
 Check IDs stay stable across minor releases unless a changelog note says otherwise. Prefer additive fields in JSON for MSP glue.
+
+## Verification scope (what runs where)
+
+The release gate is `scripts/release_gate.py`, a reproducible, fail-closed runner
+whose ledger records every quality command it executes and every step it defers.
+
+- **Runs on Linux/macOS:** Ruff lint/format, the full pytest suite with a 72%
+  coverage floor, the Playwright Chromium report suite (including the
+  no-network/CSP/a11y contracts), the coverage-manifest validator, MkDocs strict
+  build + codespell + lychee, wheel/sdist build, installed-wheel smoke, the
+  Pester bridge and installer suites, the release/CI workflow static guards, and
+  the deterministic two-run reference docs and sample report.
+- **Deferred to Windows CI:** the PyInstaller one-folder exe and its ZIP —
+  PyInstaller is not a cross-compiler, so the frozen artifact is built only on a
+  Windows runner (`windows-ci.yml`); its data/one-folder/archive contracts are
+  locked cross-platform by `tests/test_windows_packaging.py`.
+- **Deferred to the operator:** live-tenant execution. The controlled live-lab is
+  dry-run validated against fake backends (`scripts/lab_runner.py`) and no real
+  Microsoft tenant, credential, UPN, or resource identifier is ever touched or
+  stored here.

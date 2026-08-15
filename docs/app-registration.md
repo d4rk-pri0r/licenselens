@@ -29,15 +29,23 @@ export AZURE_CLIENT_SECRET="<secret>"   # client_secret mode only
 
 See the full matrix in [permissions.md](permissions.md).
 
-**Microsoft Graph (application)** — identity + Secure Score:
+**Microsoft Graph (application)** — identity, apps, Intune, Secure Score, XDR signals:
 
-- `Organization.Read.All`
+- `AccessReview.Read.All`
+- `Application.Read.All`
+- `AuditLog.Read.All`
+- `DelegatedPermissionGrant.Read.All`
+- `DeviceManagementConfiguration.Read.All`
+- `DeviceManagementManagedDevices.Read.All`
 - `Directory.Read.All`
+- `Domain.Read.All`
+- `Organization.Read.All`
 - `Policy.Read.All`
 - `RoleManagement.Read.Directory`
-- `AuditLog.Read.All`
-- `SecurityEvents.Read.All` (Secure Score for MDO/MDI signals)
-- `AccessReview.Read.All`
+- `SecurityAlert.Read.All`
+- `SecurityEvents.Read.All`
+- `SecurityIncident.Read.All`
+- `User.Read.All`
 
 **Microsoft Defender for Endpoint** (optional, for `mde-onboard-gap`):
 
