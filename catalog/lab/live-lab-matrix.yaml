@@ -1,0 +1,385 @@
+# Live-lab validation matrix (redacted).
+#
+# Machine-readable definition of the controlled live-lab validation for todo 35.
+# This file contains NO live tenant data, credentials, UPNs, resource IDs, or
+# secrets. It maps every direct check family to a proven pass case and a proven
+# fail case (or a downgrade to manual/unsupported) plus the negative cases that
+# must produce non-pass states. Actual live-tenant execution is deferred to the
+# operator; on a host without a Microsoft tenant this matrix is validated
+# against fake backends only.
+#
+# Consumed by scripts/lab_runner.py. Do not edit by hand without re-running
+# `uv run python scripts/lab_runner.py validate`.
+
+schema_version: "1.0"
+title: "LicenseLens live-lab validation matrix"
+status: "defined + dry-run validated against fake backends (no real tenant touched)"
+
+disclaimer: >
+  Synthetic fixtures only. No Microsoft tenant, credentials, user data, or
+  resource identifiers are embedded here. Every live-tenant case is described
+  as an operator procedure, never as captured data.
+
+redaction:
+  secret_tokens:
+    - client_secret
+    - clientsecret
+    - access_token
+    - accesstoken
+    - refresh_token
+    - refreshtoken
+    - api_key
+    - apikey
+    - "authorization: bearer"
+    - "authorization: basic"
+  never_emit:
+    - user_principal_name
+    - upn
+    - tenant_display_name
+    - workspace_resource_id
+    - resource_group
+    - subscription_id
+    - object_id
+    - group_object_id
+  zero_tenant_id: "00000000-0000-0000-0000-000000000000"
+
+cross_cutting:
+  licensed:
+    description: "E5 / Entra ID P2 / Defender P2 / Purview / Sentinel SKUs enabled."
+  unlicensed:
+    description: "SKU missing or disabled -> checks report not_licensed, never a false gap."
+  compliant:
+    description: "Control configured and enforced -> check reports ok."
+  noncompliant:
+    description: "Control absent/default/weak -> check reports gap or partial."
+  permission_denied:
+    description: "Missing app permission or Azure RBAC -> error/skipped, never ok."
+  unsupported_cloud:
+    description: "GCC/GCC High/DoD/China surface not readable -> skipped/unsupported, never ok."
+  empty_tenant:
+    description: "No users/devices/policies -> bounded empty states, never a false pass."
+  large_tenant:
+    description: "Pagination/truncation bounds -> partial/truncated, confidence lowered."
+  proxy_manual:
+    description: "Proxy signal or manual check -> never serialized as high-confidence ok."
+
+families:
+  - id: identity
+    todo: 18
+    workload: identity
+    check_prefixes: ["id-"]
+    backend: graph
+    auth_modes: [app_only, delegated]
+    state: direct
+    graph_permissions:
+      - Organization.Read.All
+      - Directory.Read.All
+      - Domain.Read.All
+      - User.Read.All
+      - RoleManagement.Read.Directory
+      - Policy.Read.All
+      - Application.Read.All
+      - DelegatedPermissionGrant.Read.All
+      - AuditLog.Read.All
+      - AccessReview.Read.All
+    downgraded_manual:
+      - id-idprotect-notify-high-risk
+      - id-logs-to-soc
+      - id-guest-invite-domains
+    proxy: []
+    proof: tests/test_evaluate_identity_wave3.py
+    pass_case:
+      name: identity-compliant
+      scenario: "E5/P2, all-user MFA + legacy-auth-block CA enforced, PIM active, break-glass excluded."
+      checks:
+        - check_id: id-ca-legacy-auth-block
+          expected: ok
+        - check_id: id-ca-mfa-all-users
+          expected: ok
+    fail_case:
+      name: identity-noncompliant
+      scenario: "E5/P2 licensed but no CA policy, standing GA, dormant privileged account."
+      checks:
+        - check_id: id-ca-priv-gaps
+          expected: gap
+        - check_id: id-dormant-privileged
+          expected: gap
+    negative_cases:
+      - name: permission-denied
+        expected: error
+        description: "Policy.Read.All missing -> CA checks error, not crash."
+      - name: unsupported-cloud
+        expected: skipped
+        description: "China cloud -> Graph CA/identity-protection surfaces unsupported."
+      - name: empty-tenant
+        expected: not_licensed
+        description: "No SKUs -> all identity checks not_licensed."
+      - name: large-tenant
+        expected: partial
+        description: "Truncated sign-in inventory -> dormant-privileged partial, confidence lowered."
+
+  - id: email
+    todo: 19
+    workload: exchange
+    check_prefixes: ["exo-", "mdo-"]
+    backend: powershell_bridge
+    auth_modes: [app_only, delegated]
+    state: direct
+    graph_permissions:
+      - SecurityEvents.Read.All
+    bridge_roles:
+      - Global Reader
+      - Security Reader
+      - "Exchange / View-Only Organization Management"
+    downgraded_manual:
+      - mdo-alert-policies-enabled
+      - mdo-audit-retention
+    proxy:
+      - mdo-p2-policies-default
+    proof: tests/test_evaluate_email_wave3.py
+    pass_case:
+      name: email-compliant
+      scenario: "SPF/DKIM/DMARC published, SMTP AUTH off, Safe Links/Attachments org-wide, external forwarding blocked."
+      checks:
+        - check_id: exo-dkim-enabled
+          expected: ok
+        - check_id: exo-spf-published
+          expected: ok
+    fail_case:
+      name: email-noncompliant
+      scenario: "SMTP AUTH enabled, external forwarding allowed, no Safe Links, DMARC missing."
+      checks:
+        - check_id: exo-forwarding-external-disabled
+          expected: gap
+        - check_id: mdo-safe-links-click-tracking
+          expected: gap
+    negative_cases:
+      - name: module-unavailable
+        expected: skipped
+        description: "pwsh/ExchangeOnlineManagement missing -> bridge unavailable, checks skipped."
+      - name: unsupported-cloud
+        expected: skipped
+        description: "GCC tenant without EXO/SCC module -> surfaces not readable."
+      - name: permission-denied
+        expected: error
+        description: "No view-only Exchange role -> threat policies partial/error."
+      - name: proxy-only
+        expected: partial
+        description: "Direct EXO read fails -> proxy never serialized as ok without --allow-email-proxy."
+
+  - id: collaboration
+    todo: 20
+    workload: collaboration
+    check_prefixes: ["spo-", "teams-"]
+    backend: powershell_bridge
+    auth_modes: [app_only, delegated]
+    state: direct
+    bridge_roles:
+      - Global Reader
+      - Teams Administrator
+      - SharePoint Administrator
+    downgraded_manual: []
+    proxy: []
+    proof: tests/test_evaluate_collaboration_wave3.py
+    pass_case:
+      name: collaboration-compliant
+      scenario: "Specific-people default links, anyone-link expiration enforced, Teams external access controlled."
+      checks:
+        - check_id: spo-default-link-specific
+          expected: ok
+        - check_id: teams-anonymous-start-disabled
+          expected: ok
+    fail_case:
+      name: collaboration-noncompliant
+      scenario: "Anyone links with no expiration, anonymous users can start meetings, recording on."
+      checks:
+        - check_id: spo-anyone-link-expiration
+          expected: gap
+        - check_id: teams-recording-disabled
+          expected: gap
+    negative_cases:
+      - name: unsupported-cloud
+        expected: not_applicable
+        description: "Teams unmanaged-user/email-integration surfaces on GCC -> not applicable, not false gap."
+      - name: permission-denied
+        expected: partial
+        description: "Missing SPO/Teams admin read -> bundle partial, never ok."
+      - name: weak-custom-policy
+        expected: gap
+        description: "One weak assigned custom policy is not hidden by a compliant global default."
+
+  - id: power
+    todo: 21
+    workload: power_platform
+    check_prefixes: ["pp-", "pbi-"]
+    backend: powershell_bridge
+    auth_modes: [app_only, delegated]
+    state: direct
+    bridge_roles:
+      - Power Platform Administrator
+      - Power BI Administrator
+    downgraded_manual: []
+    proxy: []
+    proof: tests/test_evaluate_power_wave3.py
+    pass_case:
+      name: power-compliant
+      scenario: "Admin-only environment creation, tenant isolation on, publish-to-web off, guest access off."
+      checks:
+        - check_id: pp-env-creation-admin-only
+          expected: ok
+        - check_id: pbi-publish-to-web-disabled
+          expected: ok
+    fail_case:
+      name: power-noncompliant
+      scenario: "Anyone can create environments, tenant isolation off, share-with-everyone allowed."
+      checks:
+        - check_id: pp-tenant-isolation-enabled
+          expected: gap
+        - check_id: pp-share-with-everyone-disabled
+          expected: gap
+    negative_cases:
+      - name: portal-only
+        expected: manual
+        description: "Portal-only surfaces -> manual/unsupported, not a false direct claim."
+      - name: module-unavailable
+        expected: skipped
+        description: "Power Platform/BI module missing -> bridge unavailable."
+      - name: empty-tenant
+        expected: partial
+        description: "No environments -> bounded empty state, not a false pass."
+
+  - id: endpoint
+    todo: 22
+    workload: endpoint
+    check_prefixes: ["endpoint-", "mde-", "mdi-", "xdr-"]
+    backend: graph_mde
+    auth_modes: [app_only, delegated]
+    state: direct
+    graph_permissions:
+      - DeviceManagementConfiguration.Read.All
+      - DeviceManagementManagedDevices.Read.All
+      - SecurityIncident.Read.All
+      - SecurityAlert.Read.All
+      - SecurityEvents.Read.All
+    mde_permission:
+      - Machine.Read.All
+    downgraded_manual: []
+    proxy:
+      - mdi-sensors-missing
+    proof: tests/test_evaluate_endpoint_wave3.py
+    pass_case:
+      name: endpoint-compliant
+      scenario: "Compliance policy assigned, MDE connector on, sensors healthy, incident flow proven."
+      checks:
+        - check_id: endpoint-compliance-policy-assigned
+          expected: ok
+        - check_id: mde-onboard-gap
+          expected: ok
+    fail_case:
+      name: endpoint-noncompliant
+      scenario: "No enrollment coverage, unhealthy sensors, empty incident signal."
+      checks:
+        - check_id: endpoint-enrollment-coverage
+          expected: gap
+        - check_id: mde-sensor-health
+          expected: gap
+    negative_cases:
+      - name: unassigned-policy
+        expected: gap
+        description: "Compliance/endpoint-security policy not assigned -> gap."
+      - name: stale-sensor
+        expected: partial
+        description: "Stale/inactive MDE sensor -> partial, confidence lowered."
+      - name: empty-incidents
+        expected: not_gap
+        description: "No incidents alone never becomes a gap/pass (capability-operation signal)."
+      - name: truncated-inventory
+        expected: partial
+        description: "Truncated device inventory -> partial, confidence lowered."
+
+  - id: purview
+    todo: 23
+    workload: purview
+    check_prefixes: ["pur-"]
+    backend: powershell_bridge
+    auth_modes: [app_only, delegated]
+    state: direct
+    graph_permissions:
+      - SecurityEvents.Read.All
+    bridge_roles:
+      - Purview Administrator
+      - Global Reader
+    downgraded_manual:
+      - pur-communication-compliance-readiness
+      - pur-ediscovery-readiness
+      - pur-insider-risk-readiness
+    proxy:
+      - pur-dlp-not-enforced
+    proof: tests/test_evaluate_purview_governance.py
+    pass_case:
+      name: purview-compliant
+      scenario: "DLP policy present/enforced, sensitivity labels published, retention coverage."
+      checks:
+        - check_id: pur-dlp-policy-present
+          expected: ok
+        - check_id: pur-sensitivity-labels-published
+          expected: ok
+    fail_case:
+      name: purview-noncompliant
+      scenario: "No DLP enforcement, unpublished labels, no retention coverage."
+      checks:
+        - check_id: pur-dlp-enforcement-block
+          expected: gap
+        - check_id: pur-retention-policy-coverage
+          expected: gap
+    negative_cases:
+      - name: test-mode-dlp
+        expected: partial
+        description: "DLP policy in simulation/test mode -> partial, not ok."
+      - name: unpublished-labels
+        expected: gap
+        description: "Labels defined but not published -> gap."
+      - name: denied-compliance-session
+        expected: error
+        description: "SCC session denied -> DLP surfaces error, not false ok."
+
+  - id: sentinel
+    todo: 24
+    workload: sentinel
+    check_prefixes: ["sen-", "az-"]
+    backend: arm
+    auth_modes: [app_only]
+    state: direct
+    azure_roles:
+      - Microsoft Sentinel Reader
+      - Security Reader
+    downgraded_manual:
+      - az-cspm-out-of-scope
+    proxy: []
+    proof: tests/test_evaluate_sentinel_azure_wave3.py
+    pass_case:
+      name: sentinel-compliant
+      scenario: "Workspace bound, healthy analytics coverage across tactics, UEBA on, connectors installed."
+      checks:
+        - check_id: sen-analytics-rule-coverage
+          expected: ok
+        - check_id: sen-ueba-not-enabled
+          expected: ok
+    fail_case:
+      name: sentinel-noncompliant
+      scenario: "Empty workspace, no automation rules, UEBA off, no data connectors."
+      checks:
+        - check_id: sen-data-connectors
+          expected: gap
+        - check_id: sen-automation-rules
+          expected: gap
+    negative_cases:
+      - name: missing-workspace
+        expected: error
+        description: "No workspace binding -> error with plain-language guidance, never ok."
+      - name: absent-rbac
+        expected: error
+        description: "Missing Sentinel Reader on workspace -> error/manual, not gap/ok."
+      - name: ambiguous-discovery
+        expected: error
+        description: "Multiple workspaces never guessed -> error until explicitly bound."
