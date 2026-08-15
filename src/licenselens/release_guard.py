@@ -35,12 +35,18 @@ from licenselens.windows_ci import action_is_pinned
 WORKFLOW_FILE: Final = ".github/workflows/publish.yml"
 VERIFY_VERSION_SCRIPT: Final = "scripts/release/verify_version.py"
 VERIFY_SIGNING_SCRIPT: Final = "scripts/release/verify_signing.py"
+VERIFY_ATTESTATION_SCRIPT: Final = "scripts/release/verify_attestation.py"
+ASSEMBLE_BUNDLE_SCRIPT: Final = "scripts/release/assemble_bundle.py"
+VALIDATE_RECEIPTS_SCRIPT: Final = "scripts/release/validate_receipts.py"
+CAPTURE_RECEIPT_SCRIPT: Final = "scripts/release/capture_receipt.py"
 LICENSE_INVENTORY_SCRIPT: Final = "scripts/release/license_inventory.py"
 PROVENANCE_SCAN_SCRIPT: Final = "scripts/provenance_scan.py"
 SIGNING_STATUS_FILE: Final = "signing-status.json"
 THIRD_PARTY_NOTICES: Final = "THIRD_PARTY_NOTICES.md"
 PROVENANCE_CLEAN_STATUS: Final = "clean"
 PROVENANCE_REQUIRED_MODES: Final = ("git-reachable", "artifacts")
+FINAL_CHECKSUMS_MARKER: Final = "SHA256SUMS"
+RELEASE_BUNDLE_NAME: Final = "release-bundle"
 
 #: Jobs the release pipeline must declare, in build-once -> gate -> promote order.
 REQUIRED_JOBS: Final = (
@@ -187,12 +193,24 @@ def release_guards(repo_root: Path) -> list[str]:
     if not _step_runs(build, "--artifacts"):
         problems.append("job 'build': must run provenance_scan --artifacts")
 
-    # --- checksums: bind exact bytes ---------------------------------------
+    # --- checksums: final SHA256SUMS after ALL promoted artifacts ----------
     checksums = jobs.get("checksums", {}) if isinstance(jobs.get("checksums"), dict) else {}
-    checksums_verify = any(
-        "sha256sum" in _run_text(step) for _, step in _all_steps({"checksums": checksums})
+    checksums_needs = checksums.get("needs") or []
+    for upstream in ("build", "build-windows", "sbom", "sign-windows"):
+        if upstream not in checksums_needs:
+            problems.append(
+                f"job 'checksums': needs must include '{upstream}' "
+                "(final SHA256SUMS after every promoted artifact is assembled)"
+            )
+    checksums_runs = "\n".join(
+        _run_text(step) for _, step in _all_steps({"checksums": checksums})
     )
-    if not checksums_verify:
+    if ASSEMBLE_BUNDLE_SCRIPT not in checksums_runs:
+        problems.append(
+            f"job 'checksums': must run {ASSEMBLE_BUNDLE_SCRIPT} so final "
+            "SHA256SUMS covers every promoted artifact"
+        )
+    elif FINAL_CHECKSUMS_MARKER not in checksums_runs and "sha256sum" not in checksums_runs:
         problems.append("job 'checksums': must recompute and verify sha256sum (bind bytes)")
 
     # --- sbom: SPDX + CycloneDX --------------------------------------------
@@ -211,6 +229,12 @@ def release_guards(repo_root: Path) -> list[str]:
         problems.append("job 'attest': must request id-token: write")
     if _job_permission(attest, "attestations") != "write":
         problems.append("job 'attest': must request attestations: write")
+    attest_needs = attest.get("needs") or []
+    if "checksums" not in attest_needs:
+        problems.append(
+            "job 'attest': needs must include 'checksums' "
+            "(attest subjects from the final assembled bundle)"
+        )
 
     # --- sign-windows: OIDC Microsoft Artifact Signing, config-gated -------
     sign = jobs.get("sign-windows", {}) if isinstance(jobs.get("sign-windows"), dict) else {}
@@ -253,6 +277,19 @@ def release_guards(repo_root: Path) -> list[str]:
         problems.append(
             "job 'promote': must run the unsigned-can't-promote guard (verify_signing.py)"
         )
+    if not _step_runs(promote, VERIFY_ATTESTATION_SCRIPT):
+        problems.append(
+            "job 'promote': must run the attestation/receipt gate "
+            f"({VERIFY_ATTESTATION_SCRIPT})"
+        )
+    if not (
+        _step_runs(promote, VALIDATE_RECEIPTS_SCRIPT)
+        or _step_runs(promote, "validate_receipts")
+        or _step_runs(promote, VERIFY_ATTESTATION_SCRIPT)
+    ):
+        problems.append(
+            "job 'promote': must validate trust receipts before publish"
+        )
     if not (
         _step_runs(promote, "validate-receipts")
         or _step_runs(promote, PROVENANCE_SCAN_SCRIPT)
@@ -261,6 +298,17 @@ def release_guards(repo_root: Path) -> list[str]:
         problems.append(
             "job 'promote': must enforce a clean provenance receipt before publish"
         )
+    if not (
+        _step_runs(promote, FINAL_CHECKSUMS_MARKER)
+        or _step_runs(promote, "sha256sum")
+        or _step_runs(promote, VERIFY_ATTESTATION_SCRIPT)
+    ):
+        problems.append(
+            "job 'promote': must verify final SHA256SUMS before publish (no rebuild)"
+        )
+    promote_runs = "\n".join(_run_text(step) for _, step in _all_steps({"promote": promote}))
+    if "python -m build" in promote_runs or "pyinstaller" in promote_runs:
+        problems.append("job 'promote': must not rebuild artifacts")
     promote_uses = _job_uses(promote)
     if not any("pypi-publish" in u for u in promote_uses):
         problems.append("job 'promote': must publish to PyPI via trusted publishing")
