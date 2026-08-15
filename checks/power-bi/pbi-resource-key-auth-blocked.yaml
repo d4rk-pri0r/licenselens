@@ -1,0 +1,27 @@
+id: pbi-resource-key-auth-blocked
+title: Power BI resource key authentication is not blocked
+customer_title: Block Power BI resource key authentication
+customer_summary: >
+  Resource key authentication is allowed, which can let embedded content use
+  less-secure key-based access.
+customer_next_step: >
+  Block resource key authentication in the Power BI admin portal.
+description: >
+  Resource key authentication for Power BI should be blocked.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Block resource key authentication in the Power BI admin portal tenant settings.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-embed-codes
+enabled: true

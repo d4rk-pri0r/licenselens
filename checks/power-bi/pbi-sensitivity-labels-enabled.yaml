@@ -1,0 +1,27 @@
+id: pbi-sensitivity-labels-enabled
+title: Power BI sensitivity labels are not applied
+customer_title: Turn on Power BI sensitivity labels
+customer_summary: >
+  Sensitivity labels are not applied to Power BI content, so reports may not
+  inherit the data classification and protection controls you already pay for.
+customer_next_step: >
+  Enable sensitivity labels in the Power BI admin portal and publish label policies.
+description: >
+  Power BI sensitivity labels should be enabled so content inherits classification.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Enable sensitivity labels in the Power BI admin portal and publish a label policy.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-security-sensitivity-label-overview
+enabled: true

@@ -1,0 +1,27 @@
+id: pbi-python-r-visuals-disabled
+title: Python and R visuals are allowed in Power BI
+customer_title: Turn off Python and R visuals
+customer_summary: >
+  Python and R visuals are enabled, which can execute arbitrary code when a
+  report is opened.
+customer_next_step: >
+  Disable Python and R visuals in the Power BI admin portal.
+description: >
+  Python and R visual interactions should be disabled.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Disable Python and R visual interactions in the Power BI admin portal.
+references:
+  - https://learn.microsoft.com/power-bi/connect-data/service-r-visuals
+enabled: true
