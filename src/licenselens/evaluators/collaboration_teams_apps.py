@@ -21,8 +21,7 @@ _TEAMS_APPS: Final = "teams_apps"
 _APPS_SURFACE: Final = "app_permission_policies"
 _V2_SURFACE: Final = "app_settings_v2"
 _V2_LIMITATION: Final = (
-    "Org-wide app settings (v2) were not readable; only legacy permission policies "
-    "were evaluated."
+    "Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated."
 )
 
 
@@ -109,8 +108,7 @@ def _apps_result(
         return Evaluation(
             status=FindingStatus.PARTIAL,
             summary=(
-                f"{ok_summary.rstrip('.')} "
-                "(partial: org-wide app settings v2 were not readable)."
+                f"{ok_summary.rstrip('.')} (partial: org-wide app settings v2 were not readable)."
             ),
             evidence=evidence,
             customer_summary=(
