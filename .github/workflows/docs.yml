@@ -1,0 +1,66 @@
+name: Docs
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build and check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Install docs dependencies (exact-pinned)
+        run: |
+          python -m pip install --upgrade pip
+          pip install "mkdocs==1.6.1" "mkdocs-material==9.7.7" "codespell==2.4.3"
+
+      - name: Build (strict — internal links and anchors fail the build)
+        run: mkdocs build --strict
+
+      - name: Spelling
+        run: codespell docs mkdocs.yml
+
+      - name: External link check
+        uses: lycheeverse/lychee-action@649b0e4890508ea3e11ea6b3ee35ce899a25afd5
+        with:
+          args: --no-progress --max-concurrency 8 docs/
+          fail: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@98ef48e41587a300b82de4cf298aa98b57b2faae
+        with:
+          path: site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@5e98f10ce206463e411e82ac66ef0f2df79c5499
