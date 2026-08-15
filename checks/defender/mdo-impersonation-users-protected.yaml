@@ -1,0 +1,26 @@
+id: mdo-impersonation-users-protected
+title: User impersonation protection is not enabled
+customer_title: Protect sensitive accounts from look-alike senders
+customer_summary: >
+  Attackers impersonate executives and admins to phish staff.
+customer_next_step: >
+  Enable user impersonation protection for profile-listed sensitive accounts.
+description: >
+  User impersonation protection is not enabled.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antiphishing
+collector: exchange_collector
+remediation: >
+  Enable user impersonation protection for profile-listed sensitive accounts.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-phishing-policies-about
+enabled: true

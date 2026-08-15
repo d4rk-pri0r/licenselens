@@ -1,0 +1,26 @@
+id: mdo-impersonation-partner-domains
+title: Partner domain impersonation protection is off
+customer_title: Protect key partner domains from look-alikes
+customer_summary: >
+  Spoofed partner domains can trick finance and operations staff.
+customer_next_step: >
+  Enable targeted domain protection for profile-listed partner domains.
+description: >
+  Partner domain impersonation protection is off.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antiphishing
+collector: exchange_collector
+remediation: >
+  Enable targeted domain protection for profile-listed partner domains.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-phishing-policies-about
+enabled: true
