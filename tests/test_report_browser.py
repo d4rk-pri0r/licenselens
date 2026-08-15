@@ -23,6 +23,7 @@ import pytest
 from playwright.sync_api import Page
 
 from licenselens.models import ScanResult
+from licenselens.report.bundle import build_report_bundle
 from licenselens.report.html import write_html_report
 from tests.report_fixtures import comprehensive_report
 
@@ -269,3 +270,16 @@ def test_four_sections_in_dom_order(page: Page, report_uri: str) -> None:
         assert heading in headings, f"missing section heading {heading!r}"
     positions = [headings.index(heading) for heading in SECTION_HEADINGS]
     assert positions == sorted(positions), f"section headings out of order: {headings}"
+
+
+def test_bundle_entry_offline_no_network(page: Page, tmp_path: Path) -> None:
+    bundle = build_report_bundle(browser_safe_report(), tmp_path / "bundle")
+    requests: list[str] = []
+    page.on("request", lambda request: requests.append(request.url))
+    page.goto(bundle.entry_path.as_uri())
+    page.wait_for_load_state("load")
+    external = [url for url in requests if url.startswith(("http://", "https://"))]
+    assert external == [], f"unexpected external network requests: {external}"
+    assert page.locator(".finding").count() == 6, "bundle did not render all findings"
+    stylesheets = page.evaluate("() => document.styleSheets.length")
+    assert stylesheets >= 1, "external stylesheet was not applied"
