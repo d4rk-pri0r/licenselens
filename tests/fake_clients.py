@@ -25,12 +25,11 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import GraphError
+from licenselens.graph import GraphListResult
 
 PathHandler = Callable[[str, dict[str, Any] | None], dict[str, Any]]
-
-
-# ---- canned handlers --------------------------------------------------------
 
 
 def ok(payload: dict[str, Any]) -> PathHandler:
@@ -49,15 +48,22 @@ def paginated(*value_pages: list[dict[str, Any]]) -> PathHandler:
     returns page 0 with a nextLink; subsequent calls follow that link.  When
     there are no more pages, no nextLink is emitted.
     """
+    state = {"calls": 0}
 
     def _handler(path: str, _params: dict[str, Any] | None) -> dict[str, Any]:
         is_next = path.startswith("http")
-        idx = 1 if is_next else 0
+        if is_next:
+            # Extract page index from synthetic next link when present
+            idx = state["calls"]
+        else:
+            idx = 0
+            state["calls"] = 0
         if idx >= len(value_pages):
             return {"value": []}
         page: dict[str, Any] = {"value": list(value_pages[idx])}
         if idx + 1 < len(value_pages):
-            page["@odata.nextLink"] = f"https://graph.microsoft.com/v1.0/next/{idx + 2}"
+            page["@odata.nextLink"] = f"https://graph.microsoft.com/v1.0/next/{idx + 1}"
+        state["calls"] = idx + 1
         return page
 
     return _handler
@@ -72,9 +78,6 @@ def error(status: int, message: str = "fake error") -> PathHandler:
     return _handler
 
 
-# ---- FakeGraphClient --------------------------------------------------------
-
-
 class FakeGraphClient:
     """Drop-in replacement for ``GraphClient`` with in-memory routing.
 
@@ -82,12 +85,19 @@ class FakeGraphClient:
     ``/subscribedSkus?$select=...`` as well.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+        allow_preview: bool = False,
+        base_url: str = "https://graph.microsoft.com/v1.0",
+    ) -> None:
+        self.cloud = cloud
+        self.allow_preview = allow_preview
+        self.base_url = base_url
         self._get_routes: dict[str, PathHandler] = {}
         self._list_routes: dict[str, PathHandler] = {}
         self._post_routes: dict[str, PathHandler] = {}
-
-    # -- registration ---------------------------------------------------------
 
     def register_get(self, path_prefix: str, handler: PathHandler) -> None:
         self._get_routes[path_prefix] = handler
@@ -98,10 +108,16 @@ class FakeGraphClient:
     def register_post(self, path_prefix: str, handler: PathHandler) -> None:
         self._post_routes[path_prefix] = handler
 
-    # -- GraphClient-compatible method surface --------------------------------
-
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
+        if self._is_beta(path) and not self.allow_preview:
+            raise GraphError(
+                f"Graph beta endpoint blocked unless allow_preview=True (path={path})",
+                status_code=400,
+            )
         handler = self._find_route(self._get_routes, path)
+        if handler is None:
+            # Fall back to list routes for single-resource GETs registered as list
+            handler = self._find_route(self._list_routes, path)
         if handler is None:
             raise GraphError(f"FakeGraphClient: no GET route for {path}", status_code=500)
         result = handler(path, params)
@@ -109,16 +125,37 @@ class FakeGraphClient:
             raise GraphError("Fake GET handler must return a dict", status_code=500)
         return result
 
-    def get_list(self, path: str, *, max_pages: int = 50) -> list[dict[str, Any]]:
+    def get_list(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        max_pages: int = 50,
+    ) -> list[dict[str, Any]]:
+        return list(self.get_list_result(path, params=params, max_pages=max_pages).items)
+
+    def get_list_result(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        max_pages: int = 50,
+    ) -> GraphListResult:
+        if self._is_beta(path) and not self.allow_preview:
+            raise GraphError(
+                f"Graph beta endpoint blocked unless allow_preview=True (path={path})",
+                status_code=400,
+            )
         handler = self._find_route(self._list_routes, path)
         if handler is None:
             raise GraphError(f"FakeGraphClient: no LIST route for {path}", status_code=500)
         items: list[dict[str, Any]] = []
         next_path: str | None = path
+        next_params = params
         page_num = 0
 
         while next_path and page_num < max_pages:
-            payload = handler(next_path, None)
+            payload = handler(next_path, next_params)
             if not isinstance(payload, dict):
                 raise GraphError("Fake LIST handler must return a dict", status_code=500)
             page_items = payload.get("value") or []
@@ -126,9 +163,15 @@ class FakeGraphClient:
                 items.extend(item for item in page_items if isinstance(item, dict))
             next_link = payload.get("@odata.nextLink")
             next_path = str(next_link) if next_link else None
+            next_params = None
             page_num += 1
 
-        return items
+        return GraphListResult(
+            items=tuple(items),
+            pages_read=page_num,
+            max_pages=max_pages,
+            next_link_seen=next_path is not None,
+        )
 
     def post(
         self,
@@ -152,15 +195,15 @@ class FakeGraphClient:
     ) -> dict[str, Any] | list[Any]:
         raise NotImplementedError("Use register_get/register_list/register_post")
 
-    # -- helpers --------------------------------------------------------------
-
     def _find_route(self, routes: dict[str, PathHandler], path: str) -> PathHandler | None:
         for prefix in sorted(routes, key=len, reverse=True):
             if path.startswith(prefix):
                 return routes[prefix]
         return None
 
-    # -- lifecycle stubs ------------------------------------------------------
+    @staticmethod
+    def _is_beta(path: str) -> bool:
+        return "/beta/" in path or path.startswith("beta/")
 
     def close(self) -> None:
         pass
@@ -172,13 +215,11 @@ class FakeGraphClient:
         pass
 
 
-# ---- FakeArmClient --------------------------------------------------
-
-
 class FakeArmClient:
     """Drop-in replacement for ``ArmClient`` (Sentinel / workspace collectors)."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, cloud: CloudEnvironment = CloudEnvironment.PUBLIC) -> None:
+        self.cloud = cloud
         self._routes: dict[str, PathHandler] = {}
 
     def register_get(self, path_prefix: str, handler: PathHandler) -> None:
@@ -190,7 +231,13 @@ class FakeArmClient:
                 return self._routes[prefix](path, params)
         raise GraphError(f"FakeArmClient: no route for {path}", status_code=500)
 
-    def get_list(self, path: str, *, max_pages: int = 30) -> list[dict[str, Any]]:
+    def get_list(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        max_pages: int = 30,
+    ) -> list[dict[str, Any]]:
         handler = None
         for prefix in sorted(self._routes, key=len, reverse=True):
             if path.startswith(prefix):
@@ -204,7 +251,7 @@ class FakeArmClient:
         pages = 0
         while pages < max_pages:
             call_path = path if first else (next_url or path)
-            payload = handler(call_path, None)
+            payload = handler(call_path, params if first else None)
             if not isinstance(payload, dict):
                 raise GraphError("Fake ARM handler must return a dict", status_code=500)
             value = payload.get("value") or []
@@ -229,13 +276,11 @@ class FakeArmClient:
         pass
 
 
-# ---- FakeMdeClient ------------------------------------------------
-
-
 class FakeMdeClient:
     """Drop-in replacement for ``MdeClient``."""
 
-    def __init__(self) -> None:
+    def __init__(self, *, cloud: CloudEnvironment = CloudEnvironment.PUBLIC) -> None:
+        self.cloud = cloud
         self._routes: dict[str, PathHandler] = {}
 
     def register_get(self, path_prefix: str, handler: PathHandler) -> None:

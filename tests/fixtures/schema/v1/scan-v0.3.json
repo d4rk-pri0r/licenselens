@@ -1,0 +1,64 @@
+{
+  "tool": "security-license-lens",
+  "tool_display_name": "Security License Lens",
+  "version": "0.3.0",
+  "tenant_id": "00000000-0000-0000-0000-000000000000",
+  "tenant_display_name": "Contoso Demo (dry-run)",
+  "tenant_slug": null,
+  "scan_mode": "dry_run",
+  "auth_mode": "dry_run",
+  "scanned_at": "2026-08-13T00:00:00+00:00",
+  "owned_capabilities": [
+    "conditional_access",
+    "entra_id_p2"
+  ],
+  "findings": [
+    {
+      "check_id": "id-ca-priv-gaps",
+      "title": "Conditional Access MFA is not enforced",
+      "workload": "identity",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Some privileged users are not covered by MFA policy.",
+      "evidence": {
+        "policies_seen": 1,
+        "privileged_users": 12
+      },
+      "entitlements_used": [
+        "entra_id_p2"
+      ],
+      "confidence": "medium",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": []
+    },
+    {
+      "check_id": "id-idprotect-off",
+      "title": "Identity Protection risk policies are not enforced",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Risk-based Conditional Access is not configured.",
+      "confidence": "high"
+    }
+  ],
+  "recommended_next_steps": [
+    "Require MFA for privileged accounts"
+  ],
+  "warnings": [],
+  "limitations": [
+    "Findings are advisory, not a compliance certification."
+  ],
+  "data_sources_used": [
+    "microsoft.graph"
+  ],
+  "strict_proxy": true,
+  "packs_scanned": [
+    "identity"
+  ],
+  "has_exposed": false,
+  "exposed_check_ids": []
+}

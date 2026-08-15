@@ -1,0 +1,108 @@
+{
+  "schema_version": "1.0",
+  "tool": "security-license-lens",
+  "tool_display_name": "Security License Lens",
+  "version": "0.3.0",
+  "tenant_id": "00000000-0000-0000-0000-000000000000",
+  "tenant_display_name": "Contoso Demo (dry-run)",
+  "tenant_slug": "contoso-demo",
+  "scan_mode": "dry_run",
+  "auth_mode": "dry_run",
+  "scanned_at": "2026-08-13T00:00:00+00:00",
+  "profile_ids": [
+    "m365-foundation"
+  ],
+  "collection_summaries": [
+    {
+      "collector": "graph.conditional_access",
+      "status": "success",
+      "source": "microsoft.graph",
+      "items_collected": 2,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "exchange.mdo_policy",
+      "status": "unsupported",
+      "source": "exchange.online",
+      "items_collected": 0,
+      "warnings": [
+        "PowerShell collection required"
+      ],
+      "errors": []
+    }
+  ],
+  "source_references": [
+    {
+      "id": "graph-ca-policies",
+      "kind": "api",
+      "name": "Conditional Access policies",
+      "reference": "/identity/conditionalAccess/policies",
+      "collected_at": "2026-08-13T00:00:00+00:00"
+    }
+  ],
+  "accepted_risks": [
+    {
+      "id": "risk-ca-rollout",
+      "check_id": "id-ca-priv-gaps",
+      "profile_id": "m365-foundation",
+      "owner": "security@example.com",
+      "reason": "Privileged account rollout is tracked in an approved change.",
+      "expires_on": "2026-12-31",
+      "source": "risk-register"
+    }
+  ],
+  "findings": [
+    {
+      "check_id": "id-ca-priv-gaps",
+      "title": "Conditional Access MFA is not enforced",
+      "workload": "identity",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "summary": "Some privileged users are not covered by MFA policy.",
+      "confidence": "medium",
+      "evaluation_mode": "direct",
+      "source_references": [
+        {
+          "id": "graph-ca-policies",
+          "kind": "api",
+          "name": "Conditional Access policies",
+          "reference": "/identity/conditionalAccess/policies",
+          "collected_at": "2026-08-13T00:00:00+00:00"
+        }
+      ],
+      "accepted_risks": [
+        {
+          "id": "risk-ca-rollout",
+          "check_id": "id-ca-priv-gaps",
+          "profile_id": "m365-foundation",
+          "owner": "security@example.com",
+          "reason": "Privileged account rollout is tracked in an approved change.",
+          "expires_on": "2026-12-31",
+          "source": "risk-register"
+        }
+      ],
+      "future_finding_field": {
+        "kept": true
+      }
+    }
+  ],
+  "recommended_next_steps": [
+    "Require MFA for privileged accounts"
+  ],
+  "warnings": [],
+  "limitations": [],
+  "data_sources_used": [
+    "microsoft.graph"
+  ],
+  "strict_proxy": true,
+  "packs_scanned": [
+    "identity"
+  ],
+  "has_exposed": false,
+  "exposed_check_ids": [],
+  "future_top_level_field": {
+    "kept": true
+  }
+}
