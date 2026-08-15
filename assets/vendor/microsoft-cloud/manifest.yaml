@@ -1,0 +1,126 @@
+# Pinned Microsoft workload icons (offline vendor allowlist).
+# Upstream: loryanstrant/MicrosoftCloudLogos @ fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+# These marks identify Microsoft products in reports only. They are NOT LicenseLens branding.
+# See THIRD_PARTY_NOTICES.md for license/risk facts and withdrawal procedure.
+
+schema_version: 1
+name: microsoft-cloud-workload-icons
+upstream_repo: loryanstrant/MicrosoftCloudLogos
+upstream_commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+upstream_commit_url: https://github.com/loryanstrant/MicrosoftCloudLogos/tree/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+raw_base_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+asset_count: 12
+usage: product-identification-only
+not_product_branding: true
+runtime_hotlink: false
+
+assets:
+  - path: logos/entra-id/microsoft-entra-id-color-icon.svg
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/entra-id/microsoft-entra-id-color-icon.svg
+    sha256: efd9f54562bfb78bf3c77aecdd5fc31b61fce8a1cec78c4370b41fc470e54eda
+    content_type: image/svg+xml
+    bytes: 1301
+    workload: entra-id
+
+  - path: logos/defender/defender-512.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/defender/defender-512.png
+    sha256: 6e4150d58364c8117f1fd109a5daa01cff7332b1252370bca0dc072312e1a70c
+    content_type: image/png
+    bytes: 161161
+    width: 512
+    height: 512
+    workload: defender
+
+  - path: logos/intune/intune.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/intune/intune.png
+    sha256: 353b561cc0163ffbfb5d42e05eb608f7e1e84914b4eb042b1cab53f0782fb09d
+    content_type: image/png
+    bytes: 41900
+    width: 256
+    height: 256
+    workload: intune
+
+  - path: logos/purview/purview-scalable.svg
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/purview/purview-scalable.svg
+    sha256: c940c3bf9d280e2189f97eb570e513b5a2d2083c502732e8a94dd91814b5bc6d
+    content_type: image/svg+xml
+    bytes: 3560
+    workload: purview
+
+  - path: logos/microsoft-sentinel/10248-icon-service-azure-sentinel.svg
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/microsoft-sentinel/10248-icon-service-azure-sentinel.svg
+    sha256: 754537541da48fd4957180d452bd64dfc4a9bbe4de4cbfdfa833ef8af556d16f
+    content_type: image/svg+xml
+    bytes: 1222
+    workload: microsoft-sentinel
+
+  - path: logos/exchange/2019-current-full-color/exchange-48x48.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/exchange/2019-current-full-color/exchange-48x48.png
+    sha256: 5d71ab8c7f43dab1efbb9c82deda1269d5c6429548a13e82c9a0aca1bf74a81e
+    content_type: image/png
+    bytes: 506
+    width: 48
+    height: 48
+    workload: exchange
+
+  - path: logos/sharepoint/2019-2025-full-color/sharepoint-48x48.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/sharepoint/2019-2025-full-color/sharepoint-48x48.png
+    sha256: ddb485bf176dfa31e4622f6fbbb412a7de6ac3106a8cafa3ca4e0a446a261b95
+    content_type: image/png
+    bytes: 703
+    width: 48
+    height: 48
+    workload: sharepoint
+
+  - path: logos/onedrive/2019-2025-full-color/onedrive-48x48.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/onedrive/2019-2025-full-color/onedrive-48x48.png
+    sha256: 9d5c5aabf84181dc4559b6429c7c89cb249779c3dabc8a85194071751d41a14c
+    content_type: image/png
+    bytes: 623
+    width: 48
+    height: 48
+    workload: onedrive
+
+  - path: logos/teams/2019-2025-full-color/microsoft-teams-48x48.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/teams/2019-2025-full-color/microsoft-teams-48x48.png
+    sha256: 3e8b827b551c1767e28e4b851ad0e21d87a062a1e32f508cd65c029727c499a8
+    content_type: image/png
+    bytes: 546
+    width: 48
+    height: 48
+    workload: teams
+
+  - path: logos/power-platform/powerplatform-scalable.svg
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/power-platform/powerplatform-scalable.svg
+    sha256: c58871d6adac53a51512341e65055d0ec12f29948a001666c11dc7b5bb5fe142
+    content_type: image/svg+xml
+    bytes: 3680
+    workload: power-platform
+
+  - path: logos/power-bi/powerbi-scalable.svg
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/power-bi/powerbi-scalable.svg
+    sha256: 75b2e20358ee63155f17a9bc1bf3e4fec0ed659f0c8d1e0400dbe8011a7586e2
+    content_type: image/svg+xml
+    bytes: 2196
+    workload: power-bi
+
+  - path: logos/azure/azure.png
+    commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/azure/azure.png
+    sha256: 4ea01e7ec2bbd4da8adfe1d04741b3d68737f12bfc674b2848e9a6a946fcff31
+    content_type: image/png
+    bytes: 84754
+    width: 855
+    height: 855
+    workload: azure
