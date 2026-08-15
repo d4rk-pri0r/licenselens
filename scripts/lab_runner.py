@@ -377,9 +377,9 @@ FAIL_PROBES: Final[tuple[Probe, ...]] = (
 
 
 def _evaluate_probe(probe: Probe) -> str:
-    from licenselens.evaluators import EVALUATORS
+    from licenselens.evaluators import evaluator_for_check
 
-    evaluator = EVALUATORS[probe.check_id]
+    evaluator = evaluator_for_check(probe.check_id)
     result = evaluator(_check(probe.check_id, _workload_for(probe.check_id)), probe.evidence)
     return result.status.value
 
@@ -421,11 +421,11 @@ class NegativeResult:
 
 @cache
 def run_negative_probes() -> tuple[NegativeResult, ...]:
-    from licenselens.evaluators import EVALUATORS
+    from licenselens.evaluators import evaluator_for_check
 
     results: list[NegativeResult] = []
 
-    status = EVALUATORS["sen-analytics-rule-coverage"](
+    status = evaluator_for_check("sen-analytics-rule-coverage")(
         _check("sen-analytics-rule-coverage", Workload.SENTINEL),
         {"sentinel_workspace_missing": True},
     ).status.value

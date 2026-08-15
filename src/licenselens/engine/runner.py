@@ -16,12 +16,50 @@ from licenselens.collectors.access_reviews import (
     DEMO_ACCESS_REVIEWS,
     collect_access_review_definitions,
 )
+from licenselens.collectors.applications import (
+    DEMO_APPLICATIONS_BUNDLE,
+    collect_applications_bundle,
+)
+from licenselens.collectors.arm import subscription_id_from_resource_id
+from licenselens.collectors.arm_selective import (
+    DEMO_DEFENDER_PRICINGS,
+    collect_defender_for_cloud_pricings,
+    summarize_defender_for_cloud_pricings,
+)
+from licenselens.collectors.auth_methods import (
+    DEMO_AUTH_METHODS_BUNDLE,
+    collect_auth_methods_bundle,
+)
+from licenselens.collectors.authorization_policy import (
+    DEMO_AUTHORIZATION_BUNDLE,
+    collect_authorization_bundle,
+)
+from licenselens.collectors.collaboration_demo import demo_collaboration_evidence
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
+from licenselens.collectors.dns_records import (
+    DEMO_DNS_RECORDS,
+    collect_dns_evidence,
+    system_resolver,
+)
+from licenselens.collectors.domains import DEMO_DOMAINS, collect_domains
+from licenselens.collectors.exchange_demo import demo_exchange_evidence
+from licenselens.collectors.guests import DEMO_GUESTS_BUNDLE, collect_guests_bundle
+from licenselens.collectors.intune_policy import (
+    DEMO_INTUNE_EVIDENCE_BUNDLE,
+    collect_intune_evidence_bundle,
+    intune_licensed_units,
+)
 from licenselens.collectors.mde import (
     DEMO_MDE_SUMMARY,
     collect_mde_machine_summary,
     mde_licensed_units,
 )
+from licenselens.collectors.mde_health import DEMO_MDE_HEALTH, collect_mde_health_summary
+from licenselens.collectors.pim_policies import (
+    DEMO_PIM_POLICIES_BUNDLE,
+    collect_pim_policies_bundle,
+)
+from licenselens.collectors.power_data_demo import demo_power_data_evidence
 from licenselens.collectors.privileged_roles import (
     DEMO_PRINCIPAL_DIRECTORY,
     DEMO_RECENT_SIGNIN_USER_IDS,
@@ -37,6 +75,10 @@ from licenselens.collectors.secure_score import (
     collect_latest_secure_score,
     extract_control_scores,
 )
+from licenselens.collectors.security_alerts import (
+    DEMO_SECURITY_ALERTS_BUNDLE,
+    collect_security_alerts_bundle,
+)
 from licenselens.collectors.security_defaults import (
     DEMO_SECURITY_DEFAULTS,
     collect_security_defaults_policy,
@@ -46,18 +88,31 @@ from licenselens.collectors.sentinel import (
     DEMO_SENTINEL_UEBA,
     collect_sentinel_bundle,
 )
+from licenselens.collectors.sentinel_extended import (
+    DEMO_SENTINEL_AUTOMATION_RULES,
+    DEMO_SENTINEL_DATA_CONNECTORS,
+    DEMO_SENTINEL_WORKSPACE,
+    collect_sentinel_extended_bundle,
+)
 from licenselens.collectors.signins import (
     collect_directory_objects_by_ids,
     collect_recent_success_signin_user_ids,
 )
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
-from licenselens.engine.evaluate import EVALUATORS, Evaluation
+from licenselens.engine.custom_rules import CustomRuleContext, evaluate_custom_rules
+from licenselens.engine.evaluate import Evaluation
 from licenselens.engine.loader import load_checks
+from licenselens.engine.profiles import (
+    ResolvedProfile,
+    accepted_risk_annotations,
+    apply_profile_to_findings,
+)
 from licenselens.engine.quality import apply_quality_policy, scan_level_limitations
 from licenselens.engine.rank import (
     rank_moves,
     recommended_next_steps_from_moves,
 )
+from licenselens.engine.registry import AssessmentRegistry, default_registry
 from licenselens.engine.rollup import capability_rollup
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
@@ -74,6 +129,7 @@ from licenselens.models import (
     SubscribedSku,
     Workload,
 )
+from licenselens.schema_contracts import EvaluationMode
 
 _STATUS_PRIORITY = {
     FindingStatus.GAP: 0,
@@ -97,6 +153,18 @@ def _customer_fields(check: CheckDefinition) -> dict[str, str]:
         "customer_summary": check.customer_summary or check.description,
         "customer_next_step": check.customer_next_step or check.remediation,
     }
+
+
+def _finding_evaluation_mode(
+    check: CheckDefinition, evidence: dict[str, Any] | None
+) -> EvaluationMode:
+    try:
+        mode = default_registry().evaluator_for(check.id).evaluation_mode
+    except KeyError:
+        mode = EvaluationMode.DIRECT
+    if mode == EvaluationMode.PROXY and (evidence or {}).get("proxy") is False:
+        return EvaluationMode.DIRECT
+    return mode
 
 
 def _base_finding(
@@ -139,6 +207,7 @@ def _base_finding(
         confidence=confidence,
         data_sources=list(data_sources or []),
         limitations=list(limitations or []),
+        evaluation_mode=_finding_evaluation_mode(check, evidence),
     )
     finding = apply_quality_policy(finding, strict_proxy=strict_proxy)
     finding.status_label = STATUS_PLAIN_LABELS.get(finding.status.value, finding.status.value)
@@ -263,26 +332,6 @@ def _recommended_next_steps(findings: list[Finding], limit: int = 5) -> list[str
     return steps
 
 
-_CHECK_EVIDENCE_KEYS: dict[str, list[str]] = {
-    "id-ca-priv-gaps": ["ca_policies", "role_assignments"],
-    "id-idprotect-off": ["ca_policies"],
-    "id-pim-unused": ["role_assignments", "role_eligibilities"],
-    "id-dormant-privileged": [
-        "role_assignments",
-        "recent_signin_user_ids",
-        "principal_directory",
-    ],
-    "id-security-defaults-on": ["security_defaults_policy"],
-    "id-access-reviews-unused": ["access_review_definitions"],
-    "mdo-p2-policies-default": ["secure_score_controls"],
-    "mde-onboard-gap": ["mde_summary"],
-    "mdi-sensors-missing": ["secure_score_controls"],
-    "sen-analytics-rule-coverage": ["sentinel_rules"],
-    "sen-ueba-not-enabled": ["sentinel_ueba"],
-    "pur-dlp-not-enforced": ["purview_dlp"],
-}
-
-
 def _gather_evidence(
     *,
     scan_mode: str,
@@ -308,9 +357,31 @@ def _gather_evidence(
         evidence["mde_summary"] = dict(DEMO_MDE_SUMMARY)
         evidence["sentinel_rules"] = dict(DEMO_SENTINEL_RULES)
         evidence["sentinel_ueba"] = dict(DEMO_SENTINEL_UEBA)
+        evidence["sentinel_data_connectors"] = dict(DEMO_SENTINEL_DATA_CONNECTORS)
+        evidence["sentinel_automation_rules"] = dict(DEMO_SENTINEL_AUTOMATION_RULES)
+        evidence["sentinel_workspace"] = dict(DEMO_SENTINEL_WORKSPACE)
+        evidence["defender_for_cloud_pricings"] = dict(DEMO_DEFENDER_PRICINGS)
         evidence["purview_dlp"] = dict(DEMO_DLP_BUNDLE)
         evidence["security_defaults_policy"] = dict(DEMO_SECURITY_DEFAULTS)
         evidence["access_review_definitions"] = list(DEMO_ACCESS_REVIEWS)
+        evidence["auth_methods_bundle"] = dict(DEMO_AUTH_METHODS_BUNDLE)
+        evidence["applications_bundle"] = dict(DEMO_APPLICATIONS_BUNDLE)
+        evidence["authorization_policy"] = dict(DEMO_AUTHORIZATION_BUNDLE["authorization_policy"])
+        evidence["admin_consent_request_policy"] = dict(
+            DEMO_AUTHORIZATION_BUNDLE["admin_consent_request_policy"]
+        )
+        evidence["guests_bundle"] = dict(DEMO_GUESTS_BUNDLE)
+        evidence["pim_policies_bundle"] = dict(DEMO_PIM_POLICIES_BUNDLE)
+        evidence["domains"] = list(DEMO_DOMAINS)
+        evidence["break_glass_principal_ids"] = []
+        evidence["approved_guest_domains"] = []
+        evidence["dns_records"] = dict(DEMO_DNS_RECORDS)
+        evidence.update(demo_exchange_evidence())
+        evidence.update(demo_collaboration_evidence())
+        evidence.update(demo_power_data_evidence())
+        evidence["intune_bundle"] = dict(DEMO_INTUNE_EVIDENCE_BUNDLE)
+        evidence["mde_health"] = dict(DEMO_MDE_HEALTH)
+        evidence["security_alerts_bundle"] = dict(DEMO_SECURITY_ALERTS_BUNDLE)
         return evidence
 
     assert client is not None
@@ -381,6 +452,26 @@ def _gather_evidence(
         warnings.append(f"Defender for Endpoint inventory could not be read: {exc}")
         evidence["mde_summary_error"] = str(exc)
 
+    try:
+        evidence["intune_bundle"] = collect_intune_evidence_bundle(
+            client, licensed_units=intune_licensed_units(skus)
+        )
+    except (AuthError, GraphError) as exc:
+        warnings.append(f"Intune device management state could not be read: {exc}")
+        evidence["intune_bundle_error"] = str(exc)
+
+    try:
+        evidence["mde_health"] = collect_mde_health_summary(auth)
+    except (AuthError, GraphError) as exc:
+        warnings.append(f"Defender for Endpoint sensor health could not be read: {exc}")
+        evidence["mde_health_error"] = str(exc)
+
+    try:
+        evidence["security_alerts_bundle"] = collect_security_alerts_bundle(client)
+    except GraphError as exc:
+        warnings.append(f"Security incidents/alerts could not be read: {exc}")
+        evidence["security_alerts_bundle_error"] = str(exc)
+
     # Sentinel pack
     if workspace_resource_id:
         try:
@@ -392,11 +483,41 @@ def _gather_evidence(
             warnings.append(f"Sentinel workspace could not be read: {exc}")
             evidence["sentinel_rules_error"] = str(exc)
             evidence["sentinel_ueba_error"] = str(exc)
+
+        try:
+            extended = collect_sentinel_extended_bundle(auth, workspace_resource_id)
+            evidence.update(
+                {key: value for key, value in extended.items() if key != "workspace_resource_id"}
+            )
+        except (AuthError, GraphError) as exc:
+            warnings.append(f"Sentinel connectors/automation could not be read: {exc}")
+
+        sub = subscription_id_from_resource_id(workspace_resource_id)
+        if sub:
+            try:
+                from licenselens.collectors.arm import ArmClient
+
+                with ArmClient(auth) as arm:
+                    pricings = collect_defender_for_cloud_pricings(arm, sub)
+                evidence["defender_for_cloud_pricings"] = summarize_defender_for_cloud_pricings(
+                    pricings, sub
+                )
+            except (AuthError, GraphError) as exc:
+                warnings.append(f"Defender for Cloud plan pricing could not be read: {exc}")
+                evidence["defender_for_cloud_pricings_error"] = str(exc)
+        else:
+            evidence["defender_for_cloud_pricings_error"] = (
+                "No Azure subscription could be derived from the workspace resource ID."
+            )
     else:
         evidence["sentinel_workspace_missing"] = True
         warnings.append(
             "No Sentinel workspace provided (--workspace-resource-id). "
             "Sentinel checks will report an error until a workspace is supplied."
+        )
+        evidence["defender_for_cloud_pricings_error"] = (
+            "Selective-Azure checks require --workspace-resource-id "
+            "(or subscription/resource-group/workspace-name)."
         )
 
     # Purview DLP (Secure Score proxy)
@@ -421,6 +542,104 @@ def _gather_evidence(
         warnings.append(f"Access review definitions could not be read: {exc}")
         evidence["access_review_definitions_error"] = str(exc)
         evidence["access_review_definitions"] = []
+
+    evidence.setdefault("break_glass_principal_ids", [])
+    evidence.setdefault("approved_guest_domains", [])
+    try:
+        evidence["auth_methods_bundle"] = collect_auth_methods_bundle(client)
+    except GraphError as exc:
+        warnings.append(f"Authentication methods policy could not be read: {exc}")
+        evidence["auth_methods_bundle_error"] = str(exc)
+        evidence["auth_methods_bundle"] = {}
+    try:
+        evidence["applications_bundle"] = collect_applications_bundle(client)
+    except GraphError as exc:
+        warnings.append(f"Applications inventory could not be read: {exc}")
+        evidence["applications_bundle_error"] = str(exc)
+        evidence["applications_bundle"] = {}
+    try:
+        authz = collect_authorization_bundle(client)
+        evidence["authorization_policy"] = authz.get("authorization_policy") or {}
+        evidence["admin_consent_request_policy"] = authz.get("admin_consent_request_policy") or {}
+    except GraphError as exc:
+        warnings.append(f"Authorization policy could not be read: {exc}")
+        evidence["authorization_policy_error"] = str(exc)
+        evidence["authorization_policy"] = {}
+        evidence["admin_consent_request_policy"] = {}
+    try:
+        evidence["guests_bundle"] = collect_guests_bundle(client)
+    except GraphError as exc:
+        warnings.append(f"Guest / cross-tenant settings could not be read: {exc}")
+        evidence["guests_bundle_error"] = str(exc)
+        evidence["guests_bundle"] = {}
+    try:
+        evidence["pim_policies_bundle"] = collect_pim_policies_bundle(client)
+    except GraphError as exc:
+        warnings.append(f"PIM role management policies could not be read: {exc}")
+        evidence["pim_policies_bundle_error"] = str(exc)
+        evidence["pim_policies_bundle"] = {}
+    try:
+        evidence["domains"] = collect_domains(client)
+    except GraphError as exc:
+        warnings.append(f"Domain password settings could not be read: {exc}")
+        evidence["domains_error"] = str(exc)
+        evidence["domains"] = []
+
+    # Exchange Online / SCC via allowlisted PowerShell bridge (best-effort).
+    # Direct reads supersede Secure Score email proxy when usable.
+    try:
+        from licenselens.collectors.exchange import (
+            ExchangeCollectOptions,
+            collect_exchange_evidence,
+        )
+        from licenselens.collectors.exchange_models import EXCHANGE_ADAPTERS
+
+        exo = collect_exchange_evidence(ExchangeCollectOptions(adapters=EXCHANGE_ADAPTERS))
+        evidence.update(exo)
+        if not exo.get("exchange_threat_usable"):
+            warnings.append(
+                "Exchange Online PowerShell threat policies were not fully readable; "
+                "MDO check stays skipped unless --allow-email-proxy is set."
+            )
+    except Exception as exc:  # noqa: BLE001
+        warnings.append(f"Exchange Online PowerShell collectors unavailable: {exc}")
+        evidence["exchange_threat_usable"] = False
+        evidence["exchange_collect_error"] = str(exc)
+
+    # Email-authentication DNS checks (SPF/DMARC) — bounded system resolver.
+    try:
+        tenant_domains = list(evidence.get("domains") or [])
+        evidence["dns_records"] = collect_dns_evidence(tenant_domains, system_resolver())
+    except Exception as exc:  # noqa: BLE001
+        warnings.append(f"DNS email-authentication checks failed: {exc}")
+        evidence["dns_records_error"] = str(exc)
+        evidence["dns_records"] = {"domains": [], "records": {}}
+
+    # Teams + SharePoint/OneDrive via allowlisted PowerShell bridge (best-effort).
+    try:
+        from licenselens.collectors.collaboration import (
+            CollaborationCollectOptions,
+            collect_collaboration_evidence,
+        )
+
+        collab = collect_collaboration_evidence(CollaborationCollectOptions())
+        evidence.update(collab)
+    except Exception as exc:  # noqa: BLE001
+        warnings.append(f"Collaboration PowerShell collectors unavailable: {exc}")
+        evidence["collaboration_collect_error"] = str(exc)
+
+    # Power Platform + Power BI + Purview via allowlisted PowerShell bridge (best-effort).
+    try:
+        from licenselens.collectors.power_data import (
+            PowerDataCollectOptions,
+            collect_power_data_evidence,
+        )
+
+        power = collect_power_data_evidence(PowerDataCollectOptions())
+        evidence.update(power)
+    except Exception as exc:  # noqa: BLE001
+        warnings.append(f"Power Platform / Power BI PowerShell collectors unavailable: {exc}")
+        evidence["power_data_collect_error"] = str(exc)
 
     return evidence
 
@@ -452,93 +671,98 @@ def _evaluate_check(
     *,
     strict_proxy: bool = True,
     allow_email_proxy: bool = False,
+    registry: AssessmentRegistry | None = None,
 ) -> Finding:
     if not _eligible(check, owned):
         return _not_licensed_finding(check, owned, strict_proxy=strict_proxy)
 
-    evaluator = EVALUATORS.get(check.id)
+    assessment = registry if registry is not None else default_registry()
+    try:
+        entry = assessment.evaluator_for(check.id)
+    except KeyError:
+        return _skipped_finding(check, owned, strict_proxy=strict_proxy)
+    evaluator = entry.evaluate
     if evaluator is None:
         return _skipped_finding(check, owned, strict_proxy=strict_proxy)
 
-    # MDO policy config has no Graph read API — skip unless operator opts into proxy.
-    if check.id == "mdo-p2-policies-default" and not allow_email_proxy:
-        return _base_finding(
-            check,
-            status=FindingStatus.SKIPPED,
-            summary=_EMAIL_UNREADABLE_SUMMARY,
-            owned=owned,
-            customer_summary=_EMAIL_UNREADABLE_CUSTOMER,
-            customer_next_step=_EMAIL_UNREADABLE_NEXT,
-            evidence={
-                "source": "none",
-                "proxy": False,
-                "email_proxy_enabled": False,
-                "note": (
-                    "No Graph API reads MDO email policy config. "
-                    "Direct path is Exchange Online PowerShell only."
-                ),
-            },
-            confidence=Confidence.LOW,
-            data_sources=[],
-            limitations=[
-                "Email policy config is PowerShell-only; not verified automatically.",
-            ],
-            strict_proxy=strict_proxy,
-        )
+    # MDO: prefer direct Exchange PowerShell; Secure Score proxy is opt-in fallback only.
+    if check.id == "mdo-p2-policies-default":
+        if evidence.get("exchange_threat_usable"):
+            pass  # evaluate via direct EXO evidence below
+        elif not allow_email_proxy:
+            return _base_finding(
+                check,
+                status=FindingStatus.SKIPPED,
+                summary=_EMAIL_UNREADABLE_SUMMARY,
+                owned=owned,
+                customer_summary=_EMAIL_UNREADABLE_CUSTOMER,
+                customer_next_step=_EMAIL_UNREADABLE_NEXT,
+                evidence={
+                    "source": "none",
+                    "proxy": False,
+                    "email_proxy_enabled": False,
+                    "exchange_direct": False,
+                    "note": (
+                        "No Graph API reads MDO email policy config. "
+                        "Direct path is Exchange Online PowerShell; "
+                        "--allow-email-proxy enables labeled Secure Score fallback."
+                    ),
+                },
+                confidence=Confidence.LOW,
+                data_sources=[],
+                limitations=[
+                    "Email policy config is PowerShell-only unless direct EXO adapters succeed.",
+                ],
+                strict_proxy=strict_proxy,
+            )
 
-    required_keys = _CHECK_EVIDENCE_KEYS.get(check.id, [])
+    required_keys = list(entry.input_models)
+    _optional_missing = {
+        "break_glass_principal_ids",
+        "approved_guest_domains",
+        "role_eligibilities",
+    }
+    _error_aliases = {
+        "ca_policies": "ca_policies_error",
+        "security_defaults_policy": "security_defaults_policy_error",
+        "access_review_definitions": "access_review_definitions_error",
+        "role_assignments": "role_assignments_error",
+        "recent_signin_user_ids": "recent_signin_error",
+        "principal_directory": "principal_directory_error",
+        "secure_score_controls": "secure_score_controls_error",
+        "mde_summary": "mde_summary_error",
+        "sentinel_rules": "sentinel_rules_error",
+        "sentinel_ueba": "sentinel_ueba_error",
+        "sentinel_data_connectors": "sentinel_data_connectors_error",
+        "sentinel_automation_rules": "sentinel_automation_rules_error",
+        "sentinel_workspace": "sentinel_workspace_error",
+        "defender_for_cloud_pricings": "defender_for_cloud_pricings_error",
+        "purview_dlp": "purview_dlp_error",
+        "auth_methods_bundle": "auth_methods_bundle_error",
+        "applications_bundle": "applications_bundle_error",
+        "authorization_policy": "authorization_policy_error",
+        "admin_consent_request_policy": "authorization_policy_error",
+        "guests_bundle": "guests_bundle_error",
+        "pim_policies_bundle": "pim_policies_bundle_error",
+        "domains": "domains_error",
+        "exchange_bundle": "exchange_collect_error",
+        "dns_records": "dns_records_error",
+        "collaboration_bundle": "collaboration_collect_error",
+        "power_data_bundle": "power_data_collect_error",
+        "intune_bundle": "intune_bundle_error",
+        "mde_health": "mde_health_error",
+        "security_alerts_bundle": "security_alerts_bundle_error",
+    }
     for key in required_keys:
-        err_key = f"{key}_error"
-        if key == "ca_policies" and evidence.get("ca_policies_error"):
-            return _error_finding(
-                check, owned, str(evidence["ca_policies_error"]), strict_proxy=strict_proxy
-            )
-        if key == "security_defaults_policy" and evidence.get("security_defaults_policy_error"):
-            return _error_finding(
-                check,
-                owned,
-                str(evidence["security_defaults_policy_error"]),
-                strict_proxy=strict_proxy,
-            )
-        if key == "access_review_definitions" and evidence.get("access_review_definitions_error"):
-            return _error_finding(
-                check,
-                owned,
-                str(evidence["access_review_definitions_error"]),
-                strict_proxy=strict_proxy,
-            )
-        if key == "role_assignments" and evidence.get("role_assignments_error"):
-            return _error_finding(
-                check,
-                owned,
-                str(evidence["role_assignments_error"]),
-                strict_proxy=strict_proxy,
-            )
-        if key == "recent_signin_user_ids" and evidence.get("recent_signin_error"):
-            return _error_finding(
-                check, owned, str(evidence["recent_signin_error"]), strict_proxy=strict_proxy
-            )
-        if key == "principal_directory" and evidence.get("principal_directory_error"):
-            return _error_finding(
-                check,
-                owned,
-                str(evidence["principal_directory_error"]),
-                strict_proxy=strict_proxy,
-            )
+        err_key = _error_aliases.get(key, f"{key}_error")
         if key == "secure_score_controls" and evidence.get("secure_score_controls_error"):
+            if check.id == "mdo-p2-policies-default" and evidence.get("exchange_threat_usable"):
+                continue
             return _error_finding(
                 check,
                 owned,
                 str(evidence["secure_score_controls_error"]),
                 strict_proxy=strict_proxy,
-            )
-        if key == "mde_summary" and evidence.get("mde_summary_error"):
-            return _error_finding(
-                check, owned, str(evidence["mde_summary_error"]), strict_proxy=strict_proxy
-            )
-        if key == "sentinel_rules" and evidence.get("sentinel_rules_error"):
-            return _error_finding(
-                check, owned, str(evidence["sentinel_rules_error"]), strict_proxy=strict_proxy
             )
         if key == "sentinel_ueba" and evidence.get("sentinel_ueba_error"):
             if "sentinel_ueba" not in evidence:
@@ -548,16 +772,19 @@ def _evaluate_check(
                     str(evidence["sentinel_ueba_error"]),
                     strict_proxy=strict_proxy,
                 )
-        if key == "purview_dlp" and evidence.get("purview_dlp_error"):
-            return _error_finding(
-                check, owned, str(evidence["purview_dlp_error"]), strict_proxy=strict_proxy
-            )
+            continue
+        if evidence.get(err_key) and key not in _optional_missing:
+            return _error_finding(check, owned, str(evidence[err_key]), strict_proxy=strict_proxy)
         if key not in evidence and err_key not in evidence:
-            if key == "role_eligibilities":
+            if key in _optional_missing:
                 continue
-            if key in {"sentinel_rules", "sentinel_ueba"} and evidence.get(
-                "sentinel_workspace_missing"
-            ):
+            if key in {
+                "sentinel_rules",
+                "sentinel_ueba",
+                "sentinel_data_connectors",
+                "sentinel_automation_rules",
+                "sentinel_workspace",
+            } and evidence.get("sentinel_workspace_missing"):
                 continue
             return _error_finding(
                 check,
@@ -584,12 +811,15 @@ def run_scan(
     tenant_slug: str | None = None,
     discover_workspaces: bool = False,
     packs: list[CheckPack] | list[str] | None = None,
+    profile: ResolvedProfile | None = None,
+    scanned_at: datetime | None = None,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
     tenant_id = auth.tenant_id
     tenant_display_name: str | None = None
     scan_mode = "dry_run" if dry_run or auth.mode == AuthMode.DRY_RUN else "live"
+    scan_time = scanned_at or datetime.now(UTC)
     evidence: dict[str, Any] = {}
 
     if scan_mode == "dry_run":
@@ -625,11 +855,35 @@ def run_scan(
                 workspace_resource_id=workspace_resource_id,
             )
 
+    evidence["scanned_at"] = scan_time.isoformat()
+
     owned = resolve_owned_capabilities(capabilities, skus)
     owned_set = set(owned)
     summaries = capability_summaries_for(capabilities, owned, skus)
 
+    if profile is not None:
+        bg_ids: list[str] = []
+        approved_domains: list[str] = list(profile.profile.sensitive_domains)
+        for exclusion in profile.profile.exclusions:
+            if str(getattr(exclusion, "kind", "general")).lower() == "break_glass":
+                bg_ids.extend(str(pid) for pid in exclusion.principal_ids if pid)
+            if not exclusion.reason.strip():
+                continue
+        evidence["break_glass_principal_ids"] = sorted(set(bg_ids))
+        evidence["approved_guest_domains"] = sorted(set(approved_domains))
+        evidence["approved_partner_domains"] = sorted(set(profile.profile.sensitive_domains))
+        evidence["sensitive_users"] = sorted(set(profile.profile.sensitive_users))
+        evidence["sensitive_domains"] = sorted(set(profile.profile.sensitive_domains))
+        evidence["allowed_forwarding_domains"] = sorted(
+            set(profile.profile.allowed_forwarding_domains)
+        )
+        evidence["dmarc_agency_contact"] = profile.profile.dmarc_agency_contact.strip()
+        evidence["dmarc_federal_contact"] = profile.profile.dmarc_federal_contact.strip()
+
     checks = [c for c in load_checks() if c.enabled]
+    if profile is not None:
+        selected_check_ids = set(profile.selected_check_ids)
+        checks = [c for c in checks if c.id in selected_check_ids]
     if workloads:
         wanted = set(workloads)
         checks = [c for c in checks if c.workload in wanted]
@@ -654,6 +908,30 @@ def run_scan(
                 bundle = collect_sentinel_bundle(auth, workspace_resource_id)
                 evidence["sentinel_rules"] = bundle.get("sentinel_rules") or {}
                 evidence["sentinel_ueba"] = bundle.get("sentinel_ueba") or {}
+                try:
+                    extended = collect_sentinel_extended_bundle(auth, workspace_resource_id)
+                    evidence.update(
+                        {
+                            key: value
+                            for key, value in extended.items()
+                            if key != "workspace_resource_id"
+                        }
+                    )
+                except (AuthError, GraphError) as exc:
+                    warnings.append(f"Sentinel connectors/automation could not be read: {exc}")
+                sub = subscription_id_from_resource_id(workspace_resource_id)
+                if sub:
+                    try:
+                        from licenselens.collectors.arm import ArmClient
+
+                        with ArmClient(auth) as arm:
+                            pricings = collect_defender_for_cloud_pricings(arm, sub)
+                        evidence["defender_for_cloud_pricings"] = (
+                            summarize_defender_for_cloud_pricings(pricings, sub)
+                        )
+                    except (AuthError, GraphError) as exc:
+                        warnings.append(f"Defender for Cloud plan pricing could not be read: {exc}")
+                        evidence["defender_for_cloud_pricings_error"] = str(exc)
                 evidence.pop("sentinel_workspace_missing", None)
             elif len(discovered) > 1:
                 warnings.append(
@@ -671,7 +949,10 @@ def run_scan(
             owned_set,
             evidence,
             strict_proxy=strict_proxy,
-            allow_email_proxy=allow_email_proxy,
+            allow_email_proxy=(
+                allow_email_proxy
+                or (profile is not None and profile.profile.backend_preferences.allow_proxy)
+            ),
         )
         for c in checks
     ]
@@ -682,6 +963,29 @@ def run_scan(
             f.check_id,
         )
     )
+    if profile is not None:
+        findings = apply_profile_to_findings(findings, profile)
+        findings.extend(
+            evaluate_custom_rules(
+                profile.profile,
+                CustomRuleContext(
+                    findings=findings,
+                    tenant_domains=profile.profile.sensitive_domains,
+                    sensitive_users=profile.profile.sensitive_users,
+                    collection_summaries=[],
+                    profile_ids=profile.profile_ids,
+                ),
+            )
+        )
+        findings.sort(
+            key=lambda f: (
+                _STATUS_PRIORITY.get(f.status, 99),
+                {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}.get(
+                    f.severity.value, 9
+                ),
+                f.check_id,
+            )
+        )
 
     live_pending = [f for f in findings if f.status == FindingStatus.SKIPPED]
     if scan_mode == "live" and live_pending:
@@ -715,6 +1019,8 @@ def run_scan(
     limitations = scan_level_limitations(findings, strict_proxy=strict_proxy)
 
     pack_scope = packs if packs is not None else DEFAULT_PACKS
+    if profile is not None and packs is None:
+        pack_scope = profile.profile.packs
     pack_values = [p.value if isinstance(p, CheckPack) else str(p) for p in pack_scope]
     moves = rank_moves(findings, limit=3, packs=pack_scope)
     rollup, outcomes = capability_rollup(
@@ -733,11 +1039,13 @@ def run_scan(
         tenant_slug=tenant_slug,
         scan_mode=scan_mode,
         auth_mode=auth.mode.value,
-        scanned_at=datetime.now(UTC).isoformat(),
+        scanned_at=scan_time.isoformat(),
         owned_capabilities=owned,
         capability_summaries=summaries,
         subscribed_skus=skus,
         findings=findings,
+        profile_ids=profile.profile_ids if profile is not None else [],
+        accepted_risks=(accepted_risk_annotations(profile.profile) if profile is not None else []),
         recommended_next_steps=recommended_next_steps_from_moves(moves),
         warnings=warnings,
         limitations=limitations,

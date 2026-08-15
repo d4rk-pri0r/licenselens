@@ -26,6 +26,7 @@ PACK_PREFERENCE: list[CheckPack] = [
     CheckPack.IDENTITY,
     CheckPack.EMAIL,
     CheckPack.ENDPOINT,
+    CheckPack.COLLABORATION,
     CheckPack.STARTER,
 ]
 PACK_RANK: dict[CheckPack, int] = {p: i for i, p in enumerate(PACK_PREFERENCE)}
