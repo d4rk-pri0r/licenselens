@@ -1,4 +1,5 @@
 """Typed evaluator registrations for security_suite_threat."""
+
 from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
@@ -23,73 +24,72 @@ def register_security_suite_threat(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="mdo-impersonation-domains-owned",
             evaluate=evaluate_mdo_impersonation_domains_owned,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-impersonation-partner-domains",
             evaluate=evaluate_mdo_impersonation_partner_domains,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-impersonation-users-protected",
             evaluate=evaluate_mdo_impersonation_users_protected,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-malware-file-filter",
             evaluate=evaluate_mdo_malware_file_filter,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-malware-zap",
             evaluate=evaluate_mdo_malware_zap,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-safe-attachments-block",
             evaluate=evaluate_mdo_safe_attachments_block,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-safe-links-block-list",
             evaluate=evaluate_mdo_safe_links_block_list,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-safe-links-click-tracking",
             evaluate=evaluate_mdo_safe_links_click_tracking,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-safe-links-real-time-scan",
             evaluate=evaluate_mdo_safe_links_real_time_scan,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
         catalog.add_evaluator(
             check_id="mdo-safety-tips-enabled",
             evaluate=evaluate_mdo_safety_tips_enabled,
-            input_models=('exchange_bundle',),
+            input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:
         catalog.exit_module("licenselens.evaluators.bindings.security_suite_threat")
-
