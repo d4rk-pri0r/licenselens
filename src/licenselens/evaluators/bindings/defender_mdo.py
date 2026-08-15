@@ -17,7 +17,7 @@ def register_defender_mdo(catalog: RegistrationCatalog) -> None:
             evaluate=evaluate_mdo_p2_policies,
             input_models=('secure_score_controls',),
             collector_id="graph_mdo",
-            evaluation_mode=EvaluationMode.PROXY,
+            evaluation_mode=EvaluationMode.DIRECT_WITH_PROXY_FALLBACK,
             backend=Backend.PROXY,
         )
     finally:

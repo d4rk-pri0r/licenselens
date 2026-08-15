@@ -145,7 +145,10 @@ class RegistrationCatalog:
         resolved_backend = backend
         if resolved_backend is None:
             resolved_backend = (
-                Backend.PROXY if evaluation_mode is EvaluationMode.PROXY else Backend.NOOP
+                Backend.PROXY
+                if evaluation_mode
+                in {EvaluationMode.PROXY, EvaluationMode.DIRECT_WITH_PROXY_FALLBACK}
+                else Backend.NOOP
             )
         entry = EvaluatorEntry(
             id=check_id,

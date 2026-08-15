@@ -52,12 +52,15 @@ def test_default_registry_binds_proxy_evaluators_to_proxy_mode() -> None:
         if entry.evaluation_mode is EvaluationMode.PROXY
     }
 
-    # Then: only current Secure Score proxy checks are labeled proxy.
+    # Then: only static Secure Score proxy checks are labeled proxy.
     assert proxy_modes == {
-        "mdo-p2-policies-default": EvaluationMode.PROXY,
         "mdi-sensors-missing": EvaluationMode.PROXY,
         "pur-dlp-not-enforced": EvaluationMode.PROXY,
     }
+    assert (
+        registry.evaluator_for("mdo-p2-policies-default").evaluation_mode
+        is EvaluationMode.DIRECT_WITH_PROXY_FALLBACK
+    )
 
 
 def test_default_registry_binds_collector_factories() -> None:

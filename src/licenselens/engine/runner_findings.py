@@ -50,7 +50,12 @@ def finding_evaluation_mode(
         mode = registry.evaluator_for(check.id).evaluation_mode
     except KeyError:
         mode = EvaluationMode.DIRECT
-    if mode == EvaluationMode.PROXY and (evidence or {}).get("proxy") is False:
+    payload = evidence or {}
+    if mode is EvaluationMode.DIRECT_WITH_PROXY_FALLBACK:
+        if payload.get("proxy") is False or payload.get("exchange_direct") is True:
+            return EvaluationMode.DIRECT
+        return EvaluationMode.PROXY
+    if mode is EvaluationMode.PROXY and payload.get("proxy") is False:
         return EvaluationMode.DIRECT
     return mode
 
