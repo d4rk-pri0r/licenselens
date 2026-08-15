@@ -1,0 +1,26 @@
+id: mdo-impersonation-domains-owned
+title: Domain impersonation protection for owned domains is off
+customer_title: Protect your own domains from look-alikes
+customer_summary: >
+  Look-alike domains can spoof your brand without detection.
+customer_next_step: >
+  Enable organization domain impersonation protection.
+description: >
+  Domain impersonation protection for owned domains is off.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antiphishing
+collector: exchange_collector
+remediation: >
+  Enable organization domain impersonation protection.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-phishing-policies-about
+enabled: true

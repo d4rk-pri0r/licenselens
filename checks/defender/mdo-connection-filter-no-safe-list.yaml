@@ -1,0 +1,26 @@
+id: mdo-connection-filter-no-safe-list
+title: Connection filter safe list is enabled
+customer_title: Turn off the connection filter safe list
+customer_summary: >
+  Safe list bypass weakens inbound filtering.
+customer_next_step: >
+  Disable EnableSafeList on connection filter policies.
+description: >
+  Connection filter safe list is enabled.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antispam
+collector: exchange_collector
+remediation: >
+  Disable EnableSafeList on connection filter policies.
+references:
+  - https://learn.microsoft.com/defender-office-365/connection-filter-policies-configure
+enabled: true

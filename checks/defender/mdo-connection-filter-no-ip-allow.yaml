@@ -1,0 +1,26 @@
+id: mdo-connection-filter-no-ip-allow
+title: Connection filter IP allow list is in use
+customer_title: Clear the connection filter IP allow list
+customer_summary: >
+  IP allow lists let mail skip malware and spam filters.
+customer_next_step: >
+  Remove entries from the connection filter IP allow list.
+description: >
+  Connection filter IP allow list is in use.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antispam
+collector: exchange_collector
+remediation: >
+  Remove entries from the connection filter IP allow list.
+references:
+  - https://learn.microsoft.com/defender-office-365/connection-filter-policies-configure
+enabled: true
