@@ -1,0 +1,128 @@
+{#
+  v2 B-section partial: capability cards + the capability constellation.
+
+  Consumed by BOTH v2 renderers via `{% from "report/v2/_v2_capability_card.html.j2"
+  import capability_constellation, capability_cards %}`. It binds the plain-data
+  view-model payload from `licenselens.report.viewmodel`:
+
+    capability_constellation(constellation)
+      constellation := viewmodel.build_constellation(result)
+      One entry per capability outcome with exactly these keys: `id`, `name`,
+      `plain_name`, `status`, `status_label`, `workload` (str | None),
+      `related_check_ids` (int). The list arrives pre-ordered by workload
+      priority then `plain_name` byte sort — this template NEVER re-sorts.
+
+    capability_cards(capabilities, constellation)
+      capabilities := viewmodel.build_sections(result)["B"]
+      One entry per capability summary with keys: `id`, `name`, `plain_name`,
+      `matched_skus`, `matched_service_plans`, `outcome`, `why_it_matters`,
+      `if_unused`, `docs_url`, `status` (str | None), `status_label`.
+
+  Determinism contract (DESIGN_V2 section 6): server-rendered static markup.
+  No randomness, no node-link topology, no canvas, no images. Workload groups
+  render as columns in the exact view-model order; points stack top-to-bottom
+  within a column in the view-model order. Identical input yields identical
+  pixels. The bundle may animate the field later; the DOM stays identical.
+
+  Variant-signal contract (v1 parity): every card and every constellation
+  point exposes `data-status` and `data-workload`; cards additionally keep the
+  v1 `data-variant` attribute. Fallbacks: status `not_licensed`, workload
+  `general` — the attributes are therefore always present.
+#}
+{%- import "report/v2/_v2_primitives.html.j2" as prim -%}
+
+{%- set WORKLOAD_LABELS = {
+    'identity': 'Identity',
+    'endpoint': 'Endpoint',
+    'defender': 'Defender',
+    'sentinel': 'Sentinel',
+    'purview': 'Purview',
+    'exchange': 'Exchange',
+    'collaboration': 'Collaboration',
+    'teams': 'Teams',
+    'power_platform': 'Power Platform',
+    'power_bi': 'Power BI',
+    'intune': 'Intune',
+    'azure': 'Azure',
+    'general': 'General',
+} -%}
+
+{#- Tiny legend: the six status words (v1 PRESENTATION vocabulary), color via
+    the shared `.status-*` classes. #}
+{%- set STATUS_LEGEND = [
+    ('gap', 'Action required'),
+    ('partial', 'Incomplete'),
+    ('ok', 'Operational'),
+    ('not_licensed', 'Not licensed'),
+    ('skipped', 'Not assessed'),
+    ('error', 'Verification failed'),
+] -%}
+
+
+{%- macro capability_constellation(constellation) -%}
+{%- if constellation -%}
+<div class="constellation" data-constellation>
+  {%- set ns = namespace(group_open=false, current=none, col_index=0, col_delay=0) -%}
+  {%- for entry in constellation -%}
+    {%- set wl = entry.workload or 'general' -%}
+    {%- if not ns.group_open or wl != ns.current -%}
+      {%- if ns.group_open %}</div>{% endif -%}
+      {%- set ns.current = wl -%}
+      {%- set ns.group_open = true -%}
+      {%- set ns.col_delay = ns.col_index * 60 -%}
+      {%- set ns.col_index = ns.col_index + 1 -%}
+  <div class="constellation-group" data-workload="{{ wl }}">
+    <div class="constellation-caption">{{ WORKLOAD_LABELS.get(wl, wl | replace('_', ' ') | title) }}</div>
+    {%- endif -%}
+    <div class="constellation-point" data-status="{{ entry.status }}" data-workload="{{ wl }}" aria-label="{{ entry.plain_name }}: {{ entry.status_label or entry.status }}" style="animation-delay: {{ ns.col_delay }}ms">
+      <span class="constellation-core status-{{ prim.CAPABILITY_VARIANT.get(entry.status, entry.status) }}" aria-hidden="true"></span>
+      <span class="constellation-label">{{ entry.plain_name }}</span>
+    </div>
+  {%- endfor -%}
+  {%- if ns.group_open %}</div>{% endif -%}
+  <div class="constellation-legend" aria-label="Capability status legend">
+    {%- for variant, word in STATUS_LEGEND -%}
+    <span class="constellation-legend-chip status-{{ variant }}"><span class="constellation-legend-swatch" aria-hidden="true"></span>{{ word }}</span>
+    {%- endfor -%}
+  </div>
+</div>
+{%- else -%}
+<p class="caption">No capability outcomes were resolved from entitlements.</p>
+{%- endif -%}
+{%- endmacro -%}
+
+
+{%- macro capability_cards(capabilities, constellation) -%}
+{%- if capabilities -%}
+{%- set workload_by_id = {} -%}
+{%- for entry in constellation -%}
+  {%- set _ = workload_by_id.update({entry.id: entry.workload or 'general'}) -%}
+{%- endfor -%}
+<div class="cards">
+  {%- for card in capabilities -%}
+  {%- set status = card.status or 'not_licensed' -%}
+  {%- set wl = workload_by_id.get(card.id, 'general') -%}
+  <article class="card" data-variant="{{ status }}" data-status="{{ status }}" data-workload="{{ wl }}">
+    {{ prim.status_marker(status) }}
+    <h3 class="card-title">{{ card.plain_name }}</h3>
+    <div class="label">Microsoft control: {{ card.name }}</div>
+    {%- if card.outcome -%}
+    <p><span class="label">What it does</span> {{ card.outcome }}</p>
+    {%- endif -%}
+    {%- if card.why_it_matters -%}
+    <p><span class="label">Why it matters</span> {{ card.why_it_matters }}</p>
+    {%- endif -%}
+    {%- if card.if_unused -%}
+    <p><span class="label">If left off</span> {{ card.if_unused }}</p>
+    {%- endif -%}
+    <div class="card-provenance">
+      <div><span class="label">License</span> <span class="mono">{{ card.matched_skus | join(', ') or 'Not reported' }}</span></div>
+      <div><span class="label">Service plan</span> <span class="mono">{{ card.matched_service_plans | join(', ') or 'No matching service plan reported' }}</span></div>
+    </div>
+  </article>
+  {%- endfor -%}
+</div>
+{%- else -%}
+<p class="caption">No licensed capabilities were resolved from entitlements.</p>
+{%- endif -%}
+{%- endmacro -%}

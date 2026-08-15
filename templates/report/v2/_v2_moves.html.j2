@@ -1,0 +1,48 @@
+{# ==========================================================================
+   Security License Lens — v2 "What matters most" partial (C-section).
+
+   Renders the prioritized top moves. Binding contract: this partial is
+   consumed with `build_sections(result)["C"]`, which returns `result.moves`
+   verbatim. The engine already caps the list at 3
+   (runner.py: rank_moves(findings, limit=3, ...)); this template MUST NOT
+   slice, cap, or reorder the list. The model order is the rank order —
+   authoritative, never re-sorted here.
+
+   TopMove payload fields: title, why, effort_label, check_ids,
+   customer_next_step, deep_link.
+
+   DESIGN_V2.md section 5C; retained v1 rules (section 9): no emoji, no
+   <img>, no external URLs except deep_link, empty optional fields omit
+   their row without crashing.
+   ========================================================================== #}
+
+{%- set move_list = moves if moves is defined else (result.moves if result is defined else []) -%}
+
+    {% if move_list %}
+    <section>
+      <h2>What matters most</h2>
+      <p class="section-help">
+        Ranked by security impact, evidence confidence, and estimated effort.
+      </p>
+      <ol class="move-list">
+        {% for move in move_list %}
+        <li class="move-item">
+          <span class="move-index mono">{{ '%02d' | format(loop.index) }}</span>
+          <div class="move-body">
+            <div class="move-head">
+              <strong class="move-title">{{ move.title }}</strong>
+              {% if move.effort_label %}<span class="move-effort">{{ move.effort_label | lower }}</span>{% endif %}
+            </div>
+            {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
+            {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
+            {% if move.check_ids %}<p class="move-ids">Checks: <span class="mono">{{ move.check_ids | join(', ') }}</span></p>{% endif %}
+            {% if move.deep_link %}<p class="move-link"><a href="{{ move.deep_link }}">Open the admin page</a></p>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      <p class="move-note">
+        Effort is a rough guide, not a quote.
+      </p>
+    </section>
+    {% endif %}

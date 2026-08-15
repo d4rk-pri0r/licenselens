@@ -19,6 +19,7 @@ from licenselens.paths import templates_dir
 from licenselens.report.bundle import (
     DATA_JS_GLOBAL,
     ICONS_JS_GLOBAL,
+    REPORT_APP_VERSION,
     ReportBundleError,
     build_report_bundle,
     extract_report_archive,
@@ -198,8 +199,9 @@ def test_legacy_entry_filename_and_html_writer_preserved(tmp_path: Path) -> None
 
 
 def test_report_app_assets_resolve_via_paths() -> None:
-    css = templates_dir() / "report_app/v1/app.css"
-    js = templates_dir() / "report_app/v1/app.js"
+    assert REPORT_APP_VERSION == "2"
+    css = templates_dir() / f"report_app/v{REPORT_APP_VERSION}/app.css"
+    js = templates_dir() / f"report_app/v{REPORT_APP_VERSION}/app.js"
     assert css.is_file() and css.read_bytes(), "app.css not resolvable from templates_dir()"
     assert js.is_file() and js.read_bytes(), "app.js not resolvable from templates_dir()"
 

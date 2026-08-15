@@ -70,7 +70,7 @@ def _parse_html(html: str) -> ET.Element:
 
 
 def _app_asset(logical_name: str) -> str:
-    return (templates_dir() / f"report_app/v1/{logical_name}").read_text(encoding="utf-8")
+    return (templates_dir() / f"report_app/v2/{logical_name}").read_text(encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
@@ -207,7 +207,7 @@ def test_legacy_html_and_json_writers_still_work_alongside_bundle(tmp_path: Path
     html_out = write_html_report(result, tmp_path / "legacy.html")
     assert html_out.is_file()
     legacy_html = html_out.read_text(encoding="utf-8")
-    assert "Security posture" in legacy_html
+    assert "Where you stand" in legacy_html
 
     json_out = write_json_report(result, tmp_path / "legacy.json")
     assert json_out.is_file()

@@ -201,7 +201,7 @@ def test_initial_render_and_navigation(app_uri: str, page: Page) -> None:
     assert _visible_count(page) == "12"
     assert _total_count(page) == "12"
     assert page.locator("[data-workload-nav] [data-nav]").count() == 6
-    assert page.locator("[data-filter-bar] [data-filter-value]").count() == 25
+    assert page.locator("[data-filter-bar] [data-filter-value]").count() == 23
     assert page.locator(".pagination").is_hidden() is False
     assert page.locator("[data-empty-state]").is_hidden() is True
 
@@ -258,10 +258,10 @@ def test_search_composes_with_filters(app_uri: str, page: Page) -> None:
     assert _visible_count(page) == "0"
 
 
-def test_profile_filter(app_uri: str, page: Page) -> None:
+def test_mode_filter(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
-    assert page.locator('[data-filter-group="profile"] [data-filter-value="secops"]').count() == 1
-    page.locator('[data-filter-group="profile"] [data-filter-value="secops"]').click()
+    assert page.locator('[data-filter-group="mode"] [data-filter-value="proxy"]').count() == 1
+    page.locator('[data-filter-group="mode"] [data-filter-value="proxy"]').click()
     assert _visible_count(page) == "3"
 
 
@@ -302,7 +302,7 @@ def test_empty_report_state(app_uri: str, page: Page) -> None:
 
 def test_pagination_25_50_100(app_uri: str, page: Page) -> None:
     page.goto(app_uri(thousand_findings_report()))
-    assert page.locator(".finding").count() == 25
+    assert page.locator(".finding-row").count() == 25
     assert page.locator("[data-page-indicator]").inner_text() == "Page 1 of 40"
     assert page.locator('[data-pager="prev"]').is_disabled() is True
     assert page.locator('[data-pager="next"]').is_disabled() is False
@@ -312,7 +312,7 @@ def test_pagination_25_50_100(app_uri: str, page: Page) -> None:
 
     page.locator("[data-page-size]").select_option("100")
     assert page.locator("[data-page-indicator]").inner_text() == "Page 1 of 10"
-    assert page.locator(".finding").count() == 100
+    assert page.locator(".finding-row").count() == 100
 
     page.locator("[data-page-size]").select_option("50")
     assert page.locator("[data-page-indicator]").inner_text() == "Page 1 of 20"
@@ -327,15 +327,9 @@ def test_single_scroll_owner_no_document_overflow(app_uri: str, page: Page) -> N
         " docWidth: document.documentElement.scrollWidth,"
         " winWidth: window.innerWidth })"
     )
-    assert metrics["docWidth"] <= metrics["winWidth"]
-    assert metrics["docScroll"] <= metrics["docClient"]
-    main = page.evaluate(
-        "() => { const m = document.querySelector('main.app-main');"
-        " return { scrollable: m.scrollHeight > m.clientHeight,"
-        " overflow: getComputedStyle(m).overflowY }; }"
-    )
-    assert main["scrollable"] is True
-    assert main["overflow"] == "auto"
+    assert metrics["docWidth"] <= metrics["winWidth"], "horizontal document overflow"
+    # v2 scrolls the document itself (no inner fixed-height scroll container).
+    assert metrics["docScroll"] > metrics["docClient"], "document should scroll with many findings"
 
 
 def test_responsive_375_no_overflow(app_uri: str, page: Page) -> None:
@@ -350,7 +344,7 @@ def test_long_labels_no_overflow(app_uri: str, page: Page) -> None:
     page.goto(app_uri(long_labels_report()))
     metrics = page.evaluate(_SCROLL_METRICS_JS)
     assert metrics["scrollWidth"] <= metrics["innerWidth"]
-    assert page.locator(".finding").count() == 3
+    assert page.locator(".finding-row").count() == 3
 
 
 # ---------------------------------------------------------------------------

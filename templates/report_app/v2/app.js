@@ -1,17 +1,19 @@
-/* Versioned offline report application (report app v1).
+/* Versioned offline report application (report app v2).
  *
- * Everything is rendered client-side from ``window.LICENSELENS_REPORT_JSON``
- * (the escaped data asset). No ``fetch``, no ``eval``, no inline event
- * handlers, no third-party runtime. Dynamic text is inserted exclusively via
+ * Everything is rendered client-side from the escaped data assets
+ * ``window.LICENSELENS_REPORT_JSON`` and ``window.LICENSELENS_VIEWMODEL``.
+ * No ``fetch``, no ``eval``, no inline event handlers, no third-party
+ * runtime. Dynamic text is inserted exclusively via
  * ``document.createTextNode`` so report/evidence data can never inject markup.
  * Exports are generated in-page and handed to the browser as Blob downloads.
+ * v2 is text-only: the retired v1 ``<img>`` workload-icon allowlist is gone,
+ * workloads are named with visible text labels.
  */
 (function () {
   "use strict";
 
   var report = window.LICENSELENS_REPORT_JSON || {};
-  var findings = Array.isArray(report.findings) ? report.findings : [];
-  var WORKLOAD_ICONS = window.LICENSELENS_WORKLOAD_ICONS || {};
+  var vm = window.LICENSELENS_VIEWMODEL || {};
 
   var PRESENTATION = {
     gap: "Action required",
@@ -24,12 +26,6 @@
   var SEVERITY_LABEL = { critical: "Critical", high: "High", medium: "Medium", low: "Low", info: "Info" };
   var CONFIDENCE_LABEL = { high: "High", medium: "Medium", low: "Low" };
   var MODE_LABEL = { direct: "Direct", proxy: "Proxy", manual: "Manual", unsupported: "Unsupported" };
-  var MODE_NOTE = {
-    direct: "Evaluated directly from collected tenant evidence.",
-    proxy: "Inferred from indirect signals; confirm in the admin portal.",
-    manual: "Requires a human to confirm the setting in the portal.",
-    unsupported: "Not automatically collectable in this environment."
-  };
   var EFFORT_LABEL = { minutes: "~minutes", hours: "~a few hours", half_day: "~half a day", days: "~days" };
   var WORKLOAD_LABEL = {
     identity: "Identity", endpoint: "Endpoint", defender: "Defender", sentinel: "Sentinel",
@@ -65,7 +61,6 @@
     { key: "severity", label: "Severity", values: SEVERITY_ORDER, labels: SEVERITY_LABEL, dynamic: false },
     { key: "confidence", label: "Confidence", values: CONFIDENCE_ORDER, labels: CONFIDENCE_LABEL, dynamic: false },
     { key: "mode", label: "Mode", values: MODE_ORDER, labels: MODE_LABEL, dynamic: false },
-    { key: "profile", label: "Profile", values: [], labels: {}, dynamic: true },
     { key: "workload", label: "Workload", values: [], labels: WORKLOAD_LABEL, dynamic: true }
   ];
 
@@ -116,35 +111,26 @@
     return marker;
   }
 
-  function workloadIcon(workload) {
-    if (!workload || workload === "general") return null;
-    var src = WORKLOAD_ICONS[workload];
-    if (!src) return null;
-    var img = el("img", "workload-icon");
-    img.setAttribute("src", src);
-    img.setAttribute("width", "18");
-    img.setAttribute("height", "18");
-    img.setAttribute("alt", "");
-    img.setAttribute("decoding", "async");
-    img.setAttribute("aria-hidden", "true");
-    return img;
-  }
-
-  function profilesOf(f) {
-    var seen = {};
-    (f.accepted_risks || []).forEach(function (r) {
-      if (r && r.profile_id) seen[String(r.profile_id).toLowerCase()] = true;
+  // Findings source: prefer the view-model E-section findings (pre-serialized
+  // strings). The view-model omits a few export-relevant fields; re-attach them
+  // from the full report payload by check_id so exports stay complete.
+  var vmFindings = (vm.sections && vm.sections.E && Array.isArray(vm.sections.E.findings))
+    ? vm.sections.E.findings
+    : [];
+  var rawFindings = Array.isArray(report.findings) ? report.findings : [];
+  var findings = vmFindings.length ? vmFindings : rawFindings;
+  if (vmFindings.length) {
+    var rawByCheckId = {};
+    rawFindings.forEach(function (f) { if (f && f.check_id) rawByCheckId[f.check_id] = f; });
+    findings = vmFindings.map(function (f) {
+      var raw = rawByCheckId[f.check_id];
+      if (!raw) return f;
+      var out = {};
+      for (var key in f) out[key] = f[key];
+      ["entitlements_used", "source_references", "accepted_risks", "references", "customer_title", "impact"]
+        .forEach(function (key) { if (raw[key] !== undefined) out[key] = raw[key]; });
+      return out;
     });
-    var evidence = f.evidence || {};
-    if (typeof evidence.profile_id === "string" && evidence.profile_id) {
-      seen[evidence.profile_id.toLowerCase()] = true;
-    }
-    if (Array.isArray(evidence.profile_ids)) {
-      evidence.profile_ids.forEach(function (id) {
-        if (id) seen[String(id).toLowerCase()] = true;
-      });
-    }
-    return Object.keys(seen);
   }
 
   function searchableText(f) {
@@ -157,7 +143,6 @@
   }
 
   function facetValue(f, key) {
-    if (key === "profile") return profilesOf(f);
     if (key === "mode") return String(f.evaluation_mode || "direct");
     return String(f[key] == null ? "" : f[key]);
   }
@@ -169,18 +154,17 @@
       severity: String(f.severity || ""),
       confidence: String(f.confidence || ""),
       mode: String(f.evaluation_mode || "direct"),
-      workload: String(f.workload || ""),
-      profile: profilesOf(f)
+      workload: String(f.workload || "")
     };
   });
 
   var state = {
     search: "",
-    filters: {
-      status: {}, severity: {}, confidence: {}, mode: {}, profile: {}, workload: {}
-    },
+    filters: { status: {}, severity: {}, confidence: {}, mode: {}, workload: {} },
     page: 1,
-    pageSize: 25
+    pageSize: 25,
+    sort: "impact",
+    sortEngaged: false
   };
 
   var nav = document.querySelector("[data-workload-nav]");
@@ -191,21 +175,14 @@
   var visibleEl = document.querySelector("[data-visible-count]");
   var totalEl = document.querySelector("[data-total-count]");
   var searchEl = document.querySelector("#finding-search");
+  var sortEl = document.querySelector("#finding-sort");
   var chartsEl = document.querySelector("[data-charts]");
   var printListEl = document.querySelector("[data-print-list]");
 
   function dynamicValues(key) {
-    if (key === "workload") {
-      var present = {};
-      facets.forEach(function (f) { if (f.workload) present[f.workload] = true; });
-      return WORKLOAD_ORDER.filter(function (w) { return present[w]; });
-    }
-    if (key === "profile") {
-      var set = {};
-      facets.forEach(function (f) { f.profile.forEach(function (p) { set[p] = true; }); });
-      return Object.keys(set).sort();
-    }
-    return [];
+    var present = {};
+    facets.forEach(function (f) { if (f.workload) present[f.workload] = true; });
+    return WORKLOAD_ORDER.filter(function (w) { return present[w]; });
   }
 
   GROUPS.forEach(function (group) {
@@ -219,8 +196,6 @@
       var tab = el("a", "workload-tab");
       tab.setAttribute("href", "#findings");
       tab.setAttribute("data-nav", w);
-      var icon = workloadIcon(w);
-      if (icon) tab.appendChild(icon);
       tab.appendChild(text(WORKLOAD_LABEL[w] || cap(w)));
       tab.addEventListener("click", function (event) {
         event.preventDefault();
@@ -346,15 +321,19 @@
     if (exportJson) exportJson.addEventListener("click", exportJsonFn);
     if (exportCsv) exportCsv.addEventListener("click", exportCsvFn);
     if (printBtn) printBtn.addEventListener("click", function () { window.print(); });
+    if (sortEl) {
+      sortEl.addEventListener("change", function () {
+        state.sort = sortEl.value === "check_id" ? "check_id" : "impact";
+        state.sortEngaged = true;
+        state.page = 1;
+        refresh();
+      });
+    }
   }
 
   function groupMatches(key, value) {
     var selected = Object.keys(state.filters[key]);
     if (!selected.length) return true;
-    if (key === "profile") {
-      var arr = Array.isArray(value) ? value : [value];
-      return selected.some(function (s) { return arr.indexOf(s) !== -1; });
-    }
     return selected.indexOf(value) !== -1;
   }
 
@@ -369,7 +348,6 @@
     if (!groupMatches("confidence", entry.confidence)) return false;
     if (!groupMatches("mode", entry.mode)) return false;
     if (!groupMatches("workload", entry.workload)) return false;
-    if (!groupMatches("profile", entry.profile)) return false;
     return true;
   }
 
@@ -378,6 +356,46 @@
     for (var i = 0; i < findings.length; i++) {
       if (matches(facets[i])) out.push(findings[i]);
     }
+    return out;
+  }
+
+  // Sort control. The engine's findings order (status priority, then severity,
+  // then check_id) is the canonical "Impact (default)" presentation, so the
+  // default state renders the view-model order byte-for-byte. The impact
+  // comparator re-ranks by severity first, then status, then check_id and is
+  // only applied once the user engages the control. Array.prototype.sort is
+  // stable in modern engines, so ties keep the engine order.
+  function rankOf(order, value) {
+    var idx = order.indexOf(value);
+    return idx === -1 ? order.length : idx;
+  }
+
+  function compareImpact(a, b) {
+    var sev = rankOf(SEVERITY_ORDER, String(a.severity || "")) -
+      rankOf(SEVERITY_ORDER, String(b.severity || ""));
+    if (sev !== 0) return sev;
+    var st = rankOf(STATUS_ORDER, String(a.status || "")) -
+      rankOf(STATUS_ORDER, String(b.status || ""));
+    if (st !== 0) return st;
+    var ca = String(a.check_id || "");
+    var cb = String(b.check_id || "");
+    if (ca < cb) return -1;
+    if (ca > cb) return 1;
+    return 0;
+  }
+
+  function compareCheckId(a, b) {
+    var ca = String(a.check_id || "");
+    var cb = String(b.check_id || "");
+    if (ca < cb) return -1;
+    if (ca > cb) return 1;
+    return 0;
+  }
+
+  function sortedFindings(list) {
+    if (!state.sortEngaged) return list;
+    var out = list.slice();
+    out.sort(state.sort === "check_id" ? compareCheckId : compareImpact);
     return out;
   }
 
@@ -399,186 +417,14 @@
     return p;
   }
 
-  function evidenceHeading(label) {
-    var h = el("h4", "evidence-heading");
-    h.appendChild(text(label));
-    return h;
-  }
-
-  function listText(values, empty) {
-    var p = el("p");
-    if (values && values.length) {
-      p.appendChild(text(String(values).split ? values.join("; ") : String(values)));
-    } else {
-      p.appendChild(text(empty || "Not reported"));
-    }
-    return p;
-  }
-
   function joined(values) {
     return values && values.length ? values.join("; ") : "";
   }
 
-  // -------------------------------------------------------------------------
-  // Evidence drawer: provenance, collection health, limitations, entitlement
-  // explanation, waiver state, and remediation — all text-node safe.
-  // -------------------------------------------------------------------------
-
-  function renderProvenance(details, f) {
-    details.appendChild(evidenceHeading("Provenance"));
-    var mode = f.evaluation_mode || "direct";
-    details.appendChild(kv("Evaluation mode", (MODE_LABEL[mode] || cap(mode)) + " (" + mode + ")"));
-    details.appendChild(kv("Collected via", joined(f.data_sources) || "Not reported"));
-
-    var refs = Array.isArray(f.source_references) ? f.source_references : [];
-    if (refs.length) {
-      refs.forEach(function (ref) {
-        if (!ref) return;
-        var p = el("p", "evidence-ref");
-        var name = ref.name || ref.id || "Source";
-        var kind = ref.kind ? " (" + ref.kind + ")" : "";
-        p.appendChild(text("Source " + name + kind + ": " + (ref.reference || "no reference")));
-        if (ref.collected_at) p.appendChild(text(" — collected " + ref.collected_at));
-        details.appendChild(p);
-      });
-    } else {
-      details.appendChild(listText([], "No source references recorded."));
-    }
-  }
-
-  function renderRawEvidence(details, f) {
-    var evidence = f.evidence;
-    if (!evidence || typeof evidence !== "object" || !Object.keys(evidence).length) {
-      return;
-    }
-    details.appendChild(evidenceHeading("Collected evidence"));
-    Object.keys(evidence).forEach(function (key) {
-      var value = evidence[key];
-      var rendered;
-      if (typeof value === "object" && value !== null) {
-        rendered = JSON.stringify(value);
-      } else {
-        rendered = String(value);
-      }
-      details.appendChild(kv(key, rendered));
-    });
-  }
-
-  function renderCollectionHealth(details, f) {
-    details.appendChild(evidenceHeading("Collection health"));
-    var mode = f.evaluation_mode || "direct";
-    details.appendChild(listText([MODE_NOTE[mode] || "Collection status not reported."]));
-
-    var summaries = Array.isArray(report.collection_summaries) ? report.collection_summaries : [];
-    var sources = (f.data_sources || []).map(function (s) { return String(s).toLowerCase(); });
-    var matches = summaries.filter(function (s) {
-      if (!s) return false;
-      var needle = String(s.source || "").toLowerCase() + " " + String(s.collector || "").toLowerCase();
-      return sources.some(function (d) { return d && needle.indexOf(d) !== -1; });
-    });
-    if (matches.length) {
-      matches.forEach(function (s) {
-        var label = s.collector || s.source || "collector";
-        var status = s.status || "unknown";
-        var items = typeof s.items_collected === "number" ? " (" + s.items_collected + " items)" : "";
-        details.appendChild(kv(label, status + items));
-      });
-    }
-  }
-
-  function renderLimitations(details, f) {
-    details.appendChild(evidenceHeading("Limitations"));
-    details.appendChild(listText(f.limitations, "None reported"));
-  }
-
-  function renderEntitlements(details, f) {
-    details.appendChild(evidenceHeading("Entitlements"));
-    var entitlements = f.entitlements_used || [];
-    if (entitlements.length) {
-      var ul = el("ul", "evidence-list");
-      entitlements.forEach(function (e) {
-        var li = el("li");
-        li.appendChild(text(String(e)));
-        ul.appendChild(li);
-      });
-      details.appendChild(ul);
-    } else {
-      details.appendChild(listText([], "No entitlement mapping recorded."));
-    }
-  }
-
-  function renderWaivers(details, f) {
-    details.appendChild(evidenceHeading("Waivers"));
-    var risks = Array.isArray(f.accepted_risks) ? f.accepted_risks : [];
-    if (!risks.length) {
-      details.appendChild(listText([], "No waivers (accepted risks) for this finding."));
-      return;
-    }
-    var ul = el("ul", "evidence-list");
-    risks.forEach(function (r) {
-      if (!r) return;
-      var stateLabel = waiverStateLabel(r);
-      var li = el("li");
-      var strong = el("strong");
-      strong.appendChild(text(stateLabel));
-      li.appendChild(strong);
-      li.appendChild(text(" — " + (r.reason || "no reason given") + " (owner: " + (r.owner || "unknown") + ")"));
-      if (r.expires_on) li.appendChild(text(" · expires " + r.expires_on));
-      ul.appendChild(li);
-    });
-    details.appendChild(ul);
-  }
-
-  function waiverStateLabel(r) {
-    if (r.expires_on) {
-      var expiry = Date.parse(r.expires_on);
-      if (!isNaN(expiry) && expiry < Date.now()) return "Expired waiver";
-      return "Active waiver";
-    }
-    return "Active waiver";
-  }
-
-  function renderRemediation(details, f) {
-    details.appendChild(evidenceHeading("Remediation"));
-    if (f.remediation) {
-      details.appendChild(listText([f.remediation]));
-    } else {
-      details.appendChild(listText([], "No remediation guidance recorded."));
-    }
-    if (f.customer_next_step) {
-      var stepP = el("p");
-      var stepStrong = el("strong");
-      stepStrong.appendChild(text("Next step:"));
-      stepP.appendChild(stepStrong);
-      stepP.appendChild(text(" " + f.customer_next_step));
-      details.appendChild(stepP);
-    }
-    var refs = Array.isArray(f.references) ? f.references : [];
-    if (refs.length) {
-      var ul = el("ul", "evidence-list");
-      refs.forEach(function (ref) {
-        var li = el("li");
-        li.appendChild(text(String(ref)));
-        ul.appendChild(li);
-      });
-      details.appendChild(ul);
-    }
-  }
-
-  function renderEvidence(details, f) {
-    renderProvenance(details, f);
-    renderRawEvidence(details, f);
-    renderCollectionHealth(details, f);
-    renderLimitations(details, f);
-    renderEntitlements(details, f);
-    renderWaivers(details, f);
-    renderRemediation(details, f);
-  }
-
   function renderFinding(f, isPrint) {
     var status = f.status || "error";
-    var title = firstStr(f.customer_title, f.title, f.check_id);
-    var article = el("article", (isPrint ? "print-finding " : "finding ") + status);
+    var title = firstStr(f.title, f.customer_title, f.check_id);
+    var article = el("article", (isPrint ? "print-finding " : "finding-row ") + status);
     article.setAttribute("data-status", status);
     article.setAttribute("data-workload", f.workload || "general");
     if (f.check_id && !isPrint) article.id = "finding-" + f.check_id;
@@ -601,9 +447,9 @@
 
     var summary = firstStr(f.customer_summary, f.summary);
     if (summary) {
-      var p = el("p");
-      p.appendChild(text(summary));
-      article.appendChild(p);
+      var summaryP = el("p");
+      summaryP.appendChild(text(summary));
+      article.appendChild(summaryP);
     }
     if (f.customer_next_step) {
       var actionP = el("p");
@@ -614,11 +460,13 @@
       article.appendChild(actionP);
     }
 
-    var details = el("details", "tech evidence");
+    var details = el("details", "tech");
     var summaryEl = el("summary");
-    summaryEl.appendChild(text("Evidence and Microsoft admin page"));
+    summaryEl.appendChild(text("Technical evidence"));
     details.appendChild(summaryEl);
-    renderEvidence(details, f);
+    details.appendChild(kv("Confidence", f.confidence_label || "Not reported"));
+    details.appendChild(kv("Data sources", joined(f.data_sources) || "Not reported"));
+    details.appendChild(kv("Limitations", joined(f.limitations) || "None reported"));
     if (f.deep_link) {
       var linkP = el("p");
       var link = el("a");
@@ -636,7 +484,7 @@
   function renderList(slice) {
     listEl.textContent = "";
     var frag = document.createDocumentFragment();
-    slice.forEach(function (f) { frag.appendChild(renderFinding(f)); });
+    slice.forEach(function (f) { frag.appendChild(renderFinding(f, false)); });
     listEl.appendChild(frag);
   }
 
@@ -721,8 +569,6 @@
     items.forEach(function (item) {
       var row = el("div", "chart-row");
       var label = el("span", "chart-row__label");
-      var icon = workloadIcon(item.key);
-      if (icon) label.appendChild(icon);
       label.appendChild(text(item.label));
       row.appendChild(label);
       var track = el("div", "chart-row__track");
@@ -911,7 +757,7 @@
   }
 
   function refresh() {
-    var filtered = filteredFindings();
+    var filtered = sortedFindings(filteredFindings());
     var total = filtered.length;
     var pages = Math.max(1, Math.ceil(total / state.pageSize));
     if (state.page > pages) state.page = pages;
@@ -951,6 +797,56 @@
     refresh();
   }
 
+  // Reveal trigger. Content is fully server-rendered; marking the body opts the
+  // staggered "coming into focus" reveal in. Reduced motion skips it and jumps
+  // straight to the final data values (instant-state contract).
+  function posturePercent() {
+    var posture = (vm.sections && vm.sections.A && vm.sections.A.posture) || null;
+    if (posture && typeof posture.realized_percent === "number") {
+      return posture.realized_percent;
+    }
+    var rollup = (report && report.capability_rollup) || null;
+    if (rollup && typeof rollup.realized_percent === "number") {
+      return rollup.realized_percent;
+    }
+    return null;
+  }
+
+  function setPostureValue(value) {
+    var digits = document.querySelector(".posture-figure .posture-digits");
+    if (digits) digits.textContent = String(value);
+  }
+
+  function animatePostureCountUp(target) {
+    var digits = document.querySelector(".posture-figure .posture-digits");
+    if (!digits) return;
+    var duration = 700; // within the DESIGN_V2 500-1000ms motion window
+    var start = null;
+    function step(timestamp) {
+      if (start === null) start = timestamp;
+      var progress = Math.min((timestamp - start) / duration, 1);
+      if (progress < 1) {
+        digits.textContent = String(Math.round(progress * target));
+        window.requestAnimationFrame(step);
+      } else {
+        digits.textContent = String(target);
+      }
+    }
+    window.requestAnimationFrame(step);
+  }
+
+  function reveal() {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var percent = posturePercent();
+      if (percent !== null) setPostureValue(percent);
+      return;
+    }
+    document.body.classList.add('revealed');
+    document.body.classList.add('constellation-settled');
+    var target = posturePercent();
+    if (target !== null) animatePostureCountUp(target);
+  }
+
   buildNav();
   buildFilters();
   buildPagination();
@@ -975,5 +871,11 @@
   if (initialHash.indexOf("#finding-") === 0) {
     var target = document.getElementById(initialHash.slice(1));
     if (target) target.scrollIntoView();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", reveal);
+  } else {
+    reveal();
   }
 })();

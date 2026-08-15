@@ -1,4 +1,5 @@
-{%- import "report/_primitives.html.j2" as prim -%}
+{%- import "report/v2/_v2_primitives.html.j2" as prim -%}
+{%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation, capability_cards -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,260 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Security License Lens report</title>
   <style>
-{% include "report/_styles.css.j2" %}
+{% include "report/v2/_v2_styles.css.j2" %}
+
+/* ==========================================================================
+   Single-file renderer layout. The v2 foundation (above) supplies tokens,
+   base, sections, cards, finding rails, status colors, motion, print, and
+   reduced-motion. This block adds the A-E layout the shared partials emit
+   but leave to each renderer. Logical properties only; radius <= 4px.
+   ========================================================================== */
+
+[hidden] { display: none !important; }
+
+/* Masthead content */
+.logo { display: flex; align-items: center; gap: 12px; padding-block: 16px; }
+.logo-mark { width: 28px; height: 28px; background: var(--accent); flex-shrink: 0; }
+.tagline { margin: 0; color: var(--text-2); font-size: 0.9rem; }
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding-block: 8px 16px;
+  border-block-start: 1px solid var(--border);
+}
+.meta-row { font-size: 0.78rem; color: var(--text-2); }
+.meta-row code { color: var(--text-1); }
+.intro {
+  margin-block: 0 16px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-inline-start: 3px solid var(--state-incomplete);
+}
+
+/* A - posture hero */
+.posture-sentence { color: var(--text-2); margin-block: 8px 0; }
+.rollup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-block: 16px;
+}
+.rollup-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-block-start: 16px;
+}
+.tile {
+  padding: 12px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+}
+.tile .n {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.tile .l { display: flex; flex-direction: column; color: var(--text-2); }
+.tile .l small { color: var(--text-3); }
+
+.section-help { color: var(--text-2); }
+
+/* B - capability constellation */
+.constellation {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(120px, 1fr);
+  gap: 16px;
+  overflow-x: auto;
+  padding-block: 12px;
+  margin-block: 8px 16px;
+}
+.constellation-group { display: flex; flex-direction: column; gap: 12px; }
+.constellation-caption { margin-block: 0 4px; }
+.constellation-point {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.constellation-core {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: currentColor;
+  box-shadow: inset 0 0 0 2px var(--canvas);
+}
+.constellation-label { font-size: 0.78rem; color: var(--text-2); }
+.constellation-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  grid-column: 1 / -1;
+  margin-block-start: 8px;
+}
+.constellation-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-2);
+}
+.constellation-legend-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* B - capability cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.card { display: flex; flex-direction: column; gap: 8px; }
+.card-title { margin: 0; }
+.card p { margin: 0; }
+.card-provenance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-block-start: 8px;
+  border-block-start: 1px solid var(--border);
+  font-size: 0.78rem;
+}
+
+/* C - moves */
+.move-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.move-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.move-index { color: var(--accent); font-weight: 700; }
+.move-body { display: flex; flex-direction: column; gap: 4px; }
+.move-head { display: flex; align-items: baseline; gap: 8px; }
+.move-effort { color: var(--text-2); font-size: 0.78rem; }
+.move-why, .move-action, .move-ids, .move-link { margin: 0; }
+.move-note { color: var(--text-3); font-size: 0.85rem; }
+
+/* Status marker layout (color binds the shared variant classes) */
+.status-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.status-glyph { flex-shrink: 0; }
+.status-marker.gap, .status-marker.error { color: var(--state-action); }
+.status-marker.partial { color: var(--state-incomplete); }
+.status-marker.ok { color: var(--state-ok); }
+.status-marker.not-licensed, .status-marker.skipped { color: var(--state-neutral); }
+
+/* D+E - filter bar */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-block-end: 16px;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-button {
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 0.78rem;
+}
+.filter-button.active {
+  background: var(--surface-3);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+.filter-count {
+  color: var(--text-2);
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* D - findings */
+.finding { padding-block: 16px; }
+.finding + .finding {
+  border-block-start: 1px solid var(--border);
+  margin-block-start: 16px;
+}
+.finding-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.finding-head h3 { margin: 0; }
+.finding-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
+.meta-item { font-size: 0.78rem; color: var(--text-2); }
+.meta-key { color: var(--text-3); }
+.finding-summary { margin-block: 8px 0; }
+.belief-slot { margin-block: 12px 0; }
+.belief-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-block-end: 4px;
+}
+.belief-slot p { margin: 0; }
+.belief-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
+.evidence-keys { margin: 0; padding-inline-start: 1.2rem; }
+.evidence-keys code { color: var(--text-1); }
+
+/* Technical tables */
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td {
+  text-align: start;
+  padding: 8px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+th { color: var(--text-2); font-weight: 600; }
+td code { color: var(--text-1); }
+
+/* Footer */
+footer {
+  max-width: 1100px;
+  margin-block: 16px;
+  margin-inline: auto;
+  padding-inline: 20px;
+  color: var(--text-3);
+  font-size: 0.85rem;
+}
+
+/* Reveal (progressive enhancement). Content is fully visible server-side;
+   the inline script adds `body.revealed`, which opts the staggered
+   "coming into focus" reveal in. Reduced motion skips it via the foundation's
+   reduced-motion block. */
+body.revealed main > section { animation: v2-section-reveal 300ms ease-out both; }
+body.revealed main > section:nth-of-type(2) { animation-delay: 40ms; }
+body.revealed main > section:nth-of-type(3) { animation-delay: 80ms; }
+body.revealed main > section:nth-of-type(4) { animation-delay: 120ms; }
   </style>
 </head>
 <body>
@@ -19,15 +273,15 @@
       </div>
     </div>
     <div class="meta">
-      {{ prim.meta_row("Version", result.version) }}
-      {{ prim.meta_row("Scanned", result.display_scanned_at) }}
-      {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}{{ prim.meta_row("Mode", mode_str) }}
-      {{ prim.meta_row("Organization", result.tenant_display_name or result.tenant_id or "demo / dry-run") }}
+      <div class="meta-row">Version <code>{{ result.version }}</code></div>
+      <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
+      {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}<div class="meta-row">Mode <code>{{ mode_str }}</code></div>
+      <div class="meta-row">Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
     </div>
     {% if result.warnings %}
-    <div class="intro" style="border-color: var(--state-incomplete);">
+    <div class="intro">
       <strong>Notes</strong>
-      <ul style="margin: 0.5rem 0 0; padding-left: 1.2rem;">
+      <ul style="margin: 0.5rem 0 0; padding-inline-start: 1.2rem;">
         {% for w in result.warnings %}
         <li>{{ w }}</li>
         {% endfor %}
@@ -36,82 +290,164 @@
     {% endif %}
   </header>
 
-    <main>
-    {% set rollup = result.capability_rollup %}
+  <main>
+    {# A - Where you stand #}
     <section class="hero">
-      <h2>Security posture</h2>
-      <div class="summary-grid">
-        <div class="summary-posture">
-          <div class="posture-figure">{{ rollup.realized_percent }}% realized</div>
-          <p class="posture-sentence">{{ rollup.realized_sentence }}.</p>
+      <h2>Where you stand</h2>
+      <p class="display-line">Your security investment coming into focus</p>
+      <div class="posture-figure">{{ posture.realized_percent }}% realized</div>
+      <p class="posture-sentence">{{ posture.realized_sentence }}.</p>
+      <p class="posture-sentence">
+        <strong>{{ result.owned_capabilities | length }}</strong> Licensed capabilities detected
+        <span aria-hidden="true">&middot;</span>
+        <strong>{{ rollup.you_own }}</strong> Prioritized capabilities
+        <span class="label">({{ result.packs_scanned | join(', ') }} priority packs)</span>
+      </p>
+      <div class="rollup">
+        <div class="rollup-cell">
+          <span class="metric-figure-secondary">{{ rollup.you_own }}</span>
+          <span class="label">You own</span>
         </div>
-        <div class="summary-action">
-          <div class="n">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
-          <div class="l">Need attention</div>
-          <small>of {{ rollup.you_own }} prioritized capabilities</small>
+        <div class="rollup-cell">
+          <span class="metric-figure-secondary status-ok">{{ rollup.fully_working }}</span>
+          <span class="label">Fully working</span>
+          <span class="label">of {{ rollup.you_own }} prioritized capabilities</span>
         </div>
-        <div class="summary-metrics">
-          <div class="metric-row">
-            <span class="n">{{ result.owned_capabilities | length }}</span>
-            <span class="metric-text"><span class="metric-label">Licensed capabilities detected</span><small>across all detected licenses</small></span>
-          </div>
-          <div class="metric-row">
-            <span class="n">{{ rollup.you_own }}</span>
-            <span class="metric-text"><span class="metric-label">Prioritized capabilities</span><small>{{ result.packs_scanned | join(', ') }} priority packs</small></span>
-          </div>
-          <div class="metric-row">
-            <span class="n">{{ rollup.fully_working }}</span>
-            <span class="metric-text"><span class="metric-label">Fully working</span></span>
-          </div>
+        <div class="rollup-cell">
+          <span class="metric-figure-secondary status-gap">{{ rollup.needs_attention }}</span>
+          <span class="label">Need attention</span>
         </div>
-        {% if result.has_exposed %}
-        <div class="critical-rail" data-critical-rail>
-          <span class="critical-rail-label">{{ exposure_labels['exposed'] }}</span>
-          <span class="critical-rail-titles">{% for f in findings if f.check_id in result.exposed_check_ids %}{{ f.display_customer_title }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+        <div class="rollup-cell">
+          <span class="metric-figure-secondary status-partial">{{ rollup.partly_set_up }}</span>
+          <span class="label">Partly set up</span>
         </div>
-        {% endif %}
-      </div>
-
-    <div class="tiles">
-      {% for status in status_order %}
-      <div class="tile">
-        <div class="n">{{ counts.get(status, 0) }}</div>
-        <div class="l">
-          {{ prim.PRESENTATION.get(status, status) }}
-          <small>{{ status }}</small>
+        <div class="rollup-cell">
+          <span class="metric-figure-secondary status-not-licensed">{{ rollup.not_licensed }}</span>
+          <span class="label">Not in your plan</span>
         </div>
       </div>
-      {% endfor %}
-    </div>
+      <div class="tiles">
+        {% for status in status_order %}
+        <div class="tile">
+          <div class="n">{{ counts.get(status, 0) }}</div>
+          <div class="l">
+            {{ prim.PRESENTATION.get(status, status) }}
+            <small>{{ status }}</small>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
     </section>
 
-    <details class="tech" style="margin-bottom: 1rem;">
-      <summary>Report key</summary>
-      <p style="margin: 0.5rem 0 0; color: var(--text-1); font-size: 0.92rem;">
-        Microsoft licenses often include powerful protections with confusing product names.
-        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
-      </p>
-    </details>
-
+    {# B - What you're paying for #}
     <section>
-      <h2>Licensed control inventory</h2>
+      <h2>What you're paying for</h2>
       <p class="section-help">
-        Licensed controls mapped to detected Microsoft entitlements. Action states appear first.
+        Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
       </p>
-{% include "report/_capability_card.html.j2" %}
+      {{ capability_constellation(constellation) }}
+      {{ capability_cards(capabilities, constellation) }}
     </section>
 
-{% include "report/_finding_card.html.j2" %}
+    {# C - What matters most #}
+    {% include "report/v2/_v2_moves.html.j2" %}
 
-{% include "report/_technical.html.j2" %}
+    {# D+E - Why LicenseLens believes this (findings + filter) #}
+    <section>
+      <h2>Why LicenseLens believes this</h2>
+      <p class="section-help">
+        Every finding with what we expected, what we observed, and what to do next.
+      </p>
+      <div class="filter-bar">
+        <div class="filter-group" role="group" aria-label="Filter by status">
+          <button class="filter-button active" data-filter="all" aria-pressed="true">All</button>
+          {% for s in status_order %}
+          <button class="filter-button" data-filter="{{ s }}" aria-pressed="false">{{ prim.PRESENTATION.get(s, s) }}</button>
+          {% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by workload">
+          <button class="filter-button active" data-workload="all" aria-pressed="true">All</button>
+          {% for w in sections["E"]["filters"]["workload"] %}
+          <button class="filter-button" data-workload="{{ w }}" aria-pressed="false">{{ w | replace('_', ' ') | title }}</button>
+          {% endfor %}
+        </div>
+        <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>{{ findings | length }}</strong> of <strong data-total-count>{{ findings | length }}</strong></span>
+      </div>
+      {% for block in blocks %}
+      {% set f = findings[loop.index0] %}
+      {% include "report/v2/_v2_finding_card.html.j2" %}
+      {% endfor %}
+    </section>
+
+    {% include "report/v2/_v2_technical.html.j2" %}
   </main>
 
   <footer>
     {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
   </footer>
   <script>
-{% include "report/_filters.js.j2" %}
+    (function () {
+      'use strict';
+
+      // Reveal trigger. Content is fully server-rendered; marking the body opts
+      // the staggered "coming into focus" reveal in. Reduced motion skips to the
+      // final state instantly (the stylesheet handles the rest).
+      function reveal() {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          return;
+        }
+        document.body.classList.add('revealed');
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', reveal);
+      } else {
+        reveal();
+      }
+
+      // Status + workload filter (port of report/_filters.js.j2 behavior).
+      var findings = document.querySelectorAll('.finding');
+      var visibleEl = document.querySelector('[data-visible-count]');
+
+      var activeStatus = 'all';
+      var activeWorkload = 'all';
+
+      function updateButtons(selector, value) {
+        document.querySelectorAll(selector).forEach(function (btn) {
+          var isActive = btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      }
+
+      function applyFilters() {
+        var visible = 0;
+        findings.forEach(function (f) {
+          var s = f.getAttribute('data-status');
+          var w = f.getAttribute('data-workload');
+          var match = (activeStatus === 'all' || s === activeStatus) &&
+                      (activeWorkload === 'all' || w === activeWorkload);
+          f.hidden = !match;
+          if (match) visible++;
+        });
+        if (visibleEl) visibleEl.textContent = String(visible);
+      }
+
+      document.querySelectorAll('[data-filter]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activeStatus = this.getAttribute('data-filter');
+          updateButtons('[data-filter]', activeStatus);
+          applyFilters();
+        });
+      });
+
+      document.querySelectorAll('[data-workload]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activeWorkload = this.getAttribute('data-workload');
+          updateButtons('[data-workload]', activeWorkload);
+          applyFilters();
+        });
+      });
+    })();
   </script>
 </body>
 </html>

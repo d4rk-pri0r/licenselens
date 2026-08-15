@@ -32,10 +32,12 @@ from licenselens.report.manifest import (
     escape_data_js,
     write_report_bundle,
 )
+from licenselens.report.viewmodel import build_constellation, build_sections
 
-REPORT_APP_VERSION: Final = "1"
+REPORT_APP_VERSION: Final = "2"
 DATA_JS_GLOBAL: Final = "window.LICENSELENS_REPORT_JSON"
 ICONS_JS_GLOBAL: Final = "window.LICENSELENS_WORKLOAD_ICONS"
+VIEWMODEL_JS_GLOBAL: Final = "window.LICENSELENS_VIEWMODEL"
 
 _CSS_LOGICAL: Final = "app.css"
 _JS_LOGICAL: Final = "app.js"
@@ -159,9 +161,20 @@ def _serialize_data_js(result: ScanResult, icon_urls: dict[str, str]) -> bytes:
         separators=(",", ":"),
     )
     icons = json.dumps(icon_urls, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
+    # build_sections returns ``C`` as ``result.moves`` (list[TopMove]); serialize
+    # those models so the view-model payload is a pure JSON value.
+    sections = build_sections(result)
+    sections["C"] = [move.model_dump(mode="json") for move in result.moves]
+    viewmodel = json.dumps(
+        {"sections": sections, "constellation": build_constellation(result)},
+        ensure_ascii=True,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
     return (
         f"{ICONS_JS_GLOBAL} = {escape_data_js(icons)};\n"
         f"{DATA_JS_GLOBAL} = {escape_data_js(payload)};\n"
+        f"{VIEWMODEL_JS_GLOBAL} = {escape_data_js(viewmodel)};\n"
     ).encode()
 
 

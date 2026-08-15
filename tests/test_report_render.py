@@ -4,9 +4,9 @@ Two groups, deliberately partitioned:
 
 * **ESTABLISHED INVARIANTS — must PASS today**: offline/autoescape/DOM/filter/
   JSON/heading contracts that must remain green across visual redesigns.
-* **ENTERPRISE-XDR DESIGN-SIGNATURE CONTRACTS**: cool-charcoal surfaces, cool-blue
-  accent tokens, no violet/brass/navy signatures, and every declared surface
-  token consumed by a selector. These turn green as the XDR redesign lands.
+* **INK-AND-VERDIGRIS (v2) DESIGN-SIGNATURE CONTRACTS**: green-ink charcoal
+  canvas, verdigris accent tokens, no violet/brass/navy signatures, and every
+  declared surface token consumed by a selector.
 * **FIXTURE INTEGRITY**: preamble asserting fixtures stay comprehensive.
 """
 
@@ -110,24 +110,29 @@ def test_empty_fixture_is_truly_empty() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_critical_rail_region_gated_on_exposure(tmp_path: Path) -> None:
+def test_exposed_findings_are_surfaced_as_action_required(tmp_path: Path) -> None:
+    # v2 folds the v1 "critical rail" into the gap status: an exposed finding is
+    # rendered as a gap-status "Action required" article, and nothing renders
+    # when nothing is exposed.
     result = comprehensive_report()
     assert result.has_exposed, "comprehensive fixture must set has_exposed=True"
-    root = parse_html(render(result, tmp_path))
-    rail = _by_attr(root, "data-critical-rail")
-    assert rail, "critical rail region missing when has_exposed=True"
-    rail_text = text_of(rail[0])
-    exposed_titles = [
-        f.display_customer_title for f in result.findings if f.check_id in result.exposed_check_ids
-    ]
-    assert exposed_titles, "fixture has no exposed findings"
-    for title in exposed_titles:
-        assert title in rail_text, f"rail text missing exposed finding title {title!r}"
+    exposed_ids = set(result.exposed_check_ids)
+    assert exposed_ids, "fixture must name exposed check ids"
 
-    # The rail must be absent when nothing is exposed.
+    root = parse_html(render(result, tmp_path))
+    gap_articles = [e for e in _by_attr(root, "data-status", "gap") if e.tag == "article"]
+    assert gap_articles, "no gap-status findings rendered when has_exposed=True"
+
+    for finding in result.findings:
+        if finding.check_id in exposed_ids:
+            assert any(finding.display_customer_title in text_of(a) for a in gap_articles), (
+                f"exposed finding {finding.check_id!r} not surfaced as an action-required finding"
+            )
+
+    # No exposure -> no action-required findings.
     empty_root = parse_html(render(empty_report(), tmp_path))
-    assert not _by_attr(empty_root, "data-critical-rail"), (
-        "critical rail must be absent when has_exposed=False"
+    assert not [e for e in _by_attr(empty_root, "data-status", "gap") if e.tag == "article"], (
+        "action-required findings must be absent when has_exposed=False"
     )
 
 
@@ -219,19 +224,23 @@ def test_no_metadata_emoji(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# ENTERPRISE-XDR design-signature contracts (cool-charcoal + cool-blue)
+# Ink-and-Verdigris (v2) design-signature contracts
 # ---------------------------------------------------------------------------
 
 SECTION_HEADINGS = [
-    "Security posture",
-    "Licensed control inventory",
-    "Priority actions",
-    "Assessment findings",
+    "Where you stand",
+    "What you're paying for",
+    "What matters most",
+    "Why LicenseLens believes this",
 ]
 
 TAGLINE = "Entitlements, controls, and configuration gaps."
 
 LEGACY_HEADINGS = [
+    "Security posture",
+    "Licensed control inventory",
+    "Priority actions",
+    "Assessment findings",
     "Your security at a glance",
     "How to read this report",
     "What you already pay for",
@@ -243,16 +252,16 @@ LEGACY_TAGLINE = "The security you already own (and ignore)"
 VIOLET_TRIO = ("#9b8cff", "#b0a4ff", "#c7beff")
 BRASS_HEXES = ("#b9a06a", "#cbb683", "#ddcca8", "#594818")
 
-COOL_BLUE_TOKENS = (
-    "--canvas: #0f1114",
-    "--surface-1: #16191d",
-    "--surface-2: #1c2025",
-    "--surface-3: #242930",
-    "--surface-4: #2c323b",
-    "--accent: #88b4d8",
-    "--accent-hover: #a3c7e4",
-    "--accent-focus: #b8d6ee",
-    "--accent-print: #2c5a7d",
+INK_VERDIGRIS_TOKENS = (
+    "--canvas: #0c1210",
+    "--surface-1: #121a17",
+    "--surface-2: #17201d",
+    "--surface-3: #1e2925",
+    "--surface-4: #26332e",
+    "--accent: #8ad3b8",
+    "--accent-hover: #a5e2ca",
+    "--accent-focus: #bdecd9",
+    "--accent-print: #145c48",
 )
 
 SURFACE_TOKENS = (
@@ -297,10 +306,10 @@ def test_no_circular_logo_mark(tmp_path: Path) -> None:
     assert "border-radius:50%" not in html, "unspaced circular radius must go"
 
 
-def test_cool_blue_accent_tokens_present(tmp_path: Path) -> None:
+def test_ink_verdigris_accent_tokens_present(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
-    for token in COOL_BLUE_TOKENS:
-        assert token in html, f"required cool-blue/XDR token {token!r} missing from the report CSS"
+    for token in INK_VERDIGRIS_TOKENS:
+        assert token in html, f"v2 token {token!r} missing from the report CSS"
 
 
 def test_every_surface_token_is_consumed(tmp_path: Path) -> None:
@@ -351,12 +360,16 @@ def test_security_ledger_section_headings_exact(tmp_path: Path) -> None:
         assert legacy not in h2_texts, f"legacy heading {legacy!r} still present in the report"
 
 
-def test_report_key_is_summary_not_heading(tmp_path: Path) -> None:
-    html = render(comprehensive_report(), tmp_path)
-    assert ">Report key<" in html, "report key summary label missing from the report"
-    root = parse_html(html)
+def test_technical_details_is_summary_not_heading(tmp_path: Path) -> None:
+    root = parse_html(render(comprehensive_report(), tmp_path))
+    summaries = [text_of(s).strip() for s in _all(root, "summary")]
+    assert any("Technical details (product names, SKUs, check IDs)" in s for s in summaries), (
+        "technical details summary label missing from the report"
+    )
     h2_texts = [text_of(h).strip() for h in _all(root, "h2")]
-    assert "Report key" not in h2_texts, "Report key must be a <summary>, not an h2"
+    assert not any("Technical details" in h for h in h2_texts), (
+        "technical details must be a <summary>, not an h2"
+    )
 
 
 def test_security_ledger_tagline(tmp_path: Path) -> None:

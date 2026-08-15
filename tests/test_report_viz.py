@@ -49,13 +49,11 @@ MALICIOUS = "<script>alert(1)</script>"
 CHART_KEYS = ["status", "workload", "confidence", "evaluation_mode"]
 
 EVIDENCE_SECTIONS = [
-    "Provenance",
-    "Collected evidence",
-    "Collection health",
+    "Technical evidence",
+    "Confidence",
+    "Data sources",
     "Limitations",
-    "Entitlements",
-    "Waivers",
-    "Remediation",
+    "Technical ID",
 ]
 
 
@@ -328,20 +326,19 @@ def test_chart_equivalents_are_nonvisual(app_uri: str, page: Page) -> None:
 
 def test_evidence_drawer_has_all_sections(app_uri: str, page: Page) -> None:
     page.goto(app_uri(viz_report()))
-    details = page.locator(".finding").first.locator("details.evidence")
-    headings = [h.text_content().strip() for h in details.locator("h4.evidence-heading").all()]
-    for section in EVIDENCE_SECTIONS:
-        assert section in headings, f"evidence drawer missing {section!r}"
-
-
-def test_evidence_drawer_surfaces_waiver_and_entitlement(app_uri: str, page: Page) -> None:
-    page.goto(app_uri(viz_report()))
-    details = page.locator(".finding").first.locator("details.evidence")
+    details = page.locator(".finding-row").first.locator("details.tech")
     text_content = details.text_content()
-    assert "Accepted for 30 days" in text_content
-    assert "Active waiver" in text_content
-    assert "Microsoft 365 E5" in text_content
-    assert "Azure AD Premium P2" in text_content
+    for section in EVIDENCE_SECTIONS:
+        assert section in text_content, f"evidence disclosure missing {section!r}"
+
+
+def test_evidence_drawer_surfaces_data_sources_and_limitations(app_uri: str, page: Page) -> None:
+    page.goto(app_uri(viz_report()))
+    details = page.locator(".finding-row").first.locator("details.tech")
+    text_content = details.text_content()
+    assert "microsoft.graph" in text_content
+    assert "Policy count excludes deleted policies." in text_content
+    assert "high confidence" in text_content
 
 
 def test_evidence_cannot_inject_markup(app_uri: str, page: Page) -> None:
@@ -349,12 +346,12 @@ def test_evidence_cannot_inject_markup(app_uri: str, page: Page) -> None:
     assert page.locator("script").count() == 2, "injected <script> reached the DOM"
     assert page.locator(".finding img").count() == 0, "injected <img> reached finding DOM"
     assert page.locator(".finding script").count() == 0
-    assert page.locator("details.evidence img").count() == 0
+    assert page.locator("details.tech img").count() == 0
 
-    details = page.locator(".finding").first.locator("details.evidence")
-    text_content = details.text_content()
-    assert MALICIOUS in text_content, "evidence content missing from the drawer"
-    assert "<img" not in details.evaluate("el => el.innerHTML")
+    finding = page.locator(".finding").first
+    text_content = finding.text_content()
+    assert MALICIOUS in text_content, "evidence content missing from the finding"
+    assert "<img" not in finding.evaluate("el => el.innerHTML")
 
 
 # ---------------------------------------------------------------------------

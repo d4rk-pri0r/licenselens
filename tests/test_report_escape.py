@@ -72,10 +72,10 @@ INJECTED_PLAN_ESCAPED = "Plan&lt;2&gt;&amp;svc"
 LINK_WITH_QUERY = "https://admin.microsoft.com/#/Security?foo=1&bar=2"
 
 SECTION_HEADINGS = [
-    "Security posture",
-    "Licensed control inventory",
-    "Priority actions",
-    "Assessment findings",
+    "Where you stand",
+    "What you're paying for",
+    "What matters most",
+    "Why LicenseLens believes this",
 ]
 
 
@@ -123,14 +123,14 @@ def test_tenant_name_and_warnings_are_escaped(tmp_path: Path) -> None:
 
 def test_injected_text_fields_are_escaped(tmp_path: Path) -> None:
     result = comprehensive_report().model_copy(deep=True)
-    result.findings[0].customer_summary = INJECTED_SUMMARY
+    result.findings[0].summary = INJECTED_SUMMARY
     result.subscribed_skus[0].sku_part_number = INJECTED_SKU
     result.subscribed_skus[0].service_plans[0].service_plan_name = INJECTED_PLAN
 
     html = render(result, tmp_path)
 
-    assert INJECTED_SUMMARY_ESCAPED in html, "customer_summary not escaped"
-    assert INJECTED_SUMMARY not in html, "customer_summary leaked raw markup"
+    assert INJECTED_SUMMARY_ESCAPED in html, "summary not escaped"
+    assert INJECTED_SUMMARY not in html, "summary leaked raw markup"
     assert INJECTED_SKU_ESCAPED in html, "sku_part_number not escaped"
     assert INJECTED_SKU not in html, "sku_part_number leaked raw markup"
     assert INJECTED_PLAN_ESCAPED in html, "service_plan_name not escaped"

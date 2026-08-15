@@ -12,9 +12,11 @@ network access.
 
 Run:  uv run python scripts/regenerate_report_assets.py
 
-Exits non-zero if the generated HTML carries a legacy AI-dashboard signature
-(violet accents, radial-gradient, color-mix(), pill/circular border radii, old
-headings/tagline) or a dropped emoji, or if the browser issues an http(s) request.
+Exits non-zero if the generated HTML fails the v2 "Ink and Verdigris" design
+gate (DESIGN_V2.md): missing v2 tokens or v2 signature copy, any legacy
+AI-dashboard signature (violet/navy/brass accents, v1 cool-blue tokens,
+radial-gradient, color-mix(), pill/circular border radii, old headings/tagline),
+a dropped emoji, or if the browser issues an http(s) request.
 """
 
 from __future__ import annotations
@@ -47,8 +49,38 @@ SCREENSHOTS: tuple[tuple[str, int, int, str], ...] = (
     ("report-mobile.png", 375, 1280, "mobile"),
 )
 
-# Tokens the redesigned report must carry (from DESIGN.md, the "Color" section).
+# v2 tokens the report must carry (from DESIGN_V2.md, section 2 — "Ink and
+# Verdigris"). The exact declaration strings mirror the `:root` block in
+# templates/report/v2/_v2_styles.css.j2.
 NEW_DESIGN_TOKENS: tuple[str, ...] = (
+    "--canvas: #0c1210",
+    "--surface-1: #121a17",
+    "--surface-2: #17201d",
+    "--surface-3: #1e2925",
+    "--surface-4: #26332e",
+    "--border: #233029",
+    "--border-strong: #31413a",
+    "--text-1: #eef2ef",
+    "--text-2: #b6c2bd",
+    "--text-3: #85918b",
+    "--accent: #8ad3b8",
+    "--accent-hover: #a5e2ca",
+    "--accent-focus: #bdecd9",
+    "--accent-print: #145c48",
+    "--state-action: #f8756b",
+    "--state-incomplete: #e2a944",
+    "--state-ok: #4cd07d",
+    "--state-neutral: #9aa49e",
+)
+
+# v2 signature copy the report must carry (DESIGN_V2.md, section 5A opening).
+NEW_DESIGN_COPY: tuple[str, ...] = ("coming into focus",)
+
+# Retired v1 tokens (DESIGN_V2.md, section 1 "Retired v1 values"): cool-blue
+# canvas/accent/surface ramp, plus the borders, text ramp, and print pair the
+# v2 palette replaces wholesale. Any of these hexes or declarations in the
+# generated HTML means the v1 palette leaked through.
+RETIRED_V1_TOKENS: tuple[str, ...] = (
     "--canvas: #0f1114",
     "--surface-1: #16191d",
     "--surface-2: #1c2025",
@@ -60,10 +92,33 @@ NEW_DESIGN_TOKENS: tuple[str, ...] = (
     "--accent-print: #2c5a7d",
     "--state-action: #ff737a",
     "--state-ok: #67c991",
+    "#0f1114",
+    "#16191d",
+    "#1c2025",
+    "#242930",
+    "#2c323b",
+    "#88b4d8",
+    "#a3c7e4",
+    "#b8d6ee",
+    "#2c5a7d",
+    "#ff737a",
+    "#67c991",
+    "#2a3038",
+    "#3a424c",
+    "#f2f4f7",
+    "#b9c0ca",
+    "#8a919c",
+    "#e2b84b",
+    "#96938b",
+    "#b3261e",
+    "#8a5a00",
+    "#1e7a3a",
+    "#57534e",
 )
 
-# Legacy signatures the redesign removed: violet/navy/brass accents, warm
-# ledger stock, radial gradients, color-mix(), pill/circular radii, and old copy.
+# Legacy AI-dashboard signatures the redesign removed and v2 still forbids:
+# violet/navy/brass accents, warm ledger stock, radial gradients, color-mix(),
+# pill/circular radii, and old (v0/v1) headings/tagline copy.
 LEGACY_SIGNATURES: tuple[str, ...] = (
     "#9b8cff",
     "#b0a4ff",
@@ -91,6 +146,8 @@ LEGACY_SIGNATURES: tuple[str, ...] = (
     "Top things to do first",
     "Where you may not be getting the full benefit",
     "The security you already own (and ignore)",
+    "Security posture",
+    "Licensed control inventory",
 )
 
 # Emoji the plain-language redesign dropped (U+23F1 stopwatch, U+1F465 busts).
@@ -129,11 +186,17 @@ def png_size(path: Path) -> tuple[int, int]:
 
 
 def check_html(html: str) -> list[str]:
-    """Return a list of design-token problems (empty means the HTML passes)."""
+    """Return a list of design-gate problems (empty means the HTML passes)."""
     problems: list[str] = []
     for token in NEW_DESIGN_TOKENS:
         if token not in html:
-            problems.append(f"missing new design token: {token!r}")
+            problems.append(f"missing v2 design token: {token!r}")
+    for phrase in NEW_DESIGN_COPY:
+        if phrase not in html:
+            problems.append(f"missing v2 signature copy: {phrase!r}")
+    for token in RETIRED_V1_TOKENS:
+        if token in html:
+            problems.append(f"retired v1 token still present: {token!r}")
     for signature in LEGACY_SIGNATURES:
         if signature in html:
             problems.append(f"legacy AI-dashboard signature still present: {signature!r}")
@@ -167,7 +230,7 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                 page.goto(uri, wait_until="load")
                 page.wait_for_timeout(SETTLE_MS)
                 if kind == "findings":
-                    heading = page.locator("h2", has_text="Assessment findings").first
+                    heading = page.locator("h2", has_text="Why LicenseLens believes this").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.locator("article.finding").first.locator("details.tech > summary").click()
                     page.wait_for_timeout(SETTLE_MS)
@@ -213,8 +276,9 @@ def main() -> int:
             print(f"  FAIL: {problem}")
     else:
         print(
-            "\nHTML design tokens: OK"
-            " (new tokens present, no legacy AI-dashboard signatures, no emoji)"
+            "\nHTML design gate: OK"
+            " (v2 tokens + copy present, no retired v1 tokens,"
+            " no legacy AI-dashboard signatures, no emoji)"
         )
 
     net_failures = [n for n, s in shots.items() if s["http_requests"]]

@@ -1,4 +1,5 @@
-{%- import "report/_primitives.html.j2" as prim -%}
+{%- import "report/v2/_v2_primitives.html.j2" as prim -%}
+{%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation, capability_cards -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
   <title>Security License Lens report</title>
+  <style>
+{% include "report/v2/_v2_styles.css.j2" %}
+  </style>
   <link rel="stylesheet" href="{{ assets_dir }}/{{ css_name }}" />
 </head>
 <body>
@@ -19,22 +23,14 @@
         </div>
       </div>
       <div class="meta">
-        {{ prim.meta_row("Version", result.version) }}
-        {{ prim.meta_row("Scanned", result.display_scanned_at) }}
-        {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}{{ prim.meta_row("Mode", mode_str) }}
-        {{ prim.meta_row("Organization", result.tenant_display_name or result.tenant_id or "demo / dry-run") }}
+        <div class="meta-row">Version <code>{{ result.version }}</code></div>
+        <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
+        {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}<div class="meta-row">Mode <code>{{ mode_str }}</code></div>
+        <div class="meta-row">Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
       </div>
     </div>
-  </header>
-
-  <nav class="workload-nav" aria-label="Workload navigation" data-workload-nav>
-    <a class="workload-tab is-active" href="#findings" data-nav="all" aria-current="page">All</a>
-  </nav>
-
-  <main class="app-main" id="main">
-    <div class="app-main__content">
     {% if result.warnings %}
-    <div class="intro" style="border-color: var(--state-incomplete);">
+    <div class="intro">
       <strong>Notes</strong>
       <ul style="margin: 0.5rem 0 0; padding-inline-start: 1.2rem;">
         {% for w in result.warnings %}
@@ -43,92 +39,148 @@
       </ul>
     </div>
     {% endif %}
+  </header>
 
-    {% set rollup = result.capability_rollup %}
-    <section class="hero">
-      <h2>Security posture</h2>
-      <div class="summary-grid">
-        <div class="summary-posture">
-          <div class="posture-figure">{{ rollup.realized_percent }}% realized</div>
-          <p class="posture-sentence">{{ rollup.realized_sentence }}.</p>
-        </div>
-        <div class="summary-action">
-          <div class="n">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
-          <div class="l">Need attention</div>
-          <small>of {{ rollup.you_own }} prioritized capabilities</small>
-        </div>
-        <div class="summary-metrics">
-          <div class="metric-row">
-            <span class="n">{{ result.owned_capabilities | length }}</span>
-            <span class="metric-text"><span class="metric-label">Licensed capabilities detected</span><small>across all detected licenses</small></span>
+  <nav class="workload-nav" aria-label="Workload navigation" data-workload-nav>
+    <a class="workload-tab is-active" href="#findings" data-nav="all" aria-current="page">All</a>
+  </nav>
+
+  <main class="app-main" id="main">
+    <div class="app-main__content">
+      {# A - Where you stand #}
+      <section class="hero">
+        <h2>Where you stand</h2>
+        <p class="display-line">Your security investment coming into focus</p>
+        <div class="posture-figure"><span class="posture-digits">{{ posture.realized_percent }}</span>% realized</div>
+        <p class="posture-sentence">{{ posture.realized_sentence }}.</p>
+        <p class="posture-sentence">
+          <strong>{{ result.owned_capabilities | length }}</strong> Licensed capabilities detected
+          <span aria-hidden="true">&middot;</span>
+          <strong>{{ rollup.you_own }}</strong> Prioritized capabilities
+          <span class="label">({{ result.packs_scanned | join(', ') }} priority packs)</span>
+        </p>
+        <div class="rollup">
+          <div class="rollup-cell">
+            <span class="metric-figure-secondary">{{ rollup.you_own }}</span>
+            <span class="label">You own</span>
           </div>
-          <div class="metric-row">
-            <span class="n">{{ rollup.you_own }}</span>
-            <span class="metric-text"><span class="metric-label">Prioritized capabilities</span><small>{{ result.packs_scanned | join(', ') }} priority packs</small></span>
+          <div class="rollup-cell">
+            <span class="metric-figure-secondary status-ok">{{ rollup.fully_working }}</span>
+            <span class="label">Fully working</span>
+            <span class="label">of {{ rollup.you_own }} prioritized capabilities</span>
           </div>
-          <div class="metric-row">
-            <span class="n">{{ rollup.fully_working }}</span>
-            <span class="metric-text"><span class="metric-label">Fully working</span></span>
+          <div class="rollup-cell">
+            <span class="metric-figure-secondary status-gap">{{ rollup.needs_attention }}</span>
+            <span class="label">Need attention</span>
+          </div>
+          <div class="rollup-cell">
+            <span class="metric-figure-secondary status-partial">{{ rollup.partly_set_up }}</span>
+            <span class="label">Partly set up</span>
+          </div>
+          <div class="rollup-cell">
+            <span class="metric-figure-secondary status-not-licensed">{{ rollup.not_licensed }}</span>
+            <span class="label">Not in your plan</span>
           </div>
         </div>
-        {% if result.has_exposed %}
-        <div class="critical-rail" data-critical-rail>
-          <span class="critical-rail-label">{{ exposure_labels['exposed'] }}</span>
-          <span class="critical-rail-titles">{% for f in findings if f.check_id in result.exposed_check_ids %}{{ f.display_customer_title }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+        <div class="tiles">
+          {% for status in status_order %}
+          <div class="tile">
+            <div class="n">{{ counts.get(status, 0) }}</div>
+            <div class="l">
+              {{ prim.PRESENTATION.get(status, status) }}
+              <small>{{ status }}</small>
+            </div>
+          </div>
+          {% endfor %}
         </div>
-        {% endif %}
-      </div>
+      </section>
 
-    <div class="tiles">
-      {% for status in status_order %}
-      <div class="tile">
-        <div class="n">{{ counts.get(status, 0) }}</div>
-        <div class="l">
-          {{ prim.PRESENTATION.get(status, status) }}
-          <small>{{ status }}</small>
+      {# B - What you're paying for #}
+      <section>
+        <h2>What you're paying for</h2>
+        <p class="section-help">
+          Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
+        </p>
+        {{ capability_constellation(constellation) }}
+        {{ capability_cards(capabilities, constellation) }}
+      </section>
+
+      {# C - What matters most #}
+      {% include "report/v2/_v2_moves.html.j2" %}
+
+      {# D - Why LicenseLens believes this (server-rendered belief blocks) #}
+      <section>
+        <h2>Why LicenseLens believes this</h2>
+        <p class="section-help">
+          Every finding with what we expected, what we observed, and what to do next.
+        </p>
+        {% for block in blocks %}
+        {% set f = findings[loop.index0] %}
+        {% include "report/v2/_v2_finding_card.html.j2" %}
+        {% endfor %}
+      </section>
+
+      {# Findings at a glance (client-rendered charts with data-table equivalents) #}
+      <section class="charts-section" aria-labelledby="charts-title">
+        <h2 id="charts-title">Findings at a glance</h2>
+        <p class="section-help">
+          Distribution of findings by status, workload, confidence, and evaluation mode.
+          Each chart has an equivalent data table for assistive technology.
+        </p>
+        <div class="charts" data-charts></div>
+      </section>
+
+      {# E - Explore everything (client-rendered, filterable, exportable list) #}
+      <section id="findings" class="findings-section" aria-labelledby="findings-title">
+        <div class="findings-head">
+          <h2 id="findings-title">Explore everything</h2>
+          <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">
+            Showing <strong data-visible-count>0</strong> of <strong data-total-count>0</strong>
+          </span>
         </div>
-      </div>
-      {% endfor %}
-    </div>
-    </section>
+        <p class="section-help">
+          Search, filter, and page through every assessed control. Select several values in a
+          group to match any of them; different groups combine.
+        </p>
 
-    <section class="charts-section" aria-labelledby="charts-title">
-      <h2 id="charts-title">Findings at a glance</h2>
-      <p class="section-help">
-        Distribution of findings by status, workload, confidence, and evaluation mode.
-        Each chart has an equivalent data table for assistive technology.
-      </p>
-      <div class="charts" data-charts></div>
-    </section>
+        <div class="search-box">
+          <label class="search-box__label" for="finding-search">Search findings</label>
+          <input id="finding-search" class="search-box__input" type="search"
+                 placeholder="Search titles, checks, evidence" autocomplete="off" spellcheck="false" />
+        </div>
 
-    <details class="tech" style="margin-bottom: 1rem;">
-      <summary>Report key</summary>
-      <p style="margin: 0.5rem 0 0; color: var(--text-1); font-size: 0.92rem;">
-        Microsoft licenses often include powerful protections with confusing product names.
-        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
-        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
-      </p>
-    </details>
+        <div class="sort-box">
+          <label class="search-box__label" for="finding-sort">Sort findings</label>
+          <select id="finding-sort" class="sort-box__select">
+            <option value="impact" selected>Impact (default)</option>
+            <option value="check_id">Check ID</option>
+          </select>
+        </div>
 
-    <section>
-      <h2>Licensed control inventory</h2>
-      <p class="section-help">
-        Licensed controls mapped to detected Microsoft entitlements. Action states appear first.
-      </p>
-{% include "report/_capability_card.html.j2" %}
-    </section>
+        <div class="filter-bar" data-filter-bar></div>
 
-{% include "report/_moves.html.j2" %}
+        <div class="findings-tools">
+          <button type="button" data-export="json">Export JSON</button>
+          <button type="button" data-export="csv">Export CSV</button>
+          <button type="button" data-print>Print</button>
+        </div>
 
-{% include "report/_findings_app.html.j2" %}
+        <div class="findings-list" data-findings-list></div>
 
-{% include "report/_technical.html.j2" %}
+        <p class="empty-state" data-empty-state hidden></p>
 
-    <footer>
-      {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
-    </footer>
+        <nav class="pagination" data-pagination aria-label="Pagination" hidden></nav>
+
+        <div class="print-list" data-print-list></div>
+      </section>
+
+      {% include "report/v2/_v2_technical.html.j2" %}
     </div>
   </main>
+
+  <footer>
+    {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
+  </footer>
 
   <script src="{{ assets_dir }}/{{ data_name }}"></script>
   <script src="{{ assets_dir }}/{{ js_name }}"></script>

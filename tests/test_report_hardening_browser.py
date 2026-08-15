@@ -230,7 +230,7 @@ def test_rtl_logical_layout_mirrors_without_overflow(app_uri: str, page: Page) -
             }; }"""
     )
     assert border["inlineStart"] == "3px"
-    assert border["right"] == "3px" and border["left"] == "1px", f"accent not mirrored: {border}"
+    assert border["right"] == "3px" and border["left"] == "0px", f"accent not mirrored: {border}"
 
 
 # ---------------------------------------------------------------------------
@@ -262,90 +262,24 @@ def test_print_emulation_renders_complete_unpaginated_findings(app_uri: str, pag
     assert metrics["sw"] <= metrics["cw"], f"print horizontal overflow: {metrics}"
 
 
-def test_workload_icons_are_restrained_decorative_and_print_hidden(
-    app_uri: str, page: Page
-) -> None:
-    """Todo 17: 16–20px text-paired icons; empty alt; print hides decorative marks."""
+def test_no_img_and_workload_text_labels(app_uri: str, page: Page) -> None:
+    """v2 retires the v1 ``<img>`` workload-icon allowlist; workloads are text-only."""
     uri, _ = app_uri(hardening_report())
     page.goto(uri)
     page.wait_for_load_state("load")
 
-    icons = page.locator("img.workload-icon")
-    count = icons.count()
-    assert count >= 1, "expected workload icons in nav/chart/capability surfaces"
+    # The strongest form of the v1 "icons are decorative/restrained" guard:
+    # v2 renders no <img> at all, so there is nothing to hide, brand, or misuse.
+    assert page.locator("img").count() == 0, "v2 must not render any <img> element"
 
-    props = page.evaluate(
-        """() => Array.from(document.querySelectorAll('img.workload-icon')).map((img) => {
-            const cs = getComputedStyle(img);
-            const rect = img.getBoundingClientRect();
-            const parentText = (img.parentElement?.textContent || '').trim();
-            const inFilter = Boolean(
-              img.closest('.filter-bar, .filter-group, button[data-filter]')
-            );
-            const inStatus = Boolean(img.closest('.status-marker, .badge'));
-            const inHero = Boolean(
-              img.closest('.hero, header.app-header .brand, .logo')
-            );
-            const inFindingStatus = Boolean(
-              img.closest('.finding')
-              && !img.closest('.chart, nav.workload-nav, .card-title')
-            );
-            return {
-              alt: img.getAttribute('alt'),
-              ariaHidden: img.getAttribute('aria-hidden'),
-              widthAttr: img.getAttribute('width'),
-              heightAttr: img.getAttribute('height'),
-              cssW: parseFloat(cs.width),
-              cssH: parseFloat(cs.height),
-              boxW: rect.width,
-              boxH: rect.height,
-              parentText,
-              inFilter,
-              inStatus,
-              inHero,
-              inFindingStatus,
-              display: cs.display,
-            };
-        })"""
-    )
-    assert props, "no workload icon metrics collected"
-    for item in props:
-        assert item["alt"] == "", f"icon alt must be empty decorative: {item}"
-        assert item["ariaHidden"] == "true", f"icon must be aria-hidden: {item}"
-        w_attr = int(item["widthAttr"] or 0)
-        h_attr = int(item["heightAttr"] or 0)
-        assert 16 <= w_attr <= 20 and 16 <= h_attr <= 20, f"attr size out of 16–20px: {item}"
-        assert 16 <= item["cssW"] <= 20 and 16 <= item["cssH"] <= 20, (
-            f"css size out of band: {item}"
-        )
-        assert item["parentText"], "icon must sit beside visible workload text"
-        assert not item["inFilter"], "icons must not appear in filters"
-        assert not item["inStatus"], "icons must not replace status glyphs"
-        assert not item["inHero"], "icons must not brand the product hero/logo"
-        assert not item["inFindingStatus"], "icons must not sit on finding status chrome"
-
-    # Screen: icons visible. Print: decorative marks hidden; text remains.
-    visible_screen = page.evaluate(
-        "() => Array.from(document.querySelectorAll('img.workload-icon'))"
-        ".filter(img => getComputedStyle(img).display !== 'none').length"
-    )
-    assert visible_screen == count
-
-    page.emulate_media(media="print")
-    hidden_print = page.evaluate(
-        "() => Array.from(document.querySelectorAll('img.workload-icon'))"
-        ".every(img => getComputedStyle(img).display === 'none')"
-    )
-    assert hidden_print is True, "print must hide decorative workload icons"
-    # Workload labels remain available as text (nav tabs and chart rows).
     nav_text = page.locator("nav.workload-nav").inner_text()
-    assert "Identity" in nav_text or "identity" in nav_text.lower()
+    assert "Identity" in nav_text, "workload nav missing visible text labels"
 
 
 def test_evidence_drawer_keyboard_operable(app_uri: str, page: Page) -> None:
     uri, _ = app_uri(hardening_report())
     page.goto(uri)
-    details = page.locator(".finding").first.locator("details.evidence")
+    details = page.locator(".finding").first.locator("details.tech")
     summary = details.locator("summary")
     summary.focus()
     assert summary.evaluate("el => el.matches(':focus')")

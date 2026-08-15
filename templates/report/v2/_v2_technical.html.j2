@@ -1,0 +1,98 @@
+{# ==========================================================================
+   Security License Lens — v2 technical details partial (findings ledger).
+
+   Binding contract: the findings reference table is consumed with the
+   view-model E-section findings list, `build_sections(result)["E"]["findings"]`
+   — one `_finding_entry` dict per finding (see viewmodel.py for the exact
+   keys). The subscribed-SKU ledger renders when a `result` is present in
+   context (the legacy renderer path) and is omitted under a pure
+   view-model context without crashing.
+
+   Status is always shown with the shared v2 status marker (glyph + word
+   from _v2_primitives.html.j2); never color-only.
+
+   DESIGN_V2.md sections 5E and 7 (native <details class="tech"> disclosure)
+   plus retained v1 rules (section 9): no emoji, no <img>, no external URLs,
+   empty optional cells render "—" without crashing.
+   ========================================================================== #}
+
+{%- import "report/v2/_v2_primitives.html.j2" as prim -%}
+
+{%- set finding_list = findings if findings is defined else (sections["E"]["findings"] if sections is defined and sections.get("E") else []) -%}
+
+{%- macro enum_or_str(v) -%}
+  {%- if v is defined and v is not none and v is not string and v.value is defined -%}
+    {{ v.value }}
+  {%- else -%}
+    {{ v }}
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro status_of(f) -%}
+  {%- if f is mapping -%}{{ f["status"] }}{%- else -%}{{ f.status.value }}{%- endif -%}
+{%- endmacro -%}
+
+    <details class="tech">
+      <summary>
+        <span class="caret" aria-hidden="true"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+        Technical details (product names, SKUs, check IDs)
+      </summary>
+
+      {% if result is defined and result.subscribed_skus %}
+      <h2 style="margin-top: 0.5rem;">Subscribed SKUs</h2>
+      <div class="table-scroll" data-table-scroll>
+        <table>
+          <thead>
+            <tr>
+              <th>Part number</th>
+              <th>Status</th>
+              <th>Units</th>
+              <th>Service plans</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sku in result.subscribed_skus %}
+            <tr>
+              <td><code>{{ sku.sku_part_number }}</code></td>
+              <td>{{ sku.capability_status or "—" }}</td>
+              <td>{{ sku.consumed_units or 0 }} / {{ sku.prepaid_units or "—" }}</td>
+              <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" style="color: var(--text-2);">No SKUs collected.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      <h2 style="margin-top: 1.25rem;">Finding reference table</h2>
+      <div class="table-scroll" data-table-scroll>
+        <table>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Check ID</th>
+              <th>Technical title</th>
+              <th>Workload</th>
+              <th>Severity</th>
+              <th>Confidence</th>
+              <th>Evaluation mode</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in finding_list %}
+            <tr>
+              <td>{{ prim.status_marker(status_of(f)) }}</td>
+              <td><code>{{ f["check_id"] }}</code></td>
+              <td>{{ f["title"] }}</td>
+              <td>{% if enum_or_str(f["workload"]) %}{{ enum_or_str(f["workload"]) }}{% else %}—{% endif %}</td>
+              <td>{% if enum_or_str(f["severity"]) %}{{ enum_or_str(f["severity"]) }}{% else %}—{% endif %}</td>
+              <td>{{ f["confidence_label"] or "—" }}</td>
+              <td>{% if enum_or_str(f["evaluation_mode"]) %}{{ enum_or_str(f["evaluation_mode"]) }}{% else %}—{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </details>

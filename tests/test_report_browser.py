@@ -32,10 +32,10 @@ pytestmark = pytest.mark.browser
 VIEWPORTS = [(375, 812), (768, 1024), (1024, 768), (1280, 900), (1440, 1000)]
 
 SECTION_HEADINGS = [
-    "Security posture",
-    "Licensed control inventory",
-    "Priority actions",
-    "Assessment findings",
+    "Where you stand",
+    "What you're paying for",
+    "What matters most",
+    "Why LicenseLens believes this",
 ]
 
 ALL_FINDING_STATUSES = {"gap", "partial", "ok", "not_licensed", "skipped", "error"}

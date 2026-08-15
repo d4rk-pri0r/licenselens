@@ -1,0 +1,99 @@
+{# ==========================================================================
+   Security License Lens — v2 finding card (section D belief block)
+
+   Renders ONE finding article from the v2 view-model payload built by
+   src/licenselens/report/viewmodel.py. The body is the six-slot belief block
+   from build_belief_block(finding, capability_summaries) with progressive
+   disclosure per DESIGN_V2.md section 7: the summary line and slots 1-2
+   (Expected / Observed) first, slots 3-4 (Why it matters / Recommended
+   action) next, then the technical evidence inside a native
+   <details class="tech"> disclosure.
+
+   Include contract (consumed by both the single-file and bundle renderers):
+     - `block` — one dict from build_sections(result)["D"], ordered the same
+       as result.findings. Keys: expected (str), observed (summary + evidence),
+       why_it_matters (capability / severity / value_impact / blast_radius),
+       recommended_action (str), evidence (data_sources / confidence_label /
+       limitations), admin_destination (str | None).
+     - `f` — the paired serialized finding from build_sections(result)["E"]
+       ["findings"] at the same index (see _finding_entry in viewmodel.py).
+       Supplies the article's data-status / data-workload attributes, the
+       status marker, the title, and the head meta row. The six belief slots
+       below bind strictly to `block`, never to hardcoded copy.
+     - `prim` — imported below from report/v2/_v2_primitives.html.j2.
+
+   The only external URL rendered is block.admin_destination (the Microsoft
+   admin deep link); no <img>, no emoji, no literal slot values.
+   ========================================================================== #}
+{%- import "report/v2/_v2_primitives.html.j2" as prim -%}
+    <article class="finding {{ f.status }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}">
+      <div class="finding-head">
+        {{ prim.status_marker(f.status) }}
+        <h3>{{ f.title }}</h3>
+      </div>
+      <div class="finding-meta">
+        {% if f.severity %}<span class="meta-item"><span class="meta-key">Severity:</span> {{ f.severity | capitalize }}</span>{% endif %}
+        {% if f.effort_label %}<span class="meta-item"><span class="meta-key">Effort:</span> {{ f.effort_label }}</span>{% endif %}
+        {% if f.blast_radius %}<span class="meta-item"><span class="meta-key">Scope:</span> {{ f.blast_radius | replace('_', ' ') }}</span>{% endif %}
+        {% if f.workload %}<span class="meta-item"><span class="meta-key">Workload:</span> {{ f.workload | capitalize }}</span>{% endif %}
+        {% if f.confidence_label %}<span class="meta-item"><span class="meta-key">Confidence:</span> {{ f.confidence_label }}</span>{% endif %}
+        {% if f.evaluation_mode %}<span class="meta-item"><span class="meta-key">Evaluation:</span> {{ f.evaluation_mode | replace('_', ' ') }}</span>{% endif %}
+      </div>
+
+      {# Progressive disclosure level 1: the summary line, before the slots. #}
+      <p class="finding-summary">{{ block.observed.summary or "Not reported" }}</p>
+
+      <div class="belief-slot">
+        <span class="belief-label">Expected</span>
+        <p>{{ block.expected or "Not reported" }}</p>
+      </div>
+
+      <div class="belief-slot">
+        <span class="belief-label">Observed</span>
+        {% if block.observed.evidence %}
+        <ul class="evidence-keys">
+          {% for key, value in block.observed.evidence.items() -%}
+          <li><code>{{ key }}</code>: {% if value is mapping -%}{{ value | tojson }}{%- elif value is sequence and value is not string -%}{{ value | join(', ') }}{%- else -%}{{ value }}{%- endif %}</li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>Not reported</p>
+        {% endif %}
+      </div>
+
+      {# Progressive disclosure level 2: why it matters + recommended action. #}
+      <div class="belief-slot">
+        <span class="belief-label">Why it matters</span>
+        <p>{{ block.why_it_matters.capability or "Not reported" }}</p>
+        <div class="belief-meta">
+          <span class="meta-item"><span class="meta-key">Severity:</span> {{ block.why_it_matters.severity | capitalize }}</span>
+          <span class="meta-item"><span class="meta-key">Value impact:</span> {{ block.why_it_matters.value_impact | replace('_', ' ') }}</span>
+          <span class="meta-item"><span class="meta-key">Scope:</span> {{ block.why_it_matters.blast_radius | replace('_', ' ') }}</span>
+        </div>
+      </div>
+
+      <div class="belief-slot">
+        <span class="belief-label">Recommended action</span>
+        <p>{{ block.recommended_action or "Not reported" }}</p>
+      </div>
+
+      {# Progressive disclosure level 3: technical evidence, inside the
+         native <details class="tech"> disclosure. #}
+      <div class="belief-slot">
+        <span class="belief-label">Evidence</span>
+        <details class="tech">
+          <summary><span class="caret" aria-hidden="true">▸</span> Technical evidence</summary>
+          <p><strong>Confidence:</strong> {{ block.evidence.confidence_label or 'Not reported' }}</p>
+          <p><strong>Data sources:</strong> {{ block.evidence.data_sources | join(', ') or 'Not reported' }}</p>
+          <p><strong>Limitations:</strong> {% if block.evidence.limitations %}{% for limit in block.evidence.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
+        </details>
+      </div>
+
+      {# The only external URL allowed: the Microsoft admin deep link. #}
+      {% if block.admin_destination %}
+      <div class="belief-slot">
+        <span class="belief-label">Admin destination</span>
+        <p><a href="{{ block.admin_destination }}">Open the admin page</a></p>
+      </div>
+      {% endif %}
+    </article>
