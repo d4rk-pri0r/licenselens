@@ -1,0 +1,26 @@
+id: id-cross-tenant-defaults
+title: Cross-tenant collaboration defaults are permissive
+customer_title: Tighten default access from unknown external tenants
+customer_summary: >
+  If unknown external tenants can collaborate by default, partner access may grow without intentional review.
+customer_next_step: >
+  Review and tighten default cross-tenant access settings.
+description: >
+  Default cross-tenant B2B collaboration should not be broadly open without review.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade
+collector: graph_guests
+remediation: >
+  Review cross-tenant access default inbound settings and partner-specific overrides.
+references:
+  - https://learn.microsoft.com/entra/external-id/cross-tenant-access-overview
+enabled: true

@@ -1,0 +1,26 @@
+id: id-ca-phishing-resistant-privileged
+title: Phishing-resistant MFA not enforced for privileged roles
+customer_title: Require strong sign-in for powerful admin roles
+customer_summary: >
+  Admin accounts are the highest-value targets. They should require phishing-resistant methods even if the rest of the tenant is still catching up.
+customer_next_step: >
+  Enforce phishing-resistant MFA for Global Administrator and other highly privileged roles.
+description: >
+  Highly privileged directory roles should require phishing-resistant MFA via Conditional Access.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: critical
+value_impact: high
+impact: high
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
+collector: graph_ca
+remediation: >
+  Target highly privileged directory roles with an enforced phishing-resistant MFA Conditional Access policy.
+references:
+  - https://learn.microsoft.com/entra/identity/role-based-access-control/privileged-roles-permissions
+enabled: true

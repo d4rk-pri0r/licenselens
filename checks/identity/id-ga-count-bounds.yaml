@@ -1,0 +1,26 @@
+id: id-ga-count-bounds
+title: Global Administrator count outside recommended bounds
+customer_title: Keep Global Admin count between two and eight
+customer_summary: >
+  Too few Global Admins creates lockout risk. Too many expands the blast radius of a single compromise.
+customer_next_step: >
+  Reduce or increase Global Administrator principals to land between 2 and 8.
+description: >
+  A minimum of two and maximum of eight Global Administrator principals should be provisioned.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim
+remediation: >
+  Keep 2-8 Global Administrator principals and move day-to-day work to finer roles.
+references:
+  - https://learn.microsoft.com/entra/identity/role-based-access-control/best-practices
+enabled: true
