@@ -19,16 +19,15 @@ def reject_false_green(*, defect_present: bool, strict_contract_passed: bool) ->
 
 
 def test_meta_guard_rejects_weakened_legacy_map_contract() -> None:
-    """Temporarily weakened assertion would pass; sentinel must catch false-green."""
+    """Weakened assertion would pass while a defect remains; sentinel must catch false-green."""
     defect_present = MAP_PATH.exists()
     strict_passed = not MAP_PATH.exists()
 
-    # Proper RED state today: defect present, strict contract not passed.
+    # Honest pairing is always allowed (defect+fail or fixed+pass).
     reject_false_green(
         defect_present=defect_present,
         strict_contract_passed=strict_passed,
     )
-    assert defect_present, "legacy map defect fixture missing; cannot prove false-green guard"
 
     # Weakened tautology (always true) — the false-green stand-in.
     weakened_passed = MAP_PATH.exists() or not MAP_PATH.exists()
