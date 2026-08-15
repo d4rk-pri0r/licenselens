@@ -1,0 +1,26 @@
+id: mdo-safety-tips-enabled
+title: Anti-phish safety tips are incomplete
+customer_title: Show safety tips for unusual senders
+customer_summary: >
+  Users need warnings for first-contact and look-alike senders.
+customer_next_step: >
+  Enable all anti-phish safety tips and indicators.
+description: >
+  Anti-phish safety tips are incomplete.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antiphishing
+collector: exchange_collector
+remediation: >
+  Enable all anti-phish safety tips and indicators.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-phishing-policies-about
+enabled: true

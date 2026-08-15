@@ -1,0 +1,26 @@
+id: mdo-unified-audit-enabled
+title: Unified audit logging is not enabled
+customer_title: Turn on unified audit logging
+customer_summary: >
+  Without unified audit, user and admin activity is not recorded for investigation.
+customer_next_step: >
+  Enable unified audit log ingestion.
+description: >
+  Unified audit logging is not enabled.
+workload: defender
+required_capabilities:
+  - purview_audit
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://compliance.microsoft.com/auditlogsearch
+collector: exchange_collector
+remediation: >
+  Enable unified audit log ingestion.
+references:
+  - https://learn.microsoft.com/purview/audit-log-enable-disable
+enabled: true

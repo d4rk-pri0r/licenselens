@@ -1,0 +1,26 @@
+id: mdo-spam-phish-not-inbox
+title: Spam or phishing can still reach the inbox
+customer_title: Keep spam and phishing out of inboxes
+customer_summary: >
+  Spam and phishing reduce productivity and deliver malware.
+customer_next_step: >
+  Set spam and phishing actions to quarantine or junk, not inbox delivery.
+description: >
+  Spam or phishing can still reach the inbox.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antispam
+collector: exchange_collector
+remediation: >
+  Set spam and phishing actions to quarantine or junk, not inbox delivery.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-spam-policies-configure
+enabled: true
