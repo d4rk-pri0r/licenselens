@@ -1,0 +1,26 @@
+id: id-pim-privileged-assignment-alert
+title: No alert on highly privileged role assignment
+customer_title: Alert when powerful roles are assigned
+customer_summary: >
+  If nobody is notified when a powerful role is granted, stealthy privilege escalation is easier.
+customer_next_step: >
+  Enable PIM notifications for privileged role assignment events.
+description: >
+  Eligible and active highly privileged role assignments should trigger alerts.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_pim_policies
+remediation: >
+  Configure PIM notification rules for privileged role assignment events.
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+enabled: true

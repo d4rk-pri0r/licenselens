@@ -1,0 +1,26 @@
+id: id-priv-cloud-only
+title: Privileged accounts synced from on-premises
+customer_title: Keep powerful admin accounts cloud-only
+customer_summary: >
+  Admin accounts tied to on-premises directories inherit on-prem compromise paths.
+customer_next_step: >
+  Use separate cloud-only accounts for highly privileged roles.
+description: >
+  Privileged users should use cloud-only accounts separate from on-premises directories.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart
+collector: graph_signins_roles
+remediation: >
+  Create cloud-only privileged accounts and remove synced accounts from standing privileged roles.
+references:
+  - https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access
+enabled: true
