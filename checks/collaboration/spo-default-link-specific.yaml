@@ -1,0 +1,26 @@
+id: spo-default-link-specific
+title: Default sharing links are not scoped to specific people
+customer_title: Default new links to specific people
+customer_summary: >
+  New sharing links default to a broad audience, so users may overshare without noticing.
+customer_next_step: >
+  Set the default sharing link type to specific people.
+description: >
+  Default sharing links should be scoped to specific people only.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Set the default file and folder link type to 'Specific people'.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true

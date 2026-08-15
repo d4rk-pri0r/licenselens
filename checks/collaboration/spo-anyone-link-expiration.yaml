@@ -1,0 +1,26 @@
+id: spo-anyone-link-expiration
+title: Anyone links do not expire within the recommended window
+customer_title: Make anyone links expire within 30 days
+customer_summary: >
+  Anyone links that never expire grant indefinite anonymous access to files.
+customer_next_step: >
+  Require anyone links to expire within 30 days.
+description: >
+  Anyone links should be required to expire within 30 days.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Enable 'These links must expire within this many days' and set 30 days or fewer.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true

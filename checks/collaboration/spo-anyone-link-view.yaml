@@ -1,0 +1,26 @@
+id: spo-anyone-link-view
+title: Anyone links allow more than view-only permission
+customer_title: Make anyone links view-only
+customer_summary: >
+  Anyone links that allow editing let anonymous users change files.
+customer_next_step: >
+  Restrict anyone links to view-only for files and folders.
+description: >
+  Anyone links should grant view-only permission.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  Set anyone-link file and folder permissions to View.
+references:
+  - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
+enabled: true
