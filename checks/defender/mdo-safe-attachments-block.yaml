@@ -1,0 +1,26 @@
+id: mdo-safe-attachments-block
+title: Safe Attachments is not set to block
+customer_title: Block malware found by Safe Attachments
+customer_summary: >
+  Suspicious attachments may still reach users if action is not block.
+customer_next_step: >
+  Set Safe Attachments unknown malware response to Block or Dynamic Delivery.
+description: >
+  Safe Attachments is not set to block.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safeattachmentv2
+collector: exchange_collector
+remediation: >
+  Set Safe Attachments unknown malware response to Block or Dynamic Delivery.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-attachments-policies-configure
+enabled: true

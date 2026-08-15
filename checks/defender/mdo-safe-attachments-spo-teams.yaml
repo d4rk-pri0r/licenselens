@@ -1,0 +1,26 @@
+id: mdo-safe-attachments-spo-teams
+title: Safe Attachments is off for SharePoint OneDrive Teams
+customer_title: Scan files in SharePoint OneDrive and Teams
+customer_summary: >
+  Malware shared as files can bypass email-only scanning.
+customer_next_step: >
+  Enable Defender for Office 365 for SharePoint, OneDrive, and Teams.
+description: >
+  Safe Attachments is off for SharePoint OneDrive Teams.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safeattachmentv2
+collector: exchange_collector
+remediation: >
+  Enable Defender for Office 365 for SharePoint, OneDrive, and Teams.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-attachments-for-spo-odfb-teams-configure
+enabled: true
