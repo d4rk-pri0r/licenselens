@@ -43,8 +43,16 @@ def test_reference_model_includes_current_catalog_and_is_deterministic() -> None
     assert "Domain.Read.All" in model.graph_permissions
     assert len(model.coverage_rows) == 109
     assert [check.id for check in model.checks] == sorted(check.id for check in model.checks)
-    assert {check.support_state for check in model.checks} <= {"direct", "proxy", "manual"}
+    assert {check.support_state for check in model.checks} <= {
+        "direct",
+        "proxy",
+        "manual",
+        "unsupported",
+        "direct_with_proxy_fallback",
+    }
     assert "direct" in {check.support_state for check in model.checks}
+    assert "manual" in {check.support_state for check in model.checks}
+    assert "direct_with_proxy_fallback" in {check.support_state for check in model.checks}
     assert any(check.id.startswith("id-ca-") for check in model.checks)
 
 
