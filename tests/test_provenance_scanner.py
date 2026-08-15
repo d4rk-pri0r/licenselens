@@ -85,9 +85,7 @@ def test_text_path_archive_binary_rejected(tmp_path: Path) -> None:
 
     dirty_bin = tmp_path / "dirty_bin"
     dirty_bin.mkdir()
-    (dirty_bin / "payload.bin").write_bytes(
-        b"header\x00" + token.encode("utf-8") + b"\x00trailer"
-    )
+    (dirty_bin / "payload.bin").write_bytes(b"header\x00" + token.encode("utf-8") + b"\x00trailer")
     result = scan_workspace(dirty_bin)
     assert result.status == "violations"
     assert any(v.snippet_hex for v in result.violations)

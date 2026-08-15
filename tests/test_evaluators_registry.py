@@ -34,9 +34,7 @@ def test_missing_evaluator_becomes_skipped_boundary_finding(
     check = next(check for check in load_checks() if check.id == "id-ca-priv-gaps")
     owned = set(check.required_capabilities)
     registry = default_registry()
-    evaluators = {
-        key: value for key, value in registry.evaluators.items() if key != check.id
-    }
+    evaluators = {key: value for key, value in registry.evaluators.items() if key != check.id}
     slim = AssessmentRegistry(
         data_sources=registry.data_sources,
         collectors=registry.collectors,

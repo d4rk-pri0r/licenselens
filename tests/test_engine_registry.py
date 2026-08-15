@@ -25,9 +25,7 @@ def test_default_registry_resolves_all_current_checks_deterministically() -> Non
 
     # When: each check resolves through the typed registry surface.
     resolved = [registry.evaluator_for(check.id).id for check in enabled_checks]
-    callables = {
-        check.id: registry.evaluator_callable(check.id) for check in enabled_checks
-    }
+    callables = {check.id: registry.evaluator_callable(check.id) for check in enabled_checks}
     first = dump_registry_json(registry)
     second = dump_registry_json(default_registry())
 
