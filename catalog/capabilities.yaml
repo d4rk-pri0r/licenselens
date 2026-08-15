@@ -1,8 +1,13 @@
 # Capability catalog — maps Microsoft service plans / SKUs to high-value features.
 # plain_name / outcome / why_it_matters / if_unused are customer-facing (SMB-friendly).
-# Community PRs welcome. Prefer service_plan_names (stable) over sku_part_numbers.
+# Prefer service_plan_names (stable) over sku_part_numbers.
+# entitlement_kind: included | base | add_on | consumption
+# clouds: omit or [] means all known clouds; otherwise explicit commercial/gcc/gcc_high/dod.
+# backends / source_version support provenance for generated docs.
+# Community PRs welcome with verified Graph subscribedSkus plan names.
 
 version: 1
+source_version: "2026-08"
 capabilities:
   - id: entra_id_p2
     name: Microsoft Entra ID P2
@@ -17,13 +22,23 @@ capabilities:
     if_unused: >
       You are paying for stronger admin protections that are not fully turned on yet.
     workloads: [identity]
+    entitlement_kind: included
     service_plan_names:
       - AAD_PREMIUM_P2
+    service_plan_aliases:
+      - AAD_PREMIUM_P2_FOR_FACULTY
     sku_part_numbers:
       - AAD_PREMIUM_P2
       - SPE_E5
       - ENTERPRISEPREMIUM
       - EMSPREMIUM
+    sku_aliases:
+      - SPE_E5_USGOV_GCCHIGH
+      - SPE_E5_USGOV_DOD
+      - M365_E5_GOV
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
 
   - id: conditional_access
@@ -39,6 +54,7 @@ capabilities:
     if_unused: >
       Your licenses include advanced sign-in rules, but they may still be loose or incomplete.
     workloads: [identity]
+    entitlement_kind: included
     service_plan_names:
       - AAD_PREMIUM
       - AAD_PREMIUM_P2
@@ -48,6 +64,13 @@ capabilities:
       - SPE_E3
       - SPE_E5
       - ENTERPRISEPREMIUM
+    sku_aliases:
+      - SPE_E3_USGOV_GCCHIGH
+      - SPE_E5_USGOV_GCCHIGH
+      - SPE_E5_USGOV_DOD
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/identity/conditional-access/overview
 
   - id: identity_protection
@@ -63,12 +86,19 @@ capabilities:
     if_unused: >
       Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.
     workloads: [identity]
+    entitlement_kind: included
     service_plan_names:
       - AAD_PREMIUM_P2
     sku_part_numbers:
       - AAD_PREMIUM_P2
       - SPE_E5
       - ENTERPRISEPREMIUM
+    sku_aliases:
+      - SPE_E5_USGOV_GCCHIGH
+      - SPE_E5_USGOV_DOD
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/id-protection/overview-identity-protection
 
   - id: defender_office_p2
@@ -83,14 +113,23 @@ capabilities:
       reduces ransomware and invoice fraud.
     if_unused: >
       Extra email protections in your license may still be off, in test mode, or only covering a few people.
-    workloads: [defender]
+    workloads: [defender, exchange]
+    entitlement_kind: included
     service_plan_names:
       - THREAT_INTELLIGENCE
       - ATP_ENTERPRISE
+    service_plan_aliases:
+      - THREAT_INTELLIGENCE_GOV
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
       - IDENTITY_THREAT_PROTECTION
+    sku_aliases:
+      - SPE_E5_USGOV_GCCHIGH
+      - IDENTITY_THREAT_PROTECTION_GOV
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph, exchange_powershell, security_compliance_powershell]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-office-365/preset-security-policies
 
   - id: defender_endpoint_p2
@@ -106,13 +145,22 @@ capabilities:
     if_unused: >
       You may be paying for advanced device protection on seats that are not fully enrolled.
     workloads: [defender, endpoint]
+    entitlement_kind: included
     service_plan_names:
       - DEFENDER_ENDPOINT_P2
       - MDATP_XPLAT
+    service_plan_aliases:
+      - WINDEFATP
     sku_part_numbers:
       - SPE_E5
       - IDENTITY_THREAT_PROTECTION
       - DEFENDER_ENDPOINT_P2
+    sku_aliases:
+      - SPE_E5_USGOV_GCCHIGH
+      - DEFENDER_ENDPOINT_P2_GOV
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph, mde]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-endpoint/onboarding
 
   - id: defender_identity
@@ -128,13 +176,19 @@ capabilities:
     if_unused: >
       Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.
     workloads: [defender, identity]
+    entitlement_kind: included
     service_plan_names:
       - ATA
       - MDI_Service_Plan
+    service_plan_aliases:
+      - Microsoft_Defender_for_Identity
     sku_part_numbers:
       - SPE_E5
       - EMSPREMIUM
       - ENTERPRISEPREMIUM
+    clouds: [commercial, gcc, gcc_high]
+    backends: [graph, manual]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-for-identity/deploy-defender-identity
 
   - id: microsoft_sentinel
@@ -150,11 +204,17 @@ capabilities:
     if_unused: >
       A security workspace may exist, but few detections or smart analytics are turned on.
     workloads: [sentinel]
+    entitlement_kind: consumption
     service_plan_names:
       - MICROSOFT_SENTINEL
+    service_plan_aliases:
+      - Azure_Sentinel
     sku_part_numbers:
       - MICROSOFT_SENTINEL
       - AZURE_SENTINEL
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [arm, graph]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/azure/sentinel/overview
 
   - id: purview_dlp
@@ -170,11 +230,613 @@ capabilities:
     if_unused: >
       Data-protection rules may be missing or still in "test only" mode, so nothing is enforced yet.
     workloads: [purview]
+    entitlement_kind: included
     service_plan_names:
       - MIP_S_CLP2
       - INFORMATION_BARRIERS
+    service_plan_aliases:
+      - MIP_S_CLP1
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph, security_compliance_powershell]
+    source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/dlp-learn-about-dlp
+
+  - id: exchange_online
+    name: Exchange Online
+    plain_name: Business email and calendar in the cloud
+    description: Exchange Online mailbox and organization configuration surface.
+    outcome: >
+      Host mailboxes in Microsoft 365 and apply tenant email security and
+      sharing controls that protect everyday business communication.
+    why_it_matters: >
+      Email remains a primary business channel and a primary attack path.
+      Weak tenant defaults leave phishing and data exposure wide open.
+    if_unused: >
+      Mailboxes may be licensed while core protection and audit settings stay at weak defaults.
+    workloads: [exchange]
+    entitlement_kind: base
+    service_plan_names:
+      - EXCHANGE_S_ENTERPRISE
+      - EXCHANGE_S_STANDARD
+      - EXCHANGESTANDARD
+    service_plan_aliases:
+      - EXCHANGE_S_ENTERPRISE_GOV
+      - EXCHANGE_S_STANDARD_GOV
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - EXCHANGESTANDARD
+      - EXCHANGEENTERPRISE
+    sku_aliases:
+      - SPE_E3_USGOV_GCCHIGH
+      - SPE_E5_USGOV_GCCHIGH
+      - SPE_E5_USGOV_DOD
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [exchange_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/exchange/exchange-online
+
+  - id: exchange_online_protection
+    name: Exchange Online Protection
+    plain_name: Baseline spam and malware filtering for email
+    description: Built-in EOP anti-spam and anti-malware stack for Exchange Online.
+    outcome: >
+      Filter obvious junk and malware before it reaches inboxes, as the foundation
+      under optional Defender for Office 365 controls.
+    why_it_matters: >
+      Without baseline filtering, every advanced email control sits on a weak floor.
+    if_unused: >
+      Core anti-spam or anti-malware policies may be off, overly permissive, or unmonitored.
+    workloads: [exchange, defender]
+    entitlement_kind: included
+    service_plan_names:
+      - EOP_ENTERPRISE
+      - EXCHANGE_S_FOUNDATION
+    service_plan_aliases:
+      - EOP_ENTERPRISE_PREMIUM
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - EXCHANGESTANDARD
+      - EXCHANGEENTERPRISE
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [exchange_powershell, security_compliance_powershell]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/defender-office-365/eop-about
+
+  - id: defender_office_p1
+    name: Microsoft Defender for Office 365 P1
+    plain_name: Safe Attachments and Safe Links essentials
+    description: Defender for Office 365 Plan 1 safe content controls without full P2 investigation suite.
+    outcome: >
+      Detonate risky attachments and rewrite dangerous links for licensed users
+      even when the full P2 investigation pack is not present.
+    why_it_matters: >
+      Many tenants own P1-level email protections that never leave default off states.
+    if_unused: >
+      Safe content policies may be missing, scoped to pilots, or left in evaluation mode.
+    workloads: [defender, exchange]
+    entitlement_kind: add_on
+    service_plan_names:
+      - ATP_ENTERPRISE
+    sku_part_numbers:
+      - ATP_ENTERPRISE
+      - IDENTITY_THREAT_PROTECTION
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [exchange_powershell, security_compliance_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/defender-office-365/defender-for-office-365
+
+  - id: sharepoint_online
+    name: SharePoint Online
+    plain_name: Team sites and shared file libraries
+    description: SharePoint Online tenant and site collaboration controls.
+    outcome: >
+      Host shared libraries with clear external sharing boundaries and default
+      link permissions that match how the business actually works.
+    why_it_matters: >
+      Over-broad sharing turns one mistaken link into a public data leak.
+    if_unused: >
+      Tenant sharing defaults may still allow anyone links or unmanaged access.
+    workloads: [collaboration]
+    entitlement_kind: base
+    service_plan_names:
+      - SHAREPOINTENTERPRISE
+      - SHAREPOINTWAC
+      - SHAREPOINTSTANDARD
+    service_plan_aliases:
+      - SHAREPOINTENTERPRISE_GOV
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - SHAREPOINTSTANDARD
+      - SHAREPOINTENTERPRISE
+    sku_aliases:
+      - SPE_E3_USGOV_GCCHIGH
+      - SPE_E5_USGOV_GCCHIGH
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [sharepoint_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/sharepoint/introduction
+
+  - id: onedrive_for_business
+    name: OneDrive for Business
+    plain_name: Personal work files in the cloud
+    description: OneDrive for Business storage and sharing controls tied to SharePoint tenancy.
+    outcome: >
+      Give people a private work drive while still enforcing sharing limits,
+      device access, and retention expectations.
+    why_it_matters: >
+      Personal work drives often hold the same sensitive files as shared libraries.
+    if_unused: >
+      OneDrive sharing or sync controls may lag behind the SharePoint tenant baseline.
+    workloads: [collaboration]
+    entitlement_kind: included
+    service_plan_names:
+      - ONEDRIVESTANDARD
+      - SHAREPOINTENTERPRISE
+      - SHAREPOINTWAC
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [sharepoint_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/onedrive/onedrive-admin
+
+  - id: teams
+    name: Microsoft Teams
+    plain_name: Chat, meetings, and teamwork hub
+    description: Microsoft Teams messaging, meetings, and external access controls.
+    outcome: >
+      Keep collaboration fast while controlling guests, anonymous join, apps,
+      and recording exposure.
+    why_it_matters: >
+      Teams is where decisions and files move quickly — weak meeting or guest
+      defaults become an easy side door.
+    if_unused: >
+      External access, lobby, or app policies may still favor convenience over control.
+    workloads: [teams, collaboration]
+    entitlement_kind: base
+    service_plan_names:
+      - TEAMS1
+      - MCOSTANDARD
+      - TEAMS_COMMERCIAL_TRIAL
+    service_plan_aliases:
+      - TEAMS_GOV
+      - MCOSTANDARD_GOV
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - TEAMS_EXPLORATORY
+    sku_aliases:
+      - SPE_E3_USGOV_GCCHIGH
+      - SPE_E5_USGOV_GCCHIGH
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [teams_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/microsoftteams/teams-overview
+
+  - id: power_platform
+    name: Microsoft Power Platform
+    plain_name: Low-code apps, flows, and environments
+    description: Power Apps, Power Automate, and related environment governance.
+    outcome: >
+      Let teams build useful apps and automations inside governed environments
+      with DLP and tenant isolation boundaries.
+    why_it_matters: >
+      Ungoverned makers can connect business data to personal connectors overnight.
+    if_unused: >
+      Environment creation, connector policies, or tenant isolation may still be wide open.
+    workloads: [power_platform]
+    entitlement_kind: included
+    service_plan_names:
+      - FLOW_O365_P2
+      - POWERAPPS_O365_P2
+      - FLOW_O365_P3
+      - POWERAPPS_O365_P3
+    service_plan_aliases:
+      - POWERAPPS_PER_USER
+      - FLOW_PER_USER
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - POWERAPPS_PER_USER
+      - FLOW_PER_USER
+    clouds: [commercial, gcc, gcc_high]
+    backends: [power_platform, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/power-platform/admin/admin-documentation
+
+  - id: power_bi_pro
+    name: Power BI Pro
+    plain_name: Shared interactive business reports
+    description: Power BI Pro workspace sharing and tenant admin controls.
+    outcome: >
+      Publish and share interactive reports with colleagues under tenant-level
+      export, sharing, and guest boundaries.
+    why_it_matters: >
+      BI content often contains concentrated business truth; loose sharing leaks strategy.
+    if_unused: >
+      Tenant sharing or export settings may still allow broader distribution than intended.
+    workloads: [power_bi]
+    entitlement_kind: base
+    service_plan_names:
+      - BI_AZURE_P2
+      - POWER_BI_PRO
+      - POWER_BI_STANDARD
+    service_plan_aliases:
+      - BI_AZURE_P_2_GOV
+    sku_part_numbers:
+      - POWER_BI_PRO
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - POWER_BI_STANDARD
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [power_bi, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/power-bi/enterprise/service-admin-planning
+
+  - id: power_bi_premium
+    name: Power BI Premium per user
+    plain_name: Advanced capacity-backed Power BI features
+    description: Power BI Premium per user features beyond Pro sharing.
+    outcome: >
+      Use advanced distribution and capacity-backed features when the business
+      needs more than Pro workspaces alone.
+    why_it_matters: >
+      Premium features change how widely reports can scale — misconfiguration multiplies exposure.
+    if_unused: >
+      Premium seats may be assigned while tenant admin controls stay at Pro-era defaults.
+    workloads: [power_bi]
+    entitlement_kind: add_on
+    service_plan_names:
+      - POWER_BI_PREMIUM_PER_USER
+      - BI_AZURE_P3
+    sku_part_numbers:
+      - POWER_BI_PREMIUM_PER_USER
+      - PBI_PREMIUM_PER_USER
+    clouds: [commercial, gcc, gcc_high]
+    backends: [power_bi, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq
+
+  - id: intune
+    name: Microsoft Intune
+    plain_name: Manage and protect company devices and apps
+    description: Intune device compliance, configuration, and app protection.
+    outcome: >
+      Require healthy devices, push secure settings, and protect work data on
+      phones and PCs people already use.
+    why_it_matters: >
+      Unmanaged devices are a common path around strong cloud identity controls.
+    if_unused: >
+      Compliance or configuration profiles may be missing, unassigned, or never enforced.
+    workloads: [intune, endpoint]
+    entitlement_kind: included
+    service_plan_names:
+      - INTUNE_A
+      - INTUNE_A_VL
+      - MDM_SALES_COLLABORATION
+    service_plan_aliases:
+      - INTUNE_EDU
+      - INTUNE_A_GOV
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - EMSPREMIUM
+      - INTUNE_A
+    sku_aliases:
+      - SPE_E3_USGOV_GCCHIGH
+      - SPE_E5_USGOV_GCCHIGH
+      - SPE_E5_USGOV_DOD
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/mem/intune/fundamentals/what-is-intune
+
+  - id: defender_endpoint_p1
+    name: Microsoft Defender for Endpoint P1
+    plain_name: Essential next-generation device protection
+    description: Defender for Endpoint Plan 1 attack surface reduction and next-gen protection.
+    outcome: >
+      Turn on core endpoint protections for licensed devices without the full P2 EDR pack.
+    why_it_matters: >
+      P1 still blocks many commodity attacks when policies are actually deployed.
+    if_unused: >
+      Attack-surface or next-gen policies may never reach the devices you already pay for.
+    workloads: [defender, endpoint]
+    entitlement_kind: add_on
+    service_plan_names:
+      - DEFENDER_ENDPOINT_P1
+      - MDE_P1
+    sku_part_numbers:
+      - DEFENDER_ENDPOINT_P1
+      - MDE_P1
+      - SPE_E3
+      - IDENTITY_THREAT_PROTECTION
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [mde, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/defender-endpoint/defender-endpoint-plan-1-2
+
+  - id: defender_xdr
+    name: Microsoft Defender XDR
+    plain_name: Cross-product incident correlation
+    description: Unified Defender XDR incident and signal correlation across workloads.
+    outcome: >
+      Connect identity, email, endpoint, and cloud signals into incidents that
+      show the full attack story instead of isolated alerts.
+    why_it_matters: >
+      Attackers hop products. Siloed alerts hide the path from phishing to privilege.
+    if_unused: >
+      XDR correlation may be licensed while automated investigation and response stay idle.
+    workloads: [defender]
+    entitlement_kind: included
+    service_plan_names:
+      - DEFENDER_ENDPOINT_P2
+      - THREAT_INTELLIGENCE
+      - MDI_Service_Plan
+      - ATA
+    service_plan_aliases:
+      - WINDEFATP
+    sku_part_numbers:
+      - SPE_E5
+      - IDENTITY_THREAT_PROTECTION
+      - EMSPREMIUM
+    sku_aliases:
+      - SPE_E5_USGOV_GCCHIGH
+      - IDENTITY_THREAT_PROTECTION_GOV
+    clouds: [commercial, gcc, gcc_high]
+    backends: [graph, mde]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/defender-xdr/microsoft-365-defender
+
+  - id: purview_audit
+    name: Microsoft Purview Audit
+    plain_name: A searchable record of important activity
+    description: Unified audit log search and retention for Microsoft 365 activities.
+    outcome: >
+      Reconstruct who did what across mail, files, and admin actions when something goes wrong.
+    why_it_matters: >
+      Without audit history, investigations stall and compliance questions go unanswered.
+    if_unused: >
+      Audit logging may be off, truncated, or never queried after an incident.
+    workloads: [purview]
+    entitlement_kind: included
+    service_plan_names:
+      - M365_ADVANCED_AUDITING
+      - EQUIVIO_ANALYTICS
+    service_plan_aliases:
+      - AUDIT_ENTERPRISE
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph, security_compliance_powershell]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/purview/audit-solutions-overview
+
+  - id: purview_sensitivity_labels
+    name: Microsoft Purview Sensitivity Labels
+    plain_name: Labels that classify and protect files and mail
+    description: Sensitivity labeling and protection for documents and email.
+    outcome: >
+      Mark sensitive content and apply encryption or access limits that travel with the file.
+    why_it_matters: >
+      Classification without enforcement is a sticker; labels with protection change outcomes.
+    if_unused: >
+      Labels may exist but remain unpublished, unused, or never auto-applied.
+    workloads: [purview]
+    entitlement_kind: included
+    service_plan_names:
+      - MIP_S_CLP1
+      - MIP_S_CLP2
+      - INFORMATION_PROTECTION_COMPLIANCE
+    sku_part_numbers:
+      - SPE_E3
+      - SPE_E5
+      - ENTERPRISEPACK
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [graph, security_compliance_powershell]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/purview/sensitivity-labels
+
+  - id: purview_retention
+    name: Microsoft Purview Data Lifecycle Management
+    plain_name: Retention rules that keep or remove content on schedule
+    description: Retention policies and retention labels that govern how long content is kept.
+    outcome: >
+      Keep content for legal or regulatory periods and remove it when it is no
+      longer needed, reducing both evidence risk and storage cost.
+    why_it_matters: >
+      Retention protects evidence and reduces over-retention risk and storage cost.
+    if_unused: >
+      Retention policies may be absent, so content is either deleted too early
+      or kept indefinitely without a defensible schedule.
+    workloads: [purview]
+    entitlement_kind: included
+    service_plan_names:
+      - Data_Lifecycle_Management
+      - Records_Management
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE
+      - SPE_E3
+      - ENTERPRISEPACK
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [security_compliance_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/purview/retention
+
+  - id: purview_insider_risk
+    name: Microsoft Purview Insider Risk Management
+    plain_name: Early warning for risky insider activity
+    description: Insider risk management policies and analytics.
+    outcome: >
+      Spot patterns that suggest data theft, leak, or policy abuse by people who already have access.
+    why_it_matters: >
+      Trusted access is powerful. Without signals, insider incidents surface only after damage.
+    if_unused: >
+      Insider risk policies may be unlicensed in practice or never moved past trial defaults.
+    workloads: [purview]
+    entitlement_kind: add_on
+    service_plan_names:
+      - INSIDER_RISK_MANAGEMENT
+      - MIR_SERVICE
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE
+      - INSIDER_RISK_MANAGEMENT
+    clouds: [commercial, gcc, gcc_high]
+    backends: [security_compliance_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/purview/insider-risk-management
+
+  - id: purview_ediscovery
+    name: Microsoft Purview eDiscovery
+    plain_name: Legal hold and investigation search
+    description: eDiscovery cases, holds, and content search capabilities.
+    outcome: >
+      Preserve and search relevant content when legal or investigative work demands it.
+    why_it_matters: >
+      Missing holds destroy evidence and create legal and regulatory exposure.
+    if_unused: >
+      eDiscovery tools may be licensed while no one can run a defensible case workflow.
+    workloads: [purview]
+    entitlement_kind: included
+    service_plan_names:
+      - EQUIVIO_ANALYTICS
+      - LOCKBOX_ENTERPRISE
+      - EXCHANGE_ANALYTICS
+    service_plan_aliases:
+      - M365_ADVANCED_AUDITING
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [security_compliance_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/purview/ediscovery
+
+  - id: purview_communication_compliance
+    name: Microsoft Purview Communication Compliance
+    plain_name: Oversight for risky business communications
+    description: Communication compliance policies for email and Teams channels.
+    outcome: >
+      Detect harassment, threats, or sensitive-data sharing patterns in business conversations.
+    why_it_matters: >
+      Toxic or noncompliant communication creates legal and cultural risk that identity tools miss.
+    if_unused: >
+      Communication compliance may be entitled but never scoped to the channels that matter.
+    workloads: [purview]
+    entitlement_kind: add_on
+    service_plan_names:
+      - COMMUNICATION_COMPLIANCE
+      - COMM_COMPLIANCE
+    sku_part_numbers:
+      - SPE_E5
+      - ENTERPRISEPREMIUM
+      - INFORMATION_PROTECTION_COMPLIANCE
+    clouds: [commercial, gcc, gcc_high]
+    backends: [security_compliance_powershell, graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/purview/communication-compliance
+
+  - id: log_analytics
+    name: Azure Log Analytics
+    plain_name: The log store behind security analytics
+    description: Log Analytics workspace ingestion used by Sentinel and Azure Monitor.
+    outcome: >
+      Land security and operational logs in a workspace that detections and investigations can query.
+    why_it_matters: >
+      Sentinel without healthy log ingestion is an empty command center.
+    if_unused: >
+      Workspaces may exist while critical tables are missing, short-retained, or never connected.
+    workloads: [sentinel, azure]
+    entitlement_kind: consumption
+    service_plan_names: []
+    sku_part_numbers:
+      - MICROSOFT_SENTINEL
+      - AZURE_SENTINEL
+    sku_aliases:
+      - AZURE_MONITOR_LOGS
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [arm]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview
+
+  - id: defender_for_cloud_cspm
+    name: Microsoft Defender for Cloud CSPM
+    plain_name: Cloud security posture for Azure resources
+    description: Foundational/CSPM posture recommendations in Defender for Cloud.
+    outcome: >
+      See misconfigurations across Azure resources that weaken the security of
+      identities, data, and workloads you already run.
+    why_it_matters: >
+      Cloud posture gaps often open the door before any malware runs.
+    if_unused: >
+      Defender for Cloud may be on paper while CSPM recommendations stay untriaged.
+    workloads: [azure, defender]
+    entitlement_kind: consumption
+    service_plan_names: []
+    sku_part_numbers:
+      - DEFENDER_CSPM
+      - ASC_CSPM
+    sku_aliases:
+      - MICROSOFT_DEFENDER_FOR_CLOUD_CSPM
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [arm]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/azure/defender-for-cloud/concept-cloud-security-posture-management
+
+  - id: defender_for_cloud_servers
+    name: Microsoft Defender for Servers
+    plain_name: Threat protection for Azure and hybrid servers
+    description: Defender for Cloud Servers plan for VM and hybrid server protection.
+    outcome: >
+      Extend server threat detection and hardening guidance to the machines that
+      still run critical line-of-business systems.
+    why_it_matters: >
+      Servers hold concentrated value; unmonitored VMs are a favorite ransomware target.
+    if_unused: >
+      The Servers plan may be enabled in billing while agents, extensions, or policies lag.
+    workloads: [azure, defender]
+    entitlement_kind: consumption
+    service_plan_names: []
+    sku_part_numbers:
+      - DEFENDER_SERVERS_P1
+      - DEFENDER_SERVERS_P2
+      - ASC_SERVERS
+    sku_aliases:
+      - MICROSOFT_DEFENDER_FOR_SERVERS
+    clouds: [commercial, gcc, gcc_high, dod]
+    backends: [arm]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/azure/defender-for-cloud/defender-for-servers-introduction
