@@ -1,0 +1,26 @@
+id: mdo-safe-links-block-list
+title: Safe Links block-list checks are incomplete
+customer_title: Screen links in email Teams and Office apps
+customer_summary: >
+  Known-malicious URLs can still be clicked without Safe Links.
+customer_next_step: >
+  Enable Safe Links for email, Teams, and Office apps.
+description: >
+  Safe Links block-list checks are incomplete.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safelinksv2
+collector: exchange_collector
+remediation: >
+  Enable Safe Links for email, Teams, and Office apps.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-links-policies-configure
+enabled: true

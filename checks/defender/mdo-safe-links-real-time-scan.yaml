@@ -1,0 +1,26 @@
+id: mdo-safe-links-real-time-scan
+title: Safe Links real-time URL scanning is off
+customer_title: Scan download links in real time
+customer_summary: >
+  Direct download links can deliver malware without real-time scanning.
+customer_next_step: >
+  Enable real-time URL scanning and wait-for-scan before delivery.
+description: >
+  Safe Links real-time URL scanning is off.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safelinksv2
+collector: exchange_collector
+remediation: >
+  Enable real-time URL scanning and wait-for-scan before delivery.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-links-policies-configure
+enabled: true

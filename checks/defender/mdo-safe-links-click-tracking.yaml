@@ -1,0 +1,26 @@
+id: mdo-safe-links-click-tracking
+title: Safe Links click tracking is off
+customer_title: Track clicks on rewritten links
+customer_summary: >
+  Without click tracking you cannot see who opened a later-malicious link.
+customer_next_step: >
+  Enable Track user clicks in Safe Links policies.
+description: >
+  Safe Links click tracking is off.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safelinksv2
+collector: exchange_collector
+remediation: >
+  Enable Track user clicks in Safe Links policies.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-links-policies-configure
+enabled: true
