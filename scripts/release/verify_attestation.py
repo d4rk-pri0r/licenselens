@@ -75,9 +75,7 @@ def main(argv: list[str] | None = None) -> int:
                 problems.append("signing-status.json is malformed")
             else:
                 if not bool(status.get("signed")):
-                    problems.append(
-                        "signing required but signing-status.json reports signed=false"
-                    )
+                    problems.append("signing required but signing-status.json reports signed=false")
         else:
             # receipt kind may still prove signing; marker absence is a soft signal
             pass

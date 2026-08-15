@@ -44,8 +44,7 @@ from typing import Final
 REPO_ROOT: Final = Path(__file__).resolve().parent.parent
 DEFAULT_OUT: Final = REPO_ROOT / ".omo/evidence/maturity-and-check-expansion"
 DEFAULT_CONFORMANCE: Final = (
-    REPO_ROOT
-    / ".omo/evidence/licenselens-plan-conformance-and-provenance-audit/conformance.json"
+    REPO_ROOT / ".omo/evidence/licenselens-plan-conformance-and-provenance-audit/conformance.json"
 )
 DEFAULT_PROVENANCE_RECEIPT: Final = REPO_ROOT / "dist" / "provenance-receipts"
 

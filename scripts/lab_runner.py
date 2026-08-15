@@ -841,9 +841,7 @@ def _arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--out",
         type=Path,
-        default=(
-            REPO_ROOT / ".omo" / "evidence" / "maturity-and-check-expansion"
-        ),
+        default=(REPO_ROOT / ".omo" / "evidence" / "maturity-and-check-expansion"),
     )
     parser.add_argument("--matrix", type=Path, default=MATRIX_PATH)
     return parser
