@@ -1,0 +1,30 @@
+id: pur-sensitivity-labels-published
+title: Sensitivity labels are not published to users
+customer_title: Publish sensitivity labels
+customer_summary: >
+  Labels that classify and protect files and email only help if people can
+  actually apply them. Unpublished labels are invisible in the apps.
+customer_next_step: >
+  Create a label policy that publishes your sensitivity labels to the people
+  who handle sensitive content, then confirm the labels appear in Office apps.
+description: >
+  Sensitivity labels may be defined but never published through a label policy,
+  so classification and protection never reach users.
+workload: purview
+required_capabilities:
+  - purview_sensitivity_labels
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/informationprotection/labelpolicies
+collector: power_data_collector
+remediation: >
+  Publish sensitivity labels through an enabled label policy scoped to users
+  and groups, and verify auto-labeling where content is created in bulk.
+references:
+  - https://learn.microsoft.com/purview/create-sensitivity-labels
+enabled: true
