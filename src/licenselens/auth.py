@@ -23,15 +23,22 @@ class AuthMode(StrEnum):
 
 GRAPH_SCOPE = "https://graph.microsoft.com/.default"
 
-# Graph application permissions planned for identity-first live scans (read-only).
 REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
-    "Organization.Read.All",
+    "AccessReview.Read.All",
+    "Application.Read.All",
+    "AuditLog.Read.All",
+    "DelegatedPermissionGrant.Read.All",
+    "DeviceManagementConfiguration.Read.All",
+    "DeviceManagementManagedDevices.Read.All",
     "Directory.Read.All",
+    "Domain.Read.All",
+    "Organization.Read.All",
     "Policy.Read.All",
     "RoleManagement.Read.Directory",
-    "AuditLog.Read.All",
+    "SecurityAlert.Read.All",
     "SecurityEvents.Read.All",
-    "AccessReview.Read.All",
+    "SecurityIncident.Read.All",
+    "User.Read.All",
 )
 
 

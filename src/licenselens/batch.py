@@ -8,6 +8,7 @@ from typing import Any
 import yaml
 
 from licenselens.auth import AuthMode, build_auth_context
+from licenselens.cli_scan_config import resolve_scan_profile, write_report_archive
 from licenselens.engine.runner import run_scan
 from licenselens.output import build_report_dir
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
@@ -49,12 +50,34 @@ def _merged_entry(defaults: dict[str, Any], entry: dict[str, Any]) -> dict[str, 
     return merged
 
 
+def _entry_backends(entry: dict[str, Any], cli_backends: list[str] | None) -> list[str] | None:
+    raw = entry.get("backend") or entry.get("backends")
+    if raw is None:
+        return cli_backends
+    if isinstance(raw, str):
+        return [part.strip() for part in raw.split(",") if part.strip()]
+    if isinstance(raw, list):
+        return [str(item).strip() for item in raw if str(item).strip()]
+    return cli_backends
+
+
+def _entry_path(entry: dict[str, Any], key: str, fallback: Path | None) -> Path | None:
+    value = entry.get(key)
+    if value is None or value == "":
+        return fallback
+    return Path(str(value))
+
+
 def run_batch(
     config_path: Path,
     *,
     output_dir: Path,
     dry_run: bool = True,
     strict_proxy: bool = True,
+    profile_id: str | None = None,
+    rules_path: Path | None = None,
+    backends: list[str] | None = None,
+    report_archive: bool = False,
 ) -> list[dict[str, Any]]:
     """Run scans for each tenant entry; returns summary rows."""
     defaults, tenants = load_tenants_config(config_path)
@@ -69,7 +92,7 @@ def run_batch(
         "|---|---|---:|---:|---|--:|",
     ]
     exposed_tenants: list[str] = []
-    index_rows: list[tuple[tuple[int, int, str], str]] = []
+    index_rows: list[tuple[tuple[object, ...], str]] = []
 
     for raw_entry in tenants:
         entry = _merged_entry(defaults, raw_entry)
@@ -84,7 +107,18 @@ def run_batch(
         if isinstance(packs, str):
             packs = [p.strip() for p in packs.split(",") if p.strip()]
         allow_email_proxy = bool(entry.get("allow_email_proxy", False))
+        tenant_profile = entry.get("profile") or profile_id
+        tenant_config = _entry_path(entry, "config", None)
+        tenant_rules = _entry_path(entry, "rules", rules_path)
+        tenant_backends = _entry_backends(entry, backends)
+        tenant_archive = bool(entry.get("report_archive", report_archive))
         try:
+            resolved_profile = resolve_scan_profile(
+                profile_id=str(tenant_profile) if tenant_profile else None,
+                config_path=tenant_config,
+                rules_path=tenant_rules,
+                backends=tenant_backends,
+            )
             auth = build_auth_context(
                 mode=mode,
                 tenant_id=tenant_id,
@@ -100,6 +134,7 @@ def run_batch(
                 tenant_slug=slug,
                 discover_workspaces=bool(entry.get("discover_workspaces")),
                 packs=packs,
+                profile=resolved_profile,
             )
             out = build_report_dir(
                 output_dir,
@@ -110,6 +145,8 @@ def run_batch(
             html = write_html_report(result, out / "security-license-lens-report.html")
             write_json_report(result, out / "security-license-lens-report.json")
             write_markdown_report(result, out / "security-license-lens-report.md")
+            if tenant_archive:
+                write_report_archive(output_dir=out, result=result)
             gaps = result.counts_by_status.get("gap", 0) + result.counts_by_status.get("partial", 0)
             exposed = result.exposed_count
             if exposed:
@@ -131,7 +168,6 @@ def run_batch(
             )
             index_rows.append(
                 (
-                    # exposed first, most exposed, then low realized
                     (0 if exposed else 1, -exposed, realized, slug),
                     f"| {slug} | {gaps} | {exposed} | {realized}% | {worst_move} | `{out}` |",
                 )
@@ -166,3 +202,6 @@ def run_batch(
     output_dir.mkdir(parents=True, exist_ok=True)
     index_path.write_text("\n".join(index_lines) + "\n", encoding="utf-8")
     return rows
+
+
+__all__ = ["load_tenants_config", "run_batch"]
