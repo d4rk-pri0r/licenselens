@@ -90,13 +90,10 @@ def test_release_gate_treats_deferred_like_failure_in_exit_aggregation(gate) -> 
     failed = [r for r in results if r.status == "fail"]
     deferred = [r for r in results if r.status == "deferred"]
 
-    intended_exit = 1 if (failed or deferred) else 0
-    assert intended_exit == 1
-
-    # Live main() policy replicated from scripts/release_gate.py:
-    #   return 1 if failed else 0
-    live_exit = 1 if failed else 0
+    assert not failed and len(deferred) == 2
+    live_exit = gate.gate_exit_code(results)
     assert live_exit != 0, (
-        "release_gate main still returns 0 when steps are only deferred "
-        f"(failed={len(failed)} deferred={len(deferred)}) (AF-G1/G2)"
+        "release_gate gate_exit_code must return nonzero when steps are only "
+        f"deferred (failed={len(failed)} deferred={len(deferred)}) (AF-G1/G2)"
     )
+    assert gate.gate_exit_code([gate.StepResult("ok", "ok", "pass", 0, 0, "ok")]) == 0

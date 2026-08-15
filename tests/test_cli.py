@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 import yaml
@@ -8,6 +9,7 @@ from licenselens.cli import app
 runner = CliRunner()
 
 FIXTURES = Path(__file__).parent / "fixtures"
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
 
 
 def test_version_command():
@@ -245,9 +247,11 @@ def test_quickstart_help_and_invalid_secret_rail():
 
 
 def test_scan_help_exposes_profile_config_rules_backend_archive():
+    # GITHUB_ACTIONS/FORCE_COLOR make Typer's rich highlighter split "--opt"
+    # into colored "-" + "-opt", so assert on ANSI-stripped help text.
     result = runner.invoke(app, ["scan", "--help"])
     assert result.exit_code == 0, result.output
-    help_text = result.stdout
+    help_text = _ANSI_ESCAPE.sub("", result.stdout or result.output)
     assert "--profile" in help_text
     assert "--config" in help_text
     assert "--rules" in help_text

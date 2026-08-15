@@ -15,7 +15,8 @@ Fail-closed contract:
   * every step must exit within its allowed exit-code set,
   * every ``required_outputs`` path must exist afterwards,
   * every ``required_markers`` substring must appear in stdout,
-  * any violation marks the step ``FAIL`` and the whole gate exits non-zero.
+  * any violation marks the step ``FAIL`` and the whole gate exits non-zero,
+  * any ``deferred`` step is treated like failure in exit aggregation (nonzero).
 
 The ledger is written as JSON (``release-gate.json``) and a human summary
 (``release-gate.txt``) under the evidence directory, plus the same to ``dist/``
@@ -289,6 +290,17 @@ def run_step(step: Step) -> StepResult:
 
 def deferred_result(step_id: str, title: str, note: str) -> StepResult:
     return StepResult(step_id, title, "deferred", None, 0, "", note)
+
+
+def gate_exit_code(results: list[StepResult]) -> int:
+    """Aggregate step statuses into the process exit code (fail-closed).
+
+    Deferred steps count as failure: a gap recorded in the ledger must not
+    yield a green gate exit. Only an all-pass result returns 0.
+    """
+    if any(r.status in ("fail", "deferred") for r in results):
+        return 1
+    return 0
 
 
 # ---------------------------------------------------------------------------
@@ -1334,6 +1346,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     failed = [r for r in results if r.status == "fail"]
+    deferred = [r for r in results if r.status == "deferred"]
     for r in results:
         print(f"[{r.status.upper():8}] {r.id}: {r.title}")
         if r.note:
@@ -1347,14 +1360,14 @@ def main(argv: list[str] | None = None) -> int:
         "steps": [r.to_dict() for r in results],
         "passed": sum(1 for r in results if r.status == "pass"),
         "failed": len(failed),
-        "deferred": sum(1 for r in results if r.status == "deferred"),
+        "deferred": len(deferred),
     }
     (out / "release-gate.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     (out / "release-gate.txt").write_text(_render_ledger(results), encoding="utf-8")
 
     print(f"\npassed={payload['passed']} failed={payload['failed']} deferred={payload['deferred']}")
     print(f"ledger -> {out / 'release-gate.txt'}")
-    return 1 if failed else 0
+    return gate_exit_code(results)
 
 
 def _render_ledger(results: list[StepResult]) -> str:
@@ -1380,7 +1393,7 @@ def _render_ledger(results: list[StepResult]) -> str:
         "",
         "The gate is fail-closed: any step whose exit code falls outside its allowed",
         "set, whose required output is absent, or whose required output marker is",
-        "missing is marked FAIL and the gate exits non-zero.",
+        "missing is marked FAIL. Deferred steps also fail the gate (nonzero exit).",
         "",
     ]
     return "\n".join(lines)
