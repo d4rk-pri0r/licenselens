@@ -15,10 +15,10 @@ The identity is a **layered enterprise security console**. Cool-charcoal surface
 - No brass identity tokens (`#b9a06a`, `#cbb683`, `#ddcca8`, `#594818`).
 - No violet/purple/pink AI gradient, and no navy `#5b9dff` or saturated cyan product accent.
 - No glassmorphism, backdrop-blur, neon/cyberpunk, or decorative glow stacks.
-- No external font, CDN, icon package, image asset, data-URI, or network request.
-- No external/embedded-file SVG. Inline `<svg>` macros are allowed when they use `currentColor` and `aria-hidden="true"` beside a visible text label.
+- No external font, CDN, icon package, image asset, data-URI, or network request — **except** the narrow `workload-icon` primitive below (todo-15 checksum-pinned local hashed images only).
+- No external/embedded-file SVG. Inline `<svg>` macros are allowed when they use `currentColor` and `aria-hidden="true"` beside a visible text label. The `workload-icon` exception may use local hashed `<img>` files (SVG/PNG) from the offline vendor allowlist; never inline vendor SVG into HTML/JS.
 - No blanket pill or radius above 4px. Circles and 999px pills are forbidden as component shapes.
-- No emoji iconography and no copied vendor branding, logos, product names, exact vendor tokens, or trade dress.
+- No emoji iconography and no copied vendor branding, logos, product names, exact vendor tokens, or trade dress — **except** the narrow `workload-icon` primitive below for product-identification marks only (never LicenseLens branding, never status meaning).
 - No light-mode UI feature. The screen is always dark; only print inverts to light ink.
 - Shadows are exactly the two pinned tokens below, applied only to raised/focused/interactive layers. Ordinary records stay tonal + 1px rules with no shadow.
 
@@ -165,12 +165,12 @@ Eight primitives. Each lists Structure, Variants, Spacing, States, Accessibility
 - **Motion:** none on the container.
 - **Layout:** full-width stacked list. Surface: `--surface-1`.
 
-### 6. Filter group
+### 6. Filter group (compound)
 
-- **Structure:** wrapping bar of segmented rectangular buttons (2px radius) with trailing "Showing N of N" count. Status and workload groups each end with All.
-- **Spacing:** button gap `8px`; button padding sized to hit 44px touch / 24px fine-pointer targets.
+- **Structure:** a labeled wrapping bar of segmented rectangular buttons (2px radius). Each group owns one facet (status, severity, confidence, evaluation mode, profile, workload). Within a group selection is **OR** (multi-select toggle); across groups facets compose with **AND**. A trailing **Clear all** control resets every group and the search box.
+- **Spacing:** button gap `8px`; button padding sized to hit 44px touch / 24px fine-pointer targets; group gap `12px`; group label is a muted uppercase micro-label.
 - **States:** default (`--surface-1`, `--text-2`); hover (accent border/text via `--accent-hover`); active (accent rule + accent text on `--surface-2`); `:focus-visible` 2px `--accent-focus` outline, 2px offset.
-- **Accessibility:** `role="group"`; `aria-pressed`; count is `role="status"` `aria-live="polite"`. Active is never color-only.
+- **Accessibility:** each group is `role="group"` with an `aria-label`; every button exposes `aria-pressed`; result count is `role="status"` `aria-live="polite"`. Active is never color-only.
 - **Motion:** color/border/background ≤150ms.
 - **Layout:** flex-wrap; count `margin-left: auto`.
 
@@ -190,6 +190,44 @@ Eight primitives. Each lists Structure, Variants, Spacing, States, Accessibility
 - **Accessibility:** `<th scope>`; numeric columns right-aligned with `tabular-nums`; mono IDs; long identifiers wrap; status labels use PRESENTATION words, not raw enum values.
 - **Motion:** none.
 - **Layout:** full-width; handset tables scroll inside the disclosure.
+
+### 9. App shell
+
+- **Structure:** fixed header (brand + tenant meta) and a fixed workload navigation strip; a single bounded `<main>` is the only vertical scroll owner. `body` is `height:100vh; overflow:hidden; display:flex; flex-direction:column`; header/nav are `flex:0 0 auto`; `main` is `flex:1 1 auto; overflow-y:auto`.
+- **States:** header/nav static; `main` scrolls; section anchors carry `scroll-margin-top` equal to the fixed chrome height so hash-deep links are not occluded.
+- **Accessibility:** nav is `<nav aria-label="Workload navigation">`; the active tab exposes `aria-current="page"`; anchors target `#findings` and per-finding `#finding-<check-id>`.
+- **Motion:** none beyond the scroll itself; `prefers-reduced-motion` disables smooth scrolling.
+- **Layout:** full-viewport flex column; content max-width `1100px` inside `main`.
+
+### 10. Search field
+
+- **Structure:** a text `<input type="search">` with a visible or visually-hidden label and a mono-friendly placeholder; a magnifier is *not* rendered (no icon font/image).
+- **States:** default (`--surface-2` fill, `--border` rule); focus (2px `--accent-focus` outline); populated (clear affordance is the native search clear, kept).
+- **Accessibility:** real input (native keyboard/search semantics); label text "Search findings"; `autocomplete="off"` `spellcheck="false"`; case-insensitive substring match across finding text — never regex, never rendered back as HTML.
+- **Motion:** none.
+- **Layout:** full width above the filter bar.
+
+### 11. Pagination
+
+- **Structure:** native `prev`/`next` buttons, a "Page N of M" indicator, and a native `<select>` for 25/50/100 results per page.
+- **States:** prev disabled on first page; next disabled on last page; buttons follow the target-size contract.
+- **Accessibility:** `<nav aria-label="Pagination">`; buttons have explicit labels; the page size select has a visible label; page changes preserve focus on the pager.
+- **Motion:** none.
+- **Layout:** right-aligned below the findings list; hidden entirely when the result count is zero.
+
+### 12. Workload icon (owner-approved exception)
+
+Narrow exception to both the **no image asset / no icon package** ban and the **no vendor logo** ban. Owner-approved for product identification only.
+
+- **Allowlist only:** exactly the 12 checksum-pinned files under `assets/vendor/microsoft-cloud/` from the todo-15 manifest (`manifest.yaml`). Emitted into the offline report bundle as content-hashed `kind: image` assets. CSP remains `img-src 'self'`.
+- **Still forbidden:** CDNs, remote fetch, hotlinks, data-URIs, inline vendor SVG, unofficial/legacy/corporate-lockup assets, any image outside the 12-file allowlist, and any use as the LicenseLens product mark.
+- **Structure:** local `<img class="workload-icon">` with explicit `width`/`height` (16–20px), `alt=""`, `aria-hidden="true"`, beside visible workload text that remains the accessible name.
+- **Placement only:** workload navigation tabs, workload chart/section context, and capability card headers. Never filters, status glyphs, finding-status semantics, product hero, or icon-only controls.
+- **No image for `general`.** Missing mapping → text only.
+- **States:** decorative; never conveys status or severity.
+- **Accessibility:** adjacent visible text names the workload; icons never become accessible names or status indicators.
+- **Motion:** none.
+- **Packaging:** wheel `force-include` and PyInstaller `DATA_DIRS` ship `assets/vendor/microsoft-cloud` → `licenselens/data/vendor/microsoft-cloud`.
 
 ## Motion & Interaction
 

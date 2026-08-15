@@ -1,0 +1,136 @@
+{%- import "report/_primitives.html.j2" as prim -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+  <title>Security License Lens report</title>
+  <link rel="stylesheet" href="{{ assets_dir }}/{{ css_name }}" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header__bar">
+      <div class="logo">
+        <div class="logo-mark"></div>
+        <div>
+          <h1>Security License Lens</h1>
+          <p class="tagline">{{ tagline }}</p>
+        </div>
+      </div>
+      <div class="meta">
+        {{ prim.meta_row("Version", result.version) }}
+        {{ prim.meta_row("Scanned", result.display_scanned_at) }}
+        {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}{{ prim.meta_row("Mode", mode_str) }}
+        {{ prim.meta_row("Organization", result.tenant_display_name or result.tenant_id or "demo / dry-run") }}
+      </div>
+    </div>
+  </header>
+
+  <nav class="workload-nav" aria-label="Workload navigation" data-workload-nav>
+    <a class="workload-tab is-active" href="#findings" data-nav="all" aria-current="page">All</a>
+  </nav>
+
+  <main class="app-main" id="main">
+    <div class="app-main__content">
+    {% if result.warnings %}
+    <div class="intro" style="border-color: var(--state-incomplete);">
+      <strong>Notes</strong>
+      <ul style="margin: 0.5rem 0 0; padding-inline-start: 1.2rem;">
+        {% for w in result.warnings %}
+        <li>{{ w }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% set rollup = result.capability_rollup %}
+    <section class="hero">
+      <h2>Security posture</h2>
+      <div class="summary-grid">
+        <div class="summary-posture">
+          <div class="posture-figure">{{ rollup.realized_percent }}% realized</div>
+          <p class="posture-sentence">{{ rollup.realized_sentence }}.</p>
+        </div>
+        <div class="summary-action">
+          <div class="n">{{ rollup.needs_attention + rollup.partly_set_up }}</div>
+          <div class="l">Need attention</div>
+          <small>of {{ rollup.you_own }} prioritized capabilities</small>
+        </div>
+        <div class="summary-metrics">
+          <div class="metric-row">
+            <span class="n">{{ result.owned_capabilities | length }}</span>
+            <span class="metric-text"><span class="metric-label">Licensed capabilities detected</span><small>across all detected licenses</small></span>
+          </div>
+          <div class="metric-row">
+            <span class="n">{{ rollup.you_own }}</span>
+            <span class="metric-text"><span class="metric-label">Prioritized capabilities</span><small>{{ result.packs_scanned | join(', ') }} priority packs</small></span>
+          </div>
+          <div class="metric-row">
+            <span class="n">{{ rollup.fully_working }}</span>
+            <span class="metric-text"><span class="metric-label">Fully working</span></span>
+          </div>
+        </div>
+        {% if result.has_exposed %}
+        <div class="critical-rail" data-critical-rail>
+          <span class="critical-rail-label">{{ exposure_labels['exposed'] }}</span>
+          <span class="critical-rail-titles">{% for f in findings if f.check_id in result.exposed_check_ids %}{{ f.display_customer_title }}{% if not loop.last %}, {% endif %}{% endfor %}</span>
+        </div>
+        {% endif %}
+      </div>
+
+    <div class="tiles">
+      {% for status in status_order %}
+      <div class="tile">
+        <div class="n">{{ counts.get(status, 0) }}</div>
+        <div class="l">
+          {{ prim.PRESENTATION.get(status, status) }}
+          <small>{{ status }}</small>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    </section>
+
+    <section class="charts-section" aria-labelledby="charts-title">
+      <h2 id="charts-title">Findings at a glance</h2>
+      <p class="section-help">
+        Distribution of findings by status, workload, confidence, and evaluation mode.
+        Each chart has an equivalent data table for assistive technology.
+      </p>
+      <div class="charts" data-charts></div>
+    </section>
+
+    <details class="tech" style="margin-bottom: 1rem;">
+      <summary>Report key</summary>
+      <p style="margin: 0.5rem 0 0; color: var(--text-1); font-size: 0.92rem;">
+        Microsoft licenses often include powerful protections with confusing product names.
+        Below we translate those into everyday outcomes, then show where setup still looks incomplete.
+        Product names and technical IDs are available in each finding's evidence and the technical section at the bottom.
+      </p>
+    </details>
+
+    <section>
+      <h2>Licensed control inventory</h2>
+      <p class="section-help">
+        Licensed controls mapped to detected Microsoft entitlements. Action states appear first.
+      </p>
+{% include "report/_capability_card.html.j2" %}
+    </section>
+
+{% include "report/_moves.html.j2" %}
+
+{% include "report/_findings_app.html.j2" %}
+
+{% include "report/_technical.html.j2" %}
+
+    <footer>
+      {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
+    </footer>
+    </div>
+  </main>
+
+  <script src="{{ assets_dir }}/{{ data_name }}"></script>
+  <script src="{{ assets_dir }}/{{ js_name }}"></script>
+</body>
+</html>

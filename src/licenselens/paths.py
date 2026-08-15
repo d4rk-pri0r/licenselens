@@ -35,3 +35,11 @@ def templates_dir() -> Path:
     if root is not None:
         return root / "templates"
     return Path(str(resources.files("licenselens") / "data" / "templates"))
+
+
+def vendor_assets_dir() -> Path:
+    """Pinned Microsoft workload icons (offline vendor allowlist)."""
+    root = _repo_root()
+    if root is not None:
+        return root / "assets" / "vendor" / "microsoft-cloud"
+    return Path(str(resources.files("licenselens") / "data" / "vendor" / "microsoft-cloud"))

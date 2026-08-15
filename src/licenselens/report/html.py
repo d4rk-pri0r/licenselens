@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Final
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -23,6 +25,21 @@ _CAPABILITY_STATUS_RANK: dict[str, int] = {
     "not_licensed": 3,
 }
 
+_WORKLOAD_PRIORITY: Final = (
+    "identity",
+    "endpoint",
+    "defender",
+    "sentinel",
+    "purview",
+    "exchange",
+    "collaboration",
+    "teams",
+    "power_platform",
+    "power_bi",
+    "intune",
+    "azure",
+)
+
 
 @dataclass(frozen=True, slots=True)
 class _CapabilityCard:
@@ -32,6 +49,31 @@ class _CapabilityCard:
     outcome: CapabilityOutcome | None
     status: str
     span: str
+    workload: str | None
+
+
+def _primary_workload(
+    result: ScanResult, outcome: CapabilityOutcome | None
+) -> str | None:
+    """Pick the dominant related-finding workload for a capability header icon."""
+    if outcome is None or not outcome.related_check_ids:
+        return None
+    related = set(outcome.related_check_ids)
+    counts: Counter[str] = Counter()
+    for finding in result.findings:
+        if finding.check_id not in related:
+            continue
+        value = finding.workload.value
+        if value != "general":
+            counts[value] += 1
+    if not counts:
+        return None
+    best = max(counts.values())
+    candidates = {workload for workload, count in counts.items() if count == best}
+    for workload in _WORKLOAD_PRIORITY:
+        if workload in candidates:
+            return workload
+    return sorted(candidates)[0]
 
 
 def _ordered_capability_cards(
@@ -51,7 +93,15 @@ def _ordered_capability_cards(
             span = "wide" if related_count >= 2 else "medium"
         else:
             span = "compact"
-        cards.append(_CapabilityCard(summary, outcome, status, span))
+        cards.append(
+            _CapabilityCard(
+                summary,
+                outcome,
+                status,
+                span,
+                _primary_workload(result, outcome),
+            )
+        )
     cards.sort(
         key=lambda card: (
             _CAPABILITY_STATUS_RANK.get(card.status, len(_CAPABILITY_STATUS_RANK)),
@@ -61,22 +111,32 @@ def _ordered_capability_cards(
     return cards
 
 
-def write_html_report(result: ScanResult, path: Path) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    env = Environment(
+def report_environment() -> Environment:
+    """Return the shared report Jinja environment (autoescape on, templates dir)."""
+    return Environment(
         loader=FileSystemLoader(str(templates_dir())),
         autoescape=True,
     )
-    template = env.get_template("report.html.j2")
+
+
+def build_report_context(result: ScanResult) -> dict[str, object]:
+    """Build the render context shared by the legacy and bundle entry templates."""
     outcome_by_id = {o.id: o for o in result.capability_outcomes}
-    html = template.render(
-        result=result,
-        tagline=TAGLINE,
-        counts=result.counts_by_status,
-        findings=result.findings,
-        status_order=["gap", "partial", "ok", "not_licensed", "skipped", "error"],
-        exposure_labels=EXPOSURE_PLAIN_LABELS,
-        capability_cards=_ordered_capability_cards(result, outcome_by_id),
+    return {
+        "result": result,
+        "tagline": TAGLINE,
+        "counts": result.counts_by_status,
+        "findings": result.findings,
+        "status_order": ["gap", "partial", "ok", "not_licensed", "skipped", "error"],
+        "exposure_labels": EXPOSURE_PLAIN_LABELS,
+        "capability_cards": _ordered_capability_cards(result, outcome_by_id),
+    }
+
+
+def write_html_report(result: ScanResult, path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    html = (
+        report_environment().get_template("report.html.j2").render(**build_report_context(result))
     )
     path.write_text(html, encoding="utf-8")
     return path

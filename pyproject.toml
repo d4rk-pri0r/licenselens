@@ -86,6 +86,7 @@ packages = ["src/licenselens"]
 "catalog" = "licenselens/data/catalog"
 "checks" = "licenselens/data/checks"
 "templates" = "licenselens/data/templates"
+"assets/vendor/microsoft-cloud" = "licenselens/data/vendor/microsoft-cloud"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

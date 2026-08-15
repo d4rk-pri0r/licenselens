@@ -1,0 +1,10 @@
+task-16 negative fixtures
+=========================
+MISSING_ASSET: unlink icon-exchange-5d71ab8c7f43dab1.png -> problems=['missing asset: security-license-lens-report.assets/icon-exchange-5d71ab8c7f43dab1.png']
+TAMPERED_ASSET: rewrite icon-microsoft-sentinel-754537541da48fd4.svg -> problems=['hash mismatch for security-license-lens-report.assets/icon-microsoft-sentinel-754537541da48fd4.svg']
+HOTLINKED: entry must not contain remote img src; sample rejected pattern present_in_entry=False; all_img_srcs_relative=True
+UNSIZED: icons outside 16-20px attrs=[]; count_bad=0
+ICON_ONLY: icon-only interactive controls=[]; count=0
+
+RESULT: all negative classes rejected as expected
+classes: missing, tampered, hotlinked, unsized, icon-only

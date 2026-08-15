@@ -1,0 +1,266 @@
+{
+  "accessibility_assertions": {
+    "icons_never_accessible_names": true,
+    "icons_never_status_indicators": true,
+    "logo_not_replaced_by_img": true,
+    "no_general_icon": true,
+    "no_icon_only_controls": true,
+    "status_glyphs_unchanged_present": true
+  },
+  "all_image_hashes_match": true,
+  "commands": [
+    {
+      "cmd": "uv run ruff check src/licenselens/report",
+      "note": "see verification log"
+    },
+    {
+      "cmd": "uv run pytest tests/test_report_bundle.py tests/test_report_manifest.py tests/test_report_hardening.py tests/test_report_browser.py tests/test_report_app.py tests/test_report_viz.py -q",
+      "exit": 0,
+      "passed": 82
+    }
+  ],
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'",
+  "csp_img_src_self": true,
+  "dom": {
+    "all_icons_aria_hidden": true,
+    "all_icons_empty_alt": true,
+    "all_icons_loaded": true,
+    "all_icons_local_src": true,
+    "card_icon_count": 4,
+    "chart_icon_count": 5,
+    "filter_icon_count": 0,
+    "finding_icon_count": 0,
+    "general_nav_has_icon": false,
+    "icon_count": 14,
+    "icon_only_controls": [],
+    "icon_sizes_sample": [
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 18,
+        "naturalW": 18,
+        "parentText": "Identity",
+        "src": "security-license-lens-report.assets/icon-entra-id-efd9f54562bfb78b.svg",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 512,
+        "naturalW": 512,
+        "parentText": "Endpoint",
+        "src": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 512,
+        "naturalW": 512,
+        "parentText": "Defender",
+        "src": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 18,
+        "naturalW": 18,
+        "parentText": "Sentinel",
+        "src": "security-license-lens-report.assets/icon-microsoft-sentinel-754537541da48fd4.svg",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 150,
+        "naturalW": 150,
+        "parentText": "Purview",
+        "src": "security-license-lens-report.assets/icon-purview-c940c3bf9d280e21.svg",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 18,
+        "naturalW": 18,
+        "parentText": "Identity",
+        "src": "security-license-lens-report.assets/icon-entra-id-efd9f54562bfb78b.svg",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 512,
+        "naturalW": 512,
+        "parentText": "Endpoint",
+        "src": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+        "w": "18"
+      },
+      {
+        "alt": "",
+        "ariaHidden": "true",
+        "complete": true,
+        "h": "18",
+        "naturalH": 512,
+        "naturalW": 512,
+        "parentText": "Defender",
+        "src": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+        "w": "18"
+      }
+    ],
+    "icons_have_adjacent_text": true,
+    "logo_img_count": 0,
+    "nav_icon_count": 5,
+    "status_glyph_count": 16
+  },
+  "expected_image_count": 12,
+  "file_uri": "file:///Users/waifumachine/licenselens/.omo/evidence/licenselens-plan-conformance-and-provenance-audit/task-16/_qa_bundle/first/security-license-lens-report.html",
+  "general_absent_from_icon_map": true,
+  "generated_at": "2026-08-15T05:25:05.685324+00:00",
+  "image_hashes": [
+    {
+      "bytes": 84754,
+      "disk_sha256": "4ea01e7ec2bbd4da8adfe1d04741b3d68737f12bfc674b2848e9a6a946fcff31",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-azure-4ea01e7ec2bbd4da.png",
+      "sha256": "4ea01e7ec2bbd4da8adfe1d04741b3d68737f12bfc674b2848e9a6a946fcff31"
+    },
+    {
+      "bytes": 161161,
+      "disk_sha256": "6e4150d58364c8117f1fd109a5daa01cff7332b1252370bca0dc072312e1a70c",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+      "sha256": "6e4150d58364c8117f1fd109a5daa01cff7332b1252370bca0dc072312e1a70c"
+    },
+    {
+      "bytes": 1301,
+      "disk_sha256": "efd9f54562bfb78bf3c77aecdd5fc31b61fce8a1cec78c4370b41fc470e54eda",
+      "match": true,
+      "media_type": "image/svg+xml",
+      "path": "security-license-lens-report.assets/icon-entra-id-efd9f54562bfb78b.svg",
+      "sha256": "efd9f54562bfb78bf3c77aecdd5fc31b61fce8a1cec78c4370b41fc470e54eda"
+    },
+    {
+      "bytes": 506,
+      "disk_sha256": "5d71ab8c7f43dab1efbb9c82deda1269d5c6429548a13e82c9a0aca1bf74a81e",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-exchange-5d71ab8c7f43dab1.png",
+      "sha256": "5d71ab8c7f43dab1efbb9c82deda1269d5c6429548a13e82c9a0aca1bf74a81e"
+    },
+    {
+      "bytes": 41900,
+      "disk_sha256": "353b561cc0163ffbfb5d42e05eb608f7e1e84914b4eb042b1cab53f0782fb09d",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-intune-353b561cc0163ffb.png",
+      "sha256": "353b561cc0163ffbfb5d42e05eb608f7e1e84914b4eb042b1cab53f0782fb09d"
+    },
+    {
+      "bytes": 1222,
+      "disk_sha256": "754537541da48fd4957180d452bd64dfc4a9bbe4de4cbfdfa833ef8af556d16f",
+      "match": true,
+      "media_type": "image/svg+xml",
+      "path": "security-license-lens-report.assets/icon-microsoft-sentinel-754537541da48fd4.svg",
+      "sha256": "754537541da48fd4957180d452bd64dfc4a9bbe4de4cbfdfa833ef8af556d16f"
+    },
+    {
+      "bytes": 623,
+      "disk_sha256": "9d5c5aabf84181dc4559b6429c7c89cb249779c3dabc8a85194071751d41a14c",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-onedrive-9d5c5aabf84181dc.png",
+      "sha256": "9d5c5aabf84181dc4559b6429c7c89cb249779c3dabc8a85194071751d41a14c"
+    },
+    {
+      "bytes": 2196,
+      "disk_sha256": "75b2e20358ee63155f17a9bc1bf3e4fec0ed659f0c8d1e0400dbe8011a7586e2",
+      "match": true,
+      "media_type": "image/svg+xml",
+      "path": "security-license-lens-report.assets/icon-power-bi-75b2e20358ee6315.svg",
+      "sha256": "75b2e20358ee63155f17a9bc1bf3e4fec0ed659f0c8d1e0400dbe8011a7586e2"
+    },
+    {
+      "bytes": 3680,
+      "disk_sha256": "c58871d6adac53a51512341e65055d0ec12f29948a001666c11dc7b5bb5fe142",
+      "match": true,
+      "media_type": "image/svg+xml",
+      "path": "security-license-lens-report.assets/icon-power-platform-c58871d6adac53a5.svg",
+      "sha256": "c58871d6adac53a51512341e65055d0ec12f29948a001666c11dc7b5bb5fe142"
+    },
+    {
+      "bytes": 3560,
+      "disk_sha256": "c940c3bf9d280e2189f97eb570e513b5a2d2083c502732e8a94dd91814b5bc6d",
+      "match": true,
+      "media_type": "image/svg+xml",
+      "path": "security-license-lens-report.assets/icon-purview-c940c3bf9d280e21.svg",
+      "sha256": "c940c3bf9d280e2189f97eb570e513b5a2d2083c502732e8a94dd91814b5bc6d"
+    },
+    {
+      "bytes": 703,
+      "disk_sha256": "ddb485bf176dfa31e4622f6fbbb412a7de6ac3106a8cafa3ca4e0a446a261b95",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-sharepoint-ddb485bf176dfa31.png",
+      "sha256": "ddb485bf176dfa31e4622f6fbbb412a7de6ac3106a8cafa3ca4e0a446a261b95"
+    },
+    {
+      "bytes": 546,
+      "disk_sha256": "3e8b827b551c1767e28e4b851ad0e21d87a062a1e32f508cd65c029727c499a8",
+      "match": true,
+      "media_type": "image/png",
+      "path": "security-license-lens-report.assets/icon-teams-3e8b827b551c1767.png",
+      "sha256": "3e8b827b551c1767e28e4b851ad0e21d87a062a1e32f508cd65c029727c499a8"
+    }
+  ],
+  "manifest_image_count": 12,
+  "network": {
+    "file_count": 8,
+    "http_https_count": 0,
+    "http_https_requests": [],
+    "total_requests": 8
+  },
+  "packaging": {
+    "paths_api": "licenselens.paths.vendor_assets_dir()",
+    "pinned_icon_count": 12,
+    "pyinstaller_data_dirs": "assets/vendor/microsoft-cloud -> licenselens/data/vendor/microsoft-cloud",
+    "wheel_force_include": "assets/vendor/microsoft-cloud = licenselens/data/vendor/microsoft-cloud"
+  },
+  "task": 16,
+  "title": "icon-bundle positive report",
+  "two_bundles_entry_byte_identical": true,
+  "two_bundles_manifest_identical": true,
+  "two_bundles_zip_byte_identical": true,
+  "verify_intact": true,
+  "workload_icon_url_map": {
+    "azure": "security-license-lens-report.assets/icon-azure-4ea01e7ec2bbd4da.png",
+    "collaboration": "security-license-lens-report.assets/icon-sharepoint-ddb485bf176dfa31.png",
+    "defender": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+    "endpoint": "security-license-lens-report.assets/icon-defender-6e4150d58364c811.png",
+    "exchange": "security-license-lens-report.assets/icon-exchange-5d71ab8c7f43dab1.png",
+    "identity": "security-license-lens-report.assets/icon-entra-id-efd9f54562bfb78b.svg",
+    "intune": "security-license-lens-report.assets/icon-intune-353b561cc0163ffb.png",
+    "power_bi": "security-license-lens-report.assets/icon-power-bi-75b2e20358ee6315.svg",
+    "power_platform": "security-license-lens-report.assets/icon-power-platform-c58871d6adac53a5.svg",
+    "purview": "security-license-lens-report.assets/icon-purview-c940c3bf9d280e21.svg",
+    "sentinel": "security-license-lens-report.assets/icon-microsoft-sentinel-754537541da48fd4.svg",
+    "teams": "security-license-lens-report.assets/icon-teams-3e8b827b551c1767.png"
+  }
+}

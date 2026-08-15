@@ -1,0 +1,26 @@
+    {% if result.moves %}
+    <section>
+      <h2>Priority actions</h2>
+      <p class="section-help">
+        Ranked by security impact, evidence confidence, and estimated effort.
+      </p>
+      <ol class="steps">
+        {% for move in result.moves %}
+        <li class="step">
+          <span class="step-index">{{ '%02d' | format(loop.index) }}</span>
+          <div class="step-body">
+            <div class="step-head">
+              <strong class="step-title">{{ move.title }}</strong>
+              {% if move.effort_label %}<span class="step-effort">{{ move.effort_label | lower }}</span>{% endif %}
+            </div>
+            {% if move.why %}<p class="step-why">{{ move.why }}</p>{% endif %}
+            {% if move.customer_next_step %}<p class="step-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      <p style="color: var(--text-2); font-size: 0.85rem; margin: 0.75rem 0 0;">
+        Effort is a rough guide, not a quote.
+      </p>
+    </section>
+    {% endif %}

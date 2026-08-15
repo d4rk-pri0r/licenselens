@@ -9,12 +9,13 @@ from __future__ import annotations
 import hashlib
 import re
 from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final
 
 import yaml
 
-from licenselens.paths import _repo_root
+from licenselens.paths import _repo_root, vendor_assets_dir
 
 PINNED_UPSTREAM_COMMIT: Final = "fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c"
 UPSTREAM_REPO: Final = "loryanstrant/MicrosoftCloudLogos"
@@ -22,6 +23,34 @@ VENDOR_REL: Final = Path("assets/vendor/microsoft-cloud")
 MANIFEST_NAME: Final = "manifest.yaml"
 EXPECTED_ASSET_COUNT: Final = 12
 SHA256_RE: Final = re.compile(r"^[a-f0-9]{64}$")
+
+# Report ``Workload`` enum values → manifest ``workload`` icon keys.
+# ``general`` has no icon. ``onedrive`` is vendored but not a report workload.
+REPORT_WORKLOAD_TO_ICON_KEY: Final[dict[str, str]] = {
+    "identity": "entra-id",
+    "defender": "defender",
+    "endpoint": "defender",
+    "sentinel": "microsoft-sentinel",
+    "purview": "purview",
+    "exchange": "exchange",
+    "collaboration": "sharepoint",
+    "teams": "teams",
+    "power_platform": "power-platform",
+    "power_bi": "power-bi",
+    "intune": "intune",
+    "azure": "azure",
+}
+
+
+@dataclass(frozen=True, slots=True)
+class PinnedIcon:
+    """One checksum-pinned vendor icon ready for offline bundle emission."""
+
+    icon_key: str
+    relative_path: str
+    content: bytes
+    media_type: str
+    sha256: str
 
 # Path segments / tokens that must never appear in allowlisted assets.
 _FORBIDDEN_PATH_TOKENS: Final = frozenset(
@@ -39,10 +68,15 @@ _ASSET_LIST_KEYS: Final = ("assets", "files", "icons", "entries")
 
 
 def vendor_root(repo_root: Path | None = None) -> Path:
-    root = repo_root if repo_root is not None else _repo_root()
-    if root is None:
-        raise FileNotFoundError("cannot resolve repository root for vendor assets")
-    return root / VENDOR_REL
+    if repo_root is not None:
+        return repo_root / VENDOR_REL
+    try:
+        return vendor_assets_dir()
+    except (FileNotFoundError, ModuleNotFoundError, TypeError, ValueError):
+        root = _repo_root()
+        if root is None:
+            raise FileNotFoundError("cannot resolve vendor assets directory") from None
+        return root / VENDOR_REL
 
 
 def manifest_path(repo_root: Path | None = None) -> Path:
@@ -216,6 +250,39 @@ def load_manifest(repo_root: Path | None = None) -> dict[str, Any]:
     return data
 
 
+def load_pinned_icons(repo_root: Path | None = None) -> tuple[PinnedIcon, ...]:
+    """Load the 12 allowlisted icons after fail-closed manifest verification."""
+    problems = verify_assets(repo_root=repo_root)
+    if problems:
+        raise FileNotFoundError(
+            "vendor workload icons failed verification: " + "; ".join(problems)
+        )
+    data = load_manifest(repo_root)
+    root = vendor_root(repo_root)
+    icons: list[PinnedIcon] = []
+    for entry in sorted(_asset_entries(data), key=_entry_path):
+        rel = _entry_path(entry)
+        sha = _entry_sha(entry)
+        media = str(entry.get("content_type") or entry.get("media_type") or "").strip()
+        icon_key = str(entry.get("workload") or "").strip()
+        if not rel or not sha or not media or not icon_key:
+            raise FileNotFoundError(f"incomplete vendor icon entry: {entry!r}")
+        path = root / rel
+        content = path.read_bytes()
+        if _sha256_file(path) != sha:
+            raise FileNotFoundError(f"checksum drift loading {rel}")
+        icons.append(
+            PinnedIcon(
+                icon_key=icon_key,
+                relative_path=rel,
+                content=content,
+                media_type=media,
+                sha256=sha,
+            )
+        )
+    return tuple(icons)
+
+
 def scan_svg_safety(text: str) -> list[str]:
     """Reject ``<script>`` and external resource URL references in SVG text.
 
@@ -244,8 +311,11 @@ def scan_svg_safety(text: str) -> list[str]:
 __all__ = [
     "EXPECTED_ASSET_COUNT",
     "PINNED_UPSTREAM_COMMIT",
+    "REPORT_WORKLOAD_TO_ICON_KEY",
     "UPSTREAM_REPO",
+    "PinnedIcon",
     "load_manifest",
+    "load_pinned_icons",
     "manifest_path",
     "scan_svg_safety",
     "validate_manifest",
