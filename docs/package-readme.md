@@ -10,7 +10,7 @@ CLI: `licenselens` · Requires Python 3.12+
 
 Security License Lens finds **Microsoft security configuration debt**: high-value capabilities in E5, Entra ID P2, Defender, and related SKUs that stay at default or unused. It starts from **owned entitlements**, maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
 
-> Sample report (dry-run): [examples/sample-report/](examples/sample-report/)
+> Sample report (dry-run): [examples/sample-report/](https://github.com/d4rk-pri0r/licenselens/tree/main/examples/sample-report)
 
 ## Quick start
 
@@ -43,16 +43,16 @@ licenselens batch tenants.yaml -o reports
 
 ## What it looks like
 
-![report hero](docs/images/report-hero.png)
+![report hero](images/report-hero.png)
 
 *The dashboard: what you own, what's working, and what to fix first.*
 
-![report findings](docs/images/report-findings.png)
+![report findings](images/report-findings.png)
 
 *Every finding shows its evidence and a direct link to the admin page.*
 
 <p align="center">
-  <img src="docs/images/report-mobile.png" width="375" alt="The report on mobile">
+  <img src="images/report-mobile.png" width="375" alt="The report on mobile">
   <br>
   <em>The same report at mobile width.</em>
 </p>
@@ -110,7 +110,7 @@ Unlicensed capabilities report `not_licensed` instead of false gaps.
 
 ### Known limitations
 
-See [docs/limitations.md](docs/limitations.md) for the full list. Short version:
+See [limitations](limitations.md) for the full list. Short version:
 
 - **Email pack off by default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled
 - MDI / Purview may still use **Secure Score proxies** (starter packs)
@@ -128,7 +128,7 @@ SKUs / service plans → capability catalog → eligible checks
 
 ## Permissions
 
-See [docs/permissions.md](docs/permissions.md) and [docs/app-registration.md](docs/app-registration.md).
+See [permissions](permissions.md) and [app registration](app-registration.md).
 
 ### Exit codes
 
@@ -140,15 +140,15 @@ See [docs/permissions.md](docs/permissions.md) and [docs/app-registration.md](do
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/adding-a-check.md](docs/adding-a-check.md).
+See [Contributing](contributing.md) and [adding a check](adding-a-check.md).
 
 ## Security
 
-[SECURITY.md](SECURITY.md) — read-only, no telemetry by default.
+[Security](security.md) — read-only, no telemetry by default.
 
 ## License
 
-[MIT](LICENSE)
+[MIT](https://github.com/d4rk-pri0r/licenselens/blob/main/LICENSE)
 
 ## Disclaimer
 
