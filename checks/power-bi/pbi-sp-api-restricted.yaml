@@ -1,0 +1,29 @@
+id: pbi-sp-api-restricted
+title: Service principals can use Power BI APIs without restriction
+customer_title: Restrict Power BI API access for service principals
+customer_summary: >
+  Service principals can call Power BI / Fabric APIs for the whole organization
+  instead of being limited to specific security groups.
+customer_next_step: >
+  Restrict service principal API access to specific security groups or disable it.
+description: >
+  Service principal use of Power BI / Fabric APIs should be disabled or limited
+  to specific security groups.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  In the Power BI admin portal, disable service principal API access or restrict
+  it to specific security groups.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-developer
+enabled: true

@@ -1,0 +1,27 @@
+id: pbi-sp-profiles-disabled
+title: Service principals can create Power BI profiles
+customer_title: Turn off service principal profiles
+customer_summary: >
+  Service principals can create and use Power BI profiles, expanding automation
+  surface beyond intended scope.
+customer_next_step: >
+  Disable service principal profile creation in the Power BI admin portal.
+description: >
+  Service principal creation and use of Power BI profiles should be disabled.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: medium
+value_impact: medium
+impact: medium
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  Disable service principal profile creation in the Power BI admin portal.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-developer
+enabled: true
