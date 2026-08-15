@@ -52,6 +52,7 @@ def test_release_gate_exits_nonzero_when_any_step_is_deferred(
         "check_secret_and_path_scan",
         "check_source_leakage",
         "check_stray_artifacts",
+        "check_provenance_artifacts",
     ):
         if hasattr(gate, name):
             monkeypatch.setattr(gate, name, _pass_check)
