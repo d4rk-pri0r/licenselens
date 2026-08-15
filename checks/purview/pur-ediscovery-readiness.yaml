@@ -1,0 +1,30 @@
+id: pur-ediscovery-readiness
+title: eDiscovery needs manual confirmation
+customer_title: Confirm eDiscovery is set up
+customer_summary: >
+  eDiscovery cases and legal holds preserve evidence when it matters. They are
+  portal-configured and need a specialist to confirm the workflow is ready.
+customer_next_step: >
+  Confirm eDiscovery administrators are assigned and legal hold workflows are
+  configured in the Purview portal.
+description: >
+  eDiscovery cases and holds are portal-configured and not fully readable
+  automatically; readiness requires manual verification.
+workload: purview
+required_capabilities:
+  - purview_ediscovery
+severity: medium
+value_impact: high
+impact: high
+effort: days
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/ediscovery
+collector: noop
+remediation: >
+  Verify eDiscovery administrator roles are assigned and that case and legal
+  hold workflows are configured and tested.
+references:
+  - https://learn.microsoft.com/purview/ediscovery
+enabled: true

@@ -1,0 +1,26 @@
+id: pur-dlp-policy-present
+title: No enforced DLP policy protects sensitive data
+customer_title: Create an enforced DLP policy for sensitive data
+customer_summary: >
+  Credit cards, tax IDs, and SSNs can leave without DLP protection.
+customer_next_step: >
+  Create and enforce a DLP policy covering agency-defined sensitive information.
+description: >
+  No enforced DLP policy protects sensitive data.
+workload: purview
+required_capabilities:
+  - purview_dlp
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://compliance.microsoft.com/datalossprevention
+collector: exchange_collector
+remediation: >
+  Create and enforce a DLP policy covering agency-defined sensitive information.
+references:
+  - https://learn.microsoft.com/purview/dlp-learn-about-dlp
+enabled: true
