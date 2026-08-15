@@ -1,0 +1,26 @@
+id: exo-sharing-calendar-not-all-domains
+title: Calendar details are shared with all domains
+customer_title: Limit calendar sharing to approved domains
+customer_summary: >
+  Open calendar sharing can leak meeting details outside your organization.
+customer_next_step: >
+  Remove sharing-with-all-domains from calendar sharing policies.
+description: >
+  Calendar details are shared with all domains.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.exchange.microsoft.com/#/individualsharing
+collector: exchange_collector
+remediation: >
+  Remove sharing-with-all-domains from calendar sharing policies.
+references:
+  - https://learn.microsoft.com/exchange/sharing/sharing-policies/sharing-policies
+enabled: true

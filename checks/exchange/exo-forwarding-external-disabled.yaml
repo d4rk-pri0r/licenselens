@@ -1,0 +1,26 @@
+id: exo-forwarding-external-disabled
+title: Automatic forwarding to external domains is not locked down
+customer_title: Stop automatic email forwarding to outside domains
+customer_summary: >
+  Attackers use auto-forwarding to quietly copy mail outside your organization.
+customer_next_step: >
+  Disable automatic forwarding on remote domains except approved partners.
+description: >
+  Automatic forwarding to external domains is not locked down.
+workload: exchange
+required_capabilities:
+  - exchange_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.exchange.microsoft.com/#/remotedomains
+collector: exchange_collector
+remediation: >
+  Disable automatic forwarding on remote domains except approved partners.
+references:
+  - https://learn.microsoft.com/exchange/mail-flow-best-practices/remote-domains/remote-domains
+enabled: true
