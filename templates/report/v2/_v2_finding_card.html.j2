@@ -66,9 +66,9 @@
         <span class="belief-label">Why it matters</span>
         <p>{{ block.why_it_matters.capability or "Not reported" }}</p>
         <div class="belief-meta">
-          <span class="meta-item"><span class="meta-key">Severity:</span> {{ block.why_it_matters.severity | capitalize }}</span>
+          {# Severity and Scope already appear once in the header meta row;
+             this slot keeps only the value impact (the meta single-source rule). #}
           <span class="meta-item"><span class="meta-key">Value impact:</span> {{ block.why_it_matters.value_impact | replace('_', ' ') }}</span>
-          <span class="meta-item"><span class="meta-key">Scope:</span> {{ block.why_it_matters.blast_radius | replace('_', ' ') }}</span>
         </div>
       </div>
 
@@ -78,19 +78,20 @@
       </div>
 
       {# Progressive disclosure level 3: technical evidence, inside the
-         native <details class="tech"> disclosure — data sources, confidence,
-         limitations, and the evidence keys. #}
+         native <details class="tech"> disclosure — data sources, limitations,
+         and the evidence keys. #}
       <div class="belief-slot">
         <span class="belief-label">Evidence</span>
         <details class="tech">
           <summary><span class="caret" aria-hidden="true">▸</span> Technical evidence</summary>
           <div class="tech-body">
-            <p><strong>Confidence:</strong> {{ block.evidence.confidence_label or 'Not reported' }}</p>
+            {# Confidence already appears once in the header meta row. #}
             <p><strong>Data sources:</strong> {{ block.evidence.data_sources | join(', ') or 'Not reported' }}</p>
             {% if block.observed.evidence %}
             <ul class="evidence-keys">
               {% for key, value in block.observed.evidence.items() -%}
-              <li><code>{{ key }}</code>: {% if value is mapping -%}{{ value | tojson }}{%- elif value is sequence and value is not string -%}{{ value | join(', ') }}{%- else -%}{{ value }}{%- endif %}</li>
+              {%- set empty = value is none or (value is string and value == '') or (value is sequence and value is not string and value | length == 0) or (value is mapping and value | length == 0) -%}
+              <li><code>{{ key }}</code>: {% if empty %}None reported{% elif value is mapping -%}{{ value | tojson }}{%- elif value is sequence and value is not string -%}{{ value | join(', ') }}{%- else -%}{{ value }}{%- endif %}</li>
               {% endfor %}
             </ul>
             {% endif %}

@@ -21,7 +21,15 @@ from xml.etree import ElementTree as ET
 
 import html5lib
 
-from licenselens.models import STATUS_PLAIN_LABELS, ScanResult
+from licenselens.models import (
+    STATUS_PLAIN_LABELS,
+    Finding,
+    FindingStatus,
+    ScanResult,
+    Severity,
+    ValueImpact,
+    Workload,
+)
 from licenselens.report.html import write_html_report
 from licenselens.report.json_report import write_json_report
 from tests.report_fixtures import comprehensive_report, empty_report, sparse_optional_fields_report
@@ -814,3 +822,81 @@ def test_constellation_cascade_instant_final_state_rule(tmp_path: Path) -> None:
         "body.instant rule must resolve the status color via --resolve-to: "
         f"{body.strip()}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Finding-card meta single-source + empty-evidence fallback locks
+# (design-v2 brief conformance, todo 8). Severity / Scope / Confidence each
+# render exactly once per finding article — in the header meta row — and empty
+# evidence values render the literal "None reported" fallback (same wording as
+# the Limitations fallback) instead of a bare `<code>key</code>:`.
+# ---------------------------------------------------------------------------
+
+META_SINGLE_SOURCE_KEYS = ("Severity", "Scope", "Confidence")
+
+
+def _finding_article_chunks(html: str) -> list[str]:
+    """One chunk per complete finding article: everything between its opening
+    ``<article class="finding ...">`` tag and the matching ``</article>``
+    (finding bodies contain no nested articles)."""
+    chunks = re.findall(r'<article class="finding [^>]*>.*?</article>', html, re.DOTALL)
+    assert chunks, "no finding articles rendered"
+    return chunks
+
+
+def test_meta_keys_single_source_per_finding_article(tmp_path: Path) -> None:
+    """Severity, Scope, and Confidence appear exactly ONCE per finding article,
+    in the header meta-key span — the Why-it-matters belief-meta repeats
+    (Severity/Scope) and the tech-body Confidence line are gone."""
+    result = comprehensive_report()
+    html = render(result, tmp_path)
+    chunks = _finding_article_chunks(html)
+    assert len(chunks) == len(result.findings), (
+        f"expected {len(result.findings)} finding articles, split into {len(chunks)}"
+    )
+    for chunk in chunks:
+        assert chunk.strip(), "empty finding article body"
+    for key in META_SINGLE_SOURCE_KEYS:
+        for chunk in chunks:
+            count = chunk.count(f">{key}:")
+            assert count == 1, (
+                f"{key!r} appears {count} times in one finding article — "
+                "it must be single-sourced in the header meta row"
+            )
+            assert f'meta-key">{key}:' in chunk, (
+                f"{key!r} single occurrence is not the header meta-key span"
+            )
+
+
+def test_empty_evidence_values_render_none_reported(tmp_path: Path) -> None:
+    """Empty evidence values (None, "", [], {}) render the literal
+    "None reported" fallback — never a bare `<code>key</code>` followed by
+    whitespace and `</li>` with no value after the colon."""
+    result = empty_report()
+    result.findings = [
+        Finding(
+            check_id="empty-evidence",
+            title="Empty evidence values",
+            workload=Workload.IDENTITY,
+            status=FindingStatus.GAP,
+            severity=Severity.HIGH,
+            value_impact=ValueImpact.HIGH,
+            summary="Evidence keys whose values are empty.",
+            customer_title="Empty evidence values",
+            customer_summary="Empty evidence values.",
+            customer_next_step="",
+            confidence_label="Medium confidence",
+            data_sources=[],
+            limitations=[],
+            evidence={"enforced_policies": [], "note": ""},
+        )
+    ]
+    html = render(result, tmp_path)
+
+    for key in ("enforced_policies", "note"):
+        assert f"<code>{key}</code>: None reported" in html, (
+            f"empty evidence key {key!r} did not render the 'None reported' fallback"
+        )
+        assert re.search(rf"<code>{key}</code>:\s*</li>", html) is None, (
+            f"evidence key {key!r} rendered bare — nothing after the colon"
+        )
