@@ -182,3 +182,121 @@ def evaluate_pur_retention_policy_coverage(
 
 def _has_auto_marker(item: PolicyItem) -> bool:
     return any(name in item.properties for name in _AUTO_LABELING_MARKERS)
+
+
+def _settings_true(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    if isinstance(value, str):
+        return value.strip().lower() not in {"", "false", "$false", "0", "none"}
+    return False
+
+
+def _settings_default_label(value: str) -> bool:
+    text = value.strip().lower()
+    if not text.startswith("defaultlabel"):
+        return False
+    remainder = text.split(":", 1)[-1] if ":" in text else ""
+    return bool(remainder.strip())
+
+
+def _policy_labeling_flags(item: PolicyItem) -> tuple[bool, bool]:
+    settings = item.properties.get("Settings")
+    default = False
+    mandatory = False
+    if isinstance(settings, dict):
+        for key, value in settings.items():
+            lowered = str(key).lower()
+            if "defaultlabel" in lowered and not default:
+                default = _settings_true(value)
+            if lowered == "mandatory" and not mandatory:
+                mandatory = _settings_true(value)
+    elif isinstance(settings, list):
+        for entry in settings:
+            if not isinstance(entry, str):
+                continue
+            text = entry.strip().lower()
+            if text.startswith("defaultlabel") and not default:
+                default = _settings_default_label(text)
+            elif text.startswith("mandatory") and not mandatory:
+                if ":" in text:
+                    mandatory = _settings_true(text.split(":", 1)[1])
+                else:
+                    mandatory = True
+    explicit_default = item.properties.get("DefaultLabelId")
+    if not default and explicit_default is not None:
+        default = _settings_true(explicit_default)
+    explicit_mandatory = item.properties.get("Mandatory")
+    if not mandatory and explicit_mandatory is not None:
+        mandatory = _settings_true(explicit_mandatory)
+    return default, mandatory
+
+
+def evaluate_pur_default_and_mandatory_labels(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check
+    policies = read_surface(evidence, "label_policies")
+    if policies.state is SurfaceRead.DENIED:
+        return denied(
+            "label_policies",
+            "We could not confirm whether a default label and mandatory labeling are set.",
+        )
+    if policies.state is SurfaceRead.UNREADABLE:
+        return unreadable(
+            "label_policies",
+            "We could not read label-policy default and mandatory settings.",
+        )
+    enabled_policies = [item for item in policies.items if item.enabled is not False]
+    has_default = False
+    mandatory = False
+    for item in enabled_policies:
+        item_default, item_mandatory = _policy_labeling_flags(item)
+        has_default = has_default or item_default
+        mandatory = mandatory or item_mandatory
+    evidence_out = {
+        "adapter": policies.adapter,
+        "label_policies": len(policies.items),
+        "default_label": has_default,
+        "mandatory_labeling": mandatory,
+        "absent": len(policies.items) == 0,
+    }
+    if has_default and mandatory:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                "A published label policy sets a default sensitivity label and "
+                "requires users to apply a label."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "New content gets a default sensitivity label, and people must "
+                "label before saving or sending."
+            ),
+            **direct_meta(),
+        )
+    if has_default or mandatory:
+        missing = "mandatory labeling" if has_default else "a default label"
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=f"A label policy sets one half of the requirement but {missing} is missing.",
+            evidence=evidence_out,
+            customer_summary=(
+                "Default and mandatory labeling are only partially configured. "
+                "Add the missing half so sensitive content is always labeled."
+            ),
+            **direct_meta(),
+        )
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary="No published label policy sets a default label or mandatory labeling.",
+        evidence=evidence_out,
+        customer_summary=(
+            "Nothing applies a default sensitivity label or requires labeling. "
+            "Configure both in your label policy."
+        ),
+        **direct_meta(),
+    )

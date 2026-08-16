@@ -10,6 +10,7 @@ from licenselens.evaluators.collaboration_sharing import (
     evaluate_spo_domain_restrictions,
     evaluate_spo_onedrive_sharing_limited,
     evaluate_spo_sharing_capability_limited,
+    evaluate_spo_unmanaged_device_access,
 )
 from licenselens.evaluators.collaboration_sharing_links import (
     evaluate_spo_anyone_link_expiration,
@@ -21,6 +22,7 @@ from licenselens.evaluators.collaboration_sharing_links import (
 from licenselens.evaluators.collaboration_teams_access import (
     evaluate_teams_email_integration_disabled,
     evaluate_teams_external_access_per_domain,
+    evaluate_teams_guest_access_restricted,
     evaluate_teams_unmanaged_inbound_blocked,
     evaluate_teams_unmanaged_outbound_blocked,
 )
@@ -139,6 +141,18 @@ def test_demo_global_custom_compliant_matrix() -> None:
     assert (
         evaluate_teams_email_integration_disabled(
             _check("teams-email-integration-disabled"), evidence
+        ).status
+        is FindingStatus.OK
+    )
+    assert (
+        evaluate_spo_unmanaged_device_access(
+            _check("spo-unmanaged-device-access"), evidence
+        ).status
+        is FindingStatus.OK
+    )
+    assert (
+        evaluate_teams_guest_access_restricted(
+            _check("teams-guest-access-restricted"), evidence
         ).status
         is FindingStatus.OK
     )
@@ -290,6 +304,67 @@ def test_denied_surface_is_partial_not_false_gap() -> None:
     assert result.status is not FindingStatus.GAP
 
 
+def test_spo_unmanaged_device_access_blocked_ok() -> None:
+    evidence = _demo()
+    result = evaluate_spo_unmanaged_device_access(
+        _check("spo-unmanaged-device-access"), evidence
+    )
+    assert result.status is FindingStatus.OK
+    assert result.evidence["unmanaged_device_policy"] == "blockaccess"
+
+
+def test_spo_unmanaged_device_access_full_access_gap() -> None:
+    evidence = _demo()
+    _set_spo_prop(evidence, "unmanaged_device_policy", "ConditionalAccessPolicy", "AllowFullAccess")
+    result = evaluate_spo_unmanaged_device_access(
+        _check("spo-unmanaged-device-access"), evidence
+    )
+    assert result.status is FindingStatus.GAP
+    assert result.status is not FindingStatus.OK
+
+
+def test_spo_unmanaged_device_access_missing_value_partial() -> None:
+    evidence = _demo()
+    _set_spo_prop(evidence, "unmanaged_device_policy", "ConditionalAccessPolicy", "")
+    result = evaluate_spo_unmanaged_device_access(
+        _check("spo-unmanaged-device-access"), evidence
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.OK
+
+
+def test_teams_guest_access_disabled_ok() -> None:
+    evidence = _demo()
+    result = evaluate_teams_guest_access_restricted(
+        _check("teams-guest-access-restricted"), evidence
+    )
+    assert result.status is FindingStatus.OK
+    assert result.evidence["allow_guest_user"] is False
+
+
+def test_teams_guest_access_wide_open_gap() -> None:
+    evidence = _demo()
+    item = _surface(evidence["collaboration_bundle"], "teams_client", "guest_access")["items"][0]
+    item["properties"]["AllowGuestUser"] = True
+    item["properties"]["AllowGuestChat"] = True
+    result = evaluate_teams_guest_access_restricted(
+        _check("teams-guest-access-restricted"), evidence
+    )
+    assert result.status is FindingStatus.GAP
+    assert result.status is not FindingStatus.OK
+
+
+def test_teams_guest_access_enabled_but_restricted_partial() -> None:
+    evidence = _demo()
+    item = _surface(evidence["collaboration_bundle"], "teams_client", "guest_access")["items"][0]
+    item["properties"]["AllowGuestUser"] = True
+    result = evaluate_teams_guest_access_restricted(
+        _check("teams-guest-access-restricted"), evidence
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.OK
+
+
 def test_all_collaboration_checks_resolve_via_registry() -> None:
     from licenselens.engine.registry import default_registry
     from licenselens.schema_contracts import EvaluationMode
@@ -298,7 +373,7 @@ def test_all_collaboration_checks_resolve_via_registry() -> None:
     collaboration_ids = {
         check.id for check in load_checks() if check.workload is Workload.COLLABORATION
     }
-    assert len(collaboration_ids) == 22
+    assert len(collaboration_ids) == 24
     for check_id in collaboration_ids:
         entry = registry.evaluator_for(check_id)
         assert entry.evaluation_mode is EvaluationMode.DIRECT

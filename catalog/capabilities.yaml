@@ -78,6 +78,62 @@ capabilities:
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/identity/conditional-access/overview
 
+  - id: workload_identities_premium
+    name: Microsoft Entra Workload ID Premium
+    plain_name: Stronger protection for apps and service accounts
+    description: Conditional Access and risk-based protection for service principals and workload identities.
+    outcome: >
+      Apply sign-in rules and risk detection to the non-human accounts that run
+      your apps and automations, not only to people.
+    why_it_matters: >
+      Apps and service accounts move faster than people and are protected by
+      fewer checks. A stolen workload identity can reach business data directly.
+    if_unused: >
+      Workload identity licenses may be provisioned while no Conditional Access
+      policy actually gates service-principal sign-ins or risk.
+    workloads: [identity]
+    entitlement_kind: add_on
+    service_plan_names:
+      - AAD_WRKLDID_P2
+    service_plan_aliases:
+      - AAD_WRKLDID_P1
+    service_plan_ids:
+      - 7dc0e92d-bf15-401d-907e-0884efe7c760
+      - 84c289f0-efcb-486f-8581-07f44fc9efad
+    sku_part_numbers:
+      - Workload_Identities_Premium_CN
+      - Workload_Identities_P2
+    clouds: [commercial]
+    backends: [graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/entra/workload-id/workload-identities-overview
+
+  - id: entitlement_management
+    name: Microsoft Entra ID Governance
+    plain_name: Managed access packages for apps, groups, and Teams
+    description: Entitlement management access packages and lifecycle-governed access.
+    outcome: >
+      Bundle access to apps, groups, sites, and Teams into requestable packages
+      with approval and expiry, so access follows the job instead of accumulating.
+    why_it_matters: >
+      Ad-hoc access grants accumulate until nobody knows who should have what.
+      Access packages make grants reviewable and self-expiring.
+    if_unused: >
+      ID Governance may be entitled while access packages are never created,
+      leaving group and app membership managed by hand.
+    workloads: [identity]
+    entitlement_kind: add_on
+    service_plan_names:
+      - Entra_Identity_Governance
+    service_plan_ids:
+      - e866a266-3cff-43a3-acca-0c90a7e00c8b
+    sku_part_numbers:
+      - Microsoft_Entra_ID_Governance
+    clouds: [commercial]
+    backends: [graph]
+    source_version: "2026-08"
+    docs_url: https://learn.microsoft.com/entra/id-governance/entitlement-management-overview
+
   - id: identity_protection
     name: Microsoft Entra ID Protection
     plain_name: Alerts when a sign-in looks suspicious

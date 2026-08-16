@@ -15,7 +15,7 @@ from licenselens.evaluators.collaboration_lib import (
     usable,
 )
 from licenselens.evaluators.common import Evaluation
-from licenselens.models import CheckDefinition, FindingStatus
+from licenselens.models import CheckDefinition, Confidence, FindingStatus
 
 _TEAMS_FED: Final = "teams_federation"
 _TEAMS_CLIENT: Final = "teams_client"
@@ -246,5 +246,80 @@ def evaluate_teams_email_integration_disabled(
         summary="Teams channel email integration is disabled.",
         evidence=evidence_out,
         customer_summary="Channels cannot receive external email.",
+        **direct_meta(),
+    )
+
+
+def evaluate_teams_guest_access_restricted(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check
+    bundle = collaboration_bundle(evidence)
+    resolved = _surface_resolution(
+        bundle, _TEAMS_CLIENT, "guest_access", label="Teams guest access"
+    )
+    if resolved is not None:
+        return resolved
+    allow_guest: bool | None = None
+    allow_guest_calling: bool | None = None
+    allow_guest_chat: bool | None = None
+    for item in items(bundle, _TEAMS_CLIENT, "guest_access"):
+        raw = item.properties.get("AllowGuestUser")
+        if isinstance(raw, bool):
+            allow_guest = raw
+        raw_calling = item.properties.get("AllowGuestCalling")
+        if isinstance(raw_calling, bool):
+            allow_guest_calling = raw_calling
+        raw_chat = item.properties.get("AllowGuestChat")
+        if isinstance(raw_chat, bool):
+            allow_guest_chat = raw_chat
+    evidence_out = {
+        "allow_guest_user": allow_guest,
+        "allow_guest_calling": allow_guest_calling,
+        "allow_guest_chat": allow_guest_chat,
+    }
+    if allow_guest is None:
+        return unavailable(
+            "Teams guest access setting could not be read; treated as unresolved.",
+            adapter=_TEAMS_CLIENT,
+            surface_name="guest_access",
+            customer_summary="We could not confirm whether Teams guest access is restricted.",
+        )
+    if allow_guest is False:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary="Teams guest access is disabled tenant-wide.",
+            evidence=evidence_out,
+            customer_summary="External guests cannot be added to teams.",
+            **direct_meta(),
+        )
+    restricted = allow_guest_calling is False and allow_guest_chat is False
+    if restricted:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Teams guest access is enabled, but guest calling and chat are disabled. "
+                "Domain-level guest restrictions could not be confirmed."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Guests can still be added to teams, though calling and chat are off. "
+                "Confirm guest invitations are limited to approved domains."
+            ),
+            confidence=Confidence.MEDIUM,
+            limitations=[
+                "Guest domain allow-listing is managed in Microsoft Entra, not Teams "
+                "PowerShell; verify the allowlist there."
+            ],
+        )
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary="Teams guest access is wide open.",
+        evidence=evidence_out,
+        customer_summary=(
+            "Anyone can be invited as a guest with calling and chat. Restrict guest "
+            "access or limit it to approved domains."
+        ),
         **direct_meta(),
     )

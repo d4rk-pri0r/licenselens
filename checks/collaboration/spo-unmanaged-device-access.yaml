@@ -1,0 +1,31 @@
+id: spo-unmanaged-device-access
+title: SharePoint and OneDrive allow unmanaged devices
+customer_title: Block unmanaged devices from SharePoint and OneDrive
+customer_summary: >
+  Personal phones and unmanaged laptops can still open company files in
+  SharePoint and OneDrive.
+expected_state: Unmanaged devices cannot open SharePoint or OneDrive content.
+customer_next_step: >
+  Block access for unmanaged devices on the SharePoint access control page.
+description: >
+  SharePoint and OneDrive can block or limit access from devices the
+  organization does not manage. Leaving this open lets any personal device
+  reach company files.
+workload: collaboration
+required_capabilities:
+  - sharepoint_online
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.microsoft.com/sharepoint
+collector: collaboration_collector
+remediation: >
+  In the SharePoint admin center, open Policies > Access control, select
+  Unmanaged devices, and choose Block access (or Allow limited, web-only access).
+references:
+  - https://learn.microsoft.com/sharepoint/control-access-from-unmanaged-devices
+enabled: true

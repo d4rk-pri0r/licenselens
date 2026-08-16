@@ -24,6 +24,9 @@ _RESTRICTED_SHARING: Final = frozenset({"disabled", "existingexternalusersharing
 # SharingCapability value that disables external sharing entirely.
 _DISABLED_SHARING: Final = "disabled"
 
+# Get-SPOTenant ConditionalAccessPolicy value that blocks unmanaged devices.
+_BLOCK_ACCESS: Final = "blockaccess"
+
 
 def _sharing_limited_result(
     *,
@@ -103,6 +106,57 @@ def evaluate_spo_onedrive_sharing_limited(
         capability=capability,
         surface_name="onedrive_sharing",
         label="OneDrive",
+    )
+
+
+def evaluate_spo_unmanaged_device_access(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check
+    bundle = collaboration_bundle(evidence)
+    if not usable(bundle, _SPO, "unmanaged_device_policy"):
+        return unavailable(
+            "Unmanaged-device access policy could not be read; treated as unresolved.",
+            adapter=_SPO,
+            surface_name="unmanaged_device_policy",
+            customer_summary="We could not confirm whether unmanaged devices are blocked.",
+        )
+    policy = None
+    for item in items(bundle, _SPO, "unmanaged_device_policy"):
+        value = prop_str(item, "ConditionalAccessPolicy")
+        if value:
+            policy = value.strip().lower()
+    if policy is None:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary="Unmanaged-device policy was returned without a conclusive value.",
+            evidence={"unmanaged_device_policy": None},
+            customer_summary="Confirm unmanaged-device access is blocked in SharePoint.",
+            confidence=Confidence.MEDIUM,
+            limitations=["ConditionalAccessPolicy was not reported."],
+        )
+    evidence_out = {"unmanaged_device_policy": policy}
+    if policy == _BLOCK_ACCESS:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary="Unmanaged devices are blocked from SharePoint and OneDrive content.",
+            evidence=evidence_out,
+            customer_summary="Unmanaged devices cannot reach SharePoint or OneDrive files.",
+            **direct_meta(),
+        )
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary=(
+            "Unmanaged-device access is not blocked "
+            f"(policy: {policy or 'not set'})."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "Devices your business does not manage can still open SharePoint and "
+            "OneDrive content. Block unmanaged-device access."
+        ),
+        **direct_meta(),
     )
 
 

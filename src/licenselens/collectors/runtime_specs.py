@@ -26,6 +26,7 @@ from licenselens.collectors.runtime_collect_identity_apps import (
     collect_pim_policies_runtime,
 )
 from licenselens.collectors.runtime_collect_identity_core import (
+    collect_access_packages_runtime,
     collect_access_reviews_runtime,
     collect_ca_policies_runtime,
     collect_principal_directory_runtime,
@@ -94,6 +95,7 @@ _COLLECTORS: dict[str, EvidenceCollectorFn] = {
     "purview_dlp": collect_purview_dlp_runtime,
     "security_defaults_policy": collect_security_defaults_runtime,
     "access_review_definitions": collect_access_reviews_runtime,
+    "access_packages": collect_access_packages_runtime,
     "auth_methods_bundle": collect_auth_methods_runtime,
     "applications_bundle": collect_applications_runtime,
     "authorization_policy": collect_authorization_policy_runtime,

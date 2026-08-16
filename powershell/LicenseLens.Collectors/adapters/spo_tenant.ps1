@@ -101,6 +101,11 @@ function Invoke-LicenseLensAdapter {
         $guestPicker = [bool] $tenant.ShowPeoplePickerSuggestionsForGuestUsers
     }
 
+    $unmanagedPolicy = $null
+    if ($tenant.PSObject.Properties.Name -contains 'ConditionalAccessPolicy') {
+        $unmanagedPolicy = [string] $tenant.ConditionalAccessPolicy
+    }
+
     $surfaces = [ordered]@{
         sharing_capability = New-TenantSurface -Surface 'sharing_capability' -Name 'TenantSharing' -Properties @{
             SharingCapability                           = $sharingCapability
@@ -129,6 +134,9 @@ function Invoke-LicenseLensAdapter {
         reauth_days = New-TenantSurface -Surface 'reauth_days' -Name 'EmailAttestationReAuth' -Properties @{
             EmailAttestationRequired  = $reauthRequired
             EmailAttestationReAuthDays = $reauthDays
+        }
+        unmanaged_device_policy = New-TenantSurface -Surface 'unmanaged_device_policy' -Name 'UnmanagedDevicePolicy' -Properties @{
+            ConditionalAccessPolicy = $unmanagedPolicy
         }
     }
 

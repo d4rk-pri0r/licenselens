@@ -149,7 +149,28 @@ DEMO_TEAMS_CLIENT_PAYLOAD: Final[dict[str, JsonValue]] = {
                     "assignments": [],
                 }
             ],
-        }
+        },
+        "guest_access": {
+            "surface": "guest_access",
+            "status": "ok",
+            "reason": "",
+            "raw_count": 1,
+            "national_cloud_limited": True,
+            "items": [
+                {
+                    "name": "GuestAccess",
+                    "identity": "Global",
+                    "kind": "effective",
+                    "enabled": False,
+                    "properties": {
+                        "AllowGuestUser": False,
+                        "AllowGuestCalling": False,
+                        "AllowGuestChat": False,
+                    },
+                    "assignments": [],
+                }
+            ],
+        },
     },
     "collected_at": "2026-08-14T00:00:00Z",
 }

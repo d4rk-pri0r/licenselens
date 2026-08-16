@@ -1,0 +1,31 @@
+id: teams-guest-access-restricted
+title: Teams guest access is wide open
+customer_title: Restrict who can join teams as a guest
+customer_summary: >
+  Guests can be invited into teams with few restrictions, which risks data
+  exposure to outsiders.
+expected_state: Teams guest access is disabled or limited to approved domains.
+customer_next_step: >
+  Turn off guest access in Teams, or limit guest invitations to approved domains.
+description: >
+  Teams lets external guests join channels and reach shared files. Guest
+  access should be disabled or restricted to allow-listed domains.
+workload: collaboration
+required_capabilities:
+  - teams
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: collaboration
+exposure_class: none
+deep_link: https://admin.teams.microsoft.com/users/guest-settings
+collector: collaboration_collector
+remediation: >
+  In the Teams admin center, under Users > Guest access, turn off guest access,
+  and use Microsoft Entra settings to allow guest invitations only from
+  approved partner domains.
+references:
+  - https://learn.microsoft.com/microsoftteams/guest-access
+enabled: true

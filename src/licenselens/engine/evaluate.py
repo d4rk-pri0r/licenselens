@@ -10,6 +10,7 @@ from licenselens.evaluators.collaboration_sharing import (
     evaluate_spo_domain_restrictions,
     evaluate_spo_onedrive_sharing_limited,
     evaluate_spo_sharing_capability_limited,
+    evaluate_spo_unmanaged_device_access,
 )
 from licenselens.evaluators.collaboration_sharing_links import (
     evaluate_spo_anyone_link_expiration,
@@ -21,6 +22,7 @@ from licenselens.evaluators.collaboration_sharing_links import (
 from licenselens.evaluators.collaboration_teams_access import (
     evaluate_teams_email_integration_disabled,
     evaluate_teams_external_access_per_domain,
+    evaluate_teams_guest_access_restricted,
     evaluate_teams_unmanaged_inbound_blocked,
     evaluate_teams_unmanaged_outbound_blocked,
 )
@@ -42,6 +44,11 @@ from licenselens.evaluators.common import Evaluation, Evaluator
 from licenselens.evaluators.defender import evaluate_mdi_sensors
 from licenselens.evaluators.defender_endpoint import evaluate_mde_onboard_gap
 from licenselens.evaluators.defender_mdo import evaluate_mdo_p2_policies
+from licenselens.evaluators.defender_mdo_forward import (
+    evaluate_mdo_mailbox_intelligence,
+    evaluate_mdo_outbound_spam_forwarding_block,
+    evaluate_mdo_transport_rule_external_forward,
+)
 from licenselens.evaluators.endpoint_intune import (
     evaluate_endpoint_compliance_noncompliance_action,
     evaluate_endpoint_compliance_policy_assigned,
@@ -72,7 +79,10 @@ from licenselens.evaluators.exchange_mailflow import (
     evaluate_exo_sharing_contact_not_all_domains,
     evaluate_exo_smtp_auth_disabled,
 )
-from licenselens.evaluators.identity_access import evaluate_ca_priv_gaps
+from licenselens.evaluators.identity_access import (
+    evaluate_ca_priv_gaps,
+    evaluate_ca_workload_identity,
+)
 from licenselens.evaluators.identity_apps_consent import (
     evaluate_app_admin_consent_workflow,
     evaluate_app_password_addition_blocked,
@@ -91,6 +101,7 @@ from licenselens.evaluators.identity_auth_methods import (
     evaluate_auth_methods_migration,
     evaluate_auth_weak_methods_disabled,
 )
+from licenselens.evaluators.identity_break_glass import evaluate_break_glass_exclusion
 from licenselens.evaluators.identity_ca_coverage import (
     evaluate_ca_device_code_block,
     evaluate_ca_legacy_auth_block,
@@ -106,6 +117,7 @@ from licenselens.evaluators.identity_ca_risk import (
 )
 from licenselens.evaluators.identity_governance import (
     evaluate_access_reviews_unused,
+    evaluate_entitlement_access_packages,
     evaluate_security_defaults_on,
 )
 from licenselens.evaluators.identity_guests import (
@@ -160,6 +172,7 @@ from licenselens.evaluators.power_platform_tenant import (
 )
 from licenselens.evaluators.purview import evaluate_purview_dlp
 from licenselens.evaluators.purview_governance import (
+    evaluate_pur_default_and_mandatory_labels,
     evaluate_pur_retention_policy_coverage,
     evaluate_pur_sensitivity_auto_labeling,
     evaluate_pur_sensitivity_labels_published,
@@ -215,12 +228,14 @@ __all__ = [
     "evaluate_spo_domain_restrictions",
     "evaluate_spo_onedrive_sharing_limited",
     "evaluate_spo_sharing_capability_limited",
+    "evaluate_spo_unmanaged_device_access",
     "evaluate_spo_anyone_link_expiration",
     "evaluate_spo_anyone_link_view",
     "evaluate_spo_default_link_specific",
     "evaluate_spo_default_link_view",
     "evaluate_spo_verification_reauth",
     "evaluate_teams_email_integration_disabled",
+    "evaluate_teams_guest_access_restricted",
     "evaluate_teams_external_access_per_domain",
     "evaluate_teams_unmanaged_inbound_blocked",
     "evaluate_teams_unmanaged_outbound_blocked",
@@ -237,6 +252,9 @@ __all__ = [
     "evaluate_mdi_sensors",
     "evaluate_mde_onboard_gap",
     "evaluate_mdo_p2_policies",
+    "evaluate_mdo_mailbox_intelligence",
+    "evaluate_mdo_outbound_spam_forwarding_block",
+    "evaluate_mdo_transport_rule_external_forward",
     "evaluate_endpoint_compliance_noncompliance_action",
     "evaluate_endpoint_compliance_policy_assigned",
     "evaluate_endpoint_enrollment_coverage",
@@ -258,6 +276,7 @@ __all__ = [
     "evaluate_exo_sharing_contact_not_all_domains",
     "evaluate_exo_smtp_auth_disabled",
     "evaluate_ca_priv_gaps",
+    "evaluate_ca_workload_identity",
     "evaluate_app_admin_consent_workflow",
     "evaluate_app_password_addition_blocked",
     "evaluate_app_registration_admin_only",
@@ -270,6 +289,7 @@ __all__ = [
     "evaluate_auth_authenticator_context",
     "evaluate_auth_methods_migration",
     "evaluate_auth_weak_methods_disabled",
+    "evaluate_break_glass_exclusion",
     "evaluate_ca_device_code_block",
     "evaluate_ca_legacy_auth_block",
     "evaluate_ca_managed_devices",
@@ -280,6 +300,7 @@ __all__ = [
     "evaluate_ca_high_risk_signins",
     "evaluate_ca_high_risk_users",
     "evaluate_access_reviews_unused",
+    "evaluate_entitlement_access_packages",
     "evaluate_security_defaults_on",
     "evaluate_cross_tenant_defaults",
     "evaluate_guest_directory_access_limited",
@@ -319,6 +340,7 @@ __all__ = [
     "evaluate_pur_retention_policy_coverage",
     "evaluate_pur_sensitivity_auto_labeling",
     "evaluate_pur_sensitivity_labels_published",
+    "evaluate_pur_default_and_mandatory_labels",
     "evaluate_pur_communication_compliance_readiness",
     "evaluate_pur_ediscovery_readiness",
     "evaluate_pur_insider_risk_readiness",

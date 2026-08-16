@@ -5,6 +5,7 @@ from __future__ import annotations
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.identity_access import (
     evaluate_ca_priv_gaps,
+    evaluate_ca_workload_identity,
 )
 from licenselens.schema_contracts import EvaluationMode
 
@@ -19,6 +20,13 @@ def register_identity_access(catalog: RegistrationCatalog) -> None:
                 "ca_policies",
                 "role_assignments",
             ),
+            collector_id="graph_ca",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="id-ca-workload-identity",
+            evaluate=evaluate_ca_workload_identity,
+            input_models=("ca_policies",),
             collector_id="graph_ca",
             evaluation_mode=EvaluationMode.DIRECT,
         )

@@ -1,0 +1,29 @@
+id: mdo-outbound-spam-forwarding-block
+title: Outbound automatic forwarding is not blocked tenant-wide
+customer_title: Block automatic mail forwarding to outside addresses
+customer_summary: >
+  Attackers use auto-forward rules to quietly copy mail outside your organization.
+expected_state: Outbound automatic forwarding is blocked tenant-wide by the outbound spam filter policy.
+customer_next_step: >
+  Turn off automatic forwarding in the outbound spam filter policy.
+description: >
+  Tenant-wide outbound automatic forwarding is not blocked.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antispam
+collector: exchange_collector
+remediation: >
+  In the Microsoft Defender portal, open Email & collaboration > Policies & rules >
+  Threat policies > Anti-spam > Outbound spam filter policy and clear
+  "Enable automatic forwarding" so forwarded mail stays inside your organization.
+references:
+  - https://learn.microsoft.com/defender-office-365/outbound-spam-policies-configure
+enabled: true

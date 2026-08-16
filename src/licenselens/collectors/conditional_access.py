@@ -163,6 +163,38 @@ def has_risk_conditions(policy: dict[str, Any]) -> bool:
     return bool(sign_in_risk_levels(policy) or user_risk_levels(policy))
 
 
+def _client_applications(policy: dict[str, Any]) -> dict[str, Any]:
+    apps = _conditions(policy).get("clientApplications") or {}
+    return apps if isinstance(apps, dict) else {}
+
+
+def included_service_principals(policy: dict[str, Any]) -> set[str]:
+    """Service principals a policy applies to (``includeServicePrincipals``).
+
+    Graph semantics: ``All`` = all service principals, ``None`` = none,
+    otherwise explicit service principal IDs / ``ServicePrincipalsInMyTenant``.
+    """
+    apps = _client_applications(policy)
+    return {str(s).lower() for s in (apps.get("includeServicePrincipals") or [])}
+
+
+def targets_service_principals(policy: dict[str, Any]) -> bool:
+    included = included_service_principals(policy)
+    return bool(included) and "none" not in included
+
+
+def service_principal_risk_levels(policy: dict[str, Any]) -> list[str]:
+    levels = _conditions(policy).get("servicePrincipalRiskLevels") or []
+    return [str(x).lower() for x in levels]
+
+
+def targets_service_principal_risk(policy: dict[str, Any]) -> bool:
+    """Policy covers workload identities via service principal risk conditions."""
+    if not targets_service_principals(policy):
+        return False
+    return bool(service_principal_risk_levels(policy))
+
+
 def authentication_strength_id(policy: dict[str, Any]) -> str | None:
     grants = policy.get("grantControls") or {}
     if not isinstance(grants, dict):

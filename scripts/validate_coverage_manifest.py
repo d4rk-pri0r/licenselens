@@ -12,11 +12,13 @@ from typing import Final
 import yaml
 
 PINNED_COMMIT: Final = "1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e"
-# Total baseline rows at the pinned commit across all eight product baselines
-# (aad.md, defender.md, exo.md, powerbi.md, powerplatform.md, securitysuite.md,
-# sharepoint.md, teams.md). Every row must be either a manifest policy row or
-# an explicitly untracked row with a rationale.
-BASELINE_TOTAL: Final = 133
+# Total baseline rows across all eight product baselines (aad.md, defender.md,
+# exo.md, powerbi.md, powerplatform.md, securitysuite.md, sharepoint.md,
+# teams.md): the 133 rows at the pinned commit plus the two rows
+# (MS.SHAREPOINT.4.1v1, MS.TEAMS.3.1v1) that the newer baseline refresh added
+# after the pin and that LicenseLens now tracks directly. Every row must be
+# either a manifest policy row or an explicitly untracked row with a rationale.
+BASELINE_TOTAL: Final = 135
 ALLOWED_FIELDS: Final = frozenset(
     {
         "product",
@@ -94,15 +96,15 @@ EXPECTED_POLICY_TEXT: Final = {
     "sharepoint": (
         "MS.SHAREPOINT.1.1v1 MS.SHAREPOINT.1.2v1 MS.SHAREPOINT.1.3v1 "
         "MS.SHAREPOINT.2.1v1 MS.SHAREPOINT.2.2v1 MS.SHAREPOINT.3.1v1 "
-        "MS.SHAREPOINT.3.2v1 MS.SHAREPOINT.3.3v2"
+        "MS.SHAREPOINT.3.2v1 MS.SHAREPOINT.3.3v2 MS.SHAREPOINT.4.1v1"
     ),
     "teams": (
         "MS.TEAMS.1.1v1 MS.TEAMS.1.2v2 MS.TEAMS.1.3v1 "
         "MS.TEAMS.1.4v1 MS.TEAMS.1.5v1 MS.TEAMS.1.6v1 "
         "MS.TEAMS.1.7v2 MS.TEAMS.2.1v2 MS.TEAMS.2.2v2 "
-        "MS.TEAMS.2.3v2 MS.TEAMS.4.1v1 MS.TEAMS.5.1v1 "
-        "MS.TEAMS.5.1v2 MS.TEAMS.5.2v1 MS.TEAMS.5.2v2 "
-        "MS.TEAMS.5.3v1 MS.TEAMS.5.3v2"
+        "MS.TEAMS.2.3v2 MS.TEAMS.3.1v1 MS.TEAMS.4.1v1 "
+        "MS.TEAMS.5.1v1 MS.TEAMS.5.1v2 MS.TEAMS.5.2v1 "
+        "MS.TEAMS.5.2v2 MS.TEAMS.5.3v1 MS.TEAMS.5.3v2"
     ),
     "powerplatform": (
         "MS.POWERPLATFORM.1.1v1 MS.POWERPLATFORM.1.2v1 MS.POWERPLATFORM.2.1v1 "

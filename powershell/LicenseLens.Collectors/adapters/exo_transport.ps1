@@ -31,6 +31,15 @@ function Invoke-LicenseLensAdapter {
                 'ApplyHtmlDisclaimerText'
                 'PrependSubject'
                 'RejectMessageReasonText'
+                'BlindCopyTo'
+                'RedirectMessageTo'
+                'SenderAddressLocation'
+                'RecipientDomainIs'
+                'ExceptIfRecipientDomainIs'
+                'MessageTypeMatches'
+                'RecipientAddressMatchesPatterns'
+                'RecipientAddressContainsWords'
+                'ExceptIfRecipientAddressContainsWords'
             )
             $items += $item
         }

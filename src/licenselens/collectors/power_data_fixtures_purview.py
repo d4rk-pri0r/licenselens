@@ -101,6 +101,7 @@ DEMO_PURVIEW_PAYLOAD: Final[dict[str, JsonValue]] = {
                         "Enabled": True,
                         "ExchangeLocation": "All",
                         "ModernGroupLocation": "All",
+                        "Settings": ["DefaultLabelId:label-conf", "Mandatory:true"],
                     },
                     "assignments": [],
                 }

@@ -54,9 +54,9 @@ def test_real_manifest_matches_pinned_policy_inventory() -> None:
 
     # Then every pinned markdown heading is represented exactly once, either as
     # a mapped policy row or as an explicitly untracked row with a rationale.
-    assert result.policy_count == 129
+    assert result.policy_count == 131
     assert result.untracked_count == 4
-    assert result.baseline_total == 133
+    assert result.baseline_total == 135
     assert result.product_counts == {
         "aad": 34,
         "defender": 19,
@@ -64,8 +64,8 @@ def test_real_manifest_matches_pinned_policy_inventory() -> None:
         "powerbi": 8,
         "powerplatform": 9,
         "securitysuite": 25,
-        "sharepoint": 8,
-        "teams": 14,
+        "sharepoint": 9,
+        "teams": 15,
     }
     assert result.sha256
 
@@ -174,7 +174,7 @@ def test_validator_cli_fails_for_invalid_manifest(tmp_path: Path) -> None:
     assert "invalid_product" in completed.stdout
 
 
-def test_validator_enforces_total_baseline_of_133(tmp_path: Path) -> None:
+def test_validator_enforces_total_baseline_of_135(tmp_path: Path) -> None:
     # Given a manifest fixture whose untracked list drops one baseline row.
     data = _manifest_data()
     policies = [dict(policy) for policy in data["policies"]]
@@ -196,8 +196,8 @@ def test_validator_enforces_total_baseline_of_133(tmp_path: Path) -> None:
     # When validation runs.
     result = validator.validate_manifest(fixture)
 
-    # Then the 133-row baseline total is enforced and the dropped row is reported.
-    assert result.baseline_total == 132
+    # Then the 135-row baseline total is enforced and the dropped row is reported.
+    assert result.baseline_total == 134
     assert "baseline_total_mismatch" in result.error_codes
     assert "missing_policy" in result.error_codes
     assert any(error.startswith("missing_policy:exo:MS.EXO.16.1v1") for error in result.errors)

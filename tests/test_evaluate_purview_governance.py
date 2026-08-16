@@ -10,6 +10,7 @@ from licenselens.collectors.power_data_models import (
 )
 from licenselens.collectors.power_data_normalize import normalize_adapter_payload
 from licenselens.engine.evaluate import (
+    evaluate_pur_default_and_mandatory_labels,
     evaluate_pur_retention_policy_coverage,
     evaluate_pur_sensitivity_auto_labeling,
     evaluate_pur_sensitivity_labels_published,
@@ -83,6 +84,13 @@ def test_demo_direct_matrix_ok() -> None:
     assert published.evidence["published"] is True
     assert published.confidence.value == "high"
 
+    default_mandatory = evaluate_pur_default_and_mandatory_labels(
+        _check("pur-default-and-mandatory-labels"), evidence
+    )
+    assert default_mandatory.status is FindingStatus.OK
+    assert default_mandatory.evidence["default_label"] is True
+    assert default_mandatory.evidence["mandatory_labeling"] is True
+
     retention = evaluate_pur_retention_policy_coverage(
         _check("pur-retention-policy-coverage"), evidence
     )
@@ -92,6 +100,101 @@ def test_demo_direct_matrix_ok() -> None:
     # Demo fixture has label policies but no explicit auto-labeling marker.
     auto = evaluate_pur_sensitivity_auto_labeling(_check("pur-sensitivity-auto-labeling"), evidence)
     assert auto.status is FindingStatus.GAP
+
+
+def test_default_and_mandatory_labels_ok_from_settings() -> None:
+    evidence = _power_evidence(
+        {
+            "label_policies": _surface(
+                "label_policies",
+                items=[
+                    _item(
+                        "Global",
+                        properties={
+                            "Settings": ["DefaultLabelId:conf", "Mandatory:true"],
+                        },
+                    )
+                ],
+            ),
+        }
+    )
+    result = evaluate_pur_default_and_mandatory_labels(
+        _check("pur-default-and-mandatory-labels"), evidence
+    )
+    assert result.status is FindingStatus.OK
+    assert result.evidence["default_label"] is True
+    assert result.evidence["mandatory_labeling"] is True
+
+
+def test_default_and_mandatory_labels_ok_from_explicit_props() -> None:
+    evidence = _power_evidence(
+        {
+            "label_policies": _surface(
+                "label_policies",
+                items=[
+                    _item(
+                        "Global",
+                        properties={"DefaultLabelId": "conf", "Mandatory": True},
+                    )
+                ],
+            ),
+        }
+    )
+    result = evaluate_pur_default_and_mandatory_labels(
+        _check("pur-default-and-mandatory-labels"), evidence
+    )
+    assert result.status is FindingStatus.OK
+
+
+def test_default_and_mandatory_labels_neither_gap() -> None:
+    evidence = _power_evidence(
+        {
+            "label_policies": _surface(
+                "label_policies",
+                items=[_item("Global", properties={"Enabled": True})],
+            ),
+        }
+    )
+    result = evaluate_pur_default_and_mandatory_labels(
+        _check("pur-default-and-mandatory-labels"), evidence
+    )
+    assert result.status is FindingStatus.GAP
+    assert result.status is not FindingStatus.OK
+    assert result.evidence["default_label"] is False
+    assert result.evidence["mandatory_labeling"] is False
+
+
+def test_default_and_mandatory_labels_absent_gap() -> None:
+    evidence = _power_evidence(
+        {
+            "label_policies": _surface(
+                "label_policies",
+                reason="absent: no label_policies configured",
+            ),
+        }
+    )
+    result = evaluate_pur_default_and_mandatory_labels(
+        _check("pur-default-and-mandatory-labels"), evidence
+    )
+    assert result.status is FindingStatus.GAP
+    assert result.evidence["absent"] is True
+
+
+def test_default_and_mandatory_labels_only_default_partial() -> None:
+    evidence = _power_evidence(
+        {
+            "label_policies": _surface(
+                "label_policies",
+                items=[_item("Global", properties={"Settings": ["DefaultLabelId:conf"]})],
+            ),
+        }
+    )
+    result = evaluate_pur_default_and_mandatory_labels(
+        _check("pur-default-and-mandatory-labels"), evidence
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.evidence["default_label"] is True
+    assert result.evidence["mandatory_labeling"] is False
 
 
 def test_auto_labeling_ok_when_marker_present() -> None:
@@ -171,6 +274,7 @@ def test_denied_compliance_session_never_passes() -> None:
     for evaluator, check_id in (
         (evaluate_pur_retention_policy_coverage, "pur-retention-policy-coverage"),
         (evaluate_pur_sensitivity_labels_published, "pur-sensitivity-labels-published"),
+        (evaluate_pur_default_and_mandatory_labels, "pur-default-and-mandatory-labels"),
     ):
         result = evaluator(
             _check(check_id),
@@ -191,6 +295,7 @@ def test_missing_bundle_is_unreadable_not_ok() -> None:
     for evaluator, check_id in (
         (evaluate_pur_sensitivity_labels_published, "pur-sensitivity-labels-published"),
         (evaluate_pur_retention_policy_coverage, "pur-retention-policy-coverage"),
+        (evaluate_pur_default_and_mandatory_labels, "pur-default-and-mandatory-labels"),
     ):
         result = evaluator(_check(check_id), {})
         assert result.status is FindingStatus.PARTIAL
@@ -263,6 +368,7 @@ def test_new_checks_registered_in_evaluators_and_registry() -> None:
         "pur-sensitivity-labels-published",
         "pur-sensitivity-auto-labeling",
         "pur-retention-policy-coverage",
+        "pur-default-and-mandatory-labels",
         "pur-insider-risk-readiness",
         "pur-communication-compliance-readiness",
         "pur-ediscovery-readiness",

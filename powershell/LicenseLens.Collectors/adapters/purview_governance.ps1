@@ -76,7 +76,7 @@ function Invoke-LicenseLensAdapter {
     $surfaces['label_policies'] = Read-PurviewList `
         -Surface 'label_policies' `
         -Cmdlet 'Get-LabelPolicy' `
-        -Props @('Comment', 'Enabled', 'ExchangeLocation', 'ModernGroupLocation', 'Settings')
+        -Props @('Comment', 'Enabled', 'ExchangeLocation', 'ModernGroupLocation', 'Settings', 'DefaultLabelId', 'Mandatory')
 
     $surfaces['retention_policies'] = Read-PurviewList `
         -Surface 'retention_policies' `

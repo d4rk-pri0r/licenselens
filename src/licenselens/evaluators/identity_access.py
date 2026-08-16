@@ -222,3 +222,90 @@ def evaluate_ca_priv_gaps(
         exposure_class=exposure_class,
         limitations=limitations,
     )
+
+
+def evaluate_ca_workload_identity(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Assess Conditional Access coverage of service-principal (workload) risk."""
+    del check  # metadata unused; signature shared with registry
+
+    policies: list[dict[str, Any]] = list(evidence.get("ca_policies") or [])
+    matching = [p for p in policies if ca.targets_service_principal_risk(p)]
+    enforced = [p for p in matching if ca.is_enabled(p)]
+    report_only = [p for p in matching if ca.is_report_only(p)]
+    targeting_only = [p for p in policies if ca.targets_service_principals(p)]
+
+    risk_levels_seen = sorted(
+        {level for p in matching for level in ca.service_principal_risk_levels(p)}
+    )
+
+    evidence_out = {
+        "policy_count": len(policies),
+        "service_principal_targeting_policies": [p.get("displayName") for p in targeting_only],
+        "enforced_workload_risk_policies": [p.get("displayName") for p in enforced],
+        "report_only_workload_risk_policies": [p.get("displayName") for p in report_only],
+        "workload_risk_policy_count": len(matching),
+        "risk_levels_covered": risk_levels_seen,
+    }
+
+    if enforced:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                f"{len(enforced)} enforced Conditional Access "
+                f"polic{'y' if len(enforced) == 1 else 'ies'} cover(s) "
+                "service-principal risk for workload identities."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Sign-in rules that watch and react to risky service accounts "
+                "(the non-human identities that run your apps) are turned on."
+            ),
+        )
+
+    if report_only:
+        noun = "policy" if len(report_only) == 1 else "policies"
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                f"{len(report_only)} Conditional Access {noun} target(s) "
+                "service-principal risk in report-only mode, so workload "
+                "identities are not actually protected yet."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Rules that would watch risky service accounts are only in "
+                "test mode — they warn but do not protect."
+            ),
+        )
+
+    if targeting_only:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                f"Found {len(targeting_only)} Conditional Access "
+                f"polic{'y' if len(targeting_only) == 1 else 'ies'} targeting service "
+                "principals, but none evaluates service-principal risk levels."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Sign-in rules mention service accounts but do not react to "
+                "their risk signals, so a compromised app can still move freely."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary=(
+            "No Conditional Access policy covers service-principal risk — "
+            "workload identities are not gated by risk-based sign-in rules."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "We did not find sign-in rules that watch risky service accounts. "
+            "The non-human identities running your apps can keep working even "
+            "when they look compromised."
+        ),
+    )

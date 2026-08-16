@@ -7,6 +7,7 @@ from licenselens.evaluators.collaboration_sharing import (
     evaluate_spo_domain_restrictions,
     evaluate_spo_onedrive_sharing_limited,
     evaluate_spo_sharing_capability_limited,
+    evaluate_spo_unmanaged_device_access,
 )
 from licenselens.schema_contracts import EvaluationMode
 
@@ -31,6 +32,13 @@ def register_collaboration_sharing(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="spo-sharing-capability-limited",
             evaluate=evaluate_spo_sharing_capability_limited,
+            input_models=("collaboration_bundle",),
+            collector_id="collaboration_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="spo-unmanaged-device-access",
+            evaluate=evaluate_spo_unmanaged_device_access,
             input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,

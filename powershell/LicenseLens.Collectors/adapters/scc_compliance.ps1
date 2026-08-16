@@ -73,7 +73,7 @@ function Invoke-LicenseLensAdapter {
     $surfaces['label_policies'] = Read-SccList `
         -Surface 'label_policies' `
         -Cmdlet 'Get-LabelPolicy' `
-        -Props @('Comment', 'Enabled', 'ExchangeLocation', 'ModernGroupLocation', 'Settings')
+        -Props @('Comment', 'Enabled', 'ExchangeLocation', 'ModernGroupLocation', 'Settings', 'DefaultLabelId', 'Mandatory')
 
     # Unified audit log ingestion (when exposed on SCC/EXO session).
     $auditItems = @()

@@ -1,0 +1,30 @@
+id: mdo-transport-rule-external-forward
+title: A mail-flow rule forwards mail to external addresses
+customer_title: Remove mail-flow rules that copy mail outside
+customer_summary: >
+  A transport rule that Bcc's or redirects mail outside is a quiet data-exfiltration channel.
+expected_state: No transport rule Bcc's or redirects mail to external domains.
+customer_next_step: >
+  Remove or rescope transport rules that redirect or blind-copy mail to external addresses.
+description: >
+  A transport rule silently forwards or Bcc's mail to external domains.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://admin.exchange.microsoft.com/#/transportrules
+collector: exchange_collector
+remediation: >
+  In the Exchange admin center, open Mail flow > Rules and remove every enabled
+  rule whose action is "Redirect the message to" or "Blind carbon copy (Bcc) the
+  message to" with a recipient outside your accepted domains, or change the
+  recipient to an internal address.
+references:
+  - https://learn.microsoft.com/exchange/security-and-compliance/mail-flow-rules/manage-mail-flow-rules
+enabled: true

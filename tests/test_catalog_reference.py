@@ -41,9 +41,9 @@ def test_reference_model_includes_current_catalog_and_is_deterministic() -> None
     assert len(model.profiles) == 11
     assert len(model.graph_permissions) >= 15
     assert "Domain.Read.All" in model.graph_permissions
-    assert len(model.coverage_rows) == 129
+    assert len(model.coverage_rows) == 131
     assert len(model.untracked_coverage_rows) == 4
-    assert len(model.coverage_rows) + len(model.untracked_coverage_rows) == 133
+    assert len(model.coverage_rows) + len(model.untracked_coverage_rows) == 135
     assert sum(row.product == "defender" for row in model.coverage_rows) == 19
     assert {row.product for row in model.untracked_coverage_rows} <= {"exo", "teams"}
     assert [check.id for check in model.checks] == sorted(check.id for check in model.checks)

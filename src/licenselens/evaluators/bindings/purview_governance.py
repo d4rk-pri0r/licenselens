@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.purview_governance import (
+    evaluate_pur_default_and_mandatory_labels,
     evaluate_pur_retention_policy_coverage,
     evaluate_pur_sensitivity_auto_labeling,
     evaluate_pur_sensitivity_labels_published,
@@ -14,6 +15,13 @@ from licenselens.schema_contracts import EvaluationMode
 def register_purview_governance(catalog: RegistrationCatalog) -> None:
     catalog.enter_module("licenselens.evaluators.bindings.purview_governance")
     try:
+        catalog.add_evaluator(
+            check_id="pur-default-and-mandatory-labels",
+            evaluate=evaluate_pur_default_and_mandatory_labels,
+            input_models=("power_data_bundle",),
+            collector_id="power_data_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
         catalog.add_evaluator(
             check_id="pur-retention-policy-coverage",
             evaluate=evaluate_pur_retention_policy_coverage,

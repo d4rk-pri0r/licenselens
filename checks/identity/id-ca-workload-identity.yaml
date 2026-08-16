@@ -1,0 +1,39 @@
+id: id-ca-workload-identity
+title: No Conditional Access policy covers service-principal risk
+customer_title: Apps and service accounts are not protected by risk-based sign-in rules
+customer_summary: >
+  Your plan can watch the non-human accounts that run your apps and block them
+  when they look compromised. We did not find a sign-in rule that does this
+  yet, so a stolen app credential can keep working quietly.
+expected_state: Conditional Access policies evaluate service-principal risk for workload identities.
+customer_next_step: >
+  Create a Conditional Access policy for workload identities that targets
+  service principal risk levels (block or require re-authentication on medium
+  and high risk).
+description: >
+  Entra Workload ID Premium enables Conditional Access and risk-based
+  protection for service principals. Workload identities (apps, services,
+  automation) are protected by fewer checks than people, so a compromised
+  service principal can access data directly. Tenants often license the
+  feature without ever creating a policy that gates service-principal risk.
+workload: identity
+required_capabilities:
+  - workload_identities_premium
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
+collector: graph_ca
+remediation: >
+  In Entra admin center > Protection > Conditional Access, create a policy
+  targeting service principals (all or selected) with service principal risk
+  levels set to medium and high, and a grant of block or require MFA. Start in
+  report-only mode to observe, then enforce.
+references:
+  - https://learn.microsoft.com/entra/identity/conditional-access/workload-identity
+  - https://learn.microsoft.com/entra/workload-id/workload-identities-overview
+enabled: true

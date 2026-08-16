@@ -19,6 +19,7 @@ Security License Lens is designed for **read-only** access.
 | `SecurityIncident.Read.All` | Defender XDR incidents (capability operation signal) |
 | `SecurityAlert.Read.All` | Defender XDR alerts_v2 (capability operation signal) |
 | `AccessReview.Read.All` | Access review definitions |
+| `EntitlementManagement.Read.All` | Entitlement Management access packages |
 | `DeviceManagementConfiguration.Read.All` | Intune compliance/configuration/endpoint-security policies |
 | `DeviceManagementManagedDevices.Read.All` | Intune managed device inventory (bounded) |
 

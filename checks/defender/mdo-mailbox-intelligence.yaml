@@ -1,0 +1,29 @@
+id: mdo-mailbox-intelligence
+title: Mailbox intelligence is not enabled on anti-phish policies
+customer_title: Turn on mailbox intelligence for impersonation detection
+customer_summary: >
+  Without mailbox intelligence, look-alike senders impersonating your people slip through.
+expected_state: Mailbox intelligence is enabled on all anti-phish policies.
+customer_next_step: >
+  Enable mailbox intelligence on every anti-phish policy.
+description: >
+  Anti-phish mailbox intelligence is not enabled.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/antiphishing
+collector: exchange_collector
+remediation: >
+  In the Microsoft Defender portal, open Email & collaboration > Policies & rules >
+  Threat policies > Anti-phishing and enable "Mailbox intelligence" on every
+  anti-phishing policy so Microsoft learns your senders and flags look-alike mail.
+references:
+  - https://learn.microsoft.com/defender-office-365/anti-phishing-policies-configure
+enabled: true

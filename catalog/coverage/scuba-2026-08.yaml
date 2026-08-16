@@ -468,6 +468,7 @@ policies:
     pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
     local_check_ids:
       - mdo-impersonation-users-protected
+      - mdo-mailbox-intelligence
 
     disposition: implemented_direct
     rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
@@ -954,6 +955,8 @@ policies:
     pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
     local_check_ids:
       - exo-forwarding-external-disabled
+      - mdo-outbound-spam-forwarding-block
+      - mdo-transport-rule-external-forward
 
     disposition: implemented_direct
     rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
@@ -1196,6 +1199,18 @@ policies:
       - spo-verification-reauth
     disposition: implemented_direct
     rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: sharepoint
+    product_name: SharePoint and OneDrive
+    policy_id: MS.SHAREPOINT.4.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/sharepoint.md#L28
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - spo-unmanaged-device-access
+    disposition: implemented_direct
+    rationale: Tracked from the newer baseline refresh; direct PowerShell evaluation.
   - product: teams
     product_name: Microsoft Teams
     policy_id: MS.TEAMS.1.1v1
@@ -1316,6 +1331,18 @@ policies:
       - teams-unmanaged-outbound-blocked
     disposition: implemented_direct
     rationale: Mapped to LicenseLens direct collaboration PowerShell evaluation.
+  - product: teams
+    product_name: Microsoft Teams
+    policy_id: MS.TEAMS.3.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L62
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - teams-guest-access-restricted
+    disposition: implemented_direct
+    rationale: Tracked from the newer baseline refresh; direct PowerShell evaluation.
   - product: teams
     product_name: Microsoft Teams
     policy_id: MS.TEAMS.4.1v1

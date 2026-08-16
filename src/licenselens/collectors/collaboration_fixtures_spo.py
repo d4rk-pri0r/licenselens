@@ -144,6 +144,24 @@ DEMO_SPO_TENANT_PAYLOAD: Final[dict[str, JsonValue]] = {
                 }
             ],
         },
+        "unmanaged_device_policy": {
+            "surface": "unmanaged_device_policy",
+            "status": "ok",
+            "reason": "",
+            "raw_count": 1,
+            "items": [
+                {
+                    "name": "UnmanagedDevicePolicy",
+                    "identity": "tenant",
+                    "kind": "effective",
+                    "enabled": True,
+                    "properties": {
+                        "ConditionalAccessPolicy": "BlockAccess",
+                    },
+                    "assignments": [],
+                }
+            ],
+        },
     },
     "collected_at": "2026-08-14T00:00:00Z",
 }

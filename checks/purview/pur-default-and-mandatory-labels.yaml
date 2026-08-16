@@ -1,0 +1,30 @@
+id: pur-default-and-mandatory-labels
+title: No default or mandatory sensitivity labels
+customer_title: Require sensitivity labels on new content
+customer_summary: >
+  New files and emails get no default classification, and people can save or
+  send content without any label.
+expected_state: A default sensitivity label and mandatory labeling are configured.
+customer_next_step: >
+  In your label policy, set a default label and require users to apply a label.
+description: >
+  A label policy should assign a default sensitivity label and require
+  labeling, so unlabeled sensitive content does not leak.
+workload: purview
+required_capabilities:
+  - purview_sensitivity_labels
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://purview.microsoft.com/informationprotection/labelpolicies
+collector: power_data_collector
+remediation: >
+  Open the label policy in Purview, select a default label for documents and
+  email, and enable "Require users to apply a label" in the policy settings.
+references:
+  - https://learn.microsoft.com/purview/sensitivity-labels-office-apps
+enabled: true

@@ -1,0 +1,38 @@
+id: id-entitlement-access-packages
+title: Entitlement Management access packages not configured
+customer_title: Access to apps, groups, and Teams is not yet lifecycle-governed
+customer_summary: >
+  Your plan can bundle access to apps, groups, sites, and Teams into
+  requestable packages with approvals and expiry dates, so access follows the
+  job instead of piling up. That capability does not look configured yet.
+expected_state: Entitlement Management access packages are configured for governed access.
+customer_next_step: >
+  In Entra admin center > Identity governance > Entitlement management, create
+  a catalog and your first access package for a common access bundle (e.g.
+  contractor or project onboarding), then review and expire memberships.
+description: >
+  Entra ID Governance includes Entitlement Management, which packages access
+  to applications, groups, SharePoint sites, and Teams into requestable,
+  approvable, expiring assignments. Without access packages, membership is
+  granted ad-hoc and accumulates without review, expanding the attack surface
+  over time.
+workload: identity
+required_capabilities:
+  - entitlement_management
+severity: medium
+value_impact: medium
+impact: medium
+effort: half_day
+blast_radius: data
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/AccessPackages
+collector: graph_entitlement_management
+remediation: >
+  Create an Entitlement Management catalog, add groups/applications/Teams as
+  resources, and publish an access package with an approval stage and an
+  access review so assignments are requested, approved, and expired.
+references:
+  - https://learn.microsoft.com/entra/id-governance/entitlement-management-overview
+  - https://learn.microsoft.com/entra/id-governance/entitlement-management-access-package-create
+enabled: true

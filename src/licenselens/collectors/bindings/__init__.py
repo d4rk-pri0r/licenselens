@@ -128,6 +128,14 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="graph_entitlement_management",
+            backend=Backend.GRAPH,
+            permissions=("EntitlementManagement.Read.All",),
+            dependencies=("access_packages",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
             collector_id="graph_guests",
             backend=Backend.GRAPH,
             permissions=("Policy.Read.All", "User.Read.All"),

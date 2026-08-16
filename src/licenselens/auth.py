@@ -32,6 +32,7 @@ REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
     "DeviceManagementManagedDevices.Read.All",
     "Directory.Read.All",
     "Domain.Read.All",
+    "EntitlementManagement.Read.All",
     "Organization.Read.All",
     "Policy.Read.All",
     "RoleManagement.Read.Directory",

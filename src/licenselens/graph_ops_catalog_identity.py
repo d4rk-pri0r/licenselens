@@ -17,6 +17,7 @@ def identity_operations() -> tuple[GraphOperation, ...]:
     role = ("RoleManagement.Read.Directory",)
     app_read = ("Application.Read.All",)
     app_del = ("Application.Read.All", "Directory.Read.All")
+    entitlement = ("EntitlementManagement.Read.All",)
 
     def op(
         operation_id: str,
@@ -121,6 +122,15 @@ def identity_operations() -> tuple[GraphOperation, ...]:
             role,
             max_pages=30,
             description="Directory role assignments",
+        ),
+        op(
+            "entitlement_access_packages",
+            "/identityGovernance/entitlementManagement/accessPackages",
+            "graph.access_packages",
+            entitlement,
+            entitlement,
+            max_pages=10,
+            description="Entitlement Management access packages",
         ),
         op(
             "applications",

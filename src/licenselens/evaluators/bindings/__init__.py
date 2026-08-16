@@ -31,6 +31,7 @@ from licenselens.evaluators.bindings.identity_apps_credentials import (
     register_identity_apps_credentials,
 )
 from licenselens.evaluators.bindings.identity_auth_methods import register_identity_auth_methods
+from licenselens.evaluators.bindings.identity_break_glass import register_identity_break_glass
 from licenselens.evaluators.bindings.identity_ca_coverage import register_identity_ca_coverage
 from licenselens.evaluators.bindings.identity_ca_risk import register_identity_ca_risk
 from licenselens.evaluators.bindings.identity_governance import register_identity_governance
@@ -74,6 +75,7 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_identity_apps_consent(catalog)
     register_identity_apps_credentials(catalog)
     register_identity_auth_methods(catalog)
+    register_identity_break_glass(catalog)
     register_identity_ca_coverage(catalog)
     register_identity_ca_risk(catalog)
     register_identity_governance(catalog)

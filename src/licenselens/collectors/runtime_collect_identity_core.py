@@ -8,6 +8,10 @@ from licenselens.collectors.access_reviews import (
 )
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
 from licenselens.collectors.contracts import EvidenceEnvelope
+from licenselens.collectors.entitlement_management import (
+    DEMO_ACCESS_PACKAGES,
+    collect_access_packages,
+)
 from licenselens.collectors.privileged_roles import (
     DEMO_PRINCIPAL_DIRECTORY,
     DEMO_RECENT_SIGNIN_USER_IDS,
@@ -172,3 +176,22 @@ def collect_access_reviews_runtime(
         return ok(key, definitions, source="graph.identityGovernance", items=len(definitions))
     except GraphError as exc:
         return graph_failure(key, exc, f"Access review definitions could not be read: {exc}", ctx)
+
+
+def collect_access_packages_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "access_packages"
+    if ctx.is_dry_run:
+        return ok(key, list(DEMO_ACCESS_PACKAGES), source="demo", items=len(DEMO_ACCESS_PACKAGES))
+    assert ctx.client is not None
+    try:
+        packages = collect_access_packages(ctx.client)
+        return ok(
+            key,
+            packages,
+            source="graph.identityGovernance.entitlementManagement",
+            items=len(packages),
+        )
+    except GraphError as exc:
+        return graph_failure(key, exc, f"Entitlement access packages could not be read: {exc}", ctx)

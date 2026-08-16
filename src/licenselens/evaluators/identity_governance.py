@@ -286,3 +286,77 @@ def evaluate_access_reviews_unused(
             "cover your most powerful admin roles."
         ),
     )
+
+
+def evaluate_entitlement_access_packages(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Entitlement Management access packages configured (lifecycle-governed access)."""
+    del check
+
+    if evidence.get("access_packages_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Entitlement access packages could not be read: "
+            + str(evidence["access_packages_error"]),
+            evidence={"error": str(evidence["access_packages_error"])},
+        )
+
+    packages = [
+        p for p in evidence.get("access_packages") or [] if isinstance(p, dict)
+    ]
+    count = len(packages)
+    visible = [p for p in packages if not p.get("isHidden")]
+    hidden = [p for p in packages if p.get("isHidden")]
+
+    evidence_out = {
+        "access_package_count": count,
+        "visible_access_packages": len(visible),
+        "hidden_access_packages": len(hidden),
+        "access_package_names": [p.get("displayName") for p in packages][:10],
+    }
+
+    if count == 0:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                "No Entitlement Management access packages were found. Access "
+                "packages are included in the tenant's plan but have never been "
+                "configured."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Your plan can bundle access to apps, groups, and Teams into "
+                "requestable packages with approvals and expiry. That "
+                "lifecycle-governed access has not been set up yet."
+            ),
+        )
+
+    if visible:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                f"Found {count} Entitlement Management access "
+                f"package(s) ({len(visible)} visible) — lifecycle-governed access "
+                "is configured."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Requestable access packages for apps, groups, and Teams appear "
+                "to be in place, so access can be granted with approval and expiry."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.PARTIAL,
+        summary=(
+            f"Found {count} access package(s), but all are hidden from "
+            "requesters — access packages exist without being offered."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "Access packages exist but are hidden from the people who would "
+            "request them, so governed access is prepared but not yet in use."
+        ),
+    )

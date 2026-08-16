@@ -105,6 +105,8 @@ DEMO_THREAT_PAYLOAD: Final[dict[str, JsonValue]] = {
                     "enabled": True,
                     "properties": {
                         "EnableSpoofIntelligence": True,
+                        "EnableMailboxIntelligence": True,
+                        "EnableMailboxIntelligenceProtection": True,
                         "EnableFirstContactSafetyTips": True,
                         "EnableSimilarUsersSafetyTips": True,
                         "EnableSimilarDomainsSafetyTips": True,
@@ -174,6 +176,22 @@ DEMO_THREAT_PAYLOAD: Final[dict[str, JsonValue]] = {
                         "IPBlockList": [],
                         "EnableSafeList": False,
                     },
+                    "assignments": [],
+                }
+            ],
+        },
+        "outbound_spam": {
+            "surface": "outbound_spam",
+            "status": "ok",
+            "reason": "",
+            "raw_count": 1,
+            "items": [
+                {
+                    "name": "Default",
+                    "identity": "Default",
+                    "kind": "default",
+                    "enabled": True,
+                    "properties": {"AutoForwardingEnabled": False, "IsDefault": True},
                     "assignments": [],
                 }
             ],

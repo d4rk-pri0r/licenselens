@@ -17,6 +17,12 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             "graph:accessReviews",
             30,
         ),
+        "access_packages": (
+            Backend.GRAPH,
+            ("EntitlementManagement.Read.All",),
+            "graph:entitlementManagement.accessPackages",
+            30,
+        ),
         "admin_consent_request_policy": (
             Backend.GRAPH,
             ("Policy.Read.All",),
@@ -177,6 +183,11 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             Backend.GRAPH,
             ("AccessReview.Read.All",),
             ("access_review_definitions",),
+        ),
+        "graph_entitlement_management": (
+            Backend.GRAPH,
+            ("EntitlementManagement.Read.All",),
+            ("access_packages",),
         ),
         "graph_applications": (
             Backend.GRAPH,

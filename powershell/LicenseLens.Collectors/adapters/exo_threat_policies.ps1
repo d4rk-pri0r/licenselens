@@ -283,6 +283,16 @@ function Invoke-LicenseLensAdapter {
         ) `
         -RuleProps @('HostedConnectionFilterPolicy', 'Priority', 'State')
 
+    $surfaces['outbound_spam'] = Read-PolicyPair `
+        -Surface 'outbound_spam' `
+        -PolicyCmdlet 'Get-HostedOutboundSpamFilterPolicy' `
+        -RuleCmdlet 'Get-HostedOutboundSpamFilterRule' `
+        -PolicyProps @(
+            'AutoForwardingEnabled'
+            'IsDefault'
+        ) `
+        -RuleProps @('HostedOutboundSpamFilterPolicy', 'Priority', 'State')
+
     $atpItems = @()
     $atpStatus = 'ok'
     $atpReason = ''

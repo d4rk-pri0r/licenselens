@@ -6,6 +6,7 @@ from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.collaboration_teams_access import (
     evaluate_teams_email_integration_disabled,
     evaluate_teams_external_access_per_domain,
+    evaluate_teams_guest_access_restricted,
     evaluate_teams_unmanaged_inbound_blocked,
     evaluate_teams_unmanaged_outbound_blocked,
 )
@@ -25,6 +26,13 @@ def register_collaboration_teams_access(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="teams-external-access-per-domain",
             evaluate=evaluate_teams_external_access_per_domain,
+            input_models=("collaboration_bundle",),
+            collector_id="collaboration_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="teams-guest-access-restricted",
+            evaluate=evaluate_teams_guest_access_restricted,
             input_models=("collaboration_bundle",),
             collector_id="collaboration_collector",
             evaluation_mode=EvaluationMode.DIRECT,
