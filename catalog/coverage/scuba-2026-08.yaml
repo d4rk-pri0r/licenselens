@@ -712,6 +712,238 @@ policies:
 
     disposition: implemented_direct
     rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: securitysuite
+    product_name: Microsoft 365 Security Suite
+    policy_id: MS.SECURITYSUITE.15.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/securitysuite.md#L1106
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-links-real-time-scan
+    disposition: implemented_direct
+    rationale: Upstream removed this row; real-time scan check covers it.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.1.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L55
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-p2-policies-default
+    disposition: implemented_proxy
+    rationale: Preset policies; dynamic direct with Secure Score fallback.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.1.2v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L73
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: EOP preset membership not read by any LicenseLens check.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.1.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L94
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-p2-policies-default
+    disposition: implemented_proxy
+    rationale: Preset policies; dynamic direct with Secure Score fallback.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.1.4v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L115
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Strict-preset scoping for sensitive accounts; no check reads it.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.1.5v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L135
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Strict-preset scoping for sensitive accounts; no check reads it.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.2.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L254
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-impersonation-users-protected
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.2.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L273
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-impersonation-domains-owned
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.2.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L292
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-impersonation-partner-domains
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.3.1v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L391
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-safe-attachments-spo-teams
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.4.1v2
+    policy_version: v2
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L457
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-policy-present
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.4.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L475
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-locations-complete
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.4.3v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L494
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-enforcement-block
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.4.4v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L512
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - pur-dlp-notifications
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.4.5v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L529
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Restricted-app DLP list; portal-only, no read path.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.4.6v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L547
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Restricted-app block actions; portal-only, no read path.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.5.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L761
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual confirmation via mdo-alert-policies-enabled check.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.5.2v1
+    policy_version: v1
+    criticality: SHOULD
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L775
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Alert destination; manual confirmation only.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.6.1v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: automated
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L874
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids:
+      - mdo-unified-audit-enabled
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Exchange/SCC evaluation.
+  - product: defender
+    product_name: Microsoft Defender for Office 365
+    policy_id: MS.DEFENDER.6.3v1
+    policy_version: v1
+    criticality: SHALL
+    check_type: manual
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L888
+    pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
+    local_check_ids: []
+    disposition: manual
+    rationale: Manual confirmation via mdo-audit-retention check.
   - product: exo
     product_name: Exchange Online
     policy_id: MS.EXO.1.1v2
@@ -1333,3 +1565,20 @@ policies:
       - pbi-sensitivity-labels-enabled
     disposition: implemented_direct
     rationale: Mapped to LicenseLens direct Power BI PowerShell evaluation.
+untracked_policies:
+  - product: exo
+    policy_id: MS.EXO.16.1v1
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/defender.md#L758
+    rationale: Removed upstream; reworked into mapped MS.SECURITYSUITE.4.1v1.
+  - product: teams
+    policy_id: MS.TEAMS.5.1v1
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L617
+    rationale: Legacy v1 superseded by mapped MS.TEAMS.5.1v2.
+  - product: teams
+    policy_id: MS.TEAMS.5.2v1
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L638
+    rationale: Legacy v1 superseded by mapped MS.TEAMS.5.2v2.
+  - product: teams
+    policy_id: MS.TEAMS.5.3v1
+    source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L661
+    rationale: Legacy v1 superseded by mapped MS.TEAMS.5.3v2.

@@ -41,7 +41,11 @@ def test_reference_model_includes_current_catalog_and_is_deterministic() -> None
     assert len(model.profiles) == 11
     assert len(model.graph_permissions) >= 15
     assert "Domain.Read.All" in model.graph_permissions
-    assert len(model.coverage_rows) == 109
+    assert len(model.coverage_rows) == 129
+    assert len(model.untracked_coverage_rows) == 4
+    assert len(model.coverage_rows) + len(model.untracked_coverage_rows) == 133
+    assert sum(row.product == "defender" for row in model.coverage_rows) == 19
+    assert {row.product for row in model.untracked_coverage_rows} <= {"exo", "teams"}
     assert [check.id for check in model.checks] == sorted(check.id for check in model.checks)
     assert {check.support_state for check in model.checks} <= {
         "direct",
@@ -235,6 +239,39 @@ def test_reference_model_rejects_tracked_noncoverage_rows_with_check_ids(
         exc_info.value.diagnostics
     )
     assert "contradictory_coverage_state:MS.AAD.2.2v1:manual" in exc_info.value.diagnostics
+
+
+def test_reference_model_rejects_malformed_untracked_rows(tmp_path: Path) -> None:
+    # Given: an untracked list that duplicates a mapped row and names an unknown product.
+    paths = _copy_reference_inputs(tmp_path)
+    data = _coverage_data(paths)
+    data["untracked_policies"] = [
+        {
+            "product": "aad",
+            "policy_id": "MS.AAD.1.1v1",
+            "source_url": (
+                "https://github.com/cisagov/ScubaGear/blob/"
+                "1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/"
+                "PowerShell/ScubaGear/baselines/aad.md#L79"
+            ),
+            "rationale": "Duplicate of a mapped row.",
+        },
+        {
+            "product": "purview",
+            "policy_id": "NOT-A-POLICY-ID",
+            "source_url": "https://example.com/not-a-baseline",
+            "rationale": "",
+        },
+    ]
+    paths.coverage_path.write_text(yaml.safe_dump(data), encoding="utf-8")
+
+    # When / Then: untracked rows are validated as typed diagnostics.
+    with pytest.raises(ReferenceCatalogError) as exc_info:
+        build_reference_model(paths)
+    assert "untracked_already_mapped:MS.AAD.1.1v1" in exc_info.value.diagnostics
+    assert "unresolved_untracked_path:1:purview" in exc_info.value.diagnostics
+    assert "invalid_untracked_policy:1:NOT-A-POLICY-ID" in exc_info.value.diagnostics
+    assert "missing_untracked_rationale:1:NOT-A-POLICY-ID" in exc_info.value.diagnostics
 
 
 def _copy_reference_inputs(tmp_path: Path) -> ReferenceModelPaths:

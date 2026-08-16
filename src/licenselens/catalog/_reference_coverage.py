@@ -8,7 +8,11 @@ from urllib.parse import urlparse
 import yaml
 from pydantic import TypeAdapter
 
-from licenselens.catalog._reference_models import CoverageDisposition, ReferenceCoverageRow
+from licenselens.catalog._reference_models import (
+    CoverageDisposition,
+    ReferenceCoverageRow,
+    ReferenceUntrackedRow,
+)
 from licenselens.models import PROXY_CHECK_IDS
 
 type JsonValue = str | int | float | bool | None | list["JsonValue"] | dict[str, "JsonValue"]
@@ -18,6 +22,7 @@ YAML_OBJECT: Final = TypeAdapter(JsonObject)
 POLICY_ID_PATTERN: Final = re.compile(r"^MS\.[A-Z]+\.\d+\.\d+v\d+$")
 PRODUCT_PATHS: Final = {
     "aad": "PowerShell/ScubaGear/baselines/aad.md",
+    "defender": "PowerShell/ScubaGear/baselines/defender.md",
     "securitysuite": "PowerShell/ScubaGear/baselines/securitysuite.md",
     "exo": "PowerShell/ScubaGear/baselines/exo.md",
     "sharepoint": "PowerShell/ScubaGear/baselines/sharepoint.md",
@@ -25,6 +30,7 @@ PRODUCT_PATHS: Final = {
     "powerplatform": "PowerShell/ScubaGear/baselines/powerplatform.md",
     "powerbi": "PowerShell/ScubaGear/baselines/powerbi.md",
 }
+UNTRACKED_FIELDS: Final = frozenset({"product", "policy_id", "source_url", "rationale"})
 
 
 class CoverageRow(TypedDict):
@@ -114,6 +120,53 @@ def _validate_coverage_row(row: CoverageRow, index: int, check_ids: set[str]) ->
     ):
         errors.append(f"contradictory_coverage_state:{row['policy_id']}:implemented_proxy")
     return errors
+
+
+def load_untracked_rows(
+    path: Path,
+    mapped_policy_ids: set[str],
+) -> tuple[list[ReferenceUntrackedRow], list[str]]:
+    raw = YAML_OBJECT.validate_python(yaml.safe_load(path.read_text(encoding="utf-8")) or {})
+    entries = raw.get("untracked_policies") or []
+    errors: list[str] = []
+    untracked: list[ReferenceUntrackedRow] = []
+    if not isinstance(entries, list):
+        return untracked, ["malformed_untracked:policies"]
+    for index, raw_entry in enumerate(entries):
+        if not isinstance(raw_entry, dict):
+            errors.append(f"malformed_untracked_row:{index}")
+            continue
+        unknown = sorted(set(raw_entry) - UNTRACKED_FIELDS)
+        errors.extend(f"unknown_untracked_field:{index}:{field}" for field in unknown)
+        product = str(raw_entry.get("product") or "")
+        policy_id = str(raw_entry.get("policy_id") or "")
+        rationale = str(raw_entry.get("rationale") or "")
+        source_path = _any_source_path(str(raw_entry.get("source_url") or ""))
+        if product not in PRODUCT_PATHS or not source_path:
+            errors.append(f"unresolved_untracked_path:{index}:{product}")
+        if POLICY_ID_PATTERN.fullmatch(policy_id) is None:
+            errors.append(f"invalid_untracked_policy:{index}:{policy_id}")
+        if not rationale:
+            errors.append(f"missing_untracked_rationale:{index}:{policy_id}")
+        if policy_id in mapped_policy_ids:
+            errors.append(f"untracked_already_mapped:{policy_id}")
+        untracked.append(
+            ReferenceUntrackedRow(
+                policy_id=policy_id,
+                product=product,
+                rationale=rationale,
+                source_path=source_path,
+            )
+        )
+    return untracked, errors
+
+
+def _any_source_path(source_url: str) -> str:
+    parsed = urlparse(source_url)
+    for path in PRODUCT_PATHS.values():
+        if parsed.path.endswith(path):
+            return path
+    return ""
 
 
 def _source_path(product: str, source_url: str) -> str:

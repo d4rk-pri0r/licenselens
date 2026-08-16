@@ -69,9 +69,9 @@ capabilities, evidence keys, and source file.
 | `id-pim-no-permanent-privileged` | `graph_pim` | direct | registered | entra_id_p2 | role_assignments, role_eligibilities | `checks/identity/id-pim-no-permanent-privileged.yaml` |
 | `id-pim-other-activation-alert` | `graph_pim_policies` | direct | registered | entra_id_p2 | pim_policies_bundle | `checks/identity/id-pim-other-activation-alert.yaml` |
 | `id-pim-privileged-assignment-alert` | `graph_pim_policies` | direct | registered | entra_id_p2 | pim_policies_bundle | `checks/identity/id-pim-privileged-assignment-alert.yaml` |
-| `id-pim-unused` | `graph_pim` | direct | registered | entra_id_p2 | role_assignments, role_eligibilities | `checks/identity/id-pim-unused.yaml` |
+| `id-pim-unused` | `graph_pim` | direct | registered | entra_id_p2 | break_glass_principal_ids, role_assignments, role_eligibilities | `checks/identity/id-pim-unused.yaml` |
 | `id-priv-cloud-only` | `graph_signins_roles` | direct | registered | entra_id_p2 | principal_directory, role_assignments | `checks/identity/id-priv-cloud-only.yaml` |
-| `id-security-defaults-on` | `graph_security_defaults` | direct | registered | conditional_access | security_defaults_policy | `checks/identity/id-security-defaults-on.yaml` |
+| `id-security-defaults-on` | `graph_security_defaults` | direct | registered | conditional_access | ca_policies, security_defaults_policy | `checks/identity/id-security-defaults-on.yaml` |
 | `mde-onboard-gap` | `mde_onboarding` | direct | registered | defender_endpoint_p1, defender_endpoint_p2 | mde_summary | `checks/defender/mde-onboard-gap.yaml` |
 | `mde-sensor-health` | `mde_health_collector` | direct | registered | defender_endpoint_p1, defender_endpoint_p2 | mde_health | `checks/endpoint/mde-sensor-health.yaml` |
 | `mdi-sensors-missing` | `mdi_sensors` | proxy | registered | defender_identity | secure_score_controls | `checks/defender/mdi-sensors-missing.yaml` |

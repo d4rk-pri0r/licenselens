@@ -12,6 +12,11 @@ from typing import Final
 import yaml
 
 PINNED_COMMIT: Final = "1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e"
+# Total baseline rows at the pinned commit across all eight product baselines
+# (aad.md, defender.md, exo.md, powerbi.md, powerplatform.md, securitysuite.md,
+# sharepoint.md, teams.md). Every row must be either a manifest policy row or
+# an explicitly untracked row with a rationale.
+BASELINE_TOTAL: Final = 133
 ALLOWED_FIELDS: Final = frozenset(
     {
         "product",
@@ -27,6 +32,7 @@ ALLOWED_FIELDS: Final = frozenset(
         "rationale",
     }
 )
+UNTRACKED_ALLOWED_FIELDS: Final = frozenset({"product", "policy_id", "source_url", "rationale"})
 FORBIDDEN_FIELDS: Final = frozenset(
     {"name", "implementation", "resources", "recommendation", "long_rationale"}
 )
@@ -35,6 +41,7 @@ DISPOSITIONS: Final = frozenset(
 )
 PRODUCT_PATHS: Final = {
     "aad": "PowerShell/ScubaGear/baselines/aad.md",
+    "defender": "PowerShell/ScubaGear/baselines/defender.md",
     "securitysuite": "PowerShell/ScubaGear/baselines/securitysuite.md",
     "exo": "PowerShell/ScubaGear/baselines/exo.md",
     "sharepoint": "PowerShell/ScubaGear/baselines/sharepoint.md",
@@ -65,13 +72,24 @@ EXPECTED_POLICY_TEXT: Final = {
         "MS.SECURITYSUITE.3.5v1 MS.SECURITYSUITE.4.1v1 MS.SECURITYSUITE.4.2v1 "
         "MS.SECURITYSUITE.5.1v1 MS.SECURITYSUITE.5.2v1 MS.SECURITYSUITE.6.1v1 "
         "MS.SECURITYSUITE.6.2v1 MS.SECURITYSUITE.7.1v1 MS.SECURITYSUITE.7.2v1 "
-        "MS.SECURITYSUITE.7.3v1 MS.SECURITYSUITE.8.1v1 MS.SECURITYSUITE.8.2v1"
+        "MS.SECURITYSUITE.7.3v1 MS.SECURITYSUITE.8.1v1 MS.SECURITYSUITE.8.2v1 "
+        "MS.SECURITYSUITE.15.2v1"
+    ),
+    "defender": (
+        "MS.DEFENDER.1.1v1 MS.DEFENDER.1.2v1 MS.DEFENDER.1.3v1 "
+        "MS.DEFENDER.1.4v1 MS.DEFENDER.1.5v1 MS.DEFENDER.2.1v1 "
+        "MS.DEFENDER.2.2v1 MS.DEFENDER.2.3v1 MS.DEFENDER.3.1v1 "
+        "MS.DEFENDER.4.1v2 MS.DEFENDER.4.2v1 MS.DEFENDER.4.3v1 "
+        "MS.DEFENDER.4.4v1 MS.DEFENDER.4.5v1 MS.DEFENDER.4.6v1 "
+        "MS.DEFENDER.5.1v1 MS.DEFENDER.5.2v1 MS.DEFENDER.6.1v1 "
+        "MS.DEFENDER.6.3v1"
     ),
     "exo": (
         "MS.EXO.1.1v2 MS.EXO.2.2v3 MS.EXO.3.1v1 "
         "MS.EXO.4.1v1 MS.EXO.4.2v1 MS.EXO.4.3v1 "
         "MS.EXO.4.4v1 MS.EXO.5.1v1 MS.EXO.6.1v1 "
-        "MS.EXO.6.2v1 MS.EXO.7.1v1 MS.EXO.13.1v1"
+        "MS.EXO.6.2v1 MS.EXO.7.1v1 MS.EXO.13.1v1 "
+        "MS.EXO.16.1v1"
     ),
     "sharepoint": (
         "MS.SHAREPOINT.1.1v1 MS.SHAREPOINT.1.2v1 MS.SHAREPOINT.1.3v1 "
@@ -82,8 +100,9 @@ EXPECTED_POLICY_TEXT: Final = {
         "MS.TEAMS.1.1v1 MS.TEAMS.1.2v2 MS.TEAMS.1.3v1 "
         "MS.TEAMS.1.4v1 MS.TEAMS.1.5v1 MS.TEAMS.1.6v1 "
         "MS.TEAMS.1.7v2 MS.TEAMS.2.1v2 MS.TEAMS.2.2v2 "
-        "MS.TEAMS.2.3v2 MS.TEAMS.4.1v1 MS.TEAMS.5.1v2 "
-        "MS.TEAMS.5.2v2 MS.TEAMS.5.3v2"
+        "MS.TEAMS.2.3v2 MS.TEAMS.4.1v1 MS.TEAMS.5.1v1 "
+        "MS.TEAMS.5.1v2 MS.TEAMS.5.2v1 MS.TEAMS.5.2v2 "
+        "MS.TEAMS.5.3v1 MS.TEAMS.5.3v2"
     ),
     "powerplatform": (
         "MS.POWERPLATFORM.1.1v1 MS.POWERPLATFORM.1.2v1 MS.POWERPLATFORM.2.1v1 "
@@ -107,6 +126,8 @@ type RowValue = str | int | bool | list[str] | None
 @dataclass(frozen=True, slots=True)
 class ValidationResult:
     policy_count: int
+    untracked_count: int
+    baseline_total: int
     product_counts: Mapping[str, int]
     sha256: str
     errors: tuple[str, ...]
@@ -122,12 +143,17 @@ def validate_manifest(path: Path) -> ValidationResult:
     try:
         raw = yaml.safe_load(text)
     except yaml.YAMLError as exc:
-        return ValidationResult(0, {}, _sha256(text), (f"malformed_yaml:{exc}",))
+        return ValidationResult(0, 0, 0, {}, _sha256(text), (f"malformed_yaml:{exc}",))
     if not isinstance(raw, dict):
-        return ValidationResult(0, {}, _sha256(text), ("malformed_manifest:root",))
+        return ValidationResult(0, 0, 0, {}, _sha256(text), ("malformed_manifest:root",))
     policies = raw.get("policies")
     if not isinstance(policies, list):
-        return ValidationResult(0, {}, _sha256(text), ("malformed_manifest:policies",))
+        return ValidationResult(0, 0, 0, {}, _sha256(text), ("malformed_manifest:policies",))
+    untracked = raw.get("untracked_policies") or []
+    if not isinstance(untracked, list):
+        return ValidationResult(
+            0, 0, 0, {}, _sha256(text), ("malformed_manifest:untracked_policies",)
+        )
 
     seen: set[str] = set()
     product_counts: Counter[str] = Counter()
@@ -147,17 +173,80 @@ def validate_manifest(path: Path) -> ValidationResult:
             if product in observed:
                 observed[product].add(policy_id)
 
+    untracked_seen: set[str] = set()
+    for index, entry in enumerate(untracked):
+        if not isinstance(entry, dict):
+            errors.append(f"malformed_untracked_row:{index}")
+            continue
+        errors.extend(_validate_untracked_row(entry, index))
+        product = entry.get("product")
+        policy_id = entry.get("policy_id")
+        if isinstance(product, str) and isinstance(policy_id, str):
+            if policy_id in untracked_seen:
+                errors.append(f"duplicate_untracked_policy:{policy_id}")
+            untracked_seen.add(policy_id)
+            if policy_id in seen:
+                errors.append(f"untracked_already_mapped:{policy_id}")
+            if product in observed:
+                observed[product].add(policy_id)
+
     for product, expected_ids in EXPECTED_POLICIES.items():
         missing = sorted(expected_ids - observed[product])
         extra = sorted(observed[product] - expected_ids)
         errors.extend(f"missing_policy:{product}:{policy_id}" for policy_id in missing)
         errors.extend(f"unknown_policy:{product}:{policy_id}" for policy_id in extra)
+    baseline_total = len(policies) + len(untracked)
+    if baseline_total != BASELINE_TOTAL:
+        errors.append(f"baseline_total_mismatch:{baseline_total}")
     return ValidationResult(
         len(policies),
+        len(untracked),
+        baseline_total,
         dict(sorted(product_counts.items())),
         _sha256(text),
         tuple(errors),
     )
+
+
+def _validate_untracked_row(row: dict[str, RowValue], index: int) -> list[str]:
+    errors: list[str] = []
+    fields = set(row)
+    extra = sorted(fields - UNTRACKED_ALLOWED_FIELDS)
+    errors.extend(f"untracked_unknown_field:{index}:{field}" for field in extra)
+    for field in UNTRACKED_ALLOWED_FIELDS:
+        if field not in row:
+            errors.append(f"untracked_missing_field:{index}:{field}")
+    product = row.get("product")
+    policy_id = row.get("policy_id")
+    source_url = row.get("source_url")
+    if not isinstance(product, str) or product not in EXPECTED_POLICIES:
+        errors.append(f"untracked_invalid_product:{index}:{product}")
+    if not isinstance(policy_id, str) or POLICY_ID_PATTERN.fullmatch(policy_id) is None:
+        errors.append(f"untracked_invalid_policy_id:{index}:{policy_id}")
+    else:
+        expected_ids = EXPECTED_POLICIES.get(product)
+        if not isinstance(expected_ids, frozenset) or policy_id not in expected_ids:
+            errors.append(f"untracked_not_in_baseline:{product}:{policy_id}")
+    rationale = row.get("rationale")
+    if not isinstance(rationale, str) or len(rationale.split()) > 12:
+        errors.append(f"untracked_invalid_rationale:{index}")
+    if isinstance(source_url, str):
+        errors.extend(_validate_any_baseline_url(source_url, index))
+    else:
+        errors.append(f"untracked_unpinned_source_url:{index}")
+    return errors
+
+
+def _validate_any_baseline_url(source_url: str, index: int) -> list[str]:
+    for path in PRODUCT_PATHS.values():
+        prefix = f"https://github.com/cisagov/ScubaGear/blob/{PINNED_COMMIT}/{path}#L"
+        if not source_url.startswith(prefix):
+            continue
+        line_text = source_url.removeprefix(prefix)
+        if line_text.isdigit() and line_text != "0":
+            return []
+        return [f"invalid_source_line:{index}"]
+    return [f"untracked_unpinned_source_url:{index}"]
 
 
 def _validate_row(row: dict[str, RowValue], index: int) -> list[str]:
@@ -178,8 +267,6 @@ def _validate_row(row: dict[str, RowValue], index: int) -> list[str]:
         errors.append(f"invalid_product:{index}:{product}")
     if not isinstance(policy_id, str) or POLICY_ID_PATTERN.fullmatch(policy_id) is None:
         errors.append(f"invalid_policy_id:{index}:{policy_id}")
-    if product == "defender":
-        errors.append(f"invalid_product:{index}:defender")
     errors.extend(_validate_literals(row, index))
     if isinstance(policy_id, str):
         expected_version = "v" + policy_id.rsplit("v", 1)[-1]
@@ -237,6 +324,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     path = Path(args[0]) if args else Path("catalog/coverage/scuba-2026-08.yaml")
     result = validate_manifest(path)
     print(f"policy_count={result.policy_count}")
+    print(f"untracked_count={result.untracked_count}")
+    print(f"baseline_total={result.baseline_total}")
     print(f"product_counts={result.product_counts}")
     print(f"sha256={result.sha256}")
     for error in result.errors:

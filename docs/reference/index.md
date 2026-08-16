@@ -9,8 +9,9 @@ Machine-generated from the todo-5 reference model (package version **0.3.0**).
 | [Capabilities](capabilities.md) | 29 |
 | [Profiles](profiles.md) | 11 |
 | [Graph permissions](permissions.md) | 15 |
-| [Coverage rows](coverage.md) | 109 |
-| Coverage gaps (manual/unsupported/not-applicable) | 10 |
+| [Coverage rows](coverage.md) | 129 |
+| [Untracked baseline rows](coverage.md) | 4 |
+| Coverage gaps (manual/unsupported/not-applicable) | 18 |
 
 ## Provenance
 

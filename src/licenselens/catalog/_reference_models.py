@@ -84,6 +84,13 @@ class ReferenceCoverageRow(StrictReferenceModel):
     source_path: str
 
 
+class ReferenceUntrackedRow(StrictReferenceModel):
+    policy_id: str
+    product: str
+    rationale: str
+    source_path: str
+
+
 class ReferenceModel(StrictReferenceModel):
     capabilities: tuple[ReferenceCapability, ...]
     checks: tuple[ReferenceCheck, ...]
@@ -91,3 +98,4 @@ class ReferenceModel(StrictReferenceModel):
     graph_permissions: tuple[str, ...]
     permission_modules: tuple[str, ...]
     coverage_rows: tuple[ReferenceCoverageRow, ...]
+    untracked_coverage_rows: tuple[ReferenceUntrackedRow, ...]

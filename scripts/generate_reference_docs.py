@@ -251,6 +251,8 @@ def _render_manifest(
         "profile_count": len(model.profiles),
         "permission_count": len(model.graph_permissions),
         "coverage_row_count": len(model.coverage_rows),
+        "untracked_row_count": len(model.untracked_coverage_rows),
+        "baseline_row_total": len(model.coverage_rows) + len(model.untracked_coverage_rows),
         "coverage_gap_count": sum(
             row.disposition.value in COVERAGE_GAP_STATES for row in model.coverage_rows
         ),
@@ -275,6 +277,7 @@ def _render_index(model: ReferenceModel) -> str:
         f"| [Profiles](profiles.md) | {len(model.profiles)} |",
         f"| [Graph permissions](permissions.md) | {len(model.graph_permissions)} |",
         f"| [Coverage rows](coverage.md) | {len(model.coverage_rows)} |",
+        f"| [Untracked baseline rows](coverage.md) | {len(model.untracked_coverage_rows)} |",
         f"| Coverage gaps (manual/unsupported/not-applicable) | {gap_count} |",
         "",
         "## Provenance",
@@ -448,12 +451,17 @@ def _render_permissions(model: ReferenceModel) -> str:
 
 def _render_coverage(model: ReferenceModel) -> str:
     gap_count = sum(row.disposition.value in COVERAGE_GAP_STATES for row in model.coverage_rows)
+    untracked = model.untracked_coverage_rows
+    accounted = len(model.coverage_rows) + len(untracked)
     lines = [
         _banner(),
         "# Coverage reference",
         "",
-        f"{len(model.coverage_rows)} SCuBA policy rows are mapped. {gap_count} are",
-        "coverage gaps: tracked but not automated by LicenseLens.",
+        f"{len(model.coverage_rows)} SCuBA policy rows are mapped; "
+        f"{len(untracked)} are explicitly untracked. "
+        f"All {accounted} baseline rows at the pinned commit are accounted for.",
+        f"{gap_count} of the mapped rows are coverage gaps: tracked but not automated",
+        "by LicenseLens.",
         "",
         "| Policy ID | Product | Disposition | Local checks | Source |",
         "|-----------|---------|-------------|--------------|--------|",
@@ -486,6 +494,26 @@ def _render_coverage(model: ReferenceModel) -> str:
         "check ids and pinned SCuBA source path.",
         "",
     ]
+    if untracked:
+        lines += [
+            "## Explicitly untracked baseline rows",
+            "",
+            f"The following {len(untracked)} baseline rows are explicitly untracked:",
+            "superseded or removed upstream, with the disposition recorded.",
+            "",
+            "| Policy ID | Product | Rationale | Source |",
+            "|-----------|---------|-----------|--------|",
+        ]
+        for row in untracked:
+            lines.append(
+                "| `{policy}` | `{product}` | {rationale} | `{source}` |".format(
+                    policy=row.policy_id,
+                    product=row.product,
+                    rationale=_cell(row.rationale),
+                    source=_cell(row.source_path or "—"),
+                )
+            )
+        lines.append("")
     return "\n".join(lines)
 
 
