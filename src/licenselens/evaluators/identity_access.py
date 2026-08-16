@@ -6,11 +6,20 @@ from typing import Any, Final
 
 from licenselens.collectors import conditional_access as ca
 from licenselens.evaluators.common import Evaluation
+from licenselens.evaluators.identity_ca_lib import (
+    break_glass_principal_ids,
+    exclusion_issues,
+)
 from licenselens.models import CheckDefinition, ExposureClass, FindingStatus
 
 _BREAK_GLASS_NOTE: Final = (
     "Break-glass (emergency access) accounts are often excluded from MFA on "
     "purpose — confirm exclusions in Conditional Access before changing anything."
+)
+_UNJUSTIFIED_EXCLUSION_NOTE: Final = (
+    "Some enforced Conditional Access policies exclude accounts without a "
+    "documented break-glass rationale in the assessment profile, so those "
+    "accounts may still sign in without the required protection."
 )
 
 
@@ -65,6 +74,17 @@ def evaluate_ca_priv_gaps(
     legacy_enforced = [p for p in enabled if ca.is_legacy_auth_block(p)]
     legacy_report = [p for p in report_only if ca.is_legacy_auth_block(p)]
 
+    justified = break_glass_principal_ids(evidence)
+
+    def _exclusion_free(policy: dict[str, Any]) -> bool:
+        return not ca.unjustified_exclusions(policy, justified)
+
+    # A policy that excludes principals without a break-glass rationale does
+    # not clear the gap (shared analysis from identity_ca_lib).
+    mfa_effective = [p for p in mfa_enforced if _exclusion_free(p)]
+    legacy_effective = [p for p in legacy_enforced if _exclusion_free(p)]
+    exclusion_issue_rows = exclusion_issues(mfa_enforced + legacy_enforced, justified)
+
     priv_asg = priv.filter_privileged_assignments(assignments)
     privileged_principal_count = len(
         {str(a.get("principalId")) for a in priv_asg if a.get("principalId")}
@@ -80,15 +100,17 @@ def evaluate_ca_priv_gaps(
 
     exposure_flags: list[str] = []
     limitations: list[str] = []
+    if exclusion_issue_rows:
+        limitations.append(_UNJUSTIFIED_EXCLUSION_NOTE)
     if _legacy_auth_exposed(
-        enforced=bool(legacy_enforced),
+        enforced=bool(legacy_effective),
         report_only=bool(legacy_report),
         sd_enabled=sd_enabled,
     ):
         exposure_flags.append("legacy_auth_broadly_allowed")
     if _mfa_less_privileged_exposed(
         privileged_principals=privileged_principal_count,
-        mfa_enforced=bool(mfa_enforced),
+        mfa_enforced=bool(mfa_effective),
         mfa_report_only=bool(mfa_report),
     ):
         exposure_flags.append("mfa_missing_for_privileged")
@@ -100,13 +122,14 @@ def evaluate_ca_priv_gaps(
         "policy_count": len(policies),
         "enabled_count": len(enabled),
         "report_only_count": len(report_only),
-        "mfa_enforced_policies": [p.get("displayName") for p in mfa_enforced],
+        "mfa_enforced_policies": [p.get("displayName") for p in mfa_effective],
         "mfa_report_only_policies": [p.get("displayName") for p in mfa_report],
-        "legacy_block_enforced": [p.get("displayName") for p in legacy_enforced],
+        "legacy_block_enforced": [p.get("displayName") for p in legacy_effective],
         "legacy_block_report_only": [p.get("displayName") for p in legacy_report],
+        "unjustified_exclusion_issues": exclusion_issue_rows,
         "privileged_principal_count": privileged_principal_count,
         "global_admin_standing_count": len(ga_standing),
-        "mfa_covers_privileged": bool(mfa_enforced),
+        "mfa_covers_privileged": bool(mfa_effective),
         "mfa_report_only_covers_privileged": bool(mfa_report),
         "exposure_flags": exposure_flags,
     }
@@ -124,8 +147,8 @@ def evaluate_ca_priv_gaps(
             limitations=limitations,
         )
 
-    has_mfa = bool(mfa_enforced)
-    has_legacy = bool(legacy_enforced)
+    has_mfa = bool(mfa_effective)
+    has_legacy = bool(legacy_effective)
     has_mfa_ro = bool(mfa_report)
     has_legacy_ro = bool(legacy_report)
 

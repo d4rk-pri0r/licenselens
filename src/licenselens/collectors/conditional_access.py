@@ -33,6 +33,35 @@ def _grant_controls(policy: dict[str, Any]) -> list[str]:
     return [str(c).lower() for c in built_in]
 
 
+def _grant_operator(policy: dict[str, Any]) -> str:
+    """Normalized ``grantControls.operator`` (``and``/``or``).
+
+    A missing or unrecognized operator defaults to ``or`` so an ambiguous
+    multi-control grant is never treated as proof of any single control.
+    """
+    grants = policy.get("grantControls") or {}
+    if not isinstance(grants, dict):
+        return "or"
+    operator = str(grants.get("operator") or "").strip().lower()
+    return operator if operator in {"and", "or"} else "or"
+
+
+def _grant_enforces(policy: dict[str, Any], kind: str) -> bool:
+    """True only when the grant genuinely requires ``kind``.
+
+    A grant enforces a control when it is the grant's only built-in control,
+    or when the operator is AND and the control is among the required
+    controls. An OR grant among several controls (e.g. "MFA OR password
+    change") does not prove any single control is required.
+    """
+    controls = _grant_controls(policy)
+    if kind not in controls:
+        return False
+    if len(controls) == 1:
+        return True
+    return _grant_operator(policy) == "and"
+
+
 # Built-in authentication strength template IDs (Microsoft Graph).
 PHISHING_RESISTANT_STRENGTH_IDS: frozenset[str] = frozenset(
     {
@@ -47,10 +76,16 @@ PASSWORDLESS_STRENGTH_IDS: frozenset[str] = frozenset(
 
 
 def requires_mfa(policy: dict[str, Any]) -> bool:
-    controls = set(_grant_controls(policy))
-    if controls & {"mfa", "phishingresistantmfa", "strengthauthentication"}:
+    if _grant_enforces(policy, "mfa") or _grant_enforces(policy, "phishingresistantmfa"):
         return True
-    return bool(authentication_strength_id(policy))
+    # Authentication strength is a separate authenticationStrength object
+    # (there is no "strengthauthentication" builtInControls value). A strength
+    # grant is MFA-enforcing when it stands alone or is AND-combined.
+    strength = authentication_strength_id(policy)
+    if not strength:
+        return False
+    controls = _grant_controls(policy)
+    return not controls or _grant_operator(policy) == "and"
 
 
 def is_block_policy(policy: dict[str, Any]) -> bool:
@@ -98,19 +133,20 @@ def client_app_types(policy: dict[str, Any]) -> set[str]:
 
 
 def is_legacy_auth_block(policy: dict[str, Any]) -> bool:
-    """Heuristic: enabled/report-only block policy scoped to legacy client apps."""
+    """Heuristic: enabled/report-only block policy scoped to legacy client apps.
+
+    An absent/empty ``clientAppTypes`` condition means the policy applies to
+    all client types (Graph semantics), so it blocks legacy authentication
+    too. Explicit ``"all"`` is the same all-clients case.
+    """
     if not (is_enabled(policy) or is_report_only(policy)):
         return False
     if not is_block_policy(policy):
         return False
     apps = client_app_types(policy)
-    if not apps:
-        return False
-    legacy_hit = bool(apps & LEGACY_CLIENT_APP_TYPES)
-    modern = apps - LEGACY_CLIENT_APP_TYPES - {"all"}
-    if legacy_hit and not modern:
+    if not apps or "all" in apps:
         return True
-    return legacy_hit and apps <= (LEGACY_CLIENT_APP_TYPES | {"all"})
+    return apps <= LEGACY_CLIENT_APP_TYPES
 
 
 def sign_in_risk_levels(policy: dict[str, Any]) -> list[str]:
@@ -139,8 +175,7 @@ def authentication_strength_id(policy: dict[str, Any]) -> str | None:
 
 
 def requires_phishing_resistant(policy: dict[str, Any]) -> bool:
-    controls = set(_grant_controls(policy))
-    if "phishingresistantmfa" in controls:
+    if _grant_enforces(policy, "phishingresistantmfa"):
         return True
     strength = authentication_strength_id(policy)
     if strength and strength in PHISHING_RESISTANT_STRENGTH_IDS:
@@ -156,8 +191,9 @@ def requires_phishing_resistant(policy: dict[str, Any]) -> bool:
 
 
 def requires_managed_device(policy: dict[str, Any]) -> bool:
-    controls = set(_grant_controls(policy))
-    return bool(controls & {"compliantdevice", "domainjoineddevice"})
+    return _grant_enforces(policy, "compliantdevice") or _grant_enforces(
+        policy, "domainjoineddevice"
+    )
 
 
 def targets_register_security_info(policy: dict[str, Any]) -> bool:
