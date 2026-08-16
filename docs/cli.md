@@ -15,6 +15,25 @@ licenselens version
 
 No options.
 
+### `setup`
+
+Print the Entra app-registration scaffold: where to find the tenant ID, the
+app-registration steps (device-code public client or app-only client secret),
+the 15 read-only Graph permissions with a one-line purpose each, the
+admin-consent URL, and the `--tenant-id` / `--client-id` / `--client-secret`
+flags and env vars for the next step. The permission list is printed from the
+same constant the auth layer enforces (`REQUIRED_GRAPH_APP_PERMISSIONS`).
+
+Offline only — no network calls, no prompts, safe for non-TTY use and
+idempotent. `init` is an alias.
+
+```bash
+licenselens setup
+```
+
+No options. Exit `0`. See [App registration](app-registration.md) for the full
+walkthrough.
+
 ### `checks`
 
 List every registered check with ID, workload, severity, profiles, backend,

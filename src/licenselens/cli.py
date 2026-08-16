@@ -12,7 +12,12 @@ from rich.panel import Panel
 from rich.table import Table
 
 from licenselens import __cli_name__, __product_name__, __version__
-from licenselens.auth import AuthMode, build_auth_context
+from licenselens.auth import (
+    DEFAULT_PUBLIC_CLIENT_ID,
+    REQUIRED_GRAPH_APP_PERMISSIONS,
+    AuthMode,
+    build_auth_context,
+)
 from licenselens.batch import run_batch
 from licenselens.cli_profile_info import checks_listing_rows, profile_requirement_report
 from licenselens.cli_scan_config import (
@@ -205,6 +210,103 @@ def _write_scan_artifacts(
 def version_cmd() -> None:
     """Print the Security License Lens version."""
     console.print(f"{__product_name__} ({__cli_name__}) {__version__}")
+
+
+#: One-line purpose per Microsoft Graph permission. Keyed by permission name;
+#: the names themselves come from ``auth.REQUIRED_GRAPH_APP_PERMISSIONS`` (the
+#: single source of truth — never retyped here).
+_GRAPH_PERMISSION_PURPOSES: dict[str, str] = {
+    "AccessReview.Read.All": "access reviews and their decisions",
+    "Application.Read.All": "app registrations and service principals",
+    "AuditLog.Read.All": "directory and sign-in audit logs",
+    "DelegatedPermissionGrant.Read.All": "OAuth consent grants across the tenant",
+    "DeviceManagementConfiguration.Read.All": "Intune device configuration policies",
+    "DeviceManagementManagedDevices.Read.All": "managed device inventory",
+    "Directory.Read.All": "directory objects (users, groups, roles)",
+    "Domain.Read.All": "registered tenant domains",
+    "Organization.Read.All": "organization-level settings",
+    "Policy.Read.All": "conditional access and identity protection policies",
+    "RoleManagement.Read.Directory": "role assignments and PIM settings",
+    "SecurityAlert.Read.All": "Microsoft 365 security alerts",
+    "SecurityEvents.Read.All": "secure score and security events",
+    "SecurityIncident.Read.All": "Microsoft 365 security incidents",
+    "User.Read.All": "user profiles and sign-in data",
+}
+
+
+@app.command("setup")
+@app.command("init")
+def setup_cmd() -> None:
+    """Scaffold the Entra app registration for live scans (offline guide).
+
+    Prints the tenant-id location, app-registration steps for device-code and
+    app-only auth, the required read-only Graph permissions, the admin-consent
+    URL, and the flags/env vars for the next step. No network calls, no
+    prompts — safe for non-TTY use and idempotent.
+    """
+    lines: list[str] = []
+
+    lines.append("1) Find your tenant (Directory) ID")
+    lines.append(
+        "   Find it in Entra ID → Overview → Tenant ID "
+        "(a GUID like xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)."
+    )
+
+    lines.append("")
+    lines.append("2) Register the app")
+    lines.append("   Entra admin center → App registrations → New registration:")
+    lines.append(
+        "   • Device code (interactive use): enable public client flows "
+        "('Allow public client flows' → Yes)."
+    )
+    lines.append(
+        "   • App-only (automation / MSP runbooks): add a client secret under "
+        "'Certificates & secrets' instead."
+    )
+
+    lines.append("")
+    lines.append("3) Add the Graph API permissions (application, read-only)")
+    for perm in REQUIRED_GRAPH_APP_PERMISSIONS:
+        purpose = _GRAPH_PERMISSION_PURPOSES.get(perm)
+        lines.append(f"   • {perm}{f' — {purpose}' if purpose else ''}")
+
+    lines.append("")
+    lines.append("4) Grant admin consent")
+    lines.append(
+        "   https://login.microsoftonline.com/{tenant-id}/adminconsent?client_id={client-id}"
+    )
+    lines.append(
+        "   Replace {tenant-id} and {client-id}, then sign in as a Global "
+        "Administrator (or an admin with consent rights)."
+    )
+
+    lines.append("")
+    lines.append("5) Point LicenseLens at the registration")
+    lines.append("   --tenant-id    / AZURE_TENANT_ID        directory (tenant) ID")
+    lines.append("   --client-id    / AZURE_CLIENT_ID        app (client) ID")
+    lines.append("   --client-secret / AZURE_CLIENT_SECRET   app-only secret (client_secret mode)")
+    lines.append("   licenselens doctor --live --auth client_secret")
+
+    lines.append("")
+    lines.append(
+        "Device-code shortcut: without --client-id, LicenseLens uses the "
+        "Microsoft Graph PowerShell public client "
+        f"({DEFAULT_PUBLIC_CLIENT_ID}); many delegated scopes are already "
+        "pre-consented on that app, so only --tenant-id is needed for a quick "
+        "try. Register your own app for production assessments."
+    )
+    lines.append(
+        "Full walkthrough (including MDE/Sentinel options): docs/app-registration.md"
+    )
+
+    console.print(
+        Panel(
+            "\n".join(lines),
+            title="Entra app registration setup",
+            border_style=IDENTITY_ACCENT,
+        )
+    )
+    raise typer.Exit(code=0)
 
 
 @app.command("checks")

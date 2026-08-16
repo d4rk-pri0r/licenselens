@@ -4,6 +4,7 @@ from pathlib import Path
 import yaml
 from typer.testing import CliRunner
 
+from licenselens.auth import REQUIRED_GRAPH_APP_PERMISSIONS
 from licenselens.cli import app
 from licenselens.errors import AuthError
 
@@ -19,8 +20,38 @@ def test_version_command():
     assert "Security License Lens" in result.stdout
 
 
+def test_setup_command_prints_scaffold():
+    result = runner.invoke(app, ["setup"])
+    assert result.exit_code == 0, result.output
+    out = result.stdout
+    assert "tenant" in out.lower()
+    assert "adminconsent" in out
+    assert "https://login.microsoftonline.com/" in out
+    assert "--tenant-id" in out
+    assert "AZURE_TENANT_ID" in out
+    assert "--client-secret" in out
+    present = [perm for perm in REQUIRED_GRAPH_APP_PERMISSIONS if perm in out]
+    assert len(present) >= 10
+    assert "directory objects" in out  # one-line purpose rendered for a scope
+
+
+def test_setup_alias_init():
+    result = runner.invoke(app, ["init"])
+    assert result.exit_code == 0, result.output
+    assert "adminconsent" in result.stdout
+
+
+def test_setup_makes_no_network_calls(monkeypatch):
+    def _boom(*_args, **_kwargs):
+        raise AssertionError("setup must not build credentials")
+
+    monkeypatch.setattr("licenselens.cli.build_auth_context", _boom)
+    result = runner.invoke(app, ["setup"])
+    assert result.exit_code == 0, result.output
+
+
 def test_help_renders_new_commands():
-    for cmd in ["diff", "batch", "discover-workspace"]:
+    for cmd in ["diff", "batch", "discover-workspace", "setup"]:
         result = runner.invoke(app, [cmd, "--help"])
         assert result.exit_code == 0, result.output
         assert "Usage" in result.stdout
@@ -322,6 +353,95 @@ def test_doctor_dry_run_does_not_print_ready():
     assert "dry-run" in result.stdout.lower()
     assert "no live tenant calls" in result.stdout.lower()
     assert "doctor --live" in result.stdout.lower()
+
+
+def _doctor_live_graph_routes():
+    from tests.fake_clients import FakeGraphClient, ok
+
+    fake = FakeGraphClient()
+    fake.register_list(
+        "/organization", ok({"value": [{"id": "t1", "displayName": "Contoso"}]})
+    )
+    fake.register_list("/subscribedSkus", ok({"value": []}))
+    fake.register_list("/identity/conditionalAccess/policies", ok({"value": []}))
+    fake.register_list("/roleManagement/directory/roleAssignments", ok({"value": []}))
+    fake.register_get(
+        "/security/secureScores", ok({"value": [{"id": "s1", "controlScores": []}]})
+    )
+    return fake
+
+
+def _patch_doctor_live_auth(monkeypatch, graph_fake):
+    from unittest.mock import MagicMock
+
+    from licenselens.auth import AuthContext
+
+    class _FakeToken:
+        token = "fake-token"
+
+    def _build_auth_context(*, mode, tenant_id=None, client_id=None, client_secret=None):
+        cred = MagicMock()
+        cred.get_token.return_value = _FakeToken()
+        return AuthContext(
+            mode=mode, tenant_id=tenant_id or "t1", client_id=client_id, credential=cred
+        )
+
+    monkeypatch.setattr("licenselens.cli.build_auth_context", _build_auth_context)
+    monkeypatch.setattr("licenselens.doctor.GraphClient", lambda auth: graph_fake)
+
+
+def test_doctor_live_device_code_reports_delegated_note_not_missing_app_permissions(
+    monkeypatch,
+):
+    _patch_doctor_live_auth(monkeypatch, _doctor_live_graph_routes())
+    result = runner.invoke(app, ["doctor", "--live"])
+    assert result.exit_code == 0, result.output
+    text = " ".join(re.sub(r"[^\w\s\-(),.]", " ", result.stdout).split())
+    assert "Missing application permission(s)" not in text
+    assert "cannot be pre-verified" in text
+
+
+def test_doctor_live_client_secret_still_reports_missing_app_permissions(monkeypatch):
+    from licenselens.auth import REQUIRED_GRAPH_APP_PERMISSIONS
+    from licenselens.doctor import GRAPH_RESOURCE_APP_ID
+    from tests.fake_clients import ok
+
+    client_id = "client-app-1"
+    sp_id = "sp-1"
+    granted = list(REQUIRED_GRAPH_APP_PERMISSIONS)[:5]
+
+    fake = _doctor_live_graph_routes()
+    fake.register_get(
+        f"/servicePrincipals(appId='{client_id}')", ok({"id": sp_id, "appId": client_id})
+    )
+    fake.register_get(
+        f"/servicePrincipals(appId='{GRAPH_RESOURCE_APP_ID}')",
+        ok(
+            {
+                "id": "graph-sp",
+                "appRoles": [{"id": f"graph-role-{p}", "value": p} for p in granted],
+            }
+        ),
+    )
+    fake.register_list(
+        f"/servicePrincipals/{sp_id}/appRoleAssignments",
+        ok(
+            {
+                "value": [
+                    {"id": f"assign-{p}", "appRoleId": f"graph-role-{p}"}
+                    for p in granted
+                ]
+            }
+        ),
+    )
+
+    _patch_doctor_live_auth(monkeypatch, fake)
+    result = runner.invoke(
+        app, ["doctor", "--live", "--auth", "client_secret", "--client-id", client_id]
+    )
+    assert result.exit_code == 0, result.output
+    text = " ".join(re.sub(r"[^\w\s\-(),.]", " ", result.stdout).split())
+    assert "Missing application permission(s)" in text
 
 
 def test_scan_help_exposes_profile_config_rules_backend_archive():
