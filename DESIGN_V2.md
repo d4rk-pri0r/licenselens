@@ -316,14 +316,20 @@ resolved against findings), capped at three with "and N more" trailing text.
 
 Per-finding belief block. Every finding renders as a full-width `article` with a 3px left
 status rail and a header (status marker + title + meta row: severity, effort, scope,
-workload, confidence, evaluation mode). The body is the **six-slot belief block**, always
-in this order, each slot with a visible bold label prefix:
+workload, confidence, evaluation mode). The header meta row is the **single source** for
+Severity, Scope, and Confidence: each appears exactly once per finding article, in the
+header only. "Why it matters" carries only the Value impact label, and the evidence
+disclosure never repeats Confidence. The body is the **six-slot belief block**, always in
+this order, each slot with a visible bold label prefix. A summary line
+(`finding.customer_summary`) renders above the slots as `<p class="finding-summary">` and
+is **omitted entirely** when empty; it never binds `finding.summary` (the Observed slot
+does).
 
 | Slot | Label | Binding (in fallback order) |
 | --- | --- | --- |
-| 1 | Expected | `summary`, then `customer_summary` |
-| 2 | Observed | `customer_summary`, then evidence-derived summary line |
-| 3 | Why it matters | `impact_label` + `severity` label |
+| 1 | Expected | catalog `expected_state` joined by `finding.check_id` at render time; `"Not reported"` when the check id is unmapped. A pure lookup, never a derived conclusion |
+| 2 | Observed | `finding.summary` + `finding.evidence` |
+| 3 | Why it matters | capability `why_it_matters` prose + `value_impact` label (Value impact only) |
 | 4 | Recommended action | `customer_next_step`, then `remediation` |
 | 5 | Evidence | `data_sources` + `evidence` keys inside the disclosure (section 8) |
 | 6 | Admin destination | `deep_link` as the visible link "Open the admin page" |
@@ -375,7 +381,7 @@ map** — no node-link topology, no edges, no physics, no canvas, no randomness,
 
 **Data.** One node per `capability_outcomes` entry, sorted and grouped exactly as the view
 model emits (`build_constellation`): groups in the fixed workload order
-`identity, defender, sentinel, purview, endpoint, exchange, collaboration, teams,
+`identity, endpoint, defender, sentinel, purview, exchange, collaboration, teams,
 power_platform, power_bi, intune, azure, general`; within a group, nodes sorted by
 `plain_name` ascending (byte sort, locale-insensitive). Identical input yields identical
 pixels, always.
@@ -532,6 +538,14 @@ offset ever applied; count-up renders N immediately; gauges, bars, nodes, and se
 appear fully resolved). No information is lost: every animated element's final content is
 server-rendered.
 
+**Status-color resolution (shared foundation).** The static `.status-*` color rules and
+the `body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral)) }`
+rule both live in the shared foundation stylesheet
+(`templates/report/v2/_v2_styles.css.j2`), consumed by **both** renderers. Under reduced
+motion the single-file renderer adds `body.instant` (mirroring the bundle `app.js`), so
+the constellation resolves to its final status colors instantly and the instant-final-state
+contract above holds with no animation.
+
 ## 12. Workload icon allowlist (restored)
 
 The v1 branded workload marks are **restored** — the "Ink and Verdigris" retirement of the
@@ -613,8 +627,10 @@ bars.
 6. `prefers-reduced-motion: reduce`: section 11's instant-final-state contract.
 7. Status is never color-only (section 13); charts always have textual equivalents
    (section 9); icons are never the only label (section 12).
-8. Null/empty fields render without crash: omit the row or show "Not reported" /
-   "None reported".
+8. Empty values render without crash. For **evidence keys** specifically: empty values
+   (`None`, `""`, `[]`, `{}`) render the literal text "None reported"; falsy non-empty
+   values (`0`, `False`) render literally ("0", "False") and are never collapsed. Other
+   empty optional fields omit the row or show "Not reported" / "None reported".
 9. Color is not the only indicator anywhere in section A's distribution: each segment is
    labeled with glyph + word + count.
 
