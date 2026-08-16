@@ -432,6 +432,10 @@ def test_exactly_one_main_and_heading_hierarchy(tmp_path: Path) -> None:
     root = parse_html(render(comprehensive_report(), tmp_path))
     mains = _all(root, "main")
     assert len(mains) == 1, f"expected exactly one <main>, found {len(mains)}"
+    # Brief §25: exactly one document title — a second <h1> (e.g. a per-section
+    # brand heading) breaks the report's single-document-title contract.
+    h1s = _all(root, "h1")
+    assert len(h1s) == 1, f"expected exactly one <h1>, found {len(h1s)}"
     headings = [e for e in root.iter() if e.tag in {"h1", "h2", "h3", "h4", "h5", "h6"}]
     assert headings, "no headings found"
     levels = [int(e.tag[1]) for e in headings]
@@ -900,3 +904,31 @@ def test_empty_evidence_values_render_none_reported(tmp_path: Path) -> None:
         assert re.search(rf"<code>{key}</code>:\s*</li>", html) is None, (
             f"evidence key {key!r} rendered bare — nothing after the colon"
         )
+
+
+# ---------------------------------------------------------------------------
+# Brief §25 media-query string locks (design-v2 brief conformance, todo 10).
+# The single-file render must ship the print stylesheet block and the
+# reduced-motion instant final state — as literal strings, so a template
+# drift that drops either media query fails here without a browser.
+# ---------------------------------------------------------------------------
+
+
+def test_single_file_inlines_print_media_query(tmp_path: Path) -> None:
+    """Brief §25: the rendered single-file report contains the literal
+    ``@media print`` block (the offline print stylesheet is inlined)."""
+    html = render(comprehensive_report(), tmp_path)
+    assert "@media print" in html, (
+        "single-file report lost its inline @media print block"
+    )
+
+
+def test_single_file_inlines_reduced_motion_media_query(tmp_path: Path) -> None:
+    """Brief §25: the rendered single-file report carries the
+    ``prefers-reduced-motion`` contract — the CSS ``@media
+    (prefers-reduced-motion: reduce)`` block AND the reveal script's
+    ``window.matchMedia`` check must both survive rendering."""
+    html = render(comprehensive_report(), tmp_path)
+    assert "prefers-reduced-motion" in html, (
+        "single-file report lost its prefers-reduced-motion contract (CSS or JS)"
+    )

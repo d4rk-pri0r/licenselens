@@ -23,7 +23,7 @@ from pathlib import Path
 import pytest
 from playwright.sync_api import Page
 
-from licenselens.models import ScanResult
+from licenselens.models import Effort, ScanResult, Severity
 from licenselens.report.bundle import build_report_bundle
 from licenselens.report.html import write_html_report
 from tests.report_fixtures import comprehensive_report
@@ -140,6 +140,18 @@ _SKU_TABLE_END_JS = """() => {
     return { beforeOverflow: Math.max(...before), after };
 }"""
 
+# Visible finding-list order. Both renderers expose their sortable rows inside
+# [data-findings-list]: the single-file renders server-side .explore-row articles
+# (data-check-id) that the sort control re-appends; the bundle renders client-side
+# .finding-row articles (data-finding) re-rendered per refresh.
+_FINDINGS_ORDER_JS = """() => {
+    const list = document.querySelector('[data-findings-list]');
+    if (!list) return [];
+    return Array.from(list.querySelectorAll('.explore-row, .finding-row'))
+        .filter((el) => !el.hidden)
+        .map((el) => el.getAttribute('data-check-id') || el.getAttribute('data-finding'));
+}"""
+
 
 def browser_safe_report() -> ScanResult:
     """``comprehensive_report()`` with the ``<script>`` payload replaced by a
@@ -154,6 +166,37 @@ def browser_safe_report() -> ScanResult:
         else None
     )
     return result.model_copy(update={"warnings": warnings, "tenant_display_name": name})
+
+
+def _sort_probe_report() -> ScanResult:
+    """Browser-safe fixture with three orthogonal perturbations so each sort
+    key demonstrably reorders the findings list:
+
+    * ``mde-onboard-gap`` becomes the only CRITICAL finding → severity sort
+      moves it to the front (engine default starts with the gap finding);
+    * ``pur-dlp-not-enforced`` becomes the only MINUTES effort → effort sort
+      moves it to the front;
+    * its title is renamed to "Audit DLP policy enforcement" so it sorts
+      first alphabetically in the bundle's title comparator.
+    """
+    result = browser_safe_report()
+    findings = []
+    for finding in result.findings:
+        if finding.check_id == "mde-onboard-gap":
+            findings.append(finding.model_copy(update={"severity": Severity.CRITICAL}))
+        elif finding.check_id == "pur-dlp-not-enforced":
+            findings.append(
+                finding.model_copy(
+                    update={
+                        "effort": Effort.MINUTES,
+                        "title": "Audit DLP policy enforcement",
+                        "customer_title": "Audit DLP policy enforcement",
+                    }
+                )
+            )
+        else:
+            findings.append(finding)
+    return result.model_copy(update={"findings": findings})
 
 
 @pytest.fixture
@@ -370,10 +413,12 @@ def _rgb_tuple(value: str) -> tuple[int, int, int]:
     raise ValueError(f"unexpected color serialization: {value!r}")
 
 
-def _renderer_uri(renderer: str, tmp_path: Path) -> str:
+def _renderer_uri(renderer: str, tmp_path: Path, result: ScanResult | None = None) -> str:
+    if result is None:
+        result = browser_safe_report()
     if renderer == "single":
-        return write_html_report(browser_safe_report(), tmp_path / "report.html").as_uri()
-    return build_report_bundle(browser_safe_report(), tmp_path / "bundle").entry_path.as_uri()
+        return write_html_report(result, tmp_path / "report.html").as_uri()
+    return build_report_bundle(result, tmp_path / "bundle").entry_path.as_uri()
 
 
 def _cdp_computed_props(page: Page, selector: str) -> dict[str, str]:
@@ -651,3 +696,135 @@ def test_constellation_first_group_is_identity_at_every_width(
     assert state["groupLefts"][0] <= min(state["groupLefts"]) + 0.5, (
         f"{renderer}@{width}px: the identity group is not the leftmost column"
     )
+
+
+# ---------------------------------------------------------------------------
+# GROUP F — brief §25 sort-control lock (todo 10). The findings-list sort
+# select (#finding-sort) exists in BOTH renderers (single-file report.html.j2
+# carries data-sort-select on the same element; bundle entry.html.j2 is
+# identical minus the data attribute), so this lock covers both. Each sort
+# key must produce its documented deterministic order — locked in full, with
+# the first row additionally locked per key where the probe perturbs it.
+# ---------------------------------------------------------------------------
+
+# Engine/default order of the probe's findings list (canonical view-model order).
+_SORT_ENGINE_ORDER = [
+    "id-ca-priv-gaps",
+    "mde-onboard-gap",
+    "id-security-defaults-on",
+    "sen-ueba-not-enabled",
+    "mdo-p2-policies-default",
+    "pur-dlp-not-enforced",
+]
+
+# Per-renderer expected orders for the probe report.
+#   * severity: CRITICAL probe first; HIGH ties break by STATUS_ORDER then
+#     check_id in the bundle (app.js compareSeverity), which for this probe
+#     (distinct statuses) equals the single-file's frozen _idx fallback — the
+#     two renderers agree.
+#   * effort: MINUTES probe first; HOURS ties break by severity then check_id
+#     in the bundle (compareEffort — so the CRITICAL probe ranks next), but
+#     keep engine order in the single-file (frozen _idx fallback) — the tails
+#     differ.
+#   * title: the bundle compares finding titles only; the single-file's frozen
+#     JS compares the whole row textContent, which is dominated by the status
+#     presentation word ("Action required" < "Incomplete" < "Not assessed" <
+#     "Not licensed" < "Operational" < "Verification failed") — hence the gap
+#     finding stays first in the single-file title sort by design.
+_SORT_EXPECTED = {
+    "single": {
+        "severity": [
+            "mde-onboard-gap",
+            "id-ca-priv-gaps",
+            "id-security-defaults-on",
+            "sen-ueba-not-enabled",
+            "mdo-p2-policies-default",
+            "pur-dlp-not-enforced",
+        ],
+        "effort": [
+            "pur-dlp-not-enforced",
+            "id-ca-priv-gaps",
+            "mde-onboard-gap",
+            "id-security-defaults-on",
+            "sen-ueba-not-enabled",
+            "mdo-p2-policies-default",
+        ],
+        "title": [
+            "id-ca-priv-gaps",
+            "mde-onboard-gap",
+            "mdo-p2-policies-default",
+            "sen-ueba-not-enabled",
+            "id-security-defaults-on",
+            "pur-dlp-not-enforced",
+        ],
+    },
+    "bundle": {
+        "severity": [
+            "mde-onboard-gap",
+            "id-ca-priv-gaps",
+            "id-security-defaults-on",
+            "sen-ueba-not-enabled",
+            "mdo-p2-policies-default",
+            "pur-dlp-not-enforced",
+        ],
+        "effort": [
+            "pur-dlp-not-enforced",
+            "mde-onboard-gap",
+            "id-ca-priv-gaps",
+            "id-security-defaults-on",
+            "mdo-p2-policies-default",
+            "sen-ueba-not-enabled",
+        ],
+        "title": [
+            "pur-dlp-not-enforced",
+            "id-ca-priv-gaps",
+            "mde-onboard-gap",
+            "mdo-p2-policies-default",
+            "id-security-defaults-on",
+            "sen-ueba-not-enabled",
+        ],
+    },
+}
+
+# Keys whose sort demonstrably changes the FIRST row on this renderer. The
+# single-file title sort legitimately keeps the gap finding first (status word
+# dominates its frozen textContent comparator), so title is bundle-only here.
+_SORT_FIRST_ROW_CHANGES = {"single": ("severity", "effort"), "bundle": ("severity", "effort", "title")}
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_findings_sort_control_reorders_deterministically(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    probe = _sort_probe_report()
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path, result=probe))
+    page.wait_for_load_state("load")
+
+    engine_order = [finding.check_id for finding in probe.findings]
+    assert engine_order == _SORT_ENGINE_ORDER, "sort probe findings drifted from the engine order"
+    assert page.evaluate(_FINDINGS_ORDER_JS) == engine_order, (
+        f"{renderer}: default (impact) order diverged from the engine order"
+    )
+
+    expected = _SORT_EXPECTED[renderer]
+    for key in ("severity", "effort", "title"):
+        page.select_option("#finding-sort", key)
+        first_run = page.evaluate(_FINDINGS_ORDER_JS)
+        assert first_run == expected[key], (
+            f"{renderer}: {key} sort order {first_run} != expected {expected[key]}"
+        )
+        if key in _SORT_FIRST_ROW_CHANGES[renderer]:
+            assert first_run[0] != engine_order[0], (
+                f"{renderer}: {key} sort did not change the first finding row "
+                f"(still {first_run[0]!r})"
+            )
+
+        page.reload()
+        page.wait_for_load_state("load")
+        page.select_option("#finding-sort", key)
+        second_run = page.evaluate(_FINDINGS_ORDER_JS)
+        assert second_run == first_run, (
+            f"{renderer}: {key} sort is not deterministic across reloads: "
+            f"{first_run} != {second_run}"
+        )

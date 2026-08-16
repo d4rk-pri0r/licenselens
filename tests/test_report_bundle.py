@@ -72,6 +72,15 @@ def test_two_builds_are_byte_identical(tmp_path: Path) -> None:
     ).read_bytes()
 
 
+def test_single_file_writer_is_byte_identical_across_renders(tmp_path: Path) -> None:
+    """The single-file renderer is deterministic: two renders of the frozen
+    fixture (fixed ``scanned_at``, no wall-clock) are byte-identical. Mirrors
+    ``test_two_builds_are_byte_identical`` for ``write_html_report``."""
+    first = write_html_report(comprehensive_report(), tmp_path / "first.html")
+    second = write_html_report(comprehensive_report(), tmp_path / "second.html")
+    assert first.read_bytes() == second.read_bytes()
+
+
 # ---------------------------------------------------------------------------
 # Manifest contract
 # ---------------------------------------------------------------------------

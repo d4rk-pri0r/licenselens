@@ -292,3 +292,51 @@ def test_constellation_cascade_instant_final_state_rule(tmp_path: Path) -> None:
         "body.instant rule must resolve the status color via --resolve-to: "
         f"{body.strip()}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Brief §25 media-query string locks (design-v2 brief conformance, todo 10).
+# The bundle ships print + reduced-motion in THREE places along its asset
+# chain, and each carrier is asserted:
+#   * the foundation (inlined verbatim into entry.html) carries BOTH
+#     `@media print` and `@media (prefers-reduced-motion: reduce)` — the
+#     inline-style half is locked here;
+#   * the hashed app-*.css asset carries BOTH (its print block adds the
+#     bundle-only selectors like .app-nav/.finding-row; its reduced-motion
+#     block is the opacity/transform override);
+#   * app.js carries the reduced-motion JS half (the `REDUCED_MOTION`
+#     matchMedia check that pins the instant posture — same contract the
+#     single-file report.html.j2 script keeps inline).
+# ---------------------------------------------------------------------------
+
+
+def test_bundle_entry_inline_foundation_has_print_and_reduced_motion(tmp_path: Path) -> None:
+    """The foundation inlined in entry.html must carry both media queries —
+    the bundle's server-side baseline, independent of the hashed assets."""
+    style = _inline_style_text(_entry_html(tmp_path))
+    assert "@media print" in style, (
+        "bundle entry's inlined foundation lost its @media print block"
+    )
+    assert "prefers-reduced-motion" in style, (
+        "bundle entry's inlined foundation lost its reduced-motion media query"
+    )
+
+
+def test_bundle_app_css_asset_has_print_and_reduced_motion() -> None:
+    """The hashed app-*.css asset must keep its own print block (bundle-only
+    selectors) and its reduced-motion override."""
+    css = _app_asset("app.css")
+    assert "@media print" in css, "bundle app.css asset lost its @media print block"
+    assert "prefers-reduced-motion" in css, (
+        "bundle app.css asset lost its prefers-reduced-motion media query"
+    )
+
+
+def test_bundle_app_js_has_reduced_motion_pin() -> None:
+    """app.js must keep the REDUCED_MOTION matchMedia check — it is the JS half
+    of the instant-final-state contract (no reduced-motion in the JS means the
+    bundle never adds body.instant under reduced motion)."""
+    js = _app_asset("app.js")
+    assert "prefers-reduced-motion" in js, (
+        "bundle app.js lost its prefers-reduced-motion matchMedia check"
+    )
