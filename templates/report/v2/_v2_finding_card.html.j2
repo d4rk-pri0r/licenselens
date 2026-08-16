@@ -1,10 +1,10 @@
 {# ==========================================================================
-   Security License Lens — v2 finding card (section D belief block)
+   Security License Lens — v2 finding article (section D belief block)
 
    Renders ONE finding article from the v2 view-model payload built by
    src/licenselens/report/viewmodel.py. The body is the six-slot belief block
    from build_belief_block(finding, capability_summaries) with progressive
-   disclosure per DESIGN_V2.md section 7: the summary line and slots 1-2
+   disclosure per DESIGN_V2.md section 8: the summary line and slots 1-2
    (Expected / Observed) first, slots 3-4 (Why it matters / Recommended
    action) next, then the technical evidence inside a native
    <details class="tech"> disclosure.
@@ -17,16 +17,20 @@
        limitations), admin_destination (str | None).
      - `f` — the paired serialized finding from build_sections(result)["E"]
        ["findings"] at the same index (see _finding_entry in viewmodel.py).
-       Supplies the article's data-status / data-workload attributes, the
-       status marker, the title, and the head meta row. The six belief slots
-       below bind strictly to `block`, never to hardcoded copy.
+       Supplies the article's id, data-status / data-workload / data-check-id
+       and facet attributes, the status marker, the title, and the head meta
+       row. The six belief slots below bind strictly to `block`, never to
+       hardcoded copy.
      - `prim` — imported below from report/v2/_v2_primitives.html.j2.
 
-   The only external URL rendered is block.admin_destination (the Microsoft
-   admin deep link); no <img>, no emoji, no literal slot values.
+   Deep-linking contract (DESIGN_V2.md section 5E): the article carries
+   id="finding-<check_id>"; `#finding-<check_id>` selects, reveals, and
+   scrolls to it. The only external URL rendered is block.admin_destination
+   (the Microsoft admin deep link); no <img>, no emoji, no literal slot
+   values.
    ========================================================================== #}
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
-    <article class="finding {{ f.status }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}">
+    <article class="finding {{ f.status }}" id="finding-{{ f.check_id }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-check-id="{{ f.check_id }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}">
       <div class="finding-head">
         {{ prim.status_marker(f.status) }}
         <h3>{{ f.title }}</h3>
@@ -50,12 +54,8 @@
 
       <div class="belief-slot">
         <span class="belief-label">Observed</span>
-        {% if block.observed.evidence %}
-        <ul class="evidence-keys">
-          {% for key, value in block.observed.evidence.items() -%}
-          <li><code>{{ key }}</code>: {% if value is mapping -%}{{ value | tojson }}{%- elif value is sequence and value is not string -%}{{ value | join(', ') }}{%- else -%}{{ value }}{%- endif %}</li>
-          {% endfor %}
-        </ul>
+        {% if block.observed.summary %}
+        <p>{{ block.observed.summary }}</p>
         {% else %}
         <p>Not reported</p>
         {% endif %}
@@ -78,14 +78,24 @@
       </div>
 
       {# Progressive disclosure level 3: technical evidence, inside the
-         native <details class="tech"> disclosure. #}
+         native <details class="tech"> disclosure — data sources, confidence,
+         limitations, and the evidence keys. #}
       <div class="belief-slot">
         <span class="belief-label">Evidence</span>
         <details class="tech">
           <summary><span class="caret" aria-hidden="true">▸</span> Technical evidence</summary>
-          <p><strong>Confidence:</strong> {{ block.evidence.confidence_label or 'Not reported' }}</p>
-          <p><strong>Data sources:</strong> {{ block.evidence.data_sources | join(', ') or 'Not reported' }}</p>
-          <p><strong>Limitations:</strong> {% if block.evidence.limitations %}{% for limit in block.evidence.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
+          <div class="tech-body">
+            <p><strong>Confidence:</strong> {{ block.evidence.confidence_label or 'Not reported' }}</p>
+            <p><strong>Data sources:</strong> {{ block.evidence.data_sources | join(', ') or 'Not reported' }}</p>
+            {% if block.observed.evidence %}
+            <ul class="evidence-keys">
+              {% for key, value in block.observed.evidence.items() -%}
+              <li><code>{{ key }}</code>: {% if value is mapping -%}{{ value | tojson }}{%- elif value is sequence and value is not string -%}{{ value | join(', ') }}{%- else -%}{{ value }}{%- endif %}</li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+            <p><strong>Limitations:</strong> {% if block.evidence.limitations %}{% for limit in block.evidence.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
+          </div>
         </details>
       </div>
 

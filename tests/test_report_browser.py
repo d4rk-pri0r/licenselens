@@ -170,7 +170,8 @@ def test_filter_keyboard_and_aria_pressed(page: Page, report_uri: str) -> None:
     page.keyboard.press("Enter")
     assert page.locator(".filter-count").inner_text().strip() == "Showing 1 of 6"
 
-    page.locator("button[data-workload='endpoint']").focus()
+    # Scoped: bare `button[data-workload='endpoint']` also matches v2 constellation buttons.
+    page.locator("[data-filter-bar] button[data-workload='endpoint']").focus()
     page.keyboard.press("Space")
     assert page.locator(".filter-count").inner_text().strip() == "Showing 0 of 6"
 

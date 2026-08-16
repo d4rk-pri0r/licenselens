@@ -1,27 +1,93 @@
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
 {%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation, capability_cards -%}
+{%- set _sections = sections -%}
+{%- set _posture = _sections["A"]["posture"] -%}
+{%- set _rollup = _sections["A"]["rollup"] -%}
+{%- set _moves = moves -%}
+{%- set _findings = findings -%}
+{%- set _filters = _sections["E"]["filters"] -%}
+{%- set mode_str = result.scan_mode -%}
+{%- if result.auth_mode and result.auth_mode != result.scan_mode -%}
+{%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}
+{%- endif -%}
+{#- Capability id -> related check ids, embedded once in the inline script so
+    capability selection can filter section D without touching the view model. #}
+{%- set _related_map = {} -%}
+{%- for _outcome in result.capability_outcomes -%}
+  {%- set _ = _related_map.update({_outcome.id: _outcome.related_check_ids}) -%}
+{%- endfor -%}
+{#- Icon map with the SVG namespace declarations stripped: inline SVG in HTML
+    needs no xmlns, and the single-file contract forbids any external-URL
+    string. The vendored path data and gradient references stay byte-identical. #}
+{%- set _svg_map = {} -%}
+{%- for _wl_key, _mark in workload_svg_map.items() -%}
+  {%- set _clean = _mark | replace('xmlns="http://www.w3.org/2000/svg" ', '') -%}
+  {%- set _clean = _clean | replace('xmlns:xlink="http://www.w3.org/1999/xlink" ', '') -%}
+  {%- set _ = _svg_map.update({_wl_key: _clean}) -%}
+{%- endfor -%}
+{#- Constellation entries extended with the decorative inline mark (the
+    capability_cards macro reads the optional `svg` key; PNG-only workloads
+    simply omit it). #}
+{%- set _constellation_ctx = [] -%}
+{%- for _entry in constellation -%}
+  {%- set _wl = _entry.workload or 'general' -%}
+  {%- set _ext = dict(_entry) -%}
+  {%- set _ = _ext.update({'svg': _svg_map.get(_wl)}) -%}
+  {%- set _ = _constellation_ctx.append(_ext) -%}
+{%- endfor -%}
+{#- Chart data: deterministic counts from the findings list. #}
+{%- set _status_counts = {} -%}
+{%- set _workload_counts = {} -%}
+{%- set _severity_counts = {} -%}
+{%- for _f in _findings -%}
+  {%- set _ = _status_counts.update({_f.status: _status_counts.get(_f.status, 0) + 1}) -%}
+  {%- set _wl2 = _f.workload or 'general' -%}
+  {%- set _ = _workload_counts.update({_wl2: _workload_counts.get(_wl2, 0) + 1}) -%}
+  {%- set _ = _severity_counts.update({_f.severity: _severity_counts.get(_f.severity, 0) + 1}) -%}
+{%- endfor -%}
+{%- set _status_max = (_status_counts.values() | max) if _status_counts else 1 -%}
+{%- set _workload_max = (_workload_counts.values() | max) if _workload_counts else 1 -%}
+{%- set _severity_max = (_severity_counts.values() | max) if _severity_counts else 1 -%}
+{%- set _workload_labels = {
+    'identity': 'Identity',
+    'endpoint': 'Endpoint',
+    'defender': 'Defender',
+    'sentinel': 'Sentinel',
+    'purview': 'Purview',
+    'exchange': 'Exchange',
+    'collaboration': 'Collaboration',
+    'teams': 'Teams',
+    'power_platform': 'Power Platform',
+    'power_bi': 'Power BI',
+    'intune': 'Intune',
+    'azure': 'Azure',
+    'general': 'General',
+} -%}
+{#- Radial gauge geometry: circumference for r=48 (viewBox 120). #}
+{%- set _gauge_c = 301.6 -%}
+{%- set _gauge_offset = _gauge_c * (1 - opening.realized_percent / 100) -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'" />
   <title>Security License Lens report</title>
   <style>
 {% include "report/v2/_v2_styles.css.j2" %}
 
 /* ==========================================================================
    Single-file renderer layout. The v2 foundation (above) supplies tokens,
-   base, sections, cards, finding rails, status colors, motion, print, and
-   reduced-motion. This block adds the A-E layout the shared partials emit
-   but leave to each renderer. Logical properties only; radius <= 4px.
+   base, type, surfaces, status semantics, the constellation, disclosure,
+   motion, reduced-motion, forced-colors, and print. This block adds the
+   single-file-only pieces: masthead, table of contents, the signature
+   opening layout, the owned-SKU strip, and the below-fold section reveals.
    ========================================================================== */
-
-[hidden] { display: none !important; }
 
 /* Masthead content */
 .logo { display: flex; align-items: center; gap: 12px; padding-block: 16px; }
-.logo-mark { width: 28px; height: 28px; background: var(--accent); flex-shrink: 0; }
-.tagline { margin: 0; color: var(--text-2); font-size: 0.9rem; }
+.logo-mark { width: 28px; height: 28px; background: var(--accent); flex-shrink: 0; border-radius: 2px; }
+.tagline { margin: 0; color: var(--text-2); font-size: 0.8125rem; }
 .meta {
   display: flex;
   flex-wrap: wrap;
@@ -29,7 +95,7 @@
   padding-block: 8px 16px;
   border-block-start: 1px solid var(--border);
 }
-.meta-row { font-size: 0.78rem; color: var(--text-2); }
+.meta-row { font-size: 0.8125rem; color: var(--text-2); }
 .meta-row code { color: var(--text-1); }
 .intro {
   margin-block: 0 16px;
@@ -39,234 +105,78 @@
   border-inline-start: 3px solid var(--state-incomplete);
 }
 
-/* A - posture hero */
-.posture-sentence { color: var(--text-2); margin-block: 8px 0; }
-.rollup {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-  margin-block: 16px;
-}
-.rollup-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-}
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin-block-start: 16px;
-}
-.tile {
-  padding: 12px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-}
-.tile .n {
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-.tile .l { display: flex; flex-direction: column; color: var(--text-2); }
-.tile .l small { color: var(--text-3); }
-
-.section-help { color: var(--text-2); }
-
-/* B - capability constellation */
-.constellation {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(120px, 1fr);
-  gap: 16px;
-  overflow-x: auto;
-  padding-block: 12px;
-  margin-block: 8px 16px;
-}
-.constellation-group { display: flex; flex-direction: column; gap: 12px; }
-.constellation-caption { margin-block: 0 4px; }
-.constellation-point {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-.constellation-core {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: currentColor;
-  box-shadow: inset 0 0 0 2px var(--canvas);
-}
-.constellation-label { font-size: 0.78rem; color: var(--text-2); }
-.constellation-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  grid-column: 1 / -1;
-  margin-block-start: 8px;
-}
-.constellation-legend-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
+/* Opening sequence meta line (stage 2). */
+.opening-meta {
+  margin-block: 8px 0;
   color: var(--text-2);
+  font-size: 0.8125rem;
 }
-.constellation-legend-swatch {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: currentColor;
+.opening-meta code { color: var(--text-1); }
+.opening-tenant-id { color: var(--text-2); }
+
+/* Below-fold reveals: B–E fade + 6px rise on first entry, one-shot
+   IntersectionObserver (single-file only; the bundle app drives its own). */
+body.revealed .reveal-target {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 250ms ease-out, transform 250ms ease-out;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+body.revealed .reveal-target.is-revealed {
+  opacity: 1;
+  transform: none;
 }
 
-/* B - capability cards */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-.card { display: flex; flex-direction: column; gap: 8px; }
-.card-title { margin: 0; }
-.card p { margin: 0; }
-.card-provenance {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-block-start: 8px;
-  border-block-start: 1px solid var(--border);
-  font-size: 0.78rem;
-}
+/* Owned-SKU strip (section B) — a compact table, not cards. */
+.sku-strip { margin-block-end: 24px; }
 
-/* C - moves */
-.move-list {
-  list-style: none;
-  margin: 0;
+/* §9 a11y sibling-overlay chart hits: the role="img" visual layers hold
+   only non-interactive spans, and the cross-filter buttons are SIBLINGS
+   positioned over their tracks/segments — mirroring the bundle's
+   .chart-hits pattern (report_app/v2/app.css:1047-1061). The hit layer
+   NEVER paints: the buttons carry only .chart-hit/.dist-hit (no
+   .chart-bar/.dist-segment/status-* paint classes), so the proportional
+   spans stay the sole painted surface while the full track/segment
+   remains one click target. min-width/min-height reset the §4 44px/24px
+   target-size floor so the JS-positioned hit geometry is exact. The
+   layers are `hidden` until the inline script positions the buttons, so
+   a JS-off report shows the spans and no stray tab stops. */
+.chart { position: relative; }
+.dist-layer { position: relative; border-radius: 999px; overflow: hidden; }
+.chart-hits,
+.dist-hits { position: absolute; inset: 0; pointer-events: none; }
+.chart-hit,
+.dist-hit {
+  position: absolute;
+  inset-inline: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+  pointer-events: auto;
+  cursor: pointer;
 }
-.move-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+.dist-hit { border-radius: 999px; }
+.chart-hit:hover,
+.dist-hit:hover { border-color: var(--border-strong); }
+.chart-hit[aria-pressed="true"],
+.dist-hit[aria-pressed="true"] { border-color: var(--accent); }
+.chart-hit.is-related,
+.dist-hit.is-related { box-shadow: inset 0 0 0 1px var(--accent); }
+.dist-bar .dist-segment { cursor: default; }
+@media print {
+  .chart-hits,
+  .dist-hits { display: none !important; }
 }
-.move-index { color: var(--accent); font-weight: 700; }
-.move-body { display: flex; flex-direction: column; gap: 4px; }
-.move-head { display: flex; align-items: baseline; gap: 8px; }
-.move-effort { color: var(--text-2); font-size: 0.78rem; }
-.move-why, .move-action, .move-ids, .move-link { margin: 0; }
-.move-note { color: var(--text-3); font-size: 0.85rem; }
-
-/* Status marker layout (color binds the shared variant classes) */
-.status-marker {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-.status-glyph { flex-shrink: 0; }
-.status-marker.gap, .status-marker.error { color: var(--state-action); }
-.status-marker.partial { color: var(--state-incomplete); }
-.status-marker.ok { color: var(--state-ok); }
-.status-marker.not-licensed, .status-marker.skipped { color: var(--state-neutral); }
-
-/* D+E - filter bar */
-.filter-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 16px;
-  margin-block-end: 16px;
-}
-.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
-.filter-button {
-  padding: 4px 10px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  font-size: 0.78rem;
-}
-.filter-button.active {
-  background: var(--surface-3);
-  border-color: var(--accent);
-  color: var(--text-1);
-}
-.filter-count {
-  color: var(--text-2);
-  margin-inline-start: auto;
-  font-variant-numeric: tabular-nums;
-}
-
-/* D - findings */
-.finding { padding-block: 16px; }
-.finding + .finding {
-  border-block-start: 1px solid var(--border);
-  margin-block-start: 16px;
-}
-.finding-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.finding-head h3 { margin: 0; }
-.finding-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
-.meta-item { font-size: 0.78rem; color: var(--text-2); }
-.meta-key { color: var(--text-3); }
-.finding-summary { margin-block: 8px 0; }
-.belief-slot { margin-block: 12px 0; }
-.belief-label {
-  display: block;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-2);
-  margin-block-end: 4px;
-}
-.belief-slot p { margin: 0; }
-.belief-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
-.evidence-keys { margin: 0; padding-inline-start: 1.2rem; }
-.evidence-keys code { color: var(--text-1); }
-
-/* Technical tables */
-.table-scroll { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; }
-th, td {
-  text-align: start;
-  padding: 8px;
-  border: 1px solid var(--border);
-  vertical-align: top;
-}
-th { color: var(--text-2); font-weight: 600; }
-td code { color: var(--text-1); }
-
-/* Footer */
-footer {
-  max-width: 1100px;
-  margin-block: 16px;
-  margin-inline: auto;
-  padding-inline: 20px;
-  color: var(--text-3);
-  font-size: 0.85rem;
-}
-
-/* Reveal (progressive enhancement). Content is fully visible server-side;
-   the inline script adds `body.revealed`, which opts the staggered
-   "coming into focus" reveal in. Reduced motion skips it via the foundation's
-   reduced-motion block. */
-body.revealed main > section { animation: v2-section-reveal 300ms ease-out both; }
-body.revealed main > section:nth-of-type(2) { animation-delay: 40ms; }
-body.revealed main > section:nth-of-type(3) { animation-delay: 80ms; }
-body.revealed main > section:nth-of-type(4) { animation-delay: 120ms; }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <div class="logo-mark"></div>
+      <div class="logo-mark" aria-hidden="true"></div>
       <div>
         <h1>Security License Lens</h1>
         <p class="tagline">{{ tagline }}</p>
@@ -275,7 +185,7 @@ body.revealed main > section:nth-of-type(4) { animation-delay: 120ms; }
     <div class="meta">
       <div class="meta-row">Version <code>{{ result.version }}</code></div>
       <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
-      {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}<div class="meta-row">Mode <code>{{ mode_str }}</code></div>
+      <div class="meta-row">Mode <code>{{ mode_str }}</code></div>
       <div class="meta-row">Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
     </div>
     {% if result.warnings %}
@@ -288,98 +198,443 @@ body.revealed main > section:nth-of-type(4) { animation-delay: 120ms; }
       </ul>
     </div>
     {% endif %}
+    <nav class="toc" aria-label="Sections">
+      <a href="#section-a">Where you stand</a>
+      <a href="#section-b">What you're paying for</a>
+      <a href="#section-c">What matters most</a>
+      <a href="#section-d">Why LicenseLens believes this</a>
+      <a href="#section-e">Explore everything</a>
+    </nav>
   </header>
 
   <main>
-    {# A - Where you stand #}
-    <section class="hero">
+    {# ======================================================================
+       A - Where you stand: the signature opening sequence (DESIGN_V2 §5A).
+       Hierarchy-first: ONE dominant metric, a supporting stat strip, and the
+       operational-distribution visualization. Not a grid of equal cards.
+       ====================================================================== #}
+    <section id="section-a" class="hero">
+      <p class="micro-label section-kicker">Posture</p>
       <h2>Where you stand</h2>
-      <p class="display-line">Your security investment coming into focus</p>
-      <div class="posture-figure">{{ posture.realized_percent }}% realized</div>
-      <p class="posture-sentence">{{ posture.realized_sentence }}.</p>
-      <p class="posture-sentence">
-        <strong>{{ result.owned_capabilities | length }}</strong> Licensed capabilities detected
-        <span aria-hidden="true">&middot;</span>
-        <strong>{{ rollup.you_own }}</strong> Prioritized capabilities
-        <span class="label">({{ result.packs_scanned | join(', ') }} priority packs)</span>
-      </p>
-      <div class="rollup">
-        <div class="rollup-cell">
-          <span class="metric-figure-secondary">{{ rollup.you_own }}</span>
-          <span class="label">You own</span>
-        </div>
-        <div class="rollup-cell">
-          <span class="metric-figure-secondary status-ok">{{ rollup.fully_working }}</span>
-          <span class="label">Fully working</span>
-          <span class="label">of {{ rollup.you_own }} prioritized capabilities</span>
-        </div>
-        <div class="rollup-cell">
-          <span class="metric-figure-secondary status-gap">{{ rollup.needs_attention }}</span>
-          <span class="label">Need attention</span>
-        </div>
-        <div class="rollup-cell">
-          <span class="metric-figure-secondary status-partial">{{ rollup.partly_set_up }}</span>
-          <span class="label">Partly set up</span>
-        </div>
-        <div class="rollup-cell">
-          <span class="metric-figure-secondary status-not-licensed">{{ rollup.not_licensed }}</span>
-          <span class="label">Not in your plan</span>
-        </div>
-      </div>
-      <div class="tiles">
-        {% for status in status_order %}
-        <div class="tile">
-          <div class="n">{{ counts.get(status, 0) }}</div>
-          <div class="l">
-            {{ prim.PRESENTATION.get(status, status) }}
-            <small>{{ status }}</small>
+
+      <div class="opening" data-opening>
+        {# Stage 1: org/tenant identity (binds the masthead source). #}
+        <p class="display-line opening-stage opening-identity">{{ opening.tenant_name }}{% if opening.tenant_id and opening.tenant_id != opening.tenant_name %} <span class="mono opening-tenant-id">{{ opening.tenant_id }}</span>{% endif %} &mdash; {{ opening.assessment_identity.tool_display_name }} assessment</p>
+
+        {# Stage 2: assessment identity — version, scan time, mode, packs. #}
+        <p class="opening-meta opening-stage">Version <code>{{ opening.assessment_identity.version }}</code> <span aria-hidden="true">&middot;</span> <time datetime="{{ opening.scanned_at }}">{{ result.display_scanned_at }}</time> <span aria-hidden="true">&middot;</span> Mode <code>{{ mode_str }}</code>{% if result.packs_scanned %} <span aria-hidden="true">&middot;</span> {{ result.packs_scanned | join(', ') }} priority packs{% endif %}</p>
+
+        {# Stage 3 + 4: the dominant metric (count-up) with the radial gauge
+           and the operational-distribution segmented bar beside it. #}
+        <div class="posture">
+          <div class="posture-main">
+            <div class="posture-figure"><span class="posture-digits" data-count-up="{{ _posture.realized_percent }}">{{ _posture.realized_percent }}% realized</span></div>
+            <div class="posture-stat-strip">
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.you_own }}</span><span class="label">You own</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary status-ok">{{ _rollup.fully_working }}</span><span class="label">Fully working</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary status-gap">{{ _rollup.needs_attention }}</span><span class="label">Action required</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary status-partial">{{ _rollup.partly_set_up }}</span><span class="label">Incomplete</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary status-not_licensed">{{ _rollup.not_licensed }}</span><span class="label">Not licensed</span></span>
+            </div>
+            <p class="posture-sentence">
+              <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
+              <span aria-hidden="true">&middot;</span>
+              <strong>{{ _rollup.you_own }}</strong> prioritized capabilities
+            </p>
           </div>
+          <figure class="radial-figure">
+            <svg class="radial-svg" viewBox="0 0 120 120" width="168" height="168" role="img" aria-labelledby="radial-caption" aria-describedby="radial-desc">
+              <circle class="radial-track" cx="60" cy="60" r="48" fill="none" stroke-width="10" />
+              <circle class="radial-arc" cx="60" cy="60" r="48" fill="none" stroke-width="10" stroke-dasharray="{{ _gauge_c }}" stroke-dashoffset="{{ _gauge_offset | round(2) }}" style="--gauge-circumference: {{ _gauge_c }};" />
+            </svg>
+            <figcaption id="radial-caption" class="micro-label">Realized investment</figcaption>
+            <p id="radial-desc" class="radial-print-line">Realized security investment: {{ _posture.realized_percent }}% of {{ _rollup.you_own }} owned, prioritized capabilities are fully working.</p>
+            <table class="chart-table">
+              <caption>Realized investment</caption>
+              <tbody>
+                <tr><th scope="row">Fully working capabilities</th><td class="num">{{ _posture.realized_percent }}%</td></tr>
+                <tr><th scope="row">Owned, prioritized capabilities</th><td class="num">{{ _rollup.you_own }}</td></tr>
+              </tbody>
+            </table>
+          </figure>
         </div>
-        {% endfor %}
+
+        {# Stage 4b: the operational distribution fills to its proportions.
+           The role="img" visual layer holds only non-interactive spans; the
+           cross-filter buttons are painted siblings overlaid on top (§9). #}
+        <figure class="dist-figure">
+          <figcaption id="dist-caption" class="micro-label">Operational distribution</figcaption>
+          <div class="dist-layer">
+            <div class="dist-bar" role="img" aria-labelledby="dist-caption" aria-describedby="dist-desc">
+              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok')] -%}
+              {%- set _count = _rollup[_key] -%}
+              {%- if _count -%}
+              <span class="dist-segment status-{{ _variant }}" style="flex-grow: {{ _count }}"></span>
+              {%- endif -%}
+              {%- endfor -%}
+              {%- if _rollup.not_licensed -%}
+              <span class="dist-segment status-not_licensed" style="flex-grow: {{ _rollup.not_licensed }}"></span>
+              {%- endif -%}
+            </div>
+            <div class="dist-hits" hidden>
+              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok')] -%}
+              {%- set _count = _rollup[_key] -%}
+              {%- if _count -%}
+              <button type="button" class="dist-hit" aria-label="Filter findings: {{ prim.PRESENTATION.get(_variant, _variant) }} ({{ _count }})" aria-pressed="false" data-chart-toggle="status:{{ _variant }}"></button>
+              {%- endif -%}
+              {%- endfor -%}
+              {%- if _rollup.not_licensed -%}
+              <button type="button" class="dist-hit" aria-label="Filter findings: Not licensed ({{ _rollup.not_licensed }})" aria-pressed="false" data-chart-toggle="status:not_licensed"></button>
+              {%- endif -%}
+            </div>
+          </div>
+          <p id="dist-desc" class="sr-only">Distribution of the {{ _rollup.you_own }} owned, prioritized capabilities: {{ _rollup.needs_attention }} action required, {{ _rollup.partly_set_up }} incomplete, {{ _rollup.fully_working }} operational, {{ _rollup.not_licensed }} not licensed.</p>
+          <table class="chart-table">
+            <caption>Operational distribution</caption>
+            <tbody>
+              <tr><th scope="row">Action required</th><td class="num">{{ _rollup.needs_attention }}</td></tr>
+              <tr><th scope="row">Incomplete</th><td class="num">{{ _rollup.partly_set_up }}</td></tr>
+              <tr><th scope="row">Operational</th><td class="num">{{ _rollup.fully_working }}</td></tr>
+              <tr><th scope="row">Not licensed</th><td class="num">{{ _rollup.not_licensed }}</td></tr>
+            </tbody>
+          </table>
+        </figure>
+
+        {# Stage 5: three labeled distribution items (fourth neutral item
+           when not-licensed counts exist). #}
+        <ul class="dist-items">
+          {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok'), ('not_licensed', 'not_licensed')] -%}
+          {%- if _key != 'not_licensed' or _rollup[_key] -%}
+          <li class="dist-item opening-stage">
+            {{ prim.status_marker(_variant) }}
+            <span class="num">{{ _rollup[_key] }}</span>
+          </li>
+          {%- endif -%}
+          {%- endfor -%}
+        </ul>
+
+        {# Stage 6: the most important implication, derived from the rollup. #}
+        {%- if _rollup.you_own > 0 -%}
+        {%- if _rollup.needs_attention > 0 -%}
+        <p class="implication opening-stage">{{ _rollup.needs_attention }} of your {{ _rollup.you_own }} priority capabilities need attention.</p>
+        {%- else -%}
+        <p class="implication opening-stage">All {{ _rollup.you_own }} of your priority capabilities are operational.</p>
+        {%- endif -%}
+        {%- endif -%}
+        <p class="posture-sentence">{{ _posture.realized_sentence }}</p>
+
+        {# Stage 7: highest-impact actions, each linked to its move in C. #}
+        {%- if _moves -%}
+        <ol class="top-actions">
+          {%- for _move in _moves -%}
+          <li class="top-action opening-stage">
+            <a href="#move-{{ loop.index }}">{{ _move.title }}</a>
+            {%- if _move.effort_label -%}<span class="effort-label">{{ _move.effort_label | lower }}</span>{%- endif -%}
+          </li>
+          {%- endfor -%}
+        </ol>
+        {%- endif -%}
+
+        {# Exposed / gap rail: retained from v1 when anything is exposed. #}
+        {%- set _gap_titles = [] -%}
+        {%- if result.has_exposed -%}
+          {%- for _f in _findings -%}
+            {%- if _f.check_id in result.exposed_check_ids -%}{%- set _ = _gap_titles.append(_f.title) -%}{%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if not _gap_titles -%}
+          {%- for _f in _findings -%}
+            {%- if _f.status in ('gap', 'error') -%}{%- set _ = _gap_titles.append(_f.title) -%}{%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+        {%- if _gap_titles -%}
+        <div class="exposed-rail">
+          <p class="micro-label">Exposed or action required</p>
+          <ul>
+            {%- for _t in _gap_titles[:3] -%}
+            <li>{{ _t }}</li>
+            {%- endfor -%}
+          </ul>
+          {%- if _gap_titles | length > 3 -%}
+          <p class="caption">and {{ _gap_titles | length - 3 }} more</p>
+          {%- endif -%}
+        </div>
+        {%- endif -%}
       </div>
     </section>
 
-    {# B - What you're paying for #}
-    <section>
+    {# ======================================================================
+       B - What you're paying for: owned SKUs, the signature constellation,
+       and capability summary rows with on-demand context.
+       ====================================================================== #}
+    <section id="section-b" class="reveal-target" style="--reveal-delay: 0ms">
+      <p class="micro-label section-kicker">Entitlements</p>
       <h2>What you're paying for</h2>
       <p class="section-help">
         Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
       </p>
-      {{ capability_constellation(constellation) }}
-      {{ capability_cards(capabilities, constellation) }}
+      {%- if result.subscribed_skus -%}
+      <div class="sku-strip">
+        <h3 class="tech-title">Owned SKUs</h3>
+        <div class="table-scroll" data-table-scroll>
+          <table>
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Service plans</th>
+                <th class="num">Licenses</th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for sku in result.subscribed_skus -%}
+              <tr>
+                <td><code>{{ sku.sku_part_number }}</code></td>
+                <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') or "—" }}</td>
+                <td class="num">{{ sku.consumed_units or 0 }} of {{ sku.prepaid_units or "—" }}</td>
+              </tr>
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {%- endif -%}
+      {{ capability_constellation(_constellation_ctx, workload_svg_map=_svg_map) }}
+      {{ capability_cards(capabilities, _constellation_ctx) }}
     </section>
 
-    {# C - What matters most #}
+    {# ======================================================================
+       C - What matters most (prioritized moves).
+       ====================================================================== #}
     {% include "report/v2/_v2_moves.html.j2" %}
 
-    {# D+E - Why LicenseLens believes this (findings + filter) #}
-    <section>
+    {# ======================================================================
+       D - Why LicenseLens believes this: the per-finding belief blocks.
+       ====================================================================== #}
+    <section id="section-d" class="reveal-target" style="--reveal-delay: 80ms">
+      <p class="micro-label section-kicker">Evidence</p>
       <h2>Why LicenseLens believes this</h2>
       <p class="section-help">
         Every finding with what we expected, what we observed, and what to do next.
       </p>
-      <div class="filter-bar">
-        <div class="filter-group" role="group" aria-label="Filter by status">
-          <button class="filter-button active" data-filter="all" aria-pressed="true">All</button>
-          {% for s in status_order %}
-          <button class="filter-button" data-filter="{{ s }}" aria-pressed="false">{{ prim.PRESENTATION.get(s, s) }}</button>
-          {% endfor %}
-        </div>
-        <div class="filter-group" role="group" aria-label="Filter by workload">
-          <button class="filter-button active" data-workload="all" aria-pressed="true">All</button>
-          {% for w in sections["E"]["filters"]["workload"] %}
-          <button class="filter-button" data-workload="{{ w }}" aria-pressed="false">{{ w | replace('_', ' ') | title }}</button>
-          {% endfor %}
-        </div>
-        <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>{{ findings | length }}</strong> of <strong data-total-count>{{ findings | length }}</strong></span>
+      <div data-findings-wrap>
+        {% for block in blocks %}
+        {% set f = _findings[loop.index0] %}
+        {% include "report/v2/_v2_finding_card.html.j2" %}
+        {% endfor %}
       </div>
-      {% for block in blocks %}
-      {% set f = findings[loop.index0] %}
-      {% include "report/v2/_v2_finding_card.html.j2" %}
-      {% endfor %}
     </section>
 
-    {% include "report/v2/_v2_technical.html.j2" %}
+    {# ======================================================================
+       E - Explore everything: the three data figures, search, filters,
+       sort, counts, pagination, and the explorable findings list.
+       ====================================================================== #}
+    <section id="section-e" class="reveal-target" style="--reveal-delay: 120ms">
+      <p class="micro-label section-kicker">Explorer</p>
+      <h2>Explore everything</h2>
+      <p class="section-help">
+        Search, filter, sort, and page through every assessed control. Select several
+        values in a group to match any of them; different groups combine.
+      </p>
+
+      <div class="charts">
+        {# Findings by status #}
+        <figure class="chart" id="chart-status">
+          <figcaption id="chart-status-caption">Findings by status</figcaption>
+          <div class="chart-body" role="img" aria-labelledby="chart-status-caption" aria-describedby="chart-status-desc">
+            {%- for s in status_order -%}
+            {%- if s in _status_counts -%}
+            {%- set _pct = _status_counts[s] / _status_max * 100 -%}
+            <div class="chart-row" data-status="{{ s }}">
+              <span class="chart-row__label">{{ prim.PRESENTATION.get(s, s) }}</span>
+              <span class="chart-value">{{ _status_counts[s] }}</span>
+              <span class="chart-bar-track">
+                <span class="chart-bar status-{{ s }}" style="width: {{ _pct | round(1) }}%"></span>
+              </span>
+            </div>
+            {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <div class="chart-hits" hidden>
+            {%- for s in status_order -%}
+            {%- if s in _status_counts -%}
+            <button type="button" class="chart-hit" aria-label="Filter findings: {{ prim.PRESENTATION.get(s, s) }} ({{ _status_counts[s] }})" aria-pressed="false" data-chart-toggle="status:{{ s }}"></button>
+            {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <p id="chart-status-desc" class="sr-only">Horizontal bars showing how many findings carry each status, out of {{ _findings | length }} findings.</p>
+          <table class="chart-table">
+            <caption>Findings by status</caption>
+            <thead><tr><th>Status</th><th class="num">Findings</th></tr></thead>
+            <tbody>
+              {%- for s in status_order -%}
+              {%- if s in _status_counts -%}
+              <tr><td>{{ prim.PRESENTATION.get(s, s) }}</td><td class="num">{{ _status_counts[s] }}</td></tr>
+              {%- endif -%}
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </figure>
+
+        {# Findings by workload #}
+        <figure class="chart" id="chart-workload">
+          <figcaption id="chart-workload-caption">Findings by workload</figcaption>
+          <div class="chart-body" role="img" aria-labelledby="chart-workload-caption" aria-describedby="chart-workload-desc">
+            {%- for w in _filters["workload"] -%}
+            {%- if w in _workload_counts -%}
+            {%- set _pct = _workload_counts[w] / _workload_max * 100 -%}
+            <div class="chart-row" data-workload="{{ w }}">
+              <span class="chart-row__label">{% if _svg_map.get(w) %}{{ _svg_map[w] }}{% endif %}{{ _workload_labels.get(w, w | replace('_', ' ') | title) }}</span>
+              <span class="chart-value">{{ _workload_counts[w] }}</span>
+              <span class="chart-bar-track">
+                <span class="chart-bar" style="width: {{ _pct | round(1) }}%"></span>
+              </span>
+            </div>
+            {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <div class="chart-hits" hidden>
+            {%- for w in _filters["workload"] -%}
+            {%- if w in _workload_counts -%}
+            <button type="button" class="chart-hit" aria-label="Filter findings: {{ _workload_labels.get(w, w | replace('_', ' ') | title) }} ({{ _workload_counts[w] }})" aria-pressed="false" data-chart-toggle="workload:{{ w }}"></button>
+            {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <p id="chart-workload-desc" class="sr-only">Horizontal bars showing where findings concentrate across workloads, out of {{ _findings | length }} findings.</p>
+          <table class="chart-table">
+            <caption>Findings by workload</caption>
+            <thead><tr><th>Workload</th><th class="num">Findings</th></tr></thead>
+            <tbody>
+              {%- for w in _filters["workload"] -%}
+              {%- if w in _workload_counts -%}
+              <tr><td>{{ _workload_labels.get(w, w | replace('_', ' ') | title) }}</td><td class="num">{{ _workload_counts[w] }}</td></tr>
+              {%- endif -%}
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </figure>
+
+        {# Findings by severity #}
+        <figure class="chart" id="chart-severity">
+          <figcaption id="chart-severity-caption">Findings by severity</figcaption>
+          <div class="chart-body" role="img" aria-labelledby="chart-severity-caption" aria-describedby="chart-severity-desc">
+            {%- for sev in _filters["severity"] -%}
+            {%- if sev in _severity_counts -%}
+            {%- set _pct = _severity_counts[sev] / _severity_max * 100 -%}
+            <div class="chart-row" data-severity="{{ sev }}">
+              <span class="chart-row__label">{{ sev | capitalize }}</span>
+              <span class="chart-value">{{ _severity_counts[sev] }}</span>
+              <span class="chart-bar-track">
+                <span class="chart-bar" style="width: {{ _pct | round(1) }}%"></span>
+              </span>
+            </div>
+            {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <div class="chart-hits" hidden>
+            {%- for sev in _filters["severity"] -%}
+            {%- if sev in _severity_counts -%}
+            <button type="button" class="chart-hit" aria-label="Filter findings: {{ sev | capitalize }} severity ({{ _severity_counts[sev] }})" aria-pressed="false" data-chart-toggle="severity:{{ sev }}"></button>
+            {%- endif -%}
+            {%- endfor -%}
+          </div>
+          <p id="chart-severity-desc" class="sr-only">Horizontal bars showing how bad the findings are, out of {{ _findings | length }} findings.</p>
+          <table class="chart-table">
+            <caption>Findings by severity</caption>
+            <thead><tr><th>Severity</th><th class="num">Findings</th></tr></thead>
+            <tbody>
+              {%- for sev in _filters["severity"] -%}
+              {%- if sev in _severity_counts -%}
+              <tr><td>{{ sev | capitalize }}</td><td class="num">{{ _severity_counts[sev] }}</td></tr>
+              {%- endif -%}
+              {%- endfor -%}
+            </tbody>
+          </table>
+        </figure>
+      </div>
+
+      <div class="search-box">
+        <label class="search-box__label" for="finding-search">Search findings</label>
+        <input id="finding-search" class="search-box__input" type="search" placeholder="Search titles, checks, evidence" autocomplete="off" spellcheck="false" data-search-input />
+      </div>
+
+      <div class="sort-box">
+        <label class="sort-box__label" for="finding-sort">Sort findings</label>
+        <select id="finding-sort" class="sort-box__select" data-sort-select>
+          <option value="impact" selected>Impact (default)</option>
+          <option value="severity">Severity</option>
+          <option value="effort">Effort</option>
+          <option value="title">Title A&ndash;Z</option>
+        </select>
+      </div>
+
+      <div class="filter-bar" data-filter-bar>
+        <div class="filter-group" role="group" aria-label="Filter by status">
+          <button type="button" class="filter-button active" data-filter="all" aria-pressed="true">All</button>
+          {% for s in status_order %}{% if s in _filters["status"] %}
+          <button type="button" class="filter-button" data-filter="{{ s }}" aria-pressed="false">{{ prim.PRESENTATION.get(s, s) }}</button>
+          {% endif %}{% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by workload">
+          <button type="button" class="filter-button active" data-workload="all" aria-pressed="true">All</button>
+          {% for w in _filters["workload"] %}
+          <button type="button" class="filter-button" data-workload="{{ w }}" aria-pressed="false">{{ _workload_labels.get(w, w | replace('_', ' ') | title) }}</button>
+          {% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by severity">
+          {% for v in _filters["severity"] %}
+          <button type="button" class="filter-button" data-facet="severity" data-value="{{ v }}" aria-pressed="false">{{ v | capitalize }}</button>
+          {% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by confidence">
+          {% for v in _filters["confidence"] %}
+          <button type="button" class="filter-button" data-facet="confidence" data-value="{{ v }}" aria-pressed="false">{{ v | capitalize }}</button>
+          {% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by evaluation mode">
+          {% for v in _filters["evaluation_mode"] %}
+          <button type="button" class="filter-button" data-facet="mode" data-value="{{ v }}" aria-pressed="false">{{ v | replace('_', ' ') | capitalize }}</button>
+          {% endfor %}
+        </div>
+        <div class="filter-group" role="group" aria-label="Filter by pack">
+          {% for v in _filters["pack"] %}
+          <button type="button" class="filter-button" data-facet="pack" data-value="{{ v }}" aria-pressed="false">{{ v | replace('-', ' ') | title }}</button>
+          {% endfor %}
+        </div>
+        <button type="button" class="clear-filters" data-clear-filters>Clear all</button>
+        <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>{{ _findings | length }}</strong> of <strong data-total-count>{{ _findings | length }}</strong></span>
+      </div>
+
+      <div class="explore-list" data-findings-list>
+        {%- for f in _findings -%}
+        <article class="explore-row" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}">
+          {{ prim.status_marker(f.status) }}
+          <h3 class="explore-row__title"><a href="#finding-{{ f.check_id }}">{{ f.title }}</a></h3>
+          <div class="explore-row__meta">
+            {% if f.severity %}<span>Severity: {{ f.severity | capitalize }}</span>{% endif %}
+            {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
+            <code>{{ f.check_id }}</code>
+          </div>
+          {% if f.summary %}<p class="explore-row__summary">{{ f.summary }}</p>{% endif %}
+        </article>
+        {%- endfor -%}
+      </div>
+
+      <p class="empty-state" data-empty-state hidden>No findings to show.</p>
+
+      <nav class="pagination" data-pagination aria-label="Pagination" tabindex="-1" hidden>
+        <button type="button" data-page-prev>Previous</button>
+        <span class="pager-page" data-pager-status>Page 1 of 1</span>
+        <button type="button" data-page-next>Next</button>
+        <label class="sort-box__label" for="page-size">Per page</label>
+        <select id="page-size" class="pager-size-select" data-page-size>
+          <option value="25" selected>25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </nav>
+
+      {% include "report/v2/_v2_technical.html.j2" %}
+    </section>
   </main>
 
   <footer>
@@ -389,64 +644,516 @@ body.revealed main > section:nth-of-type(4) { animation-delay: 120ms; }
     (function () {
       'use strict';
 
-      // Reveal trigger. Content is fully server-rendered; marking the body opts
-      // the staggered "coming into focus" reveal in. Reduced motion skips to the
-      // final state instantly (the stylesheet handles the rest).
-      function reveal() {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Data: capability id -> related check ids (server-rendered, deterministic).
+      var CAP_RELATED = {{ _related_map | tojson }};
+
+      // Deterministic rank orders for the documented sorts (§5E).
+      var SEVERITY_RANK = ['critical', 'high', 'medium', 'low', 'info'];
+      var EFFORT_RANK = ['minutes', 'hours', 'half_day', 'days'];
+
+      var state = {
+        status: {},
+        workload: 'all',
+        severity: {},
+        confidence: {},
+        mode: {},
+        pack: {},
+        related: null, // { capId, ids } | null
+        search: '',
+        sort: 'impact',
+        page: 1,
+        pageSize: 25
+      };
+
+      var list = document.querySelector('[data-findings-list]');
+      var rows = list ? Array.prototype.slice.call(list.querySelectorAll('.explore-row')) : [];
+      var dArticles = Array.prototype.slice.call(document.querySelectorAll('.finding'));
+      var emptyState = document.querySelector('[data-empty-state]');
+      var pager = document.querySelector('[data-pagination]');
+      var pagerStatus = document.querySelector('[data-pager-status]');
+      var visibleCountEl = document.querySelector('[data-visible-count]');
+      var totalCountEl = document.querySelector('[data-total-count]');
+      var searchInput = document.querySelector('[data-search-input]');
+      var sortSelect = document.querySelector('[data-sort-select]');
+      var pageSizeSelect = document.querySelector('[data-page-size]');
+      var field = document.querySelector('[data-constellation]');
+
+      var searchText = rows.map(function (row) { return row.textContent.toLowerCase(); });
+      rows.forEach(function (row, i) { row._idx = i; });
+
+      var initialGroupOrder = [];
+      var groupsByWorkload = {};
+      var legendEl = null;
+      if (field) {
+        Array.prototype.forEach.call(field.querySelectorAll('.constellation-group'), function (g) {
+          var w = g.getAttribute('data-workload');
+          initialGroupOrder.push(w);
+          groupsByWorkload[w] = g;
+        });
+        legendEl = field.querySelector('.constellation-legend');
+      }
+
+      function hasActive(obj) {
+        for (var k in obj) { if (obj[k]) return true; }
+        return false;
+      }
+
+      function toggleIn(obj, value) { obj[value] = !obj[value]; }
+
+      function resetState() {
+        state.status = {}; state.severity = {}; state.confidence = {};
+        state.mode = {}; state.pack = {}; state.workload = 'all';
+        state.related = null; state.search = ''; state.page = 1;
+        if (searchInput) searchInput.value = '';
+      }
+
+      // ------------------------------------------------------------------
+      // Constellation FLIP reorder (§7): selected workload first, the rest
+      // in enum order; DOM order is the only thing that changes.
+      // ------------------------------------------------------------------
+      function reorderConstellation() {
+        if (!field || !initialGroupOrder.length) return;
+        var selected = state.workload;
+        var order = initialGroupOrder.slice();
+        if (selected !== 'all') {
+          order = [selected].concat(initialGroupOrder.filter(function (w) { return w !== selected; }));
+        }
+        var groups = Array.prototype.slice.call(field.querySelectorAll('.constellation-group'));
+        if (!reduceMotion) {
+          var first = {};
+          groups.forEach(function (g) { first[g.getAttribute('data-workload')] = g.getBoundingClientRect(); });
+          order.forEach(function (w) { field.appendChild(groupsByWorkload[w]); });
+          if (legendEl) field.appendChild(legendEl);
+          groups.forEach(function (g) {
+            var f = first[g.getAttribute('data-workload')];
+            var l = g.getBoundingClientRect();
+            var dx = f.left - l.left, dy = f.top - l.top;
+            if (dx !== 0 || dy !== 0) {
+              g.style.transition = 'none';
+              g.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+            }
+          });
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              groups.forEach(function (g) {
+                g.style.transition = 'transform 300ms ease-out';
+                g.style.transform = '';
+              });
+              window.setTimeout(function () {
+                groups.forEach(function (g) { g.style.transition = ''; g.style.transform = ''; });
+              }, 320);
+            });
+          });
+        } else {
+          order.forEach(function (w) { field.appendChild(groupsByWorkload[w]); });
+          if (legendEl) field.appendChild(legendEl);
+        }
+        groups.forEach(function (g) {
+          g.classList.toggle('is-selected', selected !== 'all' && g.getAttribute('data-workload') === selected);
+        });
+      }
+
+      // ------------------------------------------------------------------
+      // Filtering, sorting, pagination.
+      // ------------------------------------------------------------------
+      function rowMatches(row, index) {
+        var s = row.getAttribute('data-status');
+        var w = row.getAttribute('data-workload');
+        var sev = row.getAttribute('data-severity');
+        var conf = row.getAttribute('data-confidence');
+        var mode = row.getAttribute('data-mode');
+        var pack = row.getAttribute('data-pack');
+        if (hasActive(state.status) && !state.status[s]) return false;
+        if (state.workload !== 'all' && w !== state.workload) return false;
+        if (hasActive(state.severity) && !state.severity[sev]) return false;
+        if (hasActive(state.confidence) && !state.confidence[conf]) return false;
+        if (hasActive(state.mode) && !state.mode[mode]) return false;
+        if (hasActive(state.pack) && !state.pack[pack]) return false;
+        if (state.search && searchText[index].indexOf(state.search) === -1) return false;
+        return true;
+      }
+
+      function applyDArticles() {
+        dArticles.forEach(function (article) {
+          var w = article.getAttribute('data-workload');
+          var id = article.getAttribute('data-check-id');
+          var hidden = (state.workload !== 'all' && w !== state.workload) ||
+            (state.related !== null && state.related.ids.indexOf(id) === -1);
+          article.hidden = hidden;
+        });
+      }
+
+      function sortRows(allRows) {
+        var arr = allRows.slice();
+        if (state.sort === 'impact') {
+          arr.sort(function (a, b) { return a._idx - b._idx; });
+          return arr;
+        }
+        if (state.sort === 'title') {
+          arr.sort(function (a, b) {
+            var ta = a.textContent, tb = b.textContent;
+            return ta < tb ? -1 : (ta > tb ? 1 : 0);
+          });
+          return arr;
+        }
+        var rank = state.sort === 'severity' ? SEVERITY_RANK : EFFORT_RANK;
+        var attr = state.sort === 'severity' ? 'data-severity' : 'data-effort';
+        arr.sort(function (a, b) {
+          var ra = rank.indexOf(a.getAttribute(attr));
+          var rb = rank.indexOf(b.getAttribute(attr));
+          if (ra < 0) ra = rank.length;
+          if (rb < 0) rb = rank.length;
+          if (ra !== rb) return ra - rb;
+          return a._idx - b._idx;
+        });
+        return arr;
+      }
+
+      function apply() {
+        var visible = [];
+        rows.forEach(function (row, i) {
+          var match = rowMatches(row, i);
+          if (match) visible.push(row);
+        });
+        var ordered = sortRows(rows);
+        ordered.forEach(function (row) { list.appendChild(row); });
+
+        applyDArticles();
+
+        var pageSize = state.pageSize;
+        var totalPages = Math.max(1, Math.ceil(visible.length / pageSize));
+        if (state.page > totalPages) state.page = totalPages;
+        var start = (state.page - 1) * pageSize;
+        visible.forEach(function (row, i) {
+          row.hidden = i < start || i >= start + pageSize;
+        });
+        rows.forEach(function (row) {
+          if (visible.indexOf(row) === -1) row.hidden = true;
+        });
+
+        if (visibleCountEl) visibleCountEl.textContent = String(visible.length);
+        if (totalCountEl) totalCountEl.textContent = String(rows.length);
+        if (emptyState) emptyState.hidden = rows.length > 0;
+        if (pager) {
+          var noResults = visible.length === 0;
+          pager.hidden = noResults;
+          if (pagerStatus) pagerStatus.textContent = 'Page ' + state.page + ' of ' + totalPages;
+          var prevBtn = pager.querySelector('[data-page-prev]');
+          var nextBtn = pager.querySelector('[data-page-next]');
+          if (prevBtn) prevBtn.disabled = state.page <= 1;
+          if (nextBtn) nextBtn.disabled = state.page >= totalPages;
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // Control sync: aria-pressed everywhere, single source of truth.
+      // ------------------------------------------------------------------
+      function syncControls() {
+        document.querySelectorAll('[data-filter]').forEach(function (btn) {
+          var v = btn.getAttribute('data-filter');
+          var active = v === 'all' ? !hasActive(state.status) : !!state.status[v];
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        document.querySelectorAll('.filter-button[data-workload], .constellation-caption[data-workload]').forEach(function (btn) {
+          var w = btn.getAttribute('data-workload');
+          var active = state.workload === w;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        document.querySelectorAll('[data-facet]').forEach(function (btn) {
+          var facet = btn.getAttribute('data-facet');
+          var v = btn.getAttribute('data-value');
+          var active = !!state[facet][v];
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+        document.querySelectorAll('[data-chart-toggle]').forEach(function (bar) {
+          var parts = bar.getAttribute('data-chart-toggle').split(':');
+          var facet = parts[0], v = parts[1];
+          var active = facet === 'workload' ? state.workload === v : !!state[facet][v];
+          bar.classList.toggle('active', active);
+          bar.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+      }
+
+      function scrollToList() {
+        if (list) list.scrollIntoView({ block: 'nearest' });
+      }
+
+      // ------------------------------------------------------------------
+      // Capability selection: filters section D to related check ids.
+      // ------------------------------------------------------------------
+      function selectCapability(capId) {
+        var ids = CAP_RELATED[capId];
+        if (state.related !== null && state.related.capId === capId) {
+          state.related = null;
+        } else if (ids && ids.length) {
+          state.related = { capId: capId, ids: ids };
+        } else {
+          state.related = null;
+        }
+        document.querySelectorAll('.constellation-point[data-capability-id]').forEach(function (btn) {
+          var on = state.related !== null && btn.getAttribute('data-capability-id') === capId;
+          btn.classList.toggle('is-selected', on);
+          btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
+        document.querySelectorAll('.card[data-capability-id]').forEach(function (card) {
+          card.classList.toggle('is-related', state.related !== null && card.getAttribute('data-capability-id') === capId);
+        });
+        apply();
+        if (state.related !== null) {
+          var d = document.getElementById('section-d');
+          if (d) d.scrollIntoView({ block: 'start' });
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // Finding focus: one elevated finding, related nodes and chart rows.
+      // ------------------------------------------------------------------
+      function selectFinding(article) {
+        document.querySelectorAll('.finding.is-selected').forEach(function (a) {
+          if (a !== article) a.classList.remove('is-selected');
+        });
+        article.classList.add('is-selected');
+        var id = article.getAttribute('data-check-id');
+        var relatedCaps = [];
+        Object.keys(CAP_RELATED).forEach(function (capId) {
+          if (CAP_RELATED[capId].indexOf(id) !== -1) relatedCaps.push(capId);
+        });
+        document.querySelectorAll('.constellation-point[data-capability-id]').forEach(function (btn) {
+          btn.classList.toggle('is-related', relatedCaps.indexOf(btn.getAttribute('data-capability-id')) !== -1);
+        });
+        document.querySelectorAll('.chart-row').forEach(function (row) {
+          var match = row.getAttribute('data-status') === article.getAttribute('data-status') ||
+            row.getAttribute('data-workload') === article.getAttribute('data-workload') ||
+            row.getAttribute('data-severity') === article.getAttribute('data-severity');
+          row.classList.toggle('is-related', match);
+        });
+      }
+
+      // ------------------------------------------------------------------
+      // Deep links: #finding-<check_id> selects, reveals, scrolls;
+      // #section-a..e anchor the sections.
+      // ------------------------------------------------------------------
+      function handleHash() {
+        var hash = window.location.hash;
+        if (!hash) return;
+        if (hash.indexOf('#section-') === 0) {
+          var section = document.getElementById(hash.slice(1));
+          if (section) section.scrollIntoView({ block: 'start' });
           return;
         }
+        if (hash.indexOf('#finding-') === 0) {
+          var article = document.getElementById(hash.slice(1));
+          if (!article) return;
+          resetState();
+          syncControls();
+          reorderConstellation();
+          apply();
+          selectFinding(article);
+          article.scrollIntoView({ block: 'start' });
+        }
+      }
+
+      // ------------------------------------------------------------------
+      // Chart overlay hits: each cross-filter button is positioned over its
+      // visual track/segment (sibling-overlay a11y pattern — the role="img"
+      // layer stays non-interactive, mirroring the bundle's chart-hits).
+      // offset* reads layout geometry, so the opening bar-fill transforms
+      // never skew the alignment; re-run on resize as labels rewrap.
+      // ------------------------------------------------------------------
+      function alignChartHits() {
+        document.querySelectorAll('.chart-hits, .dist-hits').forEach(function (layer) {
+          var fig = layer.closest('figure');
+          if (!fig) return;
+          var targets = layer.classList.contains('dist-hits')
+            ? Array.prototype.slice.call(fig.querySelectorAll('.dist-bar .dist-segment'))
+            : Array.prototype.slice.call(fig.querySelectorAll('.chart-body .chart-bar-track'));
+          var hits = layer.children;
+          for (var i = 0; i < hits.length && i < targets.length; i++) {
+            var t = targets[i];
+            hits[i].style.left = t.offsetLeft + 'px';
+            hits[i].style.top = t.offsetTop + 'px';
+            hits[i].style.width = t.offsetWidth + 'px';
+            hits[i].style.height = t.offsetHeight + 'px';
+          }
+          layer.hidden = false;
+        });
+      }
+
+      // ------------------------------------------------------------------
+      // Delegated events (zero per-finding listeners).
+      // ------------------------------------------------------------------
+      document.addEventListener('click', function (event) {
+        var target = event.target;
+        var bar = target.closest('[data-chart-toggle]');
+        if (bar) {
+          var parts = bar.getAttribute('data-chart-toggle').split(':');
+          var facet = parts[0], v = parts[1];
+          if (facet === 'workload') {
+            state.workload = state.workload === v ? 'all' : v;
+            reorderConstellation();
+          } else if (facet === 'status') {
+            toggleIn(state.status, v);
+          } else {
+            toggleIn(state[facet], v);
+          }
+          state.page = 1;
+          syncControls();
+          apply();
+          scrollToList();
+          return;
+        }
+        var filterBtn = target.closest('[data-filter]');
+        if (filterBtn) {
+          var fv = filterBtn.getAttribute('data-filter');
+          if (fv === 'all') state.status = {};
+          else toggleIn(state.status, fv);
+          state.page = 1;
+          syncControls();
+          apply();
+          return;
+        }
+        var node = target.closest('.constellation-point[data-capability-id]');
+        if (node) {
+          selectCapability(node.getAttribute('data-capability-id'));
+          return;
+        }
+        var workloadBtn = target.closest('button[data-workload]');
+        if (workloadBtn) {
+          var w = workloadBtn.getAttribute('data-workload');
+          state.workload = state.workload === w ? 'all' : w;
+          state.page = 1;
+          syncControls();
+          apply();
+          reorderConstellation();
+          return;
+        }
+        var facetBtn = target.closest('[data-facet]');
+        if (facetBtn) {
+          toggleIn(state[facetBtn.getAttribute('data-facet')], facetBtn.getAttribute('data-value'));
+          state.page = 1;
+          syncControls();
+          apply();
+          return;
+        }
+        if (target.closest('[data-clear-filters]')) {
+          resetState();
+          syncControls();
+          apply();
+          reorderConstellation();
+          return;
+        }
+        var card = target.closest('.card[data-capability-id]');
+        if (card && !target.closest('a, summary, details')) {
+          selectCapability(card.getAttribute('data-capability-id'));
+          return;
+        }
+        var article = target.closest('.finding');
+        if (article && !target.closest('a, summary, details')) {
+          selectFinding(article);
+        }
+      });
+
+      document.addEventListener('click', function (event) {
+        var pagerBtn = event.target.closest('[data-page-prev], [data-page-next]');
+        if (pagerBtn) {
+          if (pagerBtn.hasAttribute('data-page-prev')) state.page -= 1;
+          else state.page += 1;
+          state.page = Math.max(1, state.page);
+          apply();
+          if (pager) pager.focus();
+        }
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener('input', function () {
+          state.search = searchInput.value.trim().toLowerCase();
+          state.page = 1;
+          apply();
+        });
+      }
+
+      if (sortSelect) {
+        sortSelect.addEventListener('change', function () {
+          state.sort = sortSelect.value;
+          state.page = 1;
+          apply();
+        });
+      }
+
+      if (pageSizeSelect) {
+        pageSizeSelect.addEventListener('change', function () {
+          state.pageSize = parseInt(pageSizeSelect.value, 10) || 25;
+          state.page = 1;
+          apply();
+        });
+      }
+
+      window.addEventListener('hashchange', handleHash);
+      window.addEventListener('resize', alignChartHits);
+
+      // ------------------------------------------------------------------
+      // Opening sequence: opt-in motion (body.revealed) + count-up.
+      // ------------------------------------------------------------------
+      function startCountUp() {
+        var el = document.querySelector('[data-count-up]');
+        if (!el) return;
+        var target = parseInt(el.getAttribute('data-count-up'), 10);
+        if (!isFinite(target)) return;
+        var DURATION = 700, DELAY = 120;
+        var startTs = null;
+        el.textContent = '0% realized';
+        function tick(ts) {
+          if (startTs === null) startTs = ts;
+          var t = (ts - startTs - DELAY) / DURATION;
+          if (t < 0) { requestAnimationFrame(tick); return; }
+          t = Math.min(t, 1);
+          var eased = 1 - Math.pow(1 - t, 3);
+          el.textContent = Math.round(target * eased) + '% realized';
+          if (t < 1) requestAnimationFrame(tick);
+          else el.textContent = target + '% realized';
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function reveal() {
+        if (reduceMotion) return;
         document.body.classList.add('revealed');
+        startCountUp();
       }
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', reveal);
-      } else {
+
+      function observeReveals() {
+        if (reduceMotion || !('IntersectionObserver' in window)) return;
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              io.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('main > section.reveal-target').forEach(function (section) {
+          io.observe(section);
+        });
+      }
+
+      function init() {
+        alignChartHits();
+        apply();
+        handleHash();
         reveal();
+        observeReveals();
       }
 
-      // Status + workload filter (port of report/_filters.js.j2 behavior).
-      var findings = document.querySelectorAll('.finding');
-      var visibleEl = document.querySelector('[data-visible-count]');
-
-      var activeStatus = 'all';
-      var activeWorkload = 'all';
-
-      function updateButtons(selector, value) {
-        document.querySelectorAll(selector).forEach(function (btn) {
-          var isActive = btn.getAttribute(selector === '[data-filter]' ? 'data-filter' : 'data-workload') === value;
-          btn.classList.toggle('active', isActive);
-          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        });
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
       }
-
-      function applyFilters() {
-        var visible = 0;
-        findings.forEach(function (f) {
-          var s = f.getAttribute('data-status');
-          var w = f.getAttribute('data-workload');
-          var match = (activeStatus === 'all' || s === activeStatus) &&
-                      (activeWorkload === 'all' || w === activeWorkload);
-          f.hidden = !match;
-          if (match) visible++;
-        });
-        if (visibleEl) visibleEl.textContent = String(visible);
-      }
-
-      document.querySelectorAll('[data-filter]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          activeStatus = this.getAttribute('data-filter');
-          updateButtons('[data-filter]', activeStatus);
-          applyFilters();
-        });
-      });
-
-      document.querySelectorAll('[data-workload]').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          activeWorkload = this.getAttribute('data-workload');
-          updateButtons('[data-workload]', activeWorkload);
-          applyFilters();
-        });
-      });
     })();
   </script>
 </body>

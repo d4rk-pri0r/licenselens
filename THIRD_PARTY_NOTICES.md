@@ -41,8 +41,32 @@ Twelve product-identification icons live under
 - exact raw GitHub URL used at vendor time
 - SHA-256 of the vendored bytes
 
+Six of the twelve are SVG (`entra-id`, `purview`, `microsoft-sentinel`,
+`power-platform`, `power-bi`, and — re-vendored at this pin — `intune` via
+`icons/intune/10329-icon-service-intune.svg`, the Intune service mark used in
+Microsoft admin centers). The remaining six (`defender`, `exchange`,
+`sharepoint`, `onedrive`, `teams`, `azure`) are PNG because the upstream
+repository publishes no SVG product mark for them at the pinned commit; the
+only SVG files touching those names upstream are different products (e.g.
+Defender for IoT/EASM, Exchange on-premises access) and are deliberately
+**not** vendored to avoid misidentifying workloads.
+
 Runtime code must load only these local files. **Do not hotlink** remote logo
 URLs at runtime.
+
+### How reports use them (offline only)
+
+- **Single-file report** (`report.html.j2`): the six SVG marks are inlined as
+  static, safety-scanned `<svg>` markup (no `<img>`, no data-URI, no network)
+  next to the workload's visible text label. The six PNG-only workloads render
+  the text label alone there.
+- **Offline report bundle** (`report_app`): all twelve marks ship as
+  content-hashed files under the bundle `assets/` directory and render via
+  `window.LICENSELENS_WORKLOAD_ICONS` as decorative `<img>` elements next to
+  the visible text label.
+
+Marks are decorative (`aria-hidden="true"`, `focusable="false"`, `alt=""`) and
+never replace, hide, or convey status in place of the visible workload name.
 
 ### Upstream provenance facts (recorded)
 

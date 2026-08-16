@@ -4,9 +4,11 @@ Two groups, deliberately partitioned:
 
 * **ESTABLISHED INVARIANTS — must PASS today**: offline/autoescape/DOM/filter/
   JSON/heading contracts that must remain green across visual redesigns.
-* **INK-AND-VERDIGRIS (v2) DESIGN-SIGNATURE CONTRACTS**: green-ink charcoal
-  canvas, verdigris accent tokens, no violet/brass/navy signatures, and every
-  declared surface token consumed by a selector.
+* **WARM-CHARCOAL (v2) DESIGN-SIGNATURE CONTRACTS**: warm charcoal canvas
+  (#191714), champagne-ivory accent tokens, no violet/brass/navy signatures,
+  every declared surface token consumed by a selector, and the §4 radius
+  stops (0/2/6/10/16/999px — 999px pill authorized ONLY for proportion-based
+  fills and constellation node circles).
 * **FIXTURE INTEGRITY**: preamble asserting fixtures stay comprehensive.
 """
 
@@ -53,6 +55,14 @@ def _buttons_by_attr(root: ET.Element, attr: str) -> list[ET.Element]:
 
 def _by_class(root: ET.Element, cls: str) -> list[ET.Element]:
     return [e for e in root.iter() if cls in (e.attrib.get("class") or "").split()]
+
+
+def _local(el: ET.Element) -> str:
+    """Local tag name: html5lib keeps SVG foreign-content elements namespaced
+    (``{http://www.w3.org/2000/svg}svg``), so bare tag comparisons miss them.
+    Comment/PI nodes carry a callable ``tag`` instead of a name."""
+    tag = el.tag
+    return tag.rsplit("}", 1)[-1] if isinstance(tag, str) else ""
 
 
 def text_of(el: ET.Element) -> str:
@@ -224,7 +234,7 @@ def test_no_metadata_emoji(tmp_path: Path) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Ink-and-Verdigris (v2) design-signature contracts
+# Warm-Charcoal (v2) design-signature contracts
 # ---------------------------------------------------------------------------
 
 SECTION_HEADINGS = [
@@ -252,16 +262,30 @@ LEGACY_TAGLINE = "The security you already own (and ignore)"
 VIOLET_TRIO = ("#9b8cff", "#b0a4ff", "#c7beff")
 BRASS_HEXES = ("#b9a06a", "#cbb683", "#ddcca8", "#594818")
 
-INK_VERDIGRIS_TOKENS = (
+# Retired "Ink and Verdigris" tokens (DESIGN_V2.md §1: withdrawn, must not
+# reappear). The report CSS must no longer declare any of these values.
+RETIRED_INK_VERDIGRIS_TOKENS = (
     "--canvas: #0c1210",
     "--surface-1: #121a17",
     "--surface-2: #17201d",
     "--surface-3: #1e2925",
     "--surface-4: #26332e",
     "--accent: #8ad3b8",
-    "--accent-hover: #a5e2ca",
-    "--accent-focus: #bdecd9",
-    "--accent-print: #145c48",
+)
+
+# Warm Charcoal tokens (DESIGN_V2.md §2.1): the binding v2 palette. The exact
+# declaration strings mirror the `:root` block in
+# templates/report/v2/_v2_styles.css.j2.
+WARM_CHARCOAL_TOKENS = (
+    "--canvas: #191714",
+    "--surface-1: #211E1A",
+    "--surface-2: #2A2621",
+    "--surface-3: #332E27",
+    "--surface-4: #3D3730",
+    "--accent: #E8DFC8",
+    "--accent-hover: #F5EFDD",
+    "--accent-focus: #FFF6E3",
+    "--accent-print: #57482E",
 )
 
 SURFACE_TOKENS = (
@@ -294,22 +318,29 @@ def test_no_color_mix_usage(tmp_path: Path) -> None:
     assert "color-mix(" not in html, "color-mix() usage must be removed"
 
 
-def test_no_pill_border_radius_values(tmp_path: Path) -> None:
+def test_radii_use_only_declared_stops(tmp_path: Path) -> None:
+    """DESIGN_V2 §4 radius stops: 0/2/6/10/16 and the 999px pill (authorized
+    ONLY for proportion-based fills and constellation node circles). Non-stop
+    radii (4px, 12px) and the undeclared 50% circle must never appear; the
+    pill stop must be present for the authorized fills."""
     html = render(comprehensive_report(), tmp_path)
-    assert "border-radius: 999px" not in html, "pill radius 999px must be removed"
-    assert "border-radius: 12px" not in html, "12px card radius must be removed"
-
-
-def test_no_circular_logo_mark(tmp_path: Path) -> None:
-    html = render(comprehensive_report(), tmp_path)
-    assert "border-radius: 50%" not in html, "circular logo-mark (border-radius: 50%) must go"
+    assert "border-radius: 12px" not in html, "12px radius is not a §4 stop"
+    assert "border-radius: 4px" not in html, "4px radius is not a §4 stop"
+    assert "border-radius: 50%" not in html, "50% circle is not a §4 stop (use 999px)"
     assert "border-radius:50%" not in html, "unspaced circular radius must go"
+    assert "border-radius: 999px" in html, "pill radius (999px) must authorize proportion fills"
 
 
-def test_ink_verdigris_accent_tokens_present(tmp_path: Path) -> None:
+def test_warm_charcoal_tokens_present(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
-    for token in INK_VERDIGRIS_TOKENS:
+    for token in WARM_CHARCOAL_TOKENS:
         assert token in html, f"v2 token {token!r} missing from the report CSS"
+
+
+def test_retired_ink_verdigris_tokens_absent(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for token in RETIRED_INK_VERDIGRIS_TOKENS:
+        assert token not in html, f"withdrawn Ink-and-Verdigris token {token!r} still present"
 
 
 def test_every_surface_token_is_consumed(tmp_path: Path) -> None:
@@ -455,3 +486,265 @@ def test_json_serialized_enum_values_unchanged(tmp_path: Path) -> None:
         assert finding["status_label"] == STATUS_PLAIN_LABELS[finding["status"]], (
             f"status_label drifted from STATUS_PLAIN_LABELS for {finding['status']}"
         )
+
+
+# ---------------------------------------------------------------------------
+# Single-file workload-icon render contract (DESIGN_V2.md §12, amended)
+# ---------------------------------------------------------------------------
+#
+# Verified against the vendored upstream tree (loryanstrant/MicrosoftCloudLogos)
+# at pinned commit fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c: brand SVGs exist
+# for only six of the twelve marks there. In report workload-key space (the
+# values the rendered HTML carries in ``data-workload``, via the pinned
+# ``REPORT_WORKLOAD_TO_ICON_KEY`` mapping), the split is:
+
+SVG_VENDORED_WORKLOADS = frozenset(
+    {
+        "identity",  # entra-id
+        "intune",  # intune
+        "sentinel",  # microsoft-sentinel
+        "purview",  # purview
+        "power_platform",  # power-platform
+        "power_bi",  # power-bi
+    }
+)
+PNG_ONLY_WORKLOADS = frozenset(
+    {
+        "defender",  # defender mark is PNG-only upstream
+        "endpoint",  # maps to the defender mark — PNG-only upstream
+        "exchange",  # exchange
+        "collaboration",  # sharepoint
+        "teams",  # teams
+        "azure",  # azure
+    }
+)
+# ``onedrive`` is PNG-only upstream but is not a report workload and never renders.
+PNG_ONLY_LABELS = {
+    "defender": "Defender",
+    "endpoint": "Endpoint",
+    "exchange": "Exchange",
+    "collaboration": "Collaboration",
+    "teams": "Teams",
+    "azure": "Azure",
+}
+
+
+def _inline_marks_in(root: ET.Element, workload: str) -> list[ET.Element]:
+    """Inline ``workload-icon`` svg elements inside any element carrying
+    ``data-workload="<workload>"`` (chart rows, constellation captions, cards)."""
+    marks: list[ET.Element] = []
+    for holder in root.iter():
+        if holder.attrib.get("data-workload") != workload:
+            continue
+        marks.extend(
+            el
+            for el in holder.iter()
+            if _local(el) == "svg"
+            and "workload-icon" in (el.attrib.get("class") or "").split()
+        )
+    return list({id(mark): mark for mark in marks}.values())
+
+
+def test_single_file_inlines_svg_only_for_svg_vendored_marks(tmp_path: Path) -> None:
+    """Lock the single-file workload-icon render contract (DESIGN_V2.md §12, amended).
+
+    At pinned upstream commit fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c only six
+    of the twelve MicrosoftCloudLogos marks ship an SVG. So the single-file
+    report inlines ``<svg class="workload-icon">`` ONLY for SVG-vendored
+    workloads — six inline, six text-label-only (no data-URI, no hotlink, no
+    inline svg for the PNG-only set). The bundle's hashed ``<img>`` rendering
+    of all twelve is covered elsewhere (test_report_hardening_browser.py).
+    """
+    root = parse_html(render(comprehensive_report(), tmp_path))
+
+    present = {el.attrib["data-workload"] for el in _by_attr(root, "data-workload")}
+    svg_marks = _by_class(root, "workload-icon")
+    assert svg_marks, "single-file render lost every inline workload mark"
+    assert all(_local(el) == "svg" for el in svg_marks), (
+        "workload-icon must be an inline <svg> in the single-file report, never <img>"
+    )
+
+    svg_present = present & SVG_VENDORED_WORKLOADS
+    assert svg_present, "fixture must exercise at least one SVG-vendored workload"
+    for workload in sorted(svg_present):
+        marks = _inline_marks_in(root, workload)
+        assert marks, (
+            f"SVG-vendored workload {workload!r} rendered without an inline workload-icon"
+        )
+
+    png_present = present & PNG_ONLY_WORKLOADS
+    assert png_present, "fixture must exercise at least one PNG-only workload"
+    for workload in sorted(png_present):
+        assert not _inline_marks_in(root, workload), (
+            f"PNG-only workload {workload!r} must not inline a workload-icon svg"
+        )
+        rows = [
+            el
+            for el in root.iter("div")
+            if el.attrib.get("data-workload") == workload
+            and "chart-row" in (el.attrib.get("class") or "").split()
+        ]
+        assert rows, f"PNG-only workload {workload!r} missing its findings-by-workload row"
+        assert any(PNG_ONLY_LABELS[workload] in text_of(row) for row in rows), (
+            f"PNG-only workload {workload!r} lost its visible text label"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Single-file a11y sibling-overlay contract (F2 major #1 fix)
+# ---------------------------------------------------------------------------
+
+
+def test_single_file_no_interactive_inside_role_img(tmp_path: Path) -> None:
+    """Lock the a11y restructure: ARIA ``img`` has presentational children, so
+    no interactive element may be a descendant of any ``[role="img"]`` layer.
+
+    The cross-filter buttons now live in sibling ``.dist-hits`` / ``.chart-hits``
+    overlay layers (aligned by ``alignChartHits()``); the ``role="img"`` visual
+    layers (``.dist-bar``, ``.chart-body``, radial gauge) hold spans only.
+    """
+    root = parse_html(render(comprehensive_report(), tmp_path))
+    visual_layers = _by_attr(root, "role", "img")
+    assert visual_layers, "no role=img visual layers found"
+    offenders = [el for layer in visual_layers for el in layer.iter() if el.tag in {"button", "a"}]
+    assert not offenders, (
+        "interactive element nested inside [role=img] (presentational children "
+        "would flatten it out of the accessibility tree)"
+    )
+
+    # Positive half: the cross-filter buttons still exist, in the sibling layers.
+    for layer_class in ("dist-hits", "chart-hits"):
+        layers = _by_class(root, layer_class)
+        assert layers, f"missing sibling {layer_class} overlay layer"
+        assert any(list(layer.iter("button")) for layer in layers), (
+            f"{layer_class} overlay holds no cross-filter buttons"
+        )
+
+
+def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
+    """Lock the overlay paint contract (F2 major #2 fix): the cross-filter
+    hit buttons must NEVER paint — they carry only ``.chart-hit`` /
+    ``.dist-hit``, never the visual paint classes (``.chart-bar`` /
+    ``.dist-segment`` / ``status-*``), and the inline style block declares
+    ``background: transparent`` for the hit layer. The proportional spans
+    stay the sole painted surface, so bar length ∝ count (the previous
+    build let the buttons inherit the paint classes and rendered opaque
+    full-track bars over the partial bars — Chromium measured visual bar
+    166px vs hit 331px, both painted ``rgb(158,152,140)``).
+
+    Also locks facet parity: each hit's ``data-chart-toggle`` mirrors its
+    figure's visual rows/segments one-for-one and in order, so
+    ``alignChartHits()`` pairs them correctly.
+    """
+    html = render(comprehensive_report(), tmp_path)
+    root = parse_html(html)
+
+    # 1. Hit buttons carry no paint classes and stay toggle-ready.
+    hits = _buttons_by_attr(root, "data-chart-toggle")
+    assert hits, "single-file render lost every cross-filter hit button"
+    for hit in hits:
+        classes = set((hit.attrib.get("class") or "").split())
+        assert {"chart-hit", "dist-hit"} & classes, (
+            "hit button must carry .chart-hit or .dist-hit"
+        )
+        assert not {"chart-bar", "dist-segment"} & classes, (
+            "hit button carries a paint class (.chart-bar/.dist-segment) — "
+            "the foundation would paint it opaque over the proportional bar"
+        )
+        assert not any(c.startswith("status-") for c in classes), (
+            "hit button carries a status-* paint class"
+        )
+        assert hit.attrib.get("aria-pressed") == "false"
+
+    # 2. The hit layer declares transparent paint in the inline style block.
+    style_text = "\n".join(text_of(el) for el in root.iter("style"))
+    rule = re.search(
+        r"\.chart-hit,\s*\.dist-hit\s*\{(?P<body>.*?)\}", style_text, re.DOTALL
+    )
+    assert rule, "inline style block lost the .chart-hit/.dist-hit rule"
+    assert "background: transparent" in rule.group("body"), (
+        "hit layer must declare background: transparent"
+    )
+    assert "border: 1px solid transparent" in rule.group("body"), (
+        "hit layer must keep a transparent border for the hover/pressed affordance"
+    )
+
+    # 3. Facet parity: chart hits mirror their figure's visual rows, in order.
+    facet_attr = {
+        "chart-status": "data-status",
+        "chart-workload": "data-workload",
+        "chart-severity": "data-severity",
+    }
+    for fig in root.iter("figure"):
+        attr = facet_attr.get(fig.attrib.get("id") or "")
+        if attr is None:
+            continue
+        rows = [
+            el
+            for el in fig.iter("div")
+            if "chart-row" in (el.attrib.get("class") or "").split()
+        ]
+        layers = [
+            el
+            for el in fig.iter("div")
+            if "chart-hits" in (el.attrib.get("class") or "").split()
+        ]
+        assert len(layers) == 1, f"{fig.attrib['id']}: expected one .chart-hits layer"
+        visual_facets = [
+            f"{fig.attrib['id'].removeprefix('chart-')}:{row.attrib[attr]}" for row in rows
+        ]
+        hit_facets = [b.attrib["data-chart-toggle"] for b in layers[0].iter("button")]
+        assert hit_facets == visual_facets, (
+            f"{fig.attrib['id']}: hit toggle facets {hit_facets} out of sync "
+            f"with visual rows {visual_facets}"
+        )
+
+    # Dist bar: hit facets == visible segment status classes, in order.
+    dist_figs = [
+        el
+        for el in root.iter("figure")
+        if "dist-figure" in (el.attrib.get("class") or "").split()
+    ]
+    assert len(dist_figs) == 1, "expected one .dist-figure"
+    dist_fig = dist_figs[0]
+    segments = [
+        c
+        for el in dist_fig.iter("span")
+        if "dist-segment" in (el.attrib.get("class") or "").split()
+        for c in (el.attrib.get("class") or "").split()
+        if c.startswith("status-")
+    ]
+    dist_layers = [
+        el
+        for el in dist_fig.iter("div")
+        if "dist-hits" in (el.attrib.get("class") or "").split()
+    ]
+    assert len(dist_layers) == 1, "expected one .dist-hits layer"
+    dist_hits = [b.attrib["data-chart-toggle"] for b in dist_layers[0].iter("button")]
+    assert dist_hits == [f"status:{s.removeprefix('status-')}" for s in segments], (
+        f"dist-hit toggles {dist_hits} out of sync with segments {segments}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Single-file offline / zero-external contract (string-level trio)
+# ---------------------------------------------------------------------------
+
+
+def test_single_file_zero_network_and_zero_img(tmp_path: Path) -> None:
+    """Lock the single-file offline contract: zero ``<img>`` tags, zero
+    ``http://`` strings (inline SVGs render with their ``xmlns`` URL stripped),
+    and exactly one inline ``<script>``.
+
+    The parsed no-``<img>`` and one-``<script>`` halves partially overlap
+    ``test_no_external_resource_references`` and
+    ``test_baseline_sections_and_no_injected_element``; this test pins the trio
+    as one string-level contract — notably the zero-``http://`` lock, which no
+    other test asserts.
+    """
+    html = render(comprehensive_report(), tmp_path)
+    assert "<img" not in html, "single-file report must not emit any <img> tag"
+    assert "http://" not in html, (
+        "single-file report must not reference any http:// URL (inline SVG xmlns stripped)"
+    )
+    assert html.count("<script") == 1, "single-file report must carry exactly one inline <script>"

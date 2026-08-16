@@ -43,9 +43,16 @@ licenselens batch tenants.yaml -o reports
 
 ## What it looks like
 
-The report is a dark, premium console — "Ink and Verdigris" — that reads top to
-bottom: where you stand, what you're paying for, what matters most, and why
-LicenseLens believes each finding.
+The report is a dark, offline-first dashboard — "Warm Charcoal" — that reads
+top to bottom: where you stand, what you're paying for, what matters most, and
+why LicenseLens believes each finding.
+
+It opens with a signature animated sequence: your org identity, a count-up
+posture figure, a radial gauge, and the top actions, all landing in under a
+second — then it stays calm. Branded Microsoft workload icons sit beside every
+capability and chart label, the interactive capability constellation
+cross-filters the page, and details unfold in place via native disclosure, so
+the report renders fully with JavaScript disabled and no network at all.
 
 ![report hero](images/report-hero.png)
 

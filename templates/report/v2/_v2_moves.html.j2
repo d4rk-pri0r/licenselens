@@ -11,27 +11,32 @@
    TopMove payload fields: title, why, effort_label, check_ids,
    customer_next_step, deep_link.
 
-   DESIGN_V2.md section 5C; retained v1 rules (section 9): no emoji, no
-   <img>, no external URLs except deep_link, empty optional fields omit
-   their row without crashing.
+   DESIGN_V2.md section 5C: a numbered sequence, not equal cards — the first
+   item is visually dominant (`move-item--lead`: larger title, key shadow).
+   Each item: bold title, effort label, a "Why" line, an action line, and the
+   admin deep link as the visible text link "Open the admin page".
+
+   Retained v1 rules (section 9): no emoji, no <img>, no external URLs except
+   deep_link, empty optional fields omit their row without crashing.
    ========================================================================== #}
 
 {%- set move_list = moves if moves is defined else (result.moves if result is defined else []) -%}
 
     {% if move_list %}
-    <section>
+    <section id="section-c" class="reveal-target" style="--reveal-delay: 40ms">
+      <p class="micro-label section-kicker">Priorities</p>
       <h2>What matters most</h2>
       <p class="section-help">
         Ranked by security impact, evidence confidence, and estimated effort.
       </p>
       <ol class="move-list">
         {% for move in move_list %}
-        <li class="move-item">
+        <li class="move-item{% if loop.first %} move-item--lead{% endif %}" id="move-{{ loop.index }}">
           <span class="move-index mono">{{ '%02d' | format(loop.index) }}</span>
           <div class="move-body">
             <div class="move-head">
               <strong class="move-title">{{ move.title }}</strong>
-              {% if move.effort_label %}<span class="move-effort">{{ move.effort_label | lower }}</span>{% endif %}
+              {% if move.effort_label %}<span class="effort-label">{{ move.effort_label | lower }}</span>{% endif %}
             </div>
             {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
             {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}

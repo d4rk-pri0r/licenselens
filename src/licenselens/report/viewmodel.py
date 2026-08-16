@@ -21,6 +21,11 @@ from licenselens.models import (
     ScanResult,
 )
 
+# allow: SIZE_OK — shared view-model module; consumers (html.py, bundle.py,
+# test_report_viewmodel.py, test_report_v2_contract.py) import builders from
+# here, and the T3/T4 constraint forbids changing existing builder signatures,
+# so the module is extended in place rather than split.
+
 #: Fixed workload ordering for the capability constellation. Reuses the v1
 #: renderer's ``_WORKLOAD_PRIORITY`` idea (identity first, then endpoint, then
 #: the remaining workloads). Workloads absent from this tuple sort after every
@@ -57,6 +62,45 @@ def build_posture(result: ScanResult) -> dict[str, int | str]:
     return {
         "realized_percent": rollup.realized_percent,
         "realized_sentence": rollup.realized_sentence,
+    }
+
+
+#: Neutral tenant label when the scan carries no tenant display name to show.
+_FALLBACK_TENANT_NAME: Final[str] = "Your tenant"
+
+
+def build_opening(result: ScanResult) -> dict[str, object]:
+    """Build the v2 signature-opening payload (org identity + assessment identity).
+
+    Returns ``{"tenant_name": str, "tenant_id": str | None,
+    "assessment_identity": dict, "scanned_at": str, "realized_percent": int,
+    "realized_sentence": str}``:
+
+    * ``tenant_name`` — ``result.tenant_display_name``; when the model carries no
+      display name the neutral ``_FALLBACK_TENANT_NAME`` is returned, never
+      ``None``. The raw ``tenant_id`` is surfaced separately under its own key so
+      the renderer can show it as secondary context.
+    * ``assessment_identity`` — the generator ``tool_display_name``, ``tool``,
+      and ``version`` straight from the model.
+    * ``scanned_at`` — the scan timestamp verbatim from the model.
+    * ``realized_percent`` / ``realized_sentence`` — :func:`build_posture`
+      output, so the opening count-up and implication derive from the exact same
+      values as section A. No literal number is produced here.
+
+    Deterministic: identical ``ScanResult`` in, identical dict out.
+    """
+    posture = build_posture(result)
+    return {
+        "tenant_name": result.tenant_display_name or _FALLBACK_TENANT_NAME,
+        "tenant_id": result.tenant_id,
+        "assessment_identity": {
+            "tool": result.tool,
+            "tool_display_name": result.tool_display_name,
+            "version": result.version,
+        },
+        "scanned_at": result.scanned_at,
+        "realized_percent": posture["realized_percent"],
+        "realized_sentence": posture["realized_sentence"],
     }
 
 

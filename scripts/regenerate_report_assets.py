@@ -12,11 +12,12 @@ network access.
 
 Run:  uv run python scripts/regenerate_report_assets.py
 
-Exits non-zero if the generated HTML fails the v2 "Ink and Verdigris" design
-gate (DESIGN_V2.md): missing v2 tokens or v2 signature copy, any legacy
-AI-dashboard signature (violet/navy/brass accents, v1 cool-blue tokens,
-radial-gradient, color-mix(), pill/circular border radii, old headings/tagline),
-a dropped emoji, or if the browser issues an http(s) request.
+Exits non-zero if the generated HTML fails the v2 "Warm Charcoal" design
+gate (DESIGN_V2.md): missing v2 tokens or v2 signature copy, any withdrawn
+Ink-and-Verdigris token, any legacy AI-dashboard signature (violet/navy/brass
+accents, v1 cool-blue tokens, radial-gradient, color-mix(), non-stop radii,
+old headings/tagline), a dropped emoji, or if the browser issues an http(s)
+request.
 """
 
 from __future__ import annotations
@@ -49,32 +50,33 @@ SCREENSHOTS: tuple[tuple[str, int, int, str], ...] = (
     ("report-mobile.png", 375, 1280, "mobile"),
 )
 
-# v2 tokens the report must carry (from DESIGN_V2.md, section 2 — "Ink and
-# Verdigris"). The exact declaration strings mirror the `:root` block in
+# v2 tokens the report must carry (from DESIGN_V2.md, section 2 — "Warm
+# Charcoal"). The exact declaration strings mirror the `:root` block in
 # templates/report/v2/_v2_styles.css.j2.
 NEW_DESIGN_TOKENS: tuple[str, ...] = (
-    "--canvas: #0c1210",
-    "--surface-1: #121a17",
-    "--surface-2: #17201d",
-    "--surface-3: #1e2925",
-    "--surface-4: #26332e",
-    "--border: #233029",
-    "--border-strong: #31413a",
-    "--text-1: #eef2ef",
-    "--text-2: #b6c2bd",
-    "--text-3: #85918b",
-    "--accent: #8ad3b8",
-    "--accent-hover: #a5e2ca",
-    "--accent-focus: #bdecd9",
-    "--accent-print: #145c48",
-    "--state-action: #f8756b",
-    "--state-incomplete: #e2a944",
-    "--state-ok: #4cd07d",
-    "--state-neutral: #9aa49e",
+    "--canvas: #191714",
+    "--surface-1: #211E1A",
+    "--surface-2: #2A2621",
+    "--surface-3: #332E27",
+    "--surface-4: #3D3730",
+    "--border: #37322B",
+    "--border-strong: #4A443B",
+    "--text-1: #F2EFE9",
+    "--text-2: #B8B2A7",
+    "--text-3: #8A847A",
+    "--accent: #E8DFC8",
+    "--accent-hover: #F5EFDD",
+    "--accent-focus: #FFF6E3",
+    "--accent-print: #57482E",
+    "--state-action: #E5695F",
+    "--state-incomplete: #D9A03F",
+    "--state-ok: #55AE84",
+    "--state-neutral: #9E988C",
 )
 
-# v2 signature copy the report must carry (DESIGN_V2.md, section 5A opening).
-NEW_DESIGN_COPY: tuple[str, ...] = ("coming into focus",)
+# v2 signature copy the report must carry (DESIGN_V2.md, section 5A opening
+# identity line: "{tenant} — Security License Lens assessment").
+NEW_DESIGN_COPY: tuple[str, ...] = ("Security License Lens assessment",)
 
 # Retired v1 tokens (DESIGN_V2.md, section 1 "Retired v1 values"): cool-blue
 # canvas/accent/surface ramp, plus the borders, text ramp, and print pair the
@@ -116,9 +118,28 @@ RETIRED_V1_TOKENS: tuple[str, ...] = (
     "#57534e",
 )
 
+# Withdrawn "Ink and Verdigris" tokens (DESIGN_V2.md section 1: the earlier
+# v2 palette, superseded in full). Any of these declarations in the generated
+# HTML means the withdrawn palette leaked through.
+RETIRED_INK_VERDIGRIS_TOKENS: tuple[str, ...] = (
+    "--canvas: #0c1210",
+    "--surface-1: #121a17",
+    "--surface-2: #17201d",
+    "--surface-3: #1e2925",
+    "--surface-4: #26332e",
+    "--accent: #8ad3b8",
+    "--accent-hover: #a5e2ca",
+    "--accent-focus: #bdecd9",
+    "--accent-print: #145c48",
+    "--state-action: #f8756b",
+    "--state-incomplete: #e2a944",
+    "--state-ok: #4cd07d",
+    "--state-neutral: #9aa49e",
+)
+
 # Legacy AI-dashboard signatures the redesign removed and v2 still forbids:
 # violet/navy/brass accents, warm ledger stock, radial gradients, color-mix(),
-# pill/circular radii, and old (v0/v1) headings/tagline copy.
+# non-stop radii, and old (v0/v1) headings/tagline copy.
 LEGACY_SIGNATURES: tuple[str, ...] = (
     "#9b8cff",
     "#b0a4ff",
@@ -137,8 +158,8 @@ LEGACY_SIGNATURES: tuple[str, ...] = (
     "var(--muted)",
     "radial-gradient",
     "color-mix(",
-    "border-radius: 999px",
     "border-radius: 12px",
+    "border-radius: 4px",
     "border-radius: 50%",
     "Your security at a glance",
     "How to read this report",
@@ -197,6 +218,9 @@ def check_html(html: str) -> list[str]:
     for token in RETIRED_V1_TOKENS:
         if token in html:
             problems.append(f"retired v1 token still present: {token!r}")
+    for token in RETIRED_INK_VERDIGRIS_TOKENS:
+        if token in html:
+            problems.append(f"withdrawn Ink-and-Verdigris token still present: {token!r}")
     for signature in LEGACY_SIGNATURES:
         if signature in html:
             problems.append(f"legacy AI-dashboard signature still present: {signature!r}")
@@ -233,6 +257,25 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                     heading = page.locator("h2", has_text="Why LicenseLens believes this").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.locator("article.finding").first.locator("details.tech > summary").click()
+                    page.wait_for_timeout(SETTLE_MS)
+                elif kind == "hero":
+                    # Land on the constellation region: "What you're paying
+                    # for" h2 to viewport top, then 100px deeper so the first
+                    # card-summary icon row is also in frame. Pan the
+                    # horizontally scrollable .constellation so four caption
+                    # icons are visible — five 18px workload icons in total.
+                    heading = page.locator("h2", has_text="What you're paying for").first
+                    heading.evaluate("el => el.scrollIntoView({block: 'start'})")
+                    page.evaluate("() => window.scrollBy(0, 100)")
+                    page.locator(".constellation").first.evaluate(
+                        "el => { el.scrollLeft = 500; }"
+                    )
+                    page.wait_for_timeout(SETTLE_MS)
+                elif kind == "mobile":
+                    # Same section at full viewport height: the constellation
+                    # caption row (identity mark) plus the first card icon.
+                    heading = page.locator("h2", has_text="What you're paying for").first
+                    heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.wait_for_timeout(SETTLE_MS)
                 target = IMAGES_DIR / name
                 target.parent.mkdir(parents=True, exist_ok=True)
@@ -277,8 +320,8 @@ def main() -> int:
     else:
         print(
             "\nHTML design gate: OK"
-            " (v2 tokens + copy present, no retired v1 tokens,"
-            " no legacy AI-dashboard signatures, no emoji)"
+            " (v2 tokens + copy present, no retired v1 or withdrawn"
+            " Ink-and-Verdigris tokens, no legacy AI-dashboard signatures, no emoji)"
         )
 
     net_failures = [n for n, s in shots.items() if s["http_requests"]]

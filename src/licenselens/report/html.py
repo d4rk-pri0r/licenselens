@@ -12,7 +12,8 @@ from licenselens.models import (
     ScanResult,
 )
 from licenselens.paths import templates_dir
-from licenselens.report.viewmodel import build_constellation, build_sections
+from licenselens.report.icons import workload_svg_map
+from licenselens.report.viewmodel import build_constellation, build_opening, build_sections
 
 
 def report_environment() -> Environment:
@@ -34,6 +35,7 @@ def build_report_context(result: ScanResult) -> dict[str, object]:
         "result": result,
         "tagline": TAGLINE,
         "sections": sections,
+        "opening": build_opening(result),
         "constellation": build_constellation(result),
         "moves": sections["C"],
         "findings": sections["E"]["findings"],
@@ -49,8 +51,8 @@ def build_report_context(result: ScanResult) -> dict[str, object]:
 
 def write_html_report(result: ScanResult, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    html = (
-        report_environment().get_template("report.html.j2").render(**build_report_context(result))
-    )
+    context = build_report_context(result)
+    context["workload_svg_map"] = workload_svg_map()
+    html = report_environment().get_template("report.html.j2").render(**context)
     path.write_text(html, encoding="utf-8")
     return path

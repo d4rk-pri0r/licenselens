@@ -33,14 +33,12 @@ assets:
     height: 512
     workload: defender
 
-  - path: logos/intune/intune.png
+  - path: icons/intune/10329-icon-service-intune.svg
     commit: fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c
-    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/logos/intune/intune.png
-    sha256: 353b561cc0163ffbfb5d42e05eb608f7e1e84914b4eb042b1cab53f0782fb09d
-    content_type: image/png
-    bytes: 41900
-    width: 256
-    height: 256
+    source_url: https://raw.githubusercontent.com/loryanstrant/MicrosoftCloudLogos/fc3a6c9506dc9a6ebdfb4f5891ee486f2717257c/icons/intune/10329-icon-service-intune.svg
+    sha256: a90c553f57031340c6ef44e3773c0a49249f9783eb26d83a6590b95c5370fb04
+    content_type: image/svg+xml
+    bytes: 1737
     workload: intune
 
   - path: logos/purview/purview-scalable.svg

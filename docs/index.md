@@ -55,9 +55,13 @@ expected controls, and reports gaps as *you pay for X → expected Y → observe
 
 ## What it looks like
 
-The report is a dark, premium console — "Ink and Verdigris" — that reads top to
-bottom: where you stand, what you're paying for, what matters most, and why
-LicenseLens believes each finding.
+The report is a dark, offline-first dashboard — "Warm Charcoal" — that opens
+with a signature animated sequence: your org identity, a count-up posture
+figure, a radial gauge, and the top actions, all landing in under a second.
+Then the calm, five-section read begins: where you stand, what you're paying
+for, what matters most, and why LicenseLens believes each finding. Branded
+Microsoft workload icons sit beside every capability and chart label, and the
+whole report renders with JavaScript disabled and no network at all.
 
 ![The dashboard: what you own, what's working, and what to fix first.](images/report-hero.png)
 

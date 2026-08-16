@@ -48,22 +48,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
 - **SCuBA coverage reference** — 109 pinned coverage rows
   (`docs/reference/coverage.md`).
-- **Report redesign (v2, "Ink and Verdigris")** — the HTML report is rebuilt as
-  a dark-first, offline-first dashboard: a data-driven posture figure bound to
-  `capability_rollup.realized_percent` (never hardcoded), a signature capability
-  constellation (deterministic, status-colored, workload-grouped), a five-section
-  narrative (Where you stand → What you're paying for → What matters most → Why
-  LicenseLens believes this → Explore everything), and a six-slot per-finding
-  "belief block" (Expected / Observed / Why it matters / Recommended action /
-  Evidence / Admin destination). The report renders fully server-side and is
-  readable with JavaScript disabled; motion honors `prefers-reduced-motion`.
+- **Report redesign (v2, "Warm Charcoal")** — the HTML report is rebuilt as a
+  dark, offline-first dashboard on a warm charcoal canvas with a champagne-ivory
+  identity accent and a semantic-only red/amber/green status ramp: a signature
+  opening sequence (org identity → posture count-up → radial gauge →
+  distribution → implication → top actions, 500–1000ms total, then calm), a
+  hierarchy-first "Where you stand" led by one dominant posture figure bound to
+  `capability_rollup.realized_percent` (never hardcoded) instead of a grid of
+  equal metric cards, the interactive capability constellation (nodes resolve
+  from neutral; workload group captions cross-filter), the **restored branded
+  Microsoft workload icons** (inline SVG in the single-file report, hashed
+  `<img>` assets in the bundle, always paired with a visible text label), a
+  five-section narrative (Where you stand → What you're paying for → What
+  matters most → Why LicenseLens believes this → Explore everything), a six-slot
+  per-finding "belief block" (Expected / Observed / Why it matters / Recommended
+  action / Evidence / Admin destination), and native `<details>` progressive
+  disclosure (summary → explanation → evidence). Motion is information design:
+  one animated opening, then calm; the report renders fully server-side and is
+  readable with JavaScript disabled; `prefers-reduced-motion` renders the
+  instant final state with zero information loss.
 
 ### Changed
 - `SECURITY.md` / `docs/security.md` supported-versions table now reflects the
   `0.3.x` release line.
-- Report visuals moved to the v2 "Ink and Verdigris" palette (verdigris accent
-  on a deep green-ink charcoal canvas); the v1 workload `<img>` icon allowlist is
-  retired — workloads are named with visible text labels only.
+- Report visuals moved to the v2 "Warm Charcoal" design language (warm charcoal
+  canvas, muted warm-neutral surfaces, champagne-ivory identity accent, semantic
+  red/amber/green status ramp); the v1 workload `<img>` icon allowlist is
+  restored — the 12 branded Microsoft workload marks render as inline SVG in the
+  single-file report and as hashed `<img>` assets in the bundle, always beside a
+  visible text label.
 
 ### Fixed
 - **PowerShell bridge accepts hashtable params** — `Invoke-LicenseLensCollectorAdapter`

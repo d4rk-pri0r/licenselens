@@ -1,236 +1,117 @@
 /* ==========================================================================
    Security License Lens — offline report app stylesheet (report app v2).
+   Design identity: "Warm Charcoal" (DESIGN_V2.md, the true v2 contract).
 
-   App-shell + A-E layout layer for the bundle. The v2 foundation
-   (report/v2/_v2_styles.css.j2) supplies the token palette, base, sections,
-   cards, finding rails, status colors, motion, print, and reduced-motion; this
-   file adds the header bar, workload navigation, app-main shell, the A-E
-   layout the shared partials emit, the interactive findings toolbar, and the
-   print-only unpaginated list. Logical properties only; radius <= 4px; no
-   external references; every color is a declared v2 token referenced by name.
+   App-shell + A-E layout layer for the bundle. The shared foundation
+   (report/v2/_v2_styles.css.j2) supplies the token palette, base, status
+   variants, glyph rules, and shared-partial styling; this file adds the
+   header bar, the sticky contextual nav (sections A-E + workload tabs),
+   the app-main shell, the signature opening choreography (DESIGN_V2 11),
+   the interactive constellation, the capability detail list, moves,
+   finding rails, the charts + filter toolbar, the print-only unpaginated
+   list, and the bundle-specific motion / reduced-motion / forced-colors /
+   print layers.
+
+   Contract notes enforced here:
+     - Every color is a declared token from DESIGN_V2.md section 2; the only
+       literal colors live inside the :root block. The supplement block below
+       re-declares the tokens the shared foundation may not have updated yet
+       with byte-identical DESIGN_V2 values (last declaration wins; identical
+       values, so the cascade never diverges).
+     - All directional layout rules use logical properties (border-inline-start,
+       margin-inline, padding-inline, text-align: start/end).
+     - Radii only from the section 4 stops: 0 / 2 / 6 / 10 / 16, plus 999px
+       exclusively for proportion-based fills (posture track, distribution
+       segments, chart bars).
+     - Gradients: only --grad-hero and --grad-raised. Blur: only --blur-nav on
+       the sticky nav, behind a @supports guard. Shadows: --shadow-1/2/3 as
+       state only; a card at rest has no shadow.
+     - Screen is always dark; only @media print inverts to light ink.
+     - Reduced motion collapses to the instant final state with zero
+       information loss; forced-colors collapses chrome to system colors.
    ========================================================================== */
 
 [hidden] { display: none !important; }
 
 /* --------------------------------------------------------------------------
-   App shell — full-width header bar, workload navigation, bounded app-main.
+   2. Token supplement — DESIGN_V2 tokens the shared foundation may not
+   declare yet (values byte-identical to DESIGN_V2 2; safe duplicates).
    -------------------------------------------------------------------------- */
-header.app-header {
-  max-width: none;
-  margin: 0;
-  padding-inline: 20px;
-  border-radius: 0;
-}
-
-.app-header__bar {
-  max-width: 1100px;
-  margin-inline: auto;
-}
-
-nav.workload-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  max-width: 1100px;
-  margin-block: 0 16px;
-  margin-inline: auto;
-  padding-block: 8px;
-  padding-inline: 20px;
-}
-
-.workload-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  color: var(--text-2);
-  font-size: 0.82rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.workload-tab:hover { color: var(--accent-hover); border-color: var(--accent-hover); }
-
-.workload-tab.is-active {
-  color: var(--accent);
-  border-color: var(--accent);
-  background: var(--surface-3);
-}
-
-main.app-main { max-width: 1100px; }
-
-.app-main__content { min-width: 0; }
-
-/* --------------------------------------------------------------------------
-   Masthead content — logo, tagline, meta rows, warning intro.
-   -------------------------------------------------------------------------- */
-.logo { display: flex; align-items: center; gap: 12px; padding-block: 16px; }
-.logo-mark {
-  width: 28px;
-  height: 28px;
-  background: var(--accent);
-  flex-shrink: 0;
-}
-.tagline { margin: 0; color: var(--text-2); font-size: 0.9rem; }
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  padding-block: 8px 16px;
-  border-block-start: 1px solid var(--border);
-}
-.meta-row { font-size: 0.78rem; color: var(--text-2); }
-.meta-row code { color: var(--text-1); }
-.intro {
-  margin-block: 0 16px;
-  padding: 12px 16px;
-  background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  border-inline-start: 3px solid var(--state-incomplete);
-  border-radius: 0;
+:root {
+  --grad-hero: linear-gradient(165deg, var(--surface-2) 0%, var(--surface-1) 55%, var(--canvas) 100%);
+  --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+  --blur-nav: blur(8px);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.25);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 4px 12px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.4);
+  /* Translucent twin of --surface-3: the one authorized backdrop-filter
+     surface (sticky nav, DESIGN_V2 2.3). Opaque --surface-3 is the fallback. */
+  --nav-surface: rgba(51, 46, 39, 0.86);
 }
 
 /* --------------------------------------------------------------------------
-   A — posture hero: rollup cells and status tiles.
+   3. Typography — DESIGN_V2 type scale (locked; larger than v1 by mandate).
+   The body scale and heading sizes are re-asserted here so the bundle never
+   depends on a stale foundation value.
    -------------------------------------------------------------------------- */
-.posture-sentence { color: var(--text-2); margin-block: 8px 0; }
-.rollup {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-  margin-block: 16px;
+body {
+  font-size: 1rem;
+  line-height: 1.6;
 }
-.rollup-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-}
-.tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-  margin-block-start: 16px;
-}
-.tile {
-  padding: 12px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-}
-.tile .n {
-  font-size: 1.6rem;
+
+h1 { font-size: 1.5rem; font-weight: 650; line-height: 1.25; }
+h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
+h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.35; }
+
+/* Prose: comfortable reading, never full column width at desktop. */
+p { max-width: 72ch; }
+
+/* Label / micro-label / caption roles (DESIGN_V2 3). */
+.label { font-size: 0.8125rem; font-weight: 600; line-height: 1.4; color: var(--text-2); }
+
+.micro-label {
+  font-size: 0.75rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.caption { color: var(--text-3); }
+
+/* Section kicker: micro-label role, uppercase — the only uppercase in the
+   page besides constellation group captions. */
+.kicker {
+  margin-block: 0 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* Tech meta: mono for ids, timestamps, evidence, config values. */
+code, .mono { font-family: var(--font-mono); }
+code { font-size: 0.8125rem; line-height: 1.5; }
+.token { font-family: var(--font-mono); overflow-wrap: anywhere; }
+
+/* Numeric columns and figures: tabular numerals, numbers right-aligned. */
+.num {
+  text-align: end;
   font-variant-numeric: tabular-nums;
 }
-.tile .l { display: flex; flex-direction: column; color: var(--text-2); }
-.tile .l small { color: var(--text-3); }
-
-.section-help { color: var(--text-2); }
 
 /* --------------------------------------------------------------------------
-   B — capability constellation + cards.
-   -------------------------------------------------------------------------- */
-.constellation {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(120px, 1fr);
-  gap: 16px;
-  overflow-x: auto;
-  padding-block: 12px;
-  margin-block: 8px 16px;
-}
-.constellation-group { display: flex; flex-direction: column; gap: 12px; }
-.constellation-caption { margin-block: 0 4px; }
-.constellation-point {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-}
-.constellation-core {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  background: currentColor;
-  box-shadow: inset 0 0 0 2px var(--canvas);
-}
-.constellation-label { font-size: 0.78rem; color: var(--text-2); }
-.constellation-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  grid-column: 1 / -1;
-  margin-block-start: 8px;
-}
-.constellation-legend-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.72rem;
-  color: var(--text-2);
-}
-.constellation-legend-swatch {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: currentColor;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-.card { display: flex; flex-direction: column; gap: 8px; }
-.card-title { margin: 0; }
-.card p { margin: 0; }
-.card-provenance {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-block-start: 8px;
-  border-block-start: 1px solid var(--border);
-  font-size: 0.78rem;
-}
-
-/* --------------------------------------------------------------------------
-   C — moves.
-   -------------------------------------------------------------------------- */
-.move-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.move-item {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-}
-.move-index { color: var(--accent); font-weight: 700; }
-.move-body { display: flex; flex-direction: column; gap: 4px; }
-.move-head { display: flex; align-items: baseline; gap: 8px; }
-.move-effort { color: var(--text-2); font-size: 0.78rem; }
-.move-why, .move-action, .move-ids, .move-link { margin: 0; }
-.move-note { color: var(--text-3); font-size: 0.85rem; }
-
-/* --------------------------------------------------------------------------
-   Status marker — glyph + word, color binds the shared variant classes.
+   2.3 Semantic mapping — status is never color-only; the word and glyph
+   carry it. Error shares the gap color on screen and in print.
    -------------------------------------------------------------------------- */
 .status-marker {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.78rem;
+  gap: 6px;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .status-glyph { flex-shrink: 0; }
@@ -244,76 +125,568 @@ main.app-main { max-width: 1100px; }
 .finding.not_licensed { border-inline-start-color: var(--state-neutral); }
 
 /* --------------------------------------------------------------------------
-   D+E — filter bar.
+   App shell — masthead, sticky contextual nav, bounded app-main.
    -------------------------------------------------------------------------- */
-.filter-bar {
+header.app-header {
+  max-width: none;
+  margin: 0;
+  padding-inline: 32px;
+  border-radius: 0;
+  background: var(--surface-4);
+  border-block-end: 1px solid var(--border-strong);
+}
+
+.app-header__bar {
+  max-width: 1160px;
+  margin-inline: auto;
+  padding-block: 20px 12px;
+}
+
+.logo { display: flex; align-items: center; gap: 12px; padding-block: 4px; }
+.logo-mark {
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.tagline { margin: 0; color: var(--text-2); font-size: 0.8125rem; }
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding-block: 12px 0;
+  border-block-start: 1px solid var(--border);
+  margin-block-start: 12px;
+}
+.meta-row { font-size: 0.8125rem; color: var(--text-2); }
+.meta-row code { color: var(--text-1); }
+.intro {
+  max-width: 1160px;
+  margin-inline: auto;
+  margin-block: 0 16px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-inline-start: 3px solid var(--state-incomplete);
+  border-radius: 6px;
+}
+
+/* The single bounded report container (exactly one <main>). */
+main.app-main {
+  max-width: 1160px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+.app-main__content { min-width: 0; }
+
+/* Sections: whitespace and rules, not box chrome (DESIGN_V2 4). */
+.app-main__content > section {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding-block: 24px;
+  padding-inline: 32px;
+  margin-block: 0;
+}
+.app-main__content > section + section {
+  border-block-start: 1px solid var(--border);
+  margin-block-start: 24px;
+}
+
+.section-help { color: var(--text-2); margin-block: 0 16px; }
+
+/* --------------------------------------------------------------------------
+   6. Sticky contextual navigation — A-E links + workload tabs, --surface-3
+   with the single authorized --blur-nav backdrop blur behind a @supports
+   guard; opaque --surface-3 is the fallback. Floats gain --shadow-2.
+   -------------------------------------------------------------------------- */
+.app-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface-3);
+  border-block-end: 1px solid var(--border-strong);
+  transition: box-shadow 150ms ease-out;
+}
+.app-nav.is-floating { box-shadow: var(--shadow-2); }
+
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .app-nav {
+    background: var(--nav-surface);
+    -webkit-backdrop-filter: var(--blur-nav);
+    backdrop-filter: var(--blur-nav);
+  }
+}
+
+.app-nav__bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 16px;
-  margin-block-end: 16px;
+  gap: 8px 24px;
+  max-width: 1160px;
+  margin-inline: auto;
+  padding-block: 8px;
+  padding-inline: 32px;
 }
-.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
-.filter-group__label {
-  margin-inline-end: 4px;
-  color: var(--text-3);
-  font-size: 0.72rem;
+
+.app-nav__sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.app-nav__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  align-self: center;
+  text-decoration: none;
 }
-.filter-button,
-.filter-chip {
-  padding: 4px 10px;
+.app-nav__link:hover { color: var(--accent-hover); }
+.app-nav__link[aria-current="true"] {
+  color: var(--accent);
   background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  color: var(--text-2);
-  font-size: 0.78rem;
 }
-.filter-button.active,
-.filter-chip.is-active {
-  background: var(--surface-3);
-  border-color: var(--accent);
-  color: var(--text-1);
+
+.app-nav__workloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }
-.filter-count {
-  color: var(--text-2);
-  margin-inline-start: auto;
-  font-variant-numeric: tabular-nums;
-}
-.filter-clear {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 2px;
-  color: var(--text-2);
+
+.workload-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 10px;
-  font-size: 0.78rem;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
 }
-.filter-clear:disabled { opacity: 0.45; text-decoration: none; }
+
+.workload-tab:hover { color: var(--accent-hover); border-color: var(--border-strong); }
+
+.workload-tab.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--surface-2);
+}
+
+.nav-sentinel {
+  position: absolute;
+  top: 0;
+  height: 1px;
+  width: 1px;
+}
 
 /* --------------------------------------------------------------------------
-   D — finding belief blocks (server-rendered via the v2 finding card partial).
+   A — "Where you stand": the signature opening, hierarchy-first.
+   One dominant posture figure; supporting stats are a compact strip with
+   rules, plus the operational-distribution bar. Not a grid of equal cards.
    -------------------------------------------------------------------------- */
-.finding { padding-block: 16px; }
-.finding + .finding {
-  border-block-start: 1px solid var(--border);
-  margin-block-start: 16px;
+section.hero {
+  background: var(--grad-hero);
+  box-shadow: var(--shadow-3);
+  border-radius: 16px;
+  padding-block: 32px;
+  padding-inline: 40px;
 }
+
+/* Signature opening line: display text in a <p> (never a heading). */
+.opening-identity {
+  margin-block: 8px 0;
+  font-size: 2rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text-1);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+.opening-identity__id { font-size: 0.8125rem; color: var(--text-3); font-weight: 400; }
+
+.opening-meta {
+  margin-block: 8px 0;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+.opening-meta code { color: var(--text-1); }
+
+/* Two-column hero: figure | supporting stats + distribution (12-column grid). */
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+  margin-block-start: 20px;
+  align-items: start;
+}
+.hero-figure { grid-column: 1 / 5; min-width: 0; }
+.hero-side { grid-column: 6 / 13; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+
+/* The ONE dominant metric (DESIGN_V2 5A). */
+.posture-figure {
+  font-size: 3.5rem;
+  font-weight: 650;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  animation: none;
+}
+.posture-digits { animation: none; }
+.posture-unit { font-size: 1.25rem; font-weight: 600; color: var(--text-2); }
+
+.posture-sentence { margin-block: 12px 0; color: var(--text-2); }
+
+/* Radial realization gauge — a single proportion, drawn once. */
+.posture-gauge { margin-block: 20px 0; }
+.posture-gauge__viz { max-width: 132px; }
+.posture-gauge__svg { display: block; width: 100%; height: auto; }
+.posture-gauge__track {
+  fill: none;
+  stroke: var(--surface-3);
+  stroke-width: 8;
+}
+.posture-gauge__arc {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+/* Print: the gauge is replaced by its description line. */
+.posture-gauge__print { display: none; }
+
+/* Supporting stat strip: compact, separated by rules — not cards. */
+.stat-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-inline-start: 20px;
+  border-inline-start: 1px solid var(--border-strong);
+}
+.stat:first-child { padding-inline-start: 0; border-inline-start: 0; }
+.stat__num {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+.stat.status-ok .stat__num { color: var(--state-ok); }
+.stat.status-gap .stat__num { color: var(--state-action); }
+.stat.status-partial .stat__num { color: var(--state-incomplete); }
+.stat.status-not_licensed .stat__num { color: var(--state-neutral); }
+.stat__label { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); }
+
+/* Operational distribution: segmented horizontal bar, 999px caps. */
+.dist-figure { margin: 0; }
+.dist-bar {
+  display: flex;
+  height: 14px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.dist-seg {
+  flex-basis: 0;
+  min-width: 0;
+  height: 100%;
+  transform-origin: inline-start;
+}
+.dist-seg--gap { background: var(--state-action); }
+.dist-seg--partial { background: var(--state-incomplete); }
+.dist-seg--ok { background: var(--state-ok); }
+.dist-seg--not_licensed { background: var(--state-neutral); }
+.dist-seg--empty { flex-grow: 1; background: var(--surface-3); }
+
+/* Three (optionally four) labeled distribution items: glyph + word + count. */
+.dist-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.dist-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.dist-item.status-gap { color: var(--state-action); }
+.dist-item.status-partial { color: var(--state-incomplete); }
+.dist-item.status-ok { color: var(--state-ok); }
+.dist-item.status-not_licensed { color: var(--state-neutral); }
+.dist-item__count {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+  font-weight: 400;
+}
+
+/* Most important implication — one sentence bound from the rollup. */
+.opening-implication {
+  margin-block: 20px 0;
+  font-size: 1rem;
+  font-weight: 400;
+}
+.opening-implication p { margin: 0; }
+.opening-implication strong { font-weight: 600; color: var(--text-1); }
+
+/* Highest-impact actions: the top 2-3 moves, linked into section C. */
+.opening-actions {
+  margin-block: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.opening-actions:empty { display: none; }
+.opening-action {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-1);
+  text-decoration: none;
+  max-width: none;
+}
+.opening-action:hover { border-color: var(--border-strong); color: var(--accent-hover); }
+.opening-action__title { font-weight: 600; }
+.opening-action__effort { color: var(--text-2); font-size: 0.8125rem; margin-inline-start: auto; }
+
+/* Exposed / gap rail: 3px --state-action edge, capped at three titles. */
+.exposure-rail {
+  margin-block-start: 20px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border-inline-start: 3px solid var(--state-action);
+  border-radius: 0;
+}
+.exposure-rail p { margin: 0; }
+.exposure-rail__head { color: var(--state-action); font-weight: 600; }
+.exposure-rail ul { margin: 8px 0 0; padding-inline-start: 20px; }
+.exposure-rail__more { color: var(--text-3); }
+
+/* --------------------------------------------------------------------------
+   B — "What you're paying for": SKU strip, capability constellation,
+   capability detail list (progressive disclosure, not one giant card).
+   -------------------------------------------------------------------------- */
+.sku-strip { margin-block-end: 20px; overflow-x: auto; }
+.sku-table { width: auto; min-width: min(320px, 100%); }
+.sku-table th, .sku-table td {
+  border: 0;
+  border-block-end: 1px solid var(--border);
+  padding: 6px 16px 6px 0;
+}
+.sku-table td code { color: var(--text-1); }
+
+/* Constellation: groups render as columns in enum order; the selected
+   workload group is emphasized; horizontal scroll only below 640px. */
+.constellation {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-block: 8px 24px;
+}
+
+.constellation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* Selected workload group: --border-strong ring (inset, no layout shift)
+   plus --shadow-1 and a raised surface. */
+.constellation-group.is-selected {
+  background: var(--surface-1);
+  box-shadow: inset 0 0 0 1px var(--border-strong), var(--shadow-1);
+}
+
+/* Group caption: brand icon + plain name, micro-label role. The shared
+   macro renders it as a real button; app.js wires the cross-filter. */
+.constellation-caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-2);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-block: 0 4px;
+  background: transparent;
+  border: 0;
+  padding: 4px 6px;
+  border-radius: 6px;
+  text-align: start;
+}
+button.constellation-caption { cursor: pointer; }
+button.constellation-caption:hover { color: var(--accent-hover); }
+button.constellation-caption[aria-pressed="true"] { color: var(--accent); }
+.constellation-caption .workload-icon { width: 18px; height: 18px; }
+
+/* Nodes: the shared macro renders real buttons (16px core with a 2px status
+   ring and a soft status-tinted fill from the foundation). This layer adds
+   the interactive affordances: hover, selection, relation highlight. */
+.constellation-point {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  text-align: start;
+  cursor: pointer;
+}
+.constellation-point:hover { border-color: var(--border-strong); }
+.constellation-point.is-selected { border-color: var(--accent); }
+.constellation-point.is-related {
+  box-shadow: inset 0 0 0 1px var(--accent);
+  border-color: var(--accent);
+}
+
+.constellation-label { color: var(--text-2); }
+
+/* Legend maps the six statuses to words + colors (never color-only). */
+.constellation-legend-chip.status-gap,
+.constellation-legend-chip.status-error { color: var(--state-action); }
+.constellation-legend-chip.status-partial { color: var(--state-incomplete); }
+.constellation-legend-chip.status-ok { color: var(--state-ok); }
+.constellation-legend-chip.status-not_licensed,
+.constellation-legend-chip.status-skipped { color: var(--state-neutral); }
+
+/* Capability detail list: summary rows first, context on demand. */
+.capability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-block-start: 24px;
+}
+.capability-row {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+}
+.capability-row.is-selected {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-1);
+}
+.capability-row__select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--text-1);
+  font-size: 1rem;
+  text-align: start;
+}
+.capability-row__select[aria-pressed="true"] .capability-row__name { color: var(--accent); }
+.capability-row__name { font-weight: 600; font-size: 1.06rem; line-height: 1.35; }
+.capability-row__select .workload-icon { width: 18px; height: 18px; }
+.capability-row__outcome { margin-block: 8px 0; color: var(--text-2); }
+.capability-row details.tech { margin-block-start: 8px; }
+.capability-row__provenance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-block-start: 8px;
+  border-block-start: 1px solid var(--border);
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------------------
+   C — "What matters most": a numbered sequence, first item dominant.
+   -------------------------------------------------------------------------- */
+.move-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.move-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.move-item:first-child {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-1);
+}
+.move-item:first-child .move-title { font-size: 1.06rem; }
+.move-index { color: var(--accent); font-weight: 650; font-size: 0.8125rem; }
+.move-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.move-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.move-title { font-size: 1rem; font-weight: 600; }
+.move-effort { color: var(--text-2); font-size: 0.8125rem; }
+.move-why, .move-action, .move-ids, .move-link { margin: 0; max-width: none; }
+.move-note { color: var(--text-3); font-size: 0.8125rem; }
+
+/* --------------------------------------------------------------------------
+   D — "Why LicenseLens believes this": open typographic finding articles
+   separated by rules; the selected finding becomes the elevated surface.
+   -------------------------------------------------------------------------- */
+.finding-wrap + .finding-wrap { border-block-start: 1px solid var(--border); }
+
+.finding { padding-block: 16px; }
+
+.finding-wrap.is-selected .finding {
+  background: var(--grad-raised);
+  box-shadow: var(--shadow-2);
+  border-radius: 10px;
+  padding-inline: 20px;
+}
+
 .finding-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .finding-head h3 { margin: 0; }
 .finding-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
-.meta-item { font-size: 0.78rem; color: var(--text-2); }
+.meta-item { font-size: 0.8125rem; color: var(--text-2); }
 .meta-key { color: var(--text-3); }
-.finding-summary { margin-block: 8px 0; }
+.finding-summary { margin-block: 8px 0; max-width: 72ch; }
 .belief-slot { margin-block: 12px 0; }
 .belief-label {
   display: block;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-2);
   margin-block-end: 4px;
@@ -323,8 +696,29 @@ main.app-main { max-width: 1100px; }
 .evidence-keys { margin: 0; padding-inline-start: 1.2rem; }
 .evidence-keys code { color: var(--text-1); }
 
+/* Capability-selection filter status inside D (polite live region). */
+.d-filter-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 0 8px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+}
+.d-filter-status:empty { display: none; }
+.d-filter-status button {
+  padding: 4px 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 /* --------------------------------------------------------------------------
-   E — interactive findings app: search, toolbar, list rows, empty, pagination.
+   E — "Explore everything": charts, search, sort, filter chips, list,
+   pagination, exports.
    -------------------------------------------------------------------------- */
 .findings-head {
   display: flex;
@@ -334,58 +728,115 @@ main.app-main { max-width: 1100px; }
   margin-block-end: 8px;
 }
 .findings-head h2 { margin: 0; }
+.filter-count {
+  color: var(--text-2);
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
 
-.search-box { margin-block: 12px; }
+.charts-title { margin-block: 0 4px; }
+
+.search-box { margin-block: 16px 12px; }
 .search-box__label {
   display: block;
   margin-block-end: 4px;
-  color: var(--text-3);
-  font-size: 0.72rem;
+  color: var(--text-2);
+  font-size: 0.8125rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 .search-box__input {
   width: 100%;
+  max-width: 420px;
   padding: 8px 12px;
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
   border-radius: 2px;
   color: var(--text-1);
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
-.sort-box { margin-block: 12px; }
+.sort-box { margin-block: 0 12px; }
 .sort-box__select {
-  width: 100%;
   padding: 8px 12px;
   background: var(--surface-2);
   border: 1px solid var(--border-strong);
   border-radius: 2px;
   color: var(--text-1);
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .findings-tools {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-block: 12px;
+  margin-block: 16px 12px;
 }
 .findings-tools button {
-  padding: 4px 10px;
+  padding: 6px 12px;
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: 6px;
   color: var(--text-2);
-  font-size: 0.8rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
-.findings-tools button:hover { border-color: var(--accent-hover); color: var(--accent-hover); }
+.findings-tools button:hover { border-color: var(--border-strong); color: var(--accent-hover); }
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-block: 0 16px;
+}
+.filter-group { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.filter-group__label {
+  margin-inline-end: 4px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  align-self: center;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+}
+.filter-chip:hover { border-color: var(--border-strong); }
+.filter-chip.is-active {
+  background: var(--surface-3);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+.filter-chip .status-glyph { width: 12px; height: 12px; }
+
+.filter-clear {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.filter-clear:disabled { opacity: 0.45; text-decoration: none; }
 
 .findings-list { margin-block-start: 12px; }
+
+/* Print-only unpaginated findings list: hidden on screen, shown in print
+   (the @media print override flips it back). */
+.print-list { display: none; }
+
 .finding-row {
   padding: 12px 16px;
   margin-block-end: 12px;
@@ -393,12 +844,47 @@ main.app-main { max-width: 1100px; }
   border: 1px solid var(--border);
   border-inline-start: 3px solid transparent;
   border-radius: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
 }
+
+/* Long unbreakable tokens inside an E row must wrap inside their flex
+   cells instead of forcing the row's min-content width past the viewport. */
+.finding-row .finding-head h3,
+.finding-row .finding-row__title,
+.finding-row .finding-meta,
+.finding-row .meta-item {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.finding-row .finding-row__title { white-space: normal; }
 .finding-row:last-child { margin-block-end: 0; }
 .finding-row.gap, .finding-row.error { border-inline-start-color: var(--state-action); }
 .finding-row.partial { border-inline-start-color: var(--state-incomplete); }
 .finding-row.ok { border-inline-start-color: var(--state-ok); }
 .finding-row.not_licensed, .finding-row.skipped { border-inline-start-color: var(--state-neutral); }
+
+/* The selected finding is the one elevated surface. */
+.finding-row.is-selected {
+  background: var(--grad-raised);
+  box-shadow: var(--shadow-2);
+  border-radius: 10px;
+}
+
+/* Finding titles are real buttons (keyboard selection), styled like headings. */
+.finding-row__title {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--text-1);
+  font-size: 1.06rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: start;
+}
+.finding-row__title:hover { color: var(--accent-hover); }
 
 .empty-state {
   margin-block: 12px;
@@ -417,18 +903,18 @@ main.app-main { max-width: 1100px; }
   margin-block-start: 12px;
 }
 .pagination .pager {
-  padding: 4px 10px;
+  padding: 6px 12px;
   background: var(--surface-1);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: 6px;
   color: var(--text-2);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 .pagination .pager:disabled { opacity: 0.45; }
 .pagination__info {
   color: var(--text-2);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
 }
 .pagination__size {
@@ -436,7 +922,7 @@ main.app-main { max-width: 1100px; }
   align-items: center;
   gap: 4px;
   color: var(--text-2);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
 }
 .pagination__size select {
   padding: 4px 6px;
@@ -445,7 +931,141 @@ main.app-main { max-width: 1100px; }
   border-radius: 2px;
   color: var(--text-1);
   font-family: inherit;
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------------------
+   Charts — accessible bars with a name, a description, and a visually-hidden
+   equivalent table. Bars are cross-filter buttons (overlay hits, one per
+   row) inside the figure.
+   -------------------------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 24px;
+  align-items: start;
+  margin-block: 16px 24px;
+}
+.chart {
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 16px;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.chart figcaption {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-1);
+  margin-block-end: 8px;
+}
+.chart__body { position: relative; min-width: 0; }
+.chart__visual { position: relative; min-width: 0; }
+.chart-svg { display: block; width: 100%; height: auto; overflow: hidden; }
+.chart-label, .chart-value {
+  fill: var(--text-2);
+  font-family: var(--font-sans);
+  font-size: 11px;
+}
+.chart-value { fill: var(--text-1); font-variant-numeric: tabular-nums; }
+
+/* Accent never colors chart data: semantic colors for status facets, the
+   neutral raised surface for non-semantic facets (workload, mode). */
+.chart-bar { fill: var(--surface-4); }
+.chart-bar--gap, .chart-bar--error { fill: var(--state-action); }
+.chart-bar--partial { fill: var(--state-incomplete); }
+.chart-bar--ok { fill: var(--state-ok); }
+.chart-bar--not_licensed, .chart-bar--skipped { fill: var(--state-neutral); }
+.chart-bar--confidence-high { fill: var(--state-ok); }
+.chart-bar--confidence-medium { fill: var(--state-incomplete); }
+.chart-bar--confidence-low { fill: var(--state-action); }
+
+.chart-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 8.5rem) 1fr 2rem;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+}
+.chart-row__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chart-row__label .workload-icon { width: 16px; height: 16px; }
+.chart-row__track {
+  min-width: 0;
+  height: 16px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.chart-row__bar {
+  height: 100%;
+  background: var(--surface-4);
+  border-radius: 999px;
+  transform-origin: inline-start;
+}
+.chart-row__value {
+  color: var(--text-1);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/* Cross-filter overlay buttons: one per bar row, siblings of the role=img
+   visual so they stay in the accessibility tree. */
+.chart-hits { position: absolute; inset: 0; }
+.chart-hit {
+  position: absolute;
+  inset-inline: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+}
+.chart-hit:hover { border-color: var(--border-strong); }
+.chart-hit[aria-pressed="true"] { border-color: var(--accent); }
+.chart-hit.is-related { box-shadow: inset 0 0 0 1px var(--accent); }
+
+.chart-empty {
+  margin: 0;
+  padding: 16px;
+  color: var(--text-2);
+  border: 1px dashed var(--border-strong);
+  text-align: center;
 }
 
 /* --------------------------------------------------------------------------
@@ -463,146 +1083,18 @@ th { color: var(--text-2); font-weight: 600; }
 th.num, td.num { text-align: end; font-variant-numeric: tabular-nums; }
 td code { color: var(--text-1); }
 
+.app-tech { margin-block-start: 24px; }
+
 /* --------------------------------------------------------------------------
    Footer.
    -------------------------------------------------------------------------- */
 footer {
-  max-width: 1100px;
-  margin-block: 16px;
+  max-width: 1160px;
+  margin-block: 16px 32px;
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: 32px;
   color: var(--text-3);
-  font-size: 0.85rem;
-}
-
-/* --------------------------------------------------------------------------
-   Reveal — content is fully server-rendered; app.js adds ``body.revealed``,
-   which opts the staggered "coming into focus" reveal in. Reduced motion skips
-   it via the foundation's reduced-motion block.
-   -------------------------------------------------------------------------- */
-body.revealed main > section { animation: v2-section-reveal 300ms ease-out both; }
-body.revealed main > section:nth-of-type(2) { animation-delay: 40ms; }
-body.revealed main > section:nth-of-type(3) { animation-delay: 80ms; }
-body.revealed main > section:nth-of-type(4) { animation-delay: 120ms; }
-
-/* Constellation settle — points rest in their final server-rendered positions
-   until app.js marks the body settled in reveal(); each point then fades in
-   with the deterministic per-point animation-delay the partial already
-   inlined. Reduced motion never gets the class, keeping the instant final
-   state. */
-@keyframes v2-constellation-settle {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.constellation-point {
-  opacity: 1;
-  transform: none;
-  animation: none;
-}
-
-body.constellation-settled .constellation-point {
-  opacity: 0;
-  transform: translateY(8px);
-  animation: v2-constellation-settle 400ms ease-out forwards;
-}
-
-/* --------------------------------------------------------------------------
-   Charts — accessible inline-SVG bars with a name, a description, and a
-   visually-hidden equivalent table for nonvisual consumers.
-   -------------------------------------------------------------------------- */
-.sr-only {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-.charts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
-  align-items: start;
-}
-.chart {
-  margin: 0;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  padding: 12px;
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-.chart figcaption {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-1);
-  margin-block-end: 8px;
-}
-.chart__body { min-width: 0; }
-.chart-svg { display: block; width: 100%; height: auto; overflow: hidden; }
-.chart-label, .chart-value {
-  fill: var(--text-2);
-  font-family: var(--font-sans);
-  font-size: 11px;
-}
-.chart-value { fill: var(--text-1); font-variant-numeric: tabular-nums; }
-.chart-bar { fill: var(--accent); }
-.chart-bar--gap, .chart-bar--error { fill: var(--state-action); }
-.chart-bar--partial { fill: var(--state-incomplete); }
-.chart-bar--ok { fill: var(--state-ok); }
-.chart-bar--not_licensed, .chart-bar--skipped { fill: var(--state-neutral); }
-.chart-bar--confidence-high { fill: var(--state-ok); }
-.chart-bar--confidence-medium { fill: var(--state-incomplete); }
-.chart-bar--confidence-low { fill: var(--state-action); }
-.chart-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  min-width: 0;
-}
-.chart-row {
-  display: grid;
-  grid-template-columns: minmax(6rem, 8.5rem) 1fr 2rem;
-  align-items: center;
-  gap: 8px;
-  min-height: 1.5rem;
-}
-.chart-row__label {
-  min-width: 0;
-  color: var(--text-2);
-  font-size: 0.78rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.chart-row__track {
-  min-width: 0;
-  height: 16px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.chart-row__bar { height: 100%; background: var(--accent); border-radius: 2px; }
-.chart-row__value {
-  color: var(--text-1);
-  font-size: 0.78rem;
-  font-variant-numeric: tabular-nums;
-  text-align: end;
-}
-.chart-empty {
-  margin: 0;
-  padding: 16px;
-  color: var(--text-2);
-  border: 1px dashed var(--border-strong);
-  text-align: center;
+  font-size: 0.8125rem;
 }
 
 /* --------------------------------------------------------------------------
@@ -612,30 +1104,313 @@ body.constellation-settled .constellation-point {
 h3,
 code,
 p,
+li,
 .app-header .meta,
-.finding-row {
+.finding-row,
+.opening-identity,
+.opening-meta {
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
 /* --------------------------------------------------------------------------
-   Print-only unpaginated findings list (complete set, hidden on screen).
+   11. Motion contract — the signature opening choreography, opt-in via the
+   ``body.revealed`` class added by app.js (reduced motion never gets it, so
+   the server-rendered final state stays instant). Only transform + opacity
+   animate appearance (plus stroke-dashoffset for the gauge, driven in JS).
    -------------------------------------------------------------------------- */
-@media screen {
-  .print-list { display: none; }
+@keyframes opening-rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes dist-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Stage 1: org/tenant identity, 200ms, t=0. */
+body.revealed [data-opening-stage="identity"] {
+  opacity: 0;
+  animation: opening-rise 200ms ease-out both;
+}
+/* Stage 2: assessment meta, 200ms, delay 60ms. */
+body.revealed [data-opening-stage="meta"] {
+  opacity: 0;
+  animation: opening-rise 200ms ease-out 60ms both;
+}
+/* Supporting stat strip rides the distribution beat: 250ms, delay 200ms. */
+body.revealed [data-opening-stage="stats"] {
+  opacity: 0;
+  animation: opening-rise 250ms ease-out 200ms both;
+}
+/* Stage 4b: distribution segments fill left-to-right, 600ms, delay 200ms
+   (inline per-segment delays stagger the left-to-right read). */
+body.revealed .dist-seg {
+  transform: scaleX(0);
+  animation: dist-fill 600ms ease-out both;
+}
+/* Stage 5: distribution labels fade + rise, 250ms, 60ms stagger (inline). */
+body.revealed .dist-item {
+  opacity: 0;
+  animation: opening-rise 250ms ease-out both;
+}
+/* Stage 6: implication sentence, 300ms, delay 380ms. */
+body.revealed [data-opening-stage="implication"] {
+  opacity: 0;
+  animation: opening-rise 300ms ease-out 380ms both;
+}
+/* Stage 7: top actions fade + rise, 300ms, 80ms stagger (inline). */
+body.revealed .opening-action {
+  opacity: 0;
+  animation: opening-rise 300ms ease-out both;
+}
+
+/* Constellation resolve: nodes transition neutral -> status color column by
+   column (450ms, 50ms per column, driven by app.js removing is-resolving). */
+
+/* Below-fold section reveal: one-shot IntersectionObserver adds is-revealed;
+   the pre-reveal state exists only while app.js has marked the section. */
+main section.is-pending-reveal {
+  opacity: 0;
+  transform: translateY(6px);
+}
+main section.is-revealed {
+  opacity: 1;
+  transform: none;
+  transition: opacity 250ms ease-out, transform 250ms ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   11. Reduced motion — the instant final state: duration 0, delay 0, no
+   transform offset ever applied; opening elements, segments, bars, nodes,
+   and sections appear fully resolved with zero information loss.
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  [data-opening-stage],
+  .dist-item,
+  .dist-seg,
+  .opening-action,
+  main section.is-pending-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .constellation-point { opacity: 1 !important; transform: none !important; }
+  details.tech summary .caret { transform: none !important; }
+}
+
+/* Reduced motion + JS: the shared foundation keeps node color neutral until
+   body.revealed opts the resolve animation in; under reduced motion app.js
+   never adds revealed, so the instant final state restores the status
+   colors directly (zero information loss, DESIGN_V2 11). */
+body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral)); }
+
+/* --------------------------------------------------------------------------
+   14. Forced colors — chrome collapses to system colors; glyphs, node rings,
+   and chart bars fall back to CanvasText; brand marks keep their shapes via
+   forced-color-adjust: auto.
+   -------------------------------------------------------------------------- */
+@media (forced-colors: active) {
+  .app-header,
+  .app-nav,
+  main section,
+  .hero,
+  .constellation,
+  .capability-row,
+  .move-item,
+  .finding-row,
+  .chart,
+  .opening-action,
+  details.tech {
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  .app-nav {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .posture-figure,
+  .opening-identity,
+  .move-index,
+  .app-nav__link[aria-current="true"],
+  .workload-tab.is-active { color: CanvasText; }
+
+  .posture-gauge__arc { stroke: CanvasText; }
+  .posture-gauge__track { stroke: CanvasText; }
+
+  .dist-seg,
+  .chart-row__bar,
+  .chart-bar { background: CanvasText; fill: CanvasText; }
+
+  .constellation-core { border-color: CanvasText; background: Canvas; }
+  .constellation-core__fill { background: CanvasText; }
+
+  .dist-item.status-gap,
+  .dist-item.status-partial,
+  .dist-item.status-ok,
+  .dist-item.status-not_licensed { color: CanvasText; }
+
+  .stat__num { color: CanvasText; }
+
+  .workload-icon { forced-color-adjust: auto; }
+
+  .finding-row.gap,
+  .finding-row.error,
+  .finding-row.partial,
+  .finding-row.ok,
+  .finding-row.not_licensed,
+  .finding-row.skipped,
+  .finding.gap,
+  .finding.error,
+  .finding.partial,
+  .finding.ok,
+  .finding.not_licensed,
+  .finding.skipped { border-inline-start-color: CanvasText; }
+
+  .exposure-rail { border-inline-start-color: CanvasText; background: Canvas; }
+
+  :focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   15. Print — light inversion, expanded disclosures, textual chart
+   fallbacks, technical chrome hidden, findings always complete.
+   -------------------------------------------------------------------------- */
 @media print {
-  .search-box, .sort-box, .filter-bar, .pagination, .findings-head .filter-count,
-  .findings-tools { display: none; }
-  .findings-list { display: none; }
-  .print-list { display: block; }
-  .finding-row, .print-finding {
+  .app-nav,
+  .nav-sentinel,
+  .search-box,
+  .sort-box,
+  .filter-bar,
+  .pagination,
+  .findings-tools,
+  .d-filter-status,
+  .findings-head .filter-count { display: none !important; }
+
+  .findings-list { display: none !important; }
+  .print-list { display: block !important; }
+
+  /* Animated pre-states must never print hidden. */
+  main section.is-pending-reveal,
+  [data-opening-stage],
+  .dist-item,
+  .dist-seg,
+  .opening-action {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Capability-selection filtering must never hide findings in print. */
+  .finding-wrap[hidden] { display: block !important; }
+
+  .hero {
+    background: var(--print-hero) !important;
+    box-shadow: none !important;
+  }
+
+  .opening-action { border-color: var(--print-border) !important; }
+
+  /* Radial gauge is replaced by its accessible description line. */
+  .posture-gauge__viz { display: none; }
+  .posture-gauge__print { display: block; color: var(--accent-print) !important; }
+
+  /* Segments and brand marks keep their colors on paper. */
+  .dist-seg,
+  .dist-seg--gap,
+  .dist-seg--partial,
+  .dist-seg--ok,
+  .dist-seg--not_licensed,
+  .workload-icon {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .constellation {
+    overflow: visible;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    border: 1px solid var(--print-border) !important;
+    background: var(--print-paper) !important;
+  }
+
+  /* Every chart's sr-only data table becomes the visible print fallback. */
+  [data-chart-table] {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 8px 0 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    clip: auto !important;
+    clip-path: none !important;
+    white-space: normal !important;
+    border: 0;
+  }
+
+  .chart { background: var(--print-paper) !important; }
+
+  .finding-row, .print-finding, .capability-row, .move-item, .chart, .hero {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-  .status-marker.gap, .status-marker.error { color: var(--print-action) !important; }
-  .status-marker.partial { color: var(--print-incomplete) !important; }
-  .status-marker.ok { color: var(--print-ok) !important; }
-  .status-marker.not_licensed, .status-marker.skipped { color: var(--print-neutral) !important; }
+
+  footer { display: none !important; }
+}
+
+/* --------------------------------------------------------------------------
+   4. Responsive — 900px: the two-column hero collapses and the nav wraps;
+   640px: gutters halve, the hero figure scales to 2.5rem, the constellation
+   scrolls horizontally with a visible affordance, tables scroll.
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-figure, .hero-side { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  main.app-main,
+  header.app-header,
+  footer,
+  .app-nav__bar { padding-inline: 16px; }
+
+  .app-main__content > section { padding-inline: 16px; }
+  section.hero { padding-block: 24px; padding-inline: 16px; }
+  .posture-figure { font-size: 2.5rem; }
+
+  .constellation {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 150px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-block-end: 12px;
+  }
+  .constellation::-webkit-scrollbar { height: 6px; }
+  .constellation::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
+
+  .table-scroll { overflow-x: auto; }
+
+  .stat-strip { gap: 8px 16px; }
+}
+
+@media (pointer: coarse) {
+  .chart-row { min-height: 44px; }
 }

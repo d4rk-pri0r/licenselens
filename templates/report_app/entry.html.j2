@@ -1,5 +1,17 @@
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
-{%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation, capability_cards -%}
+{%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation -%}
+{#
+  Bundle entry (report app v2) — the JS-rich renderer per DESIGN_V2.md.
+
+  Consumes the shared report context (build_report_context); the signature
+  opening binds ``opening`` (build_opening) when the parallel task has wired
+  it in, and falls back to the model fields directly when it is absent, so
+  every opening value stays data-driven with no literal numbers. The
+  constellation macro call keeps its exact shared shape; the capability
+  detail list is rendered here (progressive disclosure), and the technical
+  ledger is rendered here with h3 headings (the shared technical partial is
+  single-file-only, keeping exactly one h2 per section A-E).
+#}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,10 +25,39 @@
   <link rel="stylesheet" href="{{ assets_dir }}/{{ css_name }}" />
 </head>
 <body>
+  {#- Opening data, data-driven at every stage (no literal numbers). #}
+  {%- set opening = opening or {} -%}
+  {%- set o_identity = opening.get('assessment_identity') or {} -%}
+  {%- set o_tenant = opening.get('tenant_name') or result.tenant_display_name or result.tenant_id or 'demo / dry-run' -%}
+  {%- set o_tenant_id = opening.get('tenant_id') or result.tenant_id -%}
+  {%- set o_tool = o_identity.get('tool_display_name') or result.tool_display_name or 'Security License Lens' -%}
+  {%- set o_version = o_identity.get('version') or result.version -%}
+  {%- set o_scanned = opening.get('scanned_at') or result.display_scanned_at -%}
+  {%- set o_pct = opening.get('realized_percent') -%}
+  {%- if o_pct is not number -%}{%- set o_pct = posture.realized_percent -%}{%- endif -%}
+  {%- set o_pct = [0, [o_pct, 100] | min] | max -%}
+  {%- set o_sentence = opening.get('realized_sentence') or posture.realized_sentence -%}
+  {%- set GAUGE_R = 52 -%}
+  {%- set GAUGE_C = (2 * 3.141592653589793 * GAUGE_R) | round(2) -%}
+  {%- set GAUGE_OFFSET = (GAUGE_C * (1 - o_pct / 100)) | round(2) -%}
+  {%- set mode_str = result.scan_mode -%}
+  {%- if result.auth_mode and result.auth_mode != result.scan_mode -%}{%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}{%- endif -%}
+  {%- set packs = result.packs_scanned | join(', ') -%}
+  {%- set rail_items = [] -%}
+  {%- for f in findings -%}
+    {%- if f.check_id in result.exposed_check_ids or f.status in ['gap', 'error'] -%}
+      {%- set _ = rail_items.append(f) -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- set cwl = {} -%}
+  {%- for e in constellation -%}
+    {%- set _ = cwl.update({e.id: e.workload or 'general'}) -%}
+  {%- endfor -%}
+
   <header class="app-header">
     <div class="app-header__bar">
       <div class="logo">
-        <div class="logo-mark"></div>
+        <div class="logo-mark" aria-hidden="true"></div>
         <div>
           <h1>Security License Lens</h1>
           <p class="tagline">{{ tagline }}</p>
@@ -25,7 +66,7 @@
       <div class="meta">
         <div class="meta-row">Version <code>{{ result.version }}</code></div>
         <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
-        {% set mode_str = result.scan_mode %}{% if result.auth_mode and result.auth_mode != result.scan_mode %}{% set mode_str = mode_str ~ ' / ' ~ result.auth_mode %}{% endif %}<div class="meta-row">Mode <code>{{ mode_str }}</code></div>
+        <div class="meta-row">Mode <code>{{ mode_str }}</code></div>
         <div class="meta-row">Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
       </div>
     </div>
@@ -41,107 +82,319 @@
     {% endif %}
   </header>
 
-  <nav class="workload-nav" aria-label="Workload navigation" data-workload-nav>
-    <a class="workload-tab is-active" href="#findings" data-nav="all" aria-current="page">All</a>
+  <nav class="app-nav" aria-label="Report navigation" data-app-nav>
+    <div class="app-nav__bar">
+      <div class="app-nav__sections" data-section-nav>
+        <a class="app-nav__link" href="#section-a" data-section-link="a" aria-current="true">Where you stand</a>
+        <a class="app-nav__link" href="#section-b" data-section-link="b">What you're paying for</a>
+        <a class="app-nav__link" href="#section-c" data-section-link="c">What matters most</a>
+        <a class="app-nav__link" href="#section-d" data-section-link="d">Why LicenseLens believes this</a>
+        <a class="app-nav__link" href="#section-e" data-section-link="e">Explore everything</a>
+      </div>
+      <div class="app-nav__workloads" data-workload-nav role="group" aria-label="Workload navigation">
+        <a class="workload-tab is-active" href="#findings" data-nav="all" aria-current="page">All</a>
+      </div>
+    </div>
   </nav>
+  <div class="nav-sentinel" data-nav-sentinel aria-hidden="true"></div>
 
   <main class="app-main" id="main">
     <div class="app-main__content">
-      {# A - Where you stand #}
-      <section class="hero">
-        <h2>Where you stand</h2>
-        <p class="display-line">Your security investment coming into focus</p>
-        <div class="posture-figure"><span class="posture-digits">{{ posture.realized_percent }}</span>% realized</div>
-        <p class="posture-sentence">{{ posture.realized_sentence }}.</p>
-        <p class="posture-sentence">
-          <strong>{{ result.owned_capabilities | length }}</strong> Licensed capabilities detected
-          <span aria-hidden="true">&middot;</span>
-          <strong>{{ rollup.you_own }}</strong> Prioritized capabilities
-          <span class="label">({{ result.packs_scanned | join(', ') }} priority packs)</span>
-        </p>
-        <div class="rollup">
-          <div class="rollup-cell">
-            <span class="metric-figure-secondary">{{ rollup.you_own }}</span>
-            <span class="label">You own</span>
-          </div>
-          <div class="rollup-cell">
-            <span class="metric-figure-secondary status-ok">{{ rollup.fully_working }}</span>
-            <span class="label">Fully working</span>
-            <span class="label">of {{ rollup.you_own }} prioritized capabilities</span>
-          </div>
-          <div class="rollup-cell">
-            <span class="metric-figure-secondary status-gap">{{ rollup.needs_attention }}</span>
-            <span class="label">Need attention</span>
-          </div>
-          <div class="rollup-cell">
-            <span class="metric-figure-secondary status-partial">{{ rollup.partly_set_up }}</span>
-            <span class="label">Partly set up</span>
-          </div>
-          <div class="rollup-cell">
-            <span class="metric-figure-secondary status-not-licensed">{{ rollup.not_licensed }}</span>
-            <span class="label">Not in your plan</span>
-          </div>
-        </div>
-        <div class="tiles">
-          {% for status in status_order %}
-          <div class="tile">
-            <div class="n">{{ counts.get(status, 0) }}</div>
-            <div class="l">
-              {{ prim.PRESENTATION.get(status, status) }}
-              <small>{{ status }}</small>
+      {# A - Where you stand: the signature opening sequence, hierarchy-first. #}
+      <section id="section-a" class="hero" aria-labelledby="a-title">
+        <p class="kicker">Overview</p>
+        <h2 id="a-title">Where you stand</h2>
+        <div class="opening">
+          <p class="opening-identity" data-opening-stage="identity">
+            <span class="opening-identity__tenant">{{ o_tenant }}</span>
+            {% if o_tenant_id and o_tenant_id != o_tenant %}
+            <span class="opening-identity__id mono">{{ o_tenant_id }}</span>
+            {% endif %}
+            <span aria-hidden="true">&mdash;</span>
+            <span>{{ o_tool }} assessment</span>
+          </p>
+          <p class="opening-meta" data-opening-stage="meta">
+            <span>Version <code>{{ o_version }}</code></span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Scanned <code>{{ o_scanned }}</code></span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Mode <code>{{ mode_str }}</code></span>
+            <span aria-hidden="true">&middot;</span>
+            <span>{% if packs %}<code>{{ packs }}</code> priority packs{% else %}no priority packs{% endif %}</span>
+          </p>
+
+          <div class="hero-grid">
+            <div class="hero-figure">
+              <div class="posture-figure" data-realized="{{ o_pct }}">
+                <span class="posture-digits">{{ o_pct }}</span><span class="posture-unit">% realized</span>
+              </div>
+              <figure class="posture-gauge">
+                <div class="posture-gauge__viz">
+                  <svg class="posture-gauge__svg" viewBox="0 0 120 120" aria-hidden="true" focusable="false">
+                    <circle class="posture-gauge__track" cx="60" cy="60" r="{{ GAUGE_R }}"></circle>
+                    <circle class="posture-gauge__arc" data-gauge-arc cx="60" cy="60" r="{{ GAUGE_R }}"
+                            stroke-dasharray="{{ GAUGE_C }}" stroke-dashoffset="{{ GAUGE_OFFSET }}"></circle>
+                  </svg>
+                </div>
+                <figcaption class="sr-only">Realization</figcaption>
+                <p class="sr-only" id="posture-gauge-desc">Realization: {{ o_pct }}% of prioritized capabilities are fully working.</p>
+                <p class="posture-gauge__print">{{ o_pct }}% realized</p>
+              </figure>
+              <p class="posture-sentence">{{ o_sentence }}.</p>
+            </div>
+
+            <div class="hero-side">
+              <div class="stat-strip" data-opening-stage="stats">
+                <span class="stat">
+                  <span class="stat__num">{{ rollup.you_own }}</span>
+                  <span class="stat__label">You own</span>
+                </span>
+                <span class="stat status-ok">
+                  <span class="stat__num">{{ rollup.fully_working }}</span>
+                  <span class="stat__label">Fully working</span>
+                </span>
+                <span class="stat status-gap">
+                  <span class="stat__num">{{ rollup.needs_attention }}</span>
+                  <span class="stat__label">Need attention</span>
+                </span>
+                <span class="stat status-partial">
+                  <span class="stat__num">{{ rollup.partly_set_up }}</span>
+                  <span class="stat__label">Partly set up</span>
+                </span>
+                <span class="stat status-not_licensed">
+                  <span class="stat__num">{{ rollup.not_licensed }}</span>
+                  <span class="stat__label">Not in plan</span>
+                </span>
+              </div>
+
+              <figure class="dist-figure" data-opening-stage="dist">
+                <div class="dist-bar" role="img" aria-labelledby="dist-title" aria-describedby="dist-desc">
+                  <span class="dist-seg dist-seg--gap" style="flex-grow: {{ rollup.needs_attention }}; animation-delay: 200ms"></span>
+                  <span class="dist-seg dist-seg--partial" style="flex-grow: {{ rollup.partly_set_up }}; animation-delay: 260ms"></span>
+                  <span class="dist-seg dist-seg--ok" style="flex-grow: {{ rollup.fully_working }}; animation-delay: 320ms"></span>
+                  {% if rollup.not_licensed > 0 %}
+                  <span class="dist-seg dist-seg--not_licensed" style="flex-grow: {{ rollup.not_licensed }}; animation-delay: 380ms"></span>
+                  {% endif %}
+                  {% if rollup.you_own == 0 %}
+                  <span class="dist-seg dist-seg--empty" style="flex-grow: 1"></span>
+                  {% endif %}
+                </div>
+                <figcaption id="dist-title" class="sr-only">Operational distribution</figcaption>
+                <p id="dist-desc" class="sr-only">Operational distribution: {{ rollup.needs_attention }} action required, {{ rollup.partly_set_up }} incomplete, {{ rollup.fully_working }} operational{% if rollup.not_licensed > 0 %}, {{ rollup.not_licensed }} not licensed{% endif %}.</p>
+                <table class="sr-only" data-dist-table>
+                  <caption>Operational distribution</caption>
+                  <thead>
+                    <tr><th scope="col">Status</th><th scope="col">Count</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Action required</td><td>{{ rollup.needs_attention }}</td></tr>
+                    <tr><td>Incomplete</td><td>{{ rollup.partly_set_up }}</td></tr>
+                    <tr><td>Operational</td><td>{{ rollup.fully_working }}</td></tr>
+                    {% if rollup.not_licensed > 0 %}
+                    <tr><td>Not licensed</td><td>{{ rollup.not_licensed }}</td></tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </figure>
+
+              <ul class="dist-items" data-opening-stage="dist-items">
+                <li class="dist-item status-gap" style="animation-delay: 250ms">
+                  {{ prim.status_glyph('gap') }}
+                  <span class="dist-item__word">Action required</span>
+                  <span class="dist-item__count">{{ rollup.needs_attention }}</span>
+                </li>
+                <li class="dist-item status-partial" style="animation-delay: 310ms">
+                  {{ prim.status_glyph('partial') }}
+                  <span class="dist-item__word">Incomplete</span>
+                  <span class="dist-item__count">{{ rollup.partly_set_up }}</span>
+                </li>
+                <li class="dist-item status-ok" style="animation-delay: 370ms">
+                  {{ prim.status_glyph('ok') }}
+                  <span class="dist-item__word">Operational</span>
+                  <span class="dist-item__count">{{ rollup.fully_working }}</span>
+                </li>
+                {% if rollup.not_licensed > 0 %}
+                <li class="dist-item status-not_licensed" style="animation-delay: 430ms">
+                  {{ prim.status_glyph('not_licensed') }}
+                  <span class="dist-item__word">Not licensed</span>
+                  <span class="dist-item__count">{{ rollup.not_licensed }}</span>
+                </li>
+                {% endif %}
+              </ul>
             </div>
           </div>
-          {% endfor %}
+
+          <div class="opening-implication" data-opening-stage="implication" style="animation-delay: 380ms">
+            {% if rollup.you_own > 0 and rollup.needs_attention > 0 %}
+            <p><strong>{{ rollup.needs_attention }}</strong> of your <strong>{{ rollup.you_own }}</strong> priority capabilities need attention.</p>
+            {% elif rollup.you_own > 0 %}
+            <p>All <strong>{{ rollup.you_own }}</strong> of your priority capabilities are operational.</p>
+            {% else %}
+            <p>No prioritized capabilities were assessed in this scan.</p>
+            {% endif %}
+          </div>
+
+          <div class="opening-actions" data-opening-stage="actions">
+            {% for move in moves[:3] %}
+            <a class="opening-action" href="#move-{{ loop.index }}" style="animation-delay: {{ 440 + loop.index0 * 80 }}ms">
+              <span class="opening-action__title">{{ move.title }}</span>
+              {% if move.effort_label %}<span class="opening-action__effort">{{ move.effort_label | lower }}</span>{% endif %}
+            </a>
+            {% endfor %}
+          </div>
+
+          {% if result.has_exposed or rail_items %}
+          <div class="exposure-rail">
+            <p class="exposure-rail__head">Exposed</p>
+            <ul>
+              {% for f in rail_items[:3] %}
+              <li>{{ f.title }}</li>
+              {% endfor %}
+              {% if rail_items | length > 3 %}
+              <li class="exposure-rail__more">and {{ rail_items | length - 3 }} more</li>
+              {% endif %}
+            </ul>
+          </div>
+          {% endif %}
         </div>
       </section>
 
       {# B - What you're paying for #}
-      <section>
-        <h2>What you're paying for</h2>
+      <section id="section-b" data-reveal data-reveal-index="1" aria-labelledby="b-title">
+        <p class="kicker">Entitlements</p>
+        <h2 id="b-title">What you're paying for</h2>
         <p class="section-help">
           Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
         </p>
-        {{ capability_constellation(constellation) }}
-        {{ capability_cards(capabilities, constellation) }}
+        {% if result.subscribed_skus %}
+        <div class="sku-strip">
+          <table class="sku-table">
+            <caption class="sr-only">Subscribed SKUs</caption>
+            <thead>
+              <tr>
+                <th scope="col">Part number</th>
+                <th scope="col" class="num">Consumed</th>
+                <th scope="col" class="num">Prepaid</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sku in result.subscribed_skus %}
+              <tr>
+                <td><code>{{ sku.sku_part_number }}</code></td>
+                <td class="num">{{ sku.consumed_units or 0 }}</td>
+                <td class="num">{{ sku.prepaid_units or '—' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+        {{ capability_constellation(constellation, workload_icon_urls=workload_icon_urls) }}
+        {% if capabilities %}
+        <div class="capability-list" data-capability-list>
+          {% for card in capabilities %}
+          {% set status = card.status or 'not_licensed' %}
+          {% set wl = cwl.get(card.id, 'general') %}
+          <article class="capability-row" data-capability="{{ card.id }}" data-status="{{ status }}" data-workload="{{ wl }}">
+            <button type="button" class="capability-row__select" data-capability-select="{{ card.id }}" aria-pressed="false">
+              {% if workload_icon_urls.get(wl) %}
+              <img class="workload-icon" src="{{ workload_icon_urls[wl] }}" width="18" height="18" alt="" decoding="async" aria-hidden="true" />
+              {% endif %}
+              <span class="capability-row__name">{{ card.plain_name }}</span>
+              {{ prim.status_marker(status) }}
+            </button>
+            {% if card.outcome %}
+            {% set sentences = card.outcome.split('. ') %}
+            <p class="capability-row__outcome">{{ sentences[0] }}{% if sentences | length > 1 and not sentences[0].endswith('.') %}.{% endif %}</p>
+            {% endif %}
+            <details class="tech">
+              <summary>Why this capability matters</summary>
+              <p><span class="label">Why it matters</span> {{ card.why_it_matters or 'Not reported' }}</p>
+              {% if card.if_unused %}<p><span class="label">If left off</span> {{ card.if_unused }}</p>{% endif %}
+              <div class="capability-row__provenance">
+                <div><span class="label">License</span> <span class="mono">{{ card.matched_skus | join(', ') or 'Not reported' }}</span></div>
+                <div><span class="label">Service plan</span> <span class="mono">{{ card.matched_service_plans | join(', ') or 'No matching service plan reported' }}</span></div>
+              </div>
+            </details>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="caption">No licensed capabilities were resolved from entitlements.</p>
+        {% endif %}
       </section>
 
-      {# C - What matters most #}
-      {% include "report/v2/_v2_moves.html.j2" %}
+      {# C - What matters most: the prioritized top moves, a numbered sequence. #}
+      <section id="section-c" data-reveal data-reveal-index="2" aria-labelledby="c-title">
+        <p class="kicker">Priorities</p>
+        <h2 id="c-title">What matters most</h2>
+        <p class="section-help">
+          Ranked by security impact, evidence confidence, and estimated effort.
+        </p>
+        {% if moves %}
+        <ol class="move-list">
+          {% for move in moves %}
+          <li class="move-item" id="move-{{ loop.index }}">
+            <span class="move-index mono" aria-hidden="true">{{ '%02d' | format(loop.index) }}</span>
+            <div class="move-body">
+              <div class="move-head">
+                <strong class="move-title">{{ move.title }}</strong>
+                {% if move.effort_label %}<span class="move-effort">{{ move.effort_label | lower }}</span>{% endif %}
+              </div>
+              {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
+              {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
+              {% if move.check_ids %}<p class="move-ids">Checks: <span class="mono">{{ move.check_ids | join(', ') }}</span></p>{% endif %}
+              {% if move.deep_link %}<p class="move-link"><a href="{{ move.deep_link }}">Open the admin page</a></p>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+        <p class="move-note">Effort is a rough guide, not a quote.</p>
+        {% else %}
+        <p class="caption">No prioritized moves were produced by this scan.</p>
+        {% endif %}
+      </section>
 
-      {# D - Why LicenseLens believes this (server-rendered belief blocks) #}
-      <section>
-        <h2>Why LicenseLens believes this</h2>
+      {# D - Why LicenseLens believes this (server-rendered belief blocks). #}
+      <section id="section-d" data-reveal data-reveal-index="3" aria-labelledby="d-title">
+        <p class="kicker">Evidence</p>
+        <h2 id="d-title">Why LicenseLens believes this</h2>
         <p class="section-help">
           Every finding with what we expected, what we observed, and what to do next.
         </p>
+        <div class="d-filter-status" data-d-filter-status role="status" aria-live="polite"></div>
         {% for block in blocks %}
         {% set f = findings[loop.index0] %}
-        {% include "report/v2/_v2_finding_card.html.j2" %}
+        <div class="finding-wrap" data-finding-wrap data-finding="{{ f.check_id }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}">
+          {% include "report/v2/_v2_finding_card.html.j2" %}
+        </div>
         {% endfor %}
+        {% if not blocks %}
+        <p class="caption">No findings were produced by this scan.</p>
+        {% endif %}
       </section>
 
-      {# Findings at a glance (client-rendered charts with data-table equivalents) #}
-      <section class="charts-section" aria-labelledby="charts-title">
-        <h2 id="charts-title">Findings at a glance</h2>
+      {# E - Explore everything: charts, search, filters, findings, deep links. #}
+      <section id="section-e" class="findings-section" data-reveal data-reveal-index="4" aria-labelledby="e-title">
+        <p class="kicker">Explore</p>
+        <h2 id="e-title">Explore everything</h2>
+        <p class="section-help">
+          Search, filter, and page through every assessed control. Select several values in a
+          group to match any of them; different groups combine.
+        </p>
+
+        <h3 class="charts-title">Findings at a glance</h3>
         <p class="section-help">
           Distribution of findings by status, workload, confidence, and evaluation mode.
           Each chart has an equivalent data table for assistive technology.
         </p>
         <div class="charts" data-charts></div>
-      </section>
 
-      {# E - Explore everything (client-rendered, filterable, exportable list) #}
-      <section id="findings" class="findings-section" aria-labelledby="findings-title">
         <div class="findings-head">
-          <h2 id="findings-title">Explore everything</h2>
           <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">
             Showing <strong data-visible-count>0</strong> of <strong data-total-count>0</strong>
           </span>
         </div>
-        <p class="section-help">
-          Search, filter, and page through every assessed control. Select several values in a
-          group to match any of them; different groups combine.
-        </p>
 
         <div class="search-box">
           <label class="search-box__label" for="finding-search">Search findings</label>
@@ -153,7 +406,9 @@
           <label class="search-box__label" for="finding-sort">Sort findings</label>
           <select id="finding-sort" class="sort-box__select">
             <option value="impact" selected>Impact (default)</option>
-            <option value="check_id">Check ID</option>
+            <option value="severity">Severity</option>
+            <option value="effort">Effort</option>
+            <option value="title">Title A–Z</option>
           </select>
         </div>
 
@@ -165,16 +420,79 @@
           <button type="button" data-print>Print</button>
         </div>
 
-        <div class="findings-list" data-findings-list></div>
+        <div class="findings-list" id="findings" data-findings-list></div>
 
         <p class="empty-state" data-empty-state hidden></p>
 
         <nav class="pagination" data-pagination aria-label="Pagination" hidden></nav>
 
         <div class="print-list" data-print-list></div>
-      </section>
 
-      {% include "report/v2/_v2_technical.html.j2" %}
+        {#- Technical ledger: h3 headings keep the h1 -> h2 -> h3 tree intact. #}
+        <details class="tech app-tech">
+          <summary>
+            <span class="caret" aria-hidden="true"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
+            Technical details (product names, SKUs, check IDs)
+          </summary>
+          {% if result.subscribed_skus %}
+          <h3>Subscribed SKUs</h3>
+          <div class="table-scroll" data-table-scroll>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Part number</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Units</th>
+                  <th scope="col">Service plans</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for sku in result.subscribed_skus %}
+                <tr>
+                  <td><code>{{ sku.sku_part_number }}</code></td>
+                  <td>{{ sku.capability_status or "—" }}</td>
+                  <td>{{ sku.consumed_units or 0 }} / {{ sku.prepaid_units or "—" }}</td>
+                  <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" style="color: var(--text-2);">No SKUs collected.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% endif %}
+
+          <h3>Finding reference table</h3>
+          <div class="table-scroll" data-table-scroll>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Status</th>
+                  <th scope="col">Check ID</th>
+                  <th scope="col">Technical title</th>
+                  <th scope="col">Workload</th>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Confidence</th>
+                  <th scope="col">Evaluation mode</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for f in findings %}
+                <tr>
+                  <td>{{ prim.status_marker(f["status"]) }}</td>
+                  <td><code>{{ f["check_id"] }}</code></td>
+                  <td>{{ f["title"] }}</td>
+                  <td>{% if f["workload"] %}{{ f["workload"] }}{% else %}—{% endif %}</td>
+                  <td>{% if f["severity"] %}{{ f["severity"] }}{% else %}—{% endif %}</td>
+                  <td>{{ f["confidence_label"] or "—" }}</td>
+                  <td>{% if f["evaluation_mode"] %}{{ f["evaluation_mode"] }}{% else %}—{% endif %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      </section>
     </div>
   </main>
 

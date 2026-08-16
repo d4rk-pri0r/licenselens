@@ -68,29 +68,55 @@ The HTML report may also embed report JSON for offline interactivity
 
 ## The HTML report
 
-The report is a dark-first, offline-first dashboard — "Ink and Verdigris": a deep
-green-ink charcoal canvas with a verdigris accent. It reads top to bottom in five
-sections:
+The report is a dark, offline-first dashboard — **"Warm Charcoal"**: a warm
+charcoal canvas (`#191714`) with muted, warm-neutral surfaces, a
+champagne-ivory identity accent, and a semantic ramp (red / amber / green)
+reserved for status alone. The only chromatic color in the UI is semantic; blue
+in the page comes from the branded Microsoft workload marks only. It reads top
+to bottom in five sections:
 
-- **Where you stand** — a signature opening line ("Your security investment
-  coming into focus"), the data-driven posture figure (`<percent>% realized`,
-  bound to `capability_rollup.realized_percent` — never hardcoded), a rollup of
-  licensed vs. working vs. gap capabilities, and per-status counts.
-- **What you're paying for** — your owned SKUs and a capability **constellation**:
-  a deterministic, labeled field of every owned capability grouped by workload
-  and colored by status, followed by the capability detail cards.
+- **Where you stand** — the signature opening sequence: org / tenant identity,
+  assessment meta, a count-up posture figure (`<percent>% realized`, bound to
+  `capability_rollup.realized_percent` — never hardcoded), a radial realization
+  gauge with an operational-distribution bar, the most important implication
+  sentence, and the top actions. Section A is hierarchy-first: **one** dominant
+  3.5rem posture figure with a supporting stat strip, not a grid of equal metric
+  cards.
+- **What you're paying for** — your owned SKUs and a capability
+  **constellation**: a deterministic, labeled field of every owned capability
+  grouped by workload and colored by status. Group captions are buttons that
+  cross-filter the page, and every caption and capability row carries the
+  workload's branded Microsoft icon next to its always-visible text label.
 - **What matters most** — the top ranked moves: title, effort, why it matters,
   and the concrete next step with a link to the admin page.
 - **Why LicenseLens believes this** — every finding as a six-slot "belief block"
   (Expected, Observed, Why it matters, Recommended action, Evidence, Admin
   destination) with a technical evidence drawer.
-- **Explore everything** — search, multi-facet filters, sort, pagination, and
-  CSV/JSON export over every assessed control (interactive view).
+- **Explore everything** — search, multi-facet filters, sort, pagination, the
+  data-visualization figures, and CSV/JSON export over every assessed control
+  (interactive view).
 
-- **Offline** — no CDN, external fonts, icon packages, images, or network
-  requests at view time; styling, glyphs, and the constellation are inline.
-- **Print** — inverts to light ink; export filtered findings to JSON or CSV, or
-  print to PDF, without any network or third-party runtime.
+- **Motion is information design** — one signature opening sequence (500–1000ms
+  total: identity fade-in, count-up, gauge draw, staggered reveals), then calm:
+  one-shot section reveals, constellation nodes resolving from neutral to their
+  status color, and ≤150ms interactive feedback. Nothing loops; nothing is
+  ambient; `prefers-reduced-motion` renders the instant final state with zero
+  information loss.
+- **Progressive disclosure** — native `<details>`: summary → explanation →
+  evidence, each level unfolding in place beneath the article. The single-file
+  renderer works with JavaScript disabled.
+- **Offline** — no CDN, external fonts, icon packages, chart libraries, or
+  network requests at view time; styling, glyphs, and the constellation are
+  inline. The single-file report inlines its branded workload icons as SVG; the
+  bundle app ships them as hashed local `<img>` assets. Both renderers always
+  pair each icon with a visible text label.
+- **Print** — inverts to light ink, expands every disclosure, and turns each
+  chart's sr-only data table into a visible textual fallback; export filtered
+  findings to JSON or CSV, or print to PDF, without any network or third-party
+  runtime.
+
+A scrubbed dry-run tenant rendered in the v2 design ships at
+`examples/sample-report/security-license-lens-report.html`.
 
 ## Diffing two scans
 
@@ -116,8 +142,10 @@ tenants first.
 
 ## Offline and privacy-safe
 
-The report loads **no external font, CDN, icon package, image, or network
-request**. Visualizations, glyphs, and styling are all local; a Content-Security-Policy
+The report loads **no external font, CDN, icon package, chart library, or
+network request**. Visualizations, glyphs, and styling are all local — the
+single-file report inlines its branded workload icons as SVG, and the bundle
+ships them as hashed local assets. A Content-Security-Policy
 blocks injected scripts without blocking the app's own assets. Offline rendering
 does not mean the JSON is free of tenant data — see [Sensitivity](#sensitivity)
 above. See [Limitations](limitations.md) for what the report can and cannot tell

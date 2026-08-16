@@ -262,17 +262,30 @@ def test_print_emulation_renders_complete_unpaginated_findings(app_uri: str, pag
     assert metrics["sw"] <= metrics["cw"], f"print horizontal overflow: {metrics}"
 
 
-def test_no_img_and_workload_text_labels(app_uri: str, page: Page) -> None:
-    """v2 retires the v1 ``<img>`` workload-icon allowlist; workloads are text-only."""
+def test_workload_icons_decorative_with_visible_text_labels(app_uri: str, page: Page) -> None:
+    """v2 restores branded workload icons as decorative ``<img>`` elements (owner's
+    #1 complaint) — always aria-hidden, always paired with a visible text label."""
     uri, _ = app_uri(hardening_report())
     page.goto(uri)
     page.wait_for_load_state("load")
 
-    # The strongest form of the v1 "icons are decorative/restrained" guard:
-    # v2 renders no <img> at all, so there is nothing to hide, brand, or misuse.
-    assert page.locator("img").count() == 0, "v2 must not render any <img> element"
+    # hardening_report() spans 5 workloads: one icon per nav tab + one per
+    # constellation caption = 10 <img class="workload-icon"> (verified against
+    # the rendered bundle; hashing/mapping itself is covered by test_report_bundle).
+    assert page.locator("img.workload-icon").count() == 10
 
-    nav_text = page.locator("nav.workload-nav").inner_text()
+    # The workload nav leads with a branded icon for every workload.
+    assert page.locator("[data-workload-nav] img.workload-icon").count() == 5
+
+    # Icons are decorative (aria-hidden, empty alt) — never meaning-bearing alone.
+    assert page.evaluate(
+        """() => Array.from(document.querySelectorAll('img.workload-icon'))
+              .every(img => img.getAttribute('aria-hidden') === 'true'
+                            && img.getAttribute('alt') === '')"""
+    ), "workload icons must be decorative (aria-hidden='true', empty alt)"
+
+    # ...but the visible text labels are always present alongside them.
+    nav_text = page.locator("[data-workload-nav]").inner_text()
     assert "Identity" in nav_text, "workload nav missing visible text labels"
 
 

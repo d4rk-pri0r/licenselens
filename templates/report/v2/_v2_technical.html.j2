@@ -11,9 +11,11 @@
    Status is always shown with the shared v2 status marker (glyph + word
    from _v2_primitives.html.j2); never color-only.
 
-   DESIGN_V2.md sections 5E and 7 (native <details class="tech"> disclosure)
-   plus retained v1 rules (section 9): no emoji, no <img>, no external URLs,
-   empty optional cells render "—" without crashing.
+   DESIGN_V2.md sections 5E and 8 (native <details class="tech"> disclosure
+   holding the technical ledger) plus retained v1 rules (section 9): no
+   emoji, no <img>, no external URLs, empty optional cells render "—"
+   without crashing. Inner table titles are h3 (the summary carries the
+   disclosure's accessible name, never a heading).
    ========================================================================== #}
 
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
@@ -37,9 +39,9 @@
         <span class="caret" aria-hidden="true"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></span>
         Technical details (product names, SKUs, check IDs)
       </summary>
-
+      <div class="tech-body">
       {% if result is defined and result.subscribed_skus %}
-      <h2 style="margin-top: 0.5rem;">Subscribed SKUs</h2>
+      <h3 class="tech-title">Subscribed SKUs</h3>
       <div class="table-scroll" data-table-scroll>
         <table>
           <thead>
@@ -59,14 +61,14 @@
               <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') }}</td>
             </tr>
             {% else %}
-            <tr><td colspan="4" style="color: var(--text-2);">No SKUs collected.</td></tr>
+            <tr><td colspan="4" class="caption">No SKUs collected.</td></tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
       {% endif %}
 
-      <h2 style="margin-top: 1.25rem;">Finding reference table</h2>
+      <h3 class="tech-title">Finding reference table</h3>
       <div class="table-scroll" data-table-scroll>
         <table>
           <thead>
@@ -94,5 +96,6 @@
             {% endfor %}
           </tbody>
         </table>
+      </div>
       </div>
     </details>

@@ -1,59 +1,74 @@
 /* ==========================================================================
    Security License Lens — v2 report foundation stylesheet
-   Design identity: "Ink and Verdigris" (DESIGN_V2.md, sections 1-10).
+   Design identity: "Warm Charcoal" (DESIGN_V2.md, the binding v2 contract).
 
    This file is a Jinja2 partial: it is included inside an existing
    <style> block by both the single-file and bundle renderers, so it must
    never carry a <style> wrapper of its own.
 
-   Contract notes enforced here:
-     - Every color is a declared token from DESIGN_V2.md section 2; the only
-       literal hex values in this file live inside the :root block.
-     - All directional rules use logical properties (border-inline-start,
-       margin-inline, padding-inline, text-align: end); no physical
-       left/right properties are used for layout.
-     - Radius never exceeds 4px; 0 / 2 / 4 are the only stops.
-     - Screen is always dark; only @media print inverts to light.
+   Contract notes enforced here (DESIGN_V2.md section numbers):
+     - §2: Every color is a declared token; the only literal hex values in
+       this file live inside the :root block. The two pinned tonal gradients
+       and the single nav blur are tokens, never ad-hoc.
+     - §3: locked type scale (2rem display, 3.5rem hero figure, 1rem body,
+       tabular numerals on every metric figure); mono only for technical
+       values; uppercase only via .micro-label (kickers, group captions).
+     - §4: spacing is a multiple of 4; radius stops 0 / 2 / 6 / 10 / 16 and
+       999px (pill) — pill ONLY for proportion-based fills and the
+       constellation node circles; elevation is selective (shadows are
+       state); layout uses logical properties only.
+     - §11: motion is information design, gated behind body.revealed (JS
+       opt-in). Only transform / opacity / stroke-dashoffset / color-resolve
+       animate; nothing loops; nothing animates on scroll or input.
+       prefers-reduced-motion = instant final state, zero information loss.
+     - §13/§14: status is never color-only (glyph + word + color); focus
+       rings, target sizes, forced-colors support.
+     - §15: print is the light inversion with expanded disclosures and
+       visible textual chart equivalents.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   2. Token palette — declared once, referenced by name everywhere else.
+   §2. Token palette — declared once, referenced by name everywhere else.
    -------------------------------------------------------------------------- */
 :root {
-  /* 2.1 Screen tokens (dark-first) */
-  --canvas: #0c1210;
-  --surface-1: #121a17;
-  --surface-2: #17201d;
-  --surface-3: #1e2925;
-  --surface-4: #26332e;
-  --border: #233029;
-  --border-strong: #31413a;
-  --text-1: #eef2ef;
-  --text-2: #b6c2bd;
-  --text-3: #85918b;
-  --accent: #8ad3b8;
-  --accent-hover: #a5e2ca;
-  --accent-focus: #bdecd9;
-  --accent-print: #145c48;
-  --state-action: #f8756b;
-  --state-incomplete: #e2a944;
-  --state-ok: #4cd07d;
-  --state-neutral: #9aa49e;
-  --shadow-key: 0 1px 2px rgba(0,0,0,.55), 0 1px 3px rgba(0,0,0,.2);
-  --shadow-soft: 0 4px 12px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.28);
+  /* §2.1 Screen tokens (dark-first, warm) */
+  --canvas: #191714;
+  --surface-1: #211E1A;
+  --surface-2: #2A2621;
+  --surface-3: #332E27;
+  --surface-4: #3D3730;
+  --border: #37322B;
+  --border-strong: #4A443B;
+  --text-1: #F2EFE9;
+  --text-2: #B8B2A7;
+  --text-3: #8A847A;
+  --accent: #E8DFC8;
+  --accent-hover: #F5EFDD;
+  --accent-focus: #FFF6E3;
+  --accent-print: #57482E;
+  --state-action: #E5695F;
+  --state-incomplete: #D9A03F;
+  --state-ok: #55AE84;
+  --state-neutral: #9E988C;
+  --grad-hero: linear-gradient(165deg, var(--surface-2) 0%, var(--surface-1) 55%, var(--canvas) 100%);
+  --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+  --shadow-1: 0 1px 2px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.25);
+  --shadow-2: 0 2px 6px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
+  --shadow-3: 0 4px 12px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.4);
+  --blur-nav: blur(8px);
 
-  /* 2.2 Print tokens (light inversion) */
-  --print-ink: #1a1d1b;
-  --print-paper: #ffffff;
-  --print-hero: #f0f4f1;
-  --print-border: #c9cfcb;
-  --print-border-strong: #97a09b;
-  --print-action: #b3321c;
-  --print-incomplete: #7c5200;
-  --print-ok: #1c6e3f;
-  --print-neutral: #555e59;
+  /* §2.2 Print tokens (light inversion) */
+  --print-ink: #23201B;
+  --print-paper: #FFFFFF;
+  --print-hero: #F6F3EC;
+  --print-border: #D8D2C7;
+  --print-border-strong: #A79F90;
+  --print-action: #B03A26;
+  --print-incomplete: #7A5200;
+  --print-ok: #20603C;
+  --print-neutral: #5A625C;
 
-  /* 3. Typography — system-only, offline-safe stacks (locked values). */
+  /* §3. Typography — system-only, offline-safe stacks (locked values). */
   --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -70,88 +85,94 @@ body {
   background: var(--canvas);
   color: var(--text-1);
   font-family: var(--font-sans);
-  font-size: 0.95rem; /* body scale, locked */
-  line-height: 1.55;
+  font-size: 1rem; /* §3 body scale, locked */
+  line-height: 1.6;
 }
 
-/* Masthead chrome: highest surface, strong rule. */
+[hidden] { display: none !important; }
+
+/* Masthead chrome: highest surface, strong rule, radius 0 (§4). */
 header {
-  max-width: 1100px;
-  margin-block: 0 16px;
+  max-width: 1160px;
+  margin-block: 0 24px;
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: 32px;
   background: var(--surface-4);
   border: 1px solid var(--border-strong);
   border-radius: 0;
 }
 
-/* The single bounded report container (exactly one <main>). */
+/* The single bounded report container (exactly one main element). */
 main {
-  max-width: 1100px;
+  max-width: 1160px;
   margin-block: 0;
   margin-inline: auto;
-  padding-inline: 20px;
+  padding-inline: 32px;
 }
 
 /* --------------------------------------------------------------------------
-   3. Typography — locked type scale, heading hierarchy h1 -> h2 -> h3.
+   §3. Typography — locked type scale, heading hierarchy h1 -> h2 -> h3.
    -------------------------------------------------------------------------- */
-h1 { font-size: 1.3rem; font-weight: 700; line-height: 1.3; }
-h2 { font-size: 1.15rem; font-weight: 600; line-height: 1.3; }
-h3 { font-size: 1.02rem; font-weight: 600; line-height: 1.3; }
+h1 { font-size: 1.5rem; font-weight: 650; line-height: 1.25; }
+h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
+h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.35; }
 
 /* Display: the signature opening line, a <p> (never a heading). */
 .display-line {
   margin-block: 0;
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1.15;
+  font-size: 2rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--text-1);
 }
 
-/* Metric figures — always tabular numerals. */
-.metric-figure {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-
-.metric-figure-secondary {
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1.1;
-  font-variant-numeric: tabular-nums;
-}
-
-/* Posture figure: accent identity color, metric size, resolves once. */
+/* Hero figure: the ONE dominant metric (§5A). Accent identity color. */
 .posture-figure {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.1;
+  margin-block: 24px 0;
+  font-size: 3.5rem;
+  font-weight: 650;
+  line-height: 1.05;
   font-variant-numeric: tabular-nums;
   color: var(--accent);
-  animation: v2-posture-resolve 700ms ease-out both;
+}
+
+/* Metric figure (secondary) — supporting stats, always tabular numerals. */
+.metric-figure-secondary {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Label / micro-label / caption roles. */
 .label {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.4;
   color: var(--text-2);
 }
 
 .micro-label {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.4;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-transform: uppercase; /* kickers and group captions only (§3) */
   color: var(--text-2);
 }
 
 .caption { color: var(--text-3); }
+
+/* Section kicker (micro-label role) and section help copy. */
+.section-kicker { margin-block: 0 4px; }
+.section-help { color: var(--text-2); margin-block: 4px 16px; }
+
+/* Technical disclosure inner titles (h3, never headings for the
+   disclosure itself). */
+.tech-title { margin-block: 16px 8px; }
+.tech-body { margin-block: 12px 4px; }
+.tech-body p { margin-block: 8px 0; }
 
 /* Numeral rules: mono stack for ids and numeric columns, numbers align end. */
 .mono { font-family: var(--font-mono); }
@@ -174,11 +195,14 @@ p,
   word-break: break-word;
 }
 
+/* Prose blocks never run full column width at desktop (§3). */
+p { max-width: 72ch; }
+
 /* --------------------------------------------------------------------------
-   Identity accent — links, selection, focus rings. Accent never colors a
-   semantic status.
+   §2.3 Identity accent — links, selection, focus rings. Accent never colors
+   a semantic status and never colors chart data.
    -------------------------------------------------------------------------- */
-a { color: var(--accent); }
+a { color: var(--accent); text-decoration: underline; }
 a:hover { color: var(--accent-hover); }
 
 ::selection {
@@ -193,73 +217,73 @@ a:hover { color: var(--accent-hover); }
 }
 
 /* --------------------------------------------------------------------------
-   4. Radius contract — 0px surfaces, 2px marks/labels/buttons, 4px maximum.
-   -------------------------------------------------------------------------- */
-.logo-mark { border-radius: 2px; }
-.status-label,
-.effort-label,
-.filter-button { border-radius: 2px; }
-
-/* --------------------------------------------------------------------------
-   Surface ladder — canvas -> surface-1 -> surface-2 -> surface-3 -> surface-4,
-   plus the two pinned shadows on raised layers only.
+   §4. Surfaces and boundaries — canvas -> surface-1 -> ... -> surface-4.
+   Whitespace and rules bound sections; cards only where a bounded unit
+   earns one; shadows are state, never decoration.
    -------------------------------------------------------------------------- */
 section {
   background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: 0;
-  padding-block: 16px;
-  padding-inline: 20px;
+  padding-block: 24px;
+  padding-inline: 32px;
 }
 
-section + section { margin-block-start: 16px; }
+section + section { margin-block-start: 24px; }
 
-/* Hero: secondary surface with the soft ambient shadow (hero only). */
+/* Hero: pinned tonal wash + hero shadow, 16px radius (§4). */
 .hero {
-  background: var(--surface-2);
-  box-shadow: var(--shadow-soft);
-  border-radius: 0;
+  background: var(--grad-hero);
+  box-shadow: var(--shadow-3);
+  border-radius: 16px;
+  padding-block: 32px;
+  padding-inline: 40px;
 }
 
+/* Cards at rest have NO shadow (§4). */
 .card {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 0;
-  padding-block: 16px;
-  padding-inline: 16px;
+  border-radius: 10px;
+  padding-block: 20px;
+  padding-inline: 20px;
 }
 
-/* Progressive disclosure level 3: native <details class="tech">. Closed =
-   dashed ghost rule on the primary surface; open = solid raised pane with
-   the key shadow. */
-details.tech {
-  background: var(--surface-1);
-  border: 1px dashed var(--surface-1);
-  border-radius: 0;
-}
-
-details.tech[open] {
+/* The single authorized blur: the bundle's sticky contextual nav (§2.3,
+   opaque --surface-3 fallback). */
+.context-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   background: var(--surface-3);
-  border: 1px solid var(--surface-3);
-  box-shadow: var(--shadow-key);
+  box-shadow: var(--shadow-2);
 }
-
-details.tech summary { cursor: pointer; }
+@supports (backdrop-filter: blur(1px)) {
+  .context-nav { backdrop-filter: var(--blur-nav); }
+}
 
 /* --------------------------------------------------------------------------
-   2.3 Semantic mapping — status is never color-only; the word and glyph
+   §2.3 Semantic mapping — status is never color-only; the word and glyph
    carry it. Error shares the gap color on screen and in print.
    -------------------------------------------------------------------------- */
 .status-gap,
-.status-error { color: var(--state-action); }
-.status-partial { color: var(--state-incomplete); }
-.status-ok { color: var(--state-ok); }
+.status-error { color: var(--state-action); --resolve-to: var(--state-action); }
+.status-partial { color: var(--state-incomplete); --resolve-to: var(--state-incomplete); }
+.status-ok { color: var(--state-ok); --resolve-to: var(--state-ok); }
 .status-not_licensed,
-.status-skipped { color: var(--state-neutral); }
+.status-skipped { color: var(--state-neutral); --resolve-to: var(--state-neutral); }
 
 /* Status marker: the status_marker macro emits `class="status-marker <variant>"`
    (two classes), so the variant color must target the pair — the single-class
-   selectors above color only the constellation core and legend chips. */
+   selectors above color only the constellation cores and legend swatches. */
+.status-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+.status-glyph { flex-shrink: 0; }
 .status-marker.gap,
 .status-marker.error { color: var(--state-action); }
 .status-marker.partial { color: var(--state-incomplete); }
@@ -272,7 +296,6 @@ details.tech summary { cursor: pointer; }
 .finding {
   border-inline-start: 3px solid transparent;
 }
-
 .finding.gap,
 .finding.error { border-inline-start-color: var(--state-action); }
 .finding.partial { border-inline-start-color: var(--state-incomplete); }
@@ -281,53 +304,734 @@ details.tech summary { cursor: pointer; }
 .finding.skipped { border-inline-start-color: var(--state-neutral); }
 
 /* --------------------------------------------------------------------------
-   6. Constellation — group captions carry the identity accent.
+   §8. Progressive disclosure — native <details>, zero-JS. Closed = dashed
+   rule on the primary surface; open = solid raised pane with the key
+   shadow. Caret rotates 90° on open.
    -------------------------------------------------------------------------- */
+details.tech {
+  background: var(--surface-1);
+  border: 1px dashed var(--border);
+  border-radius: 0;
+  padding-inline: 12px;
+}
+details.tech[open] {
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-1);
+}
+details.tech summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-2);
+}
+details.tech summary .caret { transition: transform 150ms ease-out; }
+details.tech[open] summary .caret { transform: rotate(90deg); }
+details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
+
+/* --------------------------------------------------------------------------
+   §7. Constellation — deterministic field, grouped by workload.
+   Group captions are buttons (cross-filter); nodes are buttons (capability
+   selection); status color + glyph + always-visible label, never color-only.
+   -------------------------------------------------------------------------- */
+.constellation {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(150px, 1fr);
+  gap: 16px;
+  overflow-x: auto;
+  padding-block: 12px;
+  margin-block: 8px 16px;
+  scrollbar-color: var(--surface-4) transparent;
+}
+
+.constellation-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid transparent;
+  border-radius: 16px; /* §4: constellation group container */
+  transition: border-color 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out;
+}
+.constellation-group.is-selected {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-1);
+  background: var(--surface-2);
+}
+
+/* Caption: brand icon + plain name, a real button (§7). */
 .constellation-caption {
-  color: var(--accent);
-  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-block: 0 4px;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 1.4;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.constellation-caption:hover { color: var(--text-1); }
+.constellation-caption .workload-icon { width: 18px; height: 18px; }
+
+/* Branded Microsoft workload marks (§12). Decorative only: the visible text
+   label always accompanies them. Shared by the inline <svg> markup and the
+   bundle's hashed image assets. */
+.workload-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+/* Node: 16×16 circle (pill radius authorized for this proportion-free
+   decorative fill), 2px status ring + soft tinted fill, always-visible
+   label. Neutral by default; resolves to status color column by column. */
+.constellation-point {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border: none;
+  background: none;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  text-align: start;
+  color: var(--state-neutral);
+  cursor: pointer;
+}
+
+.constellation-core {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+}
+.constellation-core::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0.25;
+}
+
+/* Selected node: 3px accent ring outside; the status ring stays on the
+   inner edge so status is never lost (§10). */
+.constellation-point.is-selected .constellation-core {
+  box-shadow: 0 0 0 1px var(--canvas), 0 0 0 3px var(--accent);
+}
+
+.constellation-label { color: var(--text-2); }
+
+.constellation-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  grid-column: 1 / -1;
+  margin-block-start: 8px;
+}
+.constellation-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
+.constellation-legend-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 /* --------------------------------------------------------------------------
-   8. Motion contract — information arriving, once. Only transform and
-   opacity move; nothing loops; nothing animates on scroll or input.
+   §5B. Capability summary rows — summary first, context on demand.
    -------------------------------------------------------------------------- */
-@keyframes v2-posture-resolve {
-  from { opacity: 0; transform: translateY(8px); }
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.card { display: flex; flex-direction: column; gap: 8px; }
+.card-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 16px;
+}
+.card-title { margin: 0; }
+.card-summary .workload-icon { width: 18px; height: 18px; }
+.card p { margin: 0; }
+.card-provenance {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-block-start: 8px;
+  border-block-start: 1px solid var(--border);
+  font-size: 0.8125rem;
+}
+
+/* --------------------------------------------------------------------------
+   §5C. Moves — a numbered sequence, first item visually dominant.
+   -------------------------------------------------------------------------- */
+.move-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.move-item {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.move-item--lead {
+  box-shadow: var(--shadow-1);
+  background: var(--surface-3);
+}
+.move-item--lead .move-title { font-size: 1.25rem; }
+.move-index { color: var(--accent); font-weight: 700; }
+.move-body { display: flex; flex-direction: column; gap: 4px; }
+.move-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.move-effort { color: var(--text-2); font-size: 0.8125rem; }
+.move-why, .move-action, .move-ids, .move-link { margin: 0; }
+.move-note { color: var(--text-3); font-size: 0.8125rem; }
+
+/* --------------------------------------------------------------------------
+   §5D. Findings — open typographic articles separated by rules; the
+   selected finding becomes the one elevated surface.
+   -------------------------------------------------------------------------- */
+.finding {
+  padding-block: 16px;
+  border-block: 1px solid transparent;
+}
+.finding + .finding {
+  border-block-start-color: var(--border);
+  margin-block-start: 16px;
+}
+.finding.is-selected {
+  background: var(--grad-raised);
+  border-color: var(--border-strong);
+  border-radius: 10px;
+  box-shadow: var(--shadow-2);
+  padding-inline: 20px;
+  padding-block: 20px;
+}
+.finding.is-related { outline: 1px solid var(--accent); outline-offset: -1px; }
+.card.is-related { outline: 1px solid var(--accent); outline-offset: -1px; }
+.finding-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.finding-head h3 { margin: 0; }
+.finding-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
+.meta-item { font-size: 0.8125rem; color: var(--text-2); }
+.meta-key { color: var(--text-3); }
+.finding-summary { margin-block: 8px 0; }
+.belief-slot { margin-block: 12px 0; }
+.belief-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-block-end: 4px;
+}
+.belief-slot p { margin: 0; }
+.belief-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
+.evidence-keys { margin: 0; padding-inline-start: 1.2rem; }
+.evidence-keys code { color: var(--text-1); }
+
+/* --------------------------------------------------------------------------
+   §5A / §9. Hero visualizations — radial realization gauge and the
+   operational-distribution segmented bar.
+   -------------------------------------------------------------------------- */
+.posture {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 24px 32px;
+  margin-block-start: 8px;
+}
+
+.posture-stat-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 16px;
+  margin-block-start: 12px;
+}
+.stat-item { display: inline-flex; align-items: baseline; gap: 6px; }
+.stat-item + .stat-item {
+  border-inline-start: 1px solid var(--border);
+  padding-inline-start: 16px;
+}
+
+/* Radial gauge: single proportion, drawn via stroke-dashoffset (§11). */
+.radial-figure { margin: 0; text-align: center; }
+.radial-svg { display: block; margin-inline: auto; }
+.radial-track { stroke: var(--surface-4); }
+.radial-arc {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* Distribution: segments proportional to counts; pill caps authorized for
+   proportion-based fills only (§4). Segments are buttons (§9). */
+.dist-figure { margin-block: 24px 0; }
+.dist-bar {
+  display: flex;
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-4);
+}
+.dist-segment {
+  border: none;
+  border-radius: 999px;
+  margin-inline-end: 2px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  cursor: pointer;
+  background: var(--state-neutral);
+  transform-origin: left;
+  transition: filter 150ms ease-out;
+}
+.dist-segment:last-child { margin-inline-end: 0; }
+.dist-segment:hover { filter: brightness(1.2); }
+.dist-segment.status-gap { background: var(--state-action); }
+.dist-segment.status-partial { background: var(--state-incomplete); }
+.dist-segment.status-ok { background: var(--state-ok); }
+.dist-segment.status-not_licensed { background: var(--state-neutral); }
+
+.dist-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  list-style: none;
+  margin-block: 12px 0;
+  padding: 0;
+}
+.dist-item { display: inline-flex; align-items: center; gap: 6px; }
+
+/* Implication + top actions close the opening sequence. */
+.implication {
+  margin-block: 20px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.posture-sentence { color: var(--text-2); margin-block: 8px 0; }
+
+.top-actions {
+  list-style: none;
+  margin-block: 20px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.top-action { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.effort-label {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
+
+/* Exposed rail: 3px action rail listing exposed / gap check titles. */
+.exposed-rail {
+  margin-block-start: 24px;
+  padding-inline-start: 16px;
+  border-inline-start: 3px solid var(--state-action);
+}
+.exposed-rail ul { margin: 4px 0 0; padding-inline-start: 1.2rem; }
+
+/* --------------------------------------------------------------------------
+   §5E. Exploration — charts, search, filter groups, sort, counts, list,
+   pagination.
+   -------------------------------------------------------------------------- */
+.charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 24px;
+  margin-block: 8px 24px;
+}
+.chart {
+  margin: 0;
+  padding: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 0;
+}
+.chart figcaption {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin-block-end: 12px;
+}
+.chart-body { display: flex; flex-direction: column; gap: 8px; }
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  align-items: center;
+}
+.chart-row__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+.chart-row__label .workload-icon { width: 16px; height: 16px; }
+.chart-value {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+.chart-bar-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  background: var(--surface-4);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.chart-bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  cursor: pointer;
+  background: var(--state-neutral);
+  transform-origin: left;
+  transition: filter 150ms ease-out;
+}
+.chart-bar:hover { filter: brightness(1.2); }
+.chart-bar.active,
+.dist-segment.active { filter: brightness(1.3); }
+.chart-bar.status-gap { background: var(--state-action); }
+.chart-bar.status-partial { background: var(--state-incomplete); }
+.chart-bar.status-ok { background: var(--state-ok); }
+.chart-bar.status-not_licensed, .chart-bar.status-skipped { background: var(--state-neutral); }
+.chart-row.is-related .chart-bar-track { outline: 1px solid var(--accent); }
+
+/* Chart equivalent data table: visually hidden on screen, styled print
+   fallback (§9/§15). table-layout: fixed makes width:1px authoritative
+   (tables otherwise grow to their min-content width and overflow). */
+.chart-table {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  table-layout: fixed;
+}
+
+/* The caption stays in the accessibility tree but is taken out of flow so
+   its min-content width cannot floor the table's used width above 1px. */
+.chart-table caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Radial gauge accessible description: visually hidden on screen, visible
+   in print as the gauge's textual replacement (§9/§15). */
+.radial-print-line {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Generic visually-hidden utility (chart descriptions, auxiliary labels). */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Search, sort, filter controls. */
+.search-box { margin-block-end: 16px; }
+.search-box__label, .sort-box__label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-2);
+  margin-block-end: 4px;
+}
+.search-box__input {
+  width: 100%;
+  max-width: 420px;
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+}
+
+.sort-box { margin-block-end: 16px; }
+.sort-box__select {
+  padding: 8px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-block-end: 16px;
+}
+.filter-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.filter-button {
+  padding: 4px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-2);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.filter-button.active {
+  background: var(--surface-3);
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+.clear-filters {
+  padding: 4px 12px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.filter-count {
+  color: var(--text-2);
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The explorable findings list (rows link to D articles). */
+.explore-list { display: flex; flex-direction: column; }
+.explore-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 4px 16px;
+  align-items: start;
+  padding-block: 12px;
+}
+.explore-row + .explore-row { border-block-start: 1px solid var(--border); }
+.explore-row > .status-marker { grid-column: 1; grid-row: 1; }
+.explore-row__title { grid-column: 2; grid-row: 1; margin: 0; }
+.explore-row__title a { text-decoration: none; }
+.explore-row__title a:hover { text-decoration: underline; }
+.explore-row__meta {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 0.8125rem;
+  color: var(--text-2);
+}
+.explore-row__meta code { color: var(--text-1); }
+.explore-row__summary {
+  grid-column: 2;
+  grid-row: 3;
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+}
+
+.empty-state { color: var(--text-2); }
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin-block-start: 16px;
+}
+.pagination button {
+  padding: 4px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+.pagination button:disabled { color: var(--text-3); cursor: default; }
+.pager-page {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.pager-size-select {
+  margin-inline-start: auto;
+  padding: 4px 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+}
+
+/* Table of contents (single-file §6). */
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding-block: 8px 16px;
+  border-block-start: 1px solid var(--border);
+}
+.toc a { font-size: 0.8125rem; }
+
+/* --------------------------------------------------------------------------
+   Technical tables — radius 0, mono cells, scrollable at 640px.
+   -------------------------------------------------------------------------- */
+.table-scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td {
+  text-align: start;
+  padding: 8px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+}
+th { color: var(--text-2); font-weight: 600; }
+td code { color: var(--text-1); }
+
+/* --------------------------------------------------------------------------
+   §11. Motion contract — information arriving, once, gated behind
+   body.revealed (JS opt-in). Without JS the page is fully visible and
+   static. Only transform / opacity / stroke-dashoffset / color-resolve
+   animate; nothing loops; nothing animates on scroll or input.
+   -------------------------------------------------------------------------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes v2-section-reveal {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes v2-constellation-settle {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes gauge-draw {
+  from { stroke-dashoffset: var(--gauge-circumference, 0); }
 }
 
-/* Posture digits resolve on load (700ms ease-out, once). */
-.posture-digits { animation: v2-posture-resolve 700ms ease-out both; }
+@keyframes bar-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
 
-/* Section and finding reveal: 300ms ease-out, once; templates stagger
-   siblings via inline animation-delay (40ms per sibling, capped). */
-.reveal-item {
+@keyframes constellation-resolve {
+  from { color: var(--state-neutral); }
+  to { color: var(--resolve-to, var(--state-neutral)); }
+}
+
+/* Opening sequence (§11): stages 1, 2, 5, 6, 7 — fade + 6px rise. */
+body.revealed .opening-stage {
   opacity: 0;
-  transform: translateY(8px);
-  animation: v2-section-reveal 300ms ease-out forwards;
+  animation: rise 200ms ease-out both;
+}
+body.revealed .opening-identity { animation-delay: 0ms; }
+body.revealed .opening-meta { animation-delay: 60ms; }
+body.revealed .dist-item { animation-duration: 250ms; }
+body.revealed .dist-item:nth-child(1) { animation-delay: 260ms; }
+body.revealed .dist-item:nth-child(2) { animation-delay: 320ms; }
+body.revealed .dist-item:nth-child(3) { animation-delay: 380ms; }
+body.revealed .dist-item:nth-child(4) { animation-delay: 440ms; }
+body.revealed .implication { animation-duration: 300ms; animation-delay: 380ms; }
+body.revealed .top-action { animation-duration: 300ms; }
+body.revealed .top-action:nth-child(1) { animation-delay: 540ms; }
+body.revealed .top-action:nth-child(2) { animation-delay: 620ms; }
+body.revealed .top-action:nth-child(3) { animation-delay: 700ms; }
+
+/* Stage 4a: radial gauge draw (700ms, delay 160ms). */
+body.revealed .radial-arc {
+  animation: gauge-draw 700ms ease-out 160ms both;
 }
 
-/* Constellation points settle column by column (400ms ease-out, 60ms per
-   column via inline animation-delay), in deterministic order. */
-.constellation-point {
-  opacity: 0;
-  transform: translateY(8px);
-  animation: v2-constellation-settle 400ms ease-out forwards;
+/* Stage 4b: distribution segments scaleX left-to-right (600ms, 200ms). */
+body.revealed .dist-segment {
+  animation: bar-fill 600ms ease-out 200ms both;
+}
+body.revealed .dist-segment:nth-child(2) { animation-delay: 240ms; }
+body.revealed .dist-segment:nth-child(3) { animation-delay: 280ms; }
+body.revealed .dist-segment:nth-child(4) { animation-delay: 320ms; }
+
+/* §9: chart bars construct on first reveal (500ms, 40ms per row). */
+body.revealed .chart-bar {
+  animation: bar-fill 500ms cubic-bezier(0.22, 1, 0.36, 1) 200ms both;
+}
+
+/* §7: constellation resolve, neutral -> status color, column by column
+   (450ms ease-out, 50ms per column via inline animation-delay). */
+body.revealed .constellation-point {
+  animation: constellation-resolve 450ms ease-out both;
 }
 
 /* Interactive states: color, border, background only, <=150ms. */
@@ -336,7 +1040,7 @@ a,
 input,
 select,
 summary {
-  transition-property: color, background-color, border-color;
+  transition-property: color, background-color, border-color, filter;
   transition-duration: 150ms;
   transition-timing-function: ease-out;
 }
@@ -345,11 +1049,7 @@ button,
 select,
 summary { cursor: pointer; }
 
-/* Disclosure caret: rotate on open/close, <=150ms. */
-details.tech summary .caret { transition: transform 150ms ease-out; }
-details.tech[open] summary .caret { transform: rotate(90deg); }
-
-/* 4. Target sizes: coarse pointer 44x44 minimum, fine pointer 24x24. */
+/* §4. Target sizes: coarse pointer 44x44 minimum, fine pointer 24x24. */
 button,
 input,
 select,
@@ -369,9 +1069,9 @@ summary {
 }
 
 /* --------------------------------------------------------------------------
-   8. Reduced motion — the instant final state: duration 0, single iteration,
-   no translateY offset ever applied. Posture digits, constellation points,
-   and section reveals appear fully resolved immediately.
+   §11. Reduced motion — the instant final state: duration 0, single
+   iteration, no transform offset ever applied. Posture digits, gauges,
+   bars, nodes, and section reveals appear fully resolved immediately.
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -384,20 +1084,23 @@ summary {
     animation-iteration-count: 1 !important;
   }
 
-  .posture-figure,
-  .posture-digits,
-  .reveal-item,
-  .constellation-point {
+  body.revealed .opening-stage,
+  body.revealed .reveal-target,
+  body.revealed .dist-segment,
+  body.revealed .chart-bar,
+  body.revealed .constellation-point {
     opacity: 1 !important;
     transform: none !important;
   }
 
+  body.revealed .radial-arc { animation: none !important; }
   details.tech summary .caret { transform: none !important; }
 }
 
 /* --------------------------------------------------------------------------
-   9. Forced colors — glyphs and constellation fills use currentColor and
-   stay distinct; page chrome collapses to system colors.
+   §14. Forced colors — glyphs, node rings, and bars fall back to system
+   colors; backgrounds collapse to Canvas/CanvasText; brand icons keep
+   their shapes via forced-color-adjust: auto.
    -------------------------------------------------------------------------- */
 @media (forced-colors: active) {
   body,
@@ -408,7 +1111,8 @@ summary {
   .hero,
   .card,
   .finding,
-  details.tech {
+  details.tech,
+  .chart {
     background: Canvas;
     color: CanvasText;
     border-color: CanvasText;
@@ -441,6 +1145,19 @@ summary {
   .finding.not_licensed,
   .finding.skipped { border-inline-start-color: CanvasText; }
 
+  .constellation-core { border-color: CanvasText; }
+  .constellation-core::before { background: CanvasText; }
+  .dist-segment,
+  .chart-bar { background: CanvasText; }
+  .dist-segment.status-gap,
+  .dist-segment.status-partial,
+  .dist-segment.status-ok,
+  .chart-bar.status-gap,
+  .chart-bar.status-partial,
+  .chart-bar.status-ok { background: CanvasText; }
+  .radial-arc { stroke: CanvasText; }
+  .workload-icon { forced-color-adjust: auto; }
+
   :focus-visible {
     outline: 2px solid Highlight;
     outline-offset: 2px;
@@ -448,9 +1165,9 @@ summary {
 }
 
 /* --------------------------------------------------------------------------
-   2.2 Print — light inversion: paper, print ink, print borders and print
-   status colors; both shadow tokens suppressed; disclosures and footer
-   hidden; hero, cards, findings, and the constellation stay whole.
+   §15. Print — light inversion: paper, print ink, print borders, print
+   status colors; shadows suppressed; gradients flattened; disclosures
+   expanded; chart tables become visible textual fallbacks.
    -------------------------------------------------------------------------- */
 @media print {
   html,
@@ -464,7 +1181,7 @@ summary {
     print-color-adjust: exact;
   }
 
-  /* Suppress both shadow tokens. */
+  /* Suppress all shadows; the two gradients flatten. */
   *,
   *::before,
   *::after { box-shadow: none !important; }
@@ -476,7 +1193,9 @@ summary {
   article,
   .card,
   .finding,
-  details.tech {
+  details.tech,
+  .chart,
+  .move-item {
     background: var(--print-paper) !important;
     border-color: var(--print-border) !important;
   }
@@ -497,12 +1216,12 @@ summary {
   .display-line,
   .label,
   .micro-label,
-  .caption { color: var(--print-ink) !important; }
+  .caption,
+  .constellation-label { color: var(--print-ink) !important; }
 
   a,
   .posture-figure,
-  .posture-digits,
-  .constellation-caption { color: var(--accent-print) !important; }
+  .posture-digits { color: var(--accent-print) !important; }
 
   /* Status labels: transparent backgrounds, contrast-safe print colors. */
   .status-marker,
@@ -530,16 +1249,123 @@ summary {
   .finding.not_licensed,
   .finding.skipped { border-inline-start-color: var(--print-neutral) !important; }
 
-  /* Hide technical disclosures and the footer. */
-  details.tech { display: none !important; }
+  .dist-segment,
+  .chart-bar { background: var(--print-neutral) !important; }
+  .dist-segment.status-gap { background: var(--print-action) !important; }
+  .dist-segment.status-partial { background: var(--print-incomplete) !important; }
+  .dist-segment.status-ok { background: var(--print-ok) !important; }
+  .chart-bar.status-gap { background: var(--print-action) !important; }
+  .chart-bar.status-partial { background: var(--print-incomplete) !important; }
+  .chart-bar.status-ok { background: var(--print-ok) !important; }
+  .radial-arc { stroke: var(--accent-print) !important; }
+  .radial-track { stroke: var(--print-border) !important; }
+
+  /* Expanded content predictable: every disclosure renders expanded, and
+     every finding the filter may have hidden stays in the artifact. */
+  details.tech:not([open]) > :not(summary) { display: block; }
+  .finding[hidden],
+  .explore-row[hidden] { display: block !important; }
+
+  /* Visualizations get textual fallbacks: the sr-only data tables become
+     visible styled print tables; the radial gauge is replaced by its
+     description line. */
+  .chart-table {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+    border: 1px solid var(--print-border);
+    margin-block-start: 8px;
+    table-layout: auto;
+  }
+  .chart-table caption {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    white-space: normal;
+  }
+  .radial-svg { display: none !important; }
+  .radial-print-line {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+    border: 0;
+  }
+
+  /* Hide technical chrome (nav, filters, pager, footer). */
+  .toc,
+  .search-box,
+  .sort-box,
+  .filter-bar,
+  .pagination,
   footer { display: none !important; }
 
-  /* Hero, cards, findings, and the constellation stay whole across pages. */
+  /* Hero, move items, capability rows, findings, and the constellation
+     stay whole across pages. */
   .hero,
   .card,
   .finding,
-  .constellation {
+  .constellation,
+  .chart {
     break-inside: avoid;
     page-break-inside: avoid;
   }
+}
+
+/* --------------------------------------------------------------------------
+   §4. Responsive — 900px: two-column hero collapses, nav wraps.
+   640px: gutters halve, hero figure scales down, constellation scrolls
+   horizontally, tables scroll.
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px) {
+  .posture {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .radial-figure { text-align: start; }
+  .radial-svg { margin-inline: 0; }
+}
+
+@media (max-width: 640px) {
+  header,
+  main {
+    padding-inline: 16px;
+  }
+  section {
+    padding-block: 16px;
+    padding-inline: 16px;
+  }
+  .hero {
+    padding-block: 24px;
+    padding-inline: 16px;
+  }
+  .posture-figure { font-size: 2.5rem; }
+  .display-line { font-size: 1.5rem; }
+  .constellation {
+    grid-auto-columns: minmax(180px, 72vw);
+    scrollbar-width: thin;
+  }
+  .explore-row__meta { grid-column: 1 / -1; }
+  .explore-row__summary { grid-column: 1 / -1; }
+}
+
+/* --------------------------------------------------------------------------
+   Footer.
+   -------------------------------------------------------------------------- */
+footer {
+  max-width: 1160px;
+  margin-block: 16px;
+  margin-inline: auto;
+  padding-inline: 32px;
+  color: var(--text-3);
+  font-size: 0.8125rem;
 }

@@ -201,7 +201,7 @@ def test_initial_render_and_navigation(app_uri: str, page: Page) -> None:
     assert _visible_count(page) == "12"
     assert _total_count(page) == "12"
     assert page.locator("[data-workload-nav] [data-nav]").count() == 6
-    assert page.locator("[data-filter-bar] [data-filter-value]").count() == 23
+    assert page.locator("[data-filter-bar] [data-filter-value]").count() == 24
     assert page.locator(".pagination").is_hidden() is False
     assert page.locator("[data-empty-state]").is_hidden() is True
 

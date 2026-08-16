@@ -31,10 +31,16 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
   https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
 - **SCuBA coverage reference** — 109 pinned coverage rows
   (`docs/reference/coverage.md`).
-- **Report redesign (v2, "Ink and Verdigris")** — the HTML report is rebuilt as
-  a dark-first, offline-first dashboard with a data-driven posture figure, a
-  capability constellation, and a five-section narrative; fully readable with
-  JavaScript disabled and `prefers-reduced-motion`-aware.
+- **Report redesign (v2, "Warm Charcoal")** — the HTML report is rebuilt as a
+  dark, offline-first dashboard with a signature animated opening sequence (org
+  identity → posture count-up → radial gauge → distribution → implication → top
+  actions, 500–1000ms total), a hierarchy-first posture figure (one dominant
+  metric, not a grid of equal cards), the interactive capability constellation
+  with restored branded Microsoft workload icons (inline SVG in the single-file
+  report, hashed `<img>` assets in the bundle), a five-section narrative, and
+  native `<details>` progressive disclosure; fully readable with JavaScript
+  disabled, motion settles to calm after the opening, and
+  `prefers-reduced-motion` is honored.
 - **Fixes** — the PowerShell bridge now accepts hashtable params (Pester contract
   passes cross-platform), the installer no longer leaves literal-backslash
   directories on non-Windows hosts, and `.playwright-mcp/` plus a stray debug

@@ -58,7 +58,9 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert "Security License Lens" in html_text
     assert "What you're paying for" in html_text
     assert "What it does" in html_text or "Why it matters" in html_text
-    assert html_text.count("What matters most") == 1
+    # Section C heading appears twice: the section h2 and its table-of-contents
+    # link under the masthead (DESIGN_V2 §6, same anchors, same labels).
+    assert html_text.count("What matters most") == 2
     assert "Recommended first steps" not in html_text
     assert js.is_file() and "customer_title" in js.read_text(encoding="utf-8")
     assert md_text.startswith("# Security License Lens")
@@ -130,14 +132,15 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
     result = run_scan(auth, dry_run=True)
     html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
 
-    # Hero top card renders the rollup numbers and sentence.
+    # Hero opening renders the dominant posture figure, the supporting stat
+    # strip, and the detected-vs-prioritized distinction.
     assert "Where you stand" in html
-    assert "Licensed capabilities detected" in html
-    assert "Prioritized capabilities" in html
+    assert "licensed capabilities detected" in html
+    assert "prioritized capabilities" in html
     assert "Fully working" in html
     assert str(result.capability_rollup.you_own) in html
     assert result.capability_rollup.realized_sentence in html
-    assert "Need attention" in html
+    assert "Action required" in html
 
     # Prioritized moves surface with owner-voice labels.
     assert "What matters most" in html
@@ -170,17 +173,20 @@ def test_reports_distinguish_detected_from_prioritized_capabilities(tmp_path: Pa
     assert detected > prioritized
     assert f"{result.capability_rollup.realized_percent}% realized" in html
     for report in (html, md):
-        assert "Licensed capabilities detected" in report
         assert str(detected) in report
-        assert "Prioritized capabilities" in report
         assert str(prioritized) in report
         assert "identity" in report
         assert "endpoint" in report
-        assert f"of {prioritized} prioritized capabilities" in report
         for cap in result.capability_summaries:
             assert ", ".join(cap.matched_skus) in report
             if cap.matched_service_plans:
                 assert ", ".join(cap.matched_service_plans) in report
+    assert "licensed capabilities detected" in html
+    assert "prioritized capabilities" in html
+    assert f"of {prioritized} prioritized" in html
+    assert "Licensed capabilities detected" in md
+    assert "Prioritized capabilities" in md
+    assert f"of {prioritized} prioritized capabilities" in md
 
 
 def test_reports_identify_priority_packs(tmp_path: Path):
@@ -202,7 +208,8 @@ def test_reports_surface_evidence_and_one_action_plan(tmp_path: Path):
 
     finding_with_limitations = next(f for f in result.findings if f.limitations)
     exposed_findings = [f for f in result.findings if f.check_id in result.exposed_check_ids]
-    assert html.count("What matters most") == 1
+    # Section C heading + its table-of-contents link (DESIGN_V2 §6).
+    assert html.count("What matters most") == 2
     assert md.count("Top things to do first") == 1
     for report in (html, md):
         assert "Recommended first steps" not in report

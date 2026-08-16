@@ -16,10 +16,12 @@ from __future__ import annotations
 from licenselens.report.viewmodel import (
     build_belief_block,
     build_constellation,
+    build_opening,
     build_posture,
     build_sections,
 )
 from tests.report_fixtures import (
+    SCANNED_AT,
     comprehensive_report,
     empty_report,
     sparse_optional_fields_report,
@@ -67,6 +69,44 @@ def test_posture_empty_report_safety() -> None:
 
 def test_posture_deterministic() -> None:
     assert build_posture(comprehensive_report()) == build_posture(comprehensive_report())
+
+
+def test_opening_carries_tenant_and_assessment_identity() -> None:
+    result = comprehensive_report()
+    opening = build_opening(result)
+    assert opening["tenant_name"] == result.tenant_display_name
+    assert opening["tenant_id"] == result.tenant_id
+    assert opening["scanned_at"] == SCANNED_AT
+    assert opening["assessment_identity"] == {
+        "tool": result.tool,
+        "tool_display_name": result.tool_display_name,
+        "version": result.version,
+    }
+
+
+def test_opening_falls_back_to_neutral_tenant_name() -> None:
+    result = empty_report()
+    opening = build_opening(result)
+    assert opening["tenant_name"] == "Your tenant"
+    assert opening["tenant_id"] is None
+
+
+def test_opening_surfaces_tenant_id_when_display_name_missing() -> None:
+    result = comprehensive_report().model_copy(update={"tenant_display_name": None})
+    opening = build_opening(result)
+    assert opening["tenant_name"] == "Your tenant"
+    assert opening["tenant_id"] == result.tenant_id
+
+
+def test_opening_reuses_posture_values() -> None:
+    result = comprehensive_report()
+    opening = build_opening(result)
+    assert opening["realized_percent"] == result.capability_rollup.realized_percent
+    assert opening["realized_sentence"] == result.capability_rollup.realized_sentence
+
+
+def test_opening_deterministic() -> None:
+    assert build_opening(comprehensive_report()) == build_opening(comprehensive_report())
 
 
 def test_constellation_deterministic() -> None:
