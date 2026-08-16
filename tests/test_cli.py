@@ -1,3 +1,4 @@
+import json
 import re
 from pathlib import Path
 
@@ -18,6 +19,14 @@ def test_version_command():
     result = runner.invoke(app, ["version"])
     assert result.exit_code == 0
     assert "Security License Lens" in result.stdout
+
+
+def test_version_flag_prints_version():
+    from licenselens import __version__
+
+    result = runner.invoke(app, ["--version"])
+    assert result.exit_code == 0, result.output
+    assert f"licenselens {__version__}" in result.stdout
 
 
 def test_setup_command_prints_scaffold():
@@ -141,6 +150,35 @@ def test_scan_dry_run_prints_top_card(tmp_path: Path):
     assert "Need attention (prioritized): 5" in result.stdout
     assert "Priority actions:" in result.stdout
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
+
+
+def test_scan_output_surfaces_diff_loop(tmp_path: Path):
+    result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 1, result.output
+    assert "To compare against a prior assessment" in result.stdout
+    assert "licenselens diff <old.json> <new.json>" in result.stdout
+
+
+def test_scan_second_run_preserves_prior_reports(tmp_path: Path):
+    out = tmp_path / "out"
+    first = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(out)])
+    assert first.exit_code == 1, first.output
+    original_json = out / "security-license-lens-report.json"
+    assert original_json.is_file()
+    before = original_json.read_text(encoding="utf-8")
+
+    second = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(out)])
+    assert second.exit_code == 1, second.output
+    assert "Prior report files found" in second.stdout
+    # The prior scan's flat artifacts (the diff baseline) are untouched.
+    assert original_json.read_text(encoding="utf-8") == before
+    fresh = [p for p in out.iterdir() if p.is_dir() and p.name.startswith("scan-")]
+    assert len(fresh) == 1
+    assert (fresh[0] / "security-license-lens-report.json").is_file()
+    assert (fresh[0] / "security-license-lens-report.html").is_file()
+    assert (fresh[0] / "security-license-lens-report.md").is_file()
+    # No nested diversion: the fresh dir itself is written into directly.
+    assert len(list(fresh[0].iterdir())) == 3
 
 
 def test_scan_dry_run_prints_plain_language_exposure(tmp_path: Path):
@@ -705,6 +743,25 @@ def test_checks_lists_profile_backend_mode_state():
     assert "identity" in result.stdout
     assert "enabled" in result.stdout
     assert "direct" in result.stdout
+
+
+def test_checks_json_emits_full_ids():
+    result = runner.invoke(app, ["checks", "--json"])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.stdout)
+    assert isinstance(payload, list) and len(payload) >= 100
+    by_id = {item["id"]: item for item in payload}
+    assert "id-ca-priv-gaps" in by_id
+    assert "endpoint-compliance-noncompliance-action" in by_id  # longest id, untruncated
+    for item in payload:
+        assert "…" not in item["id"]
+        assert item["title"]
+        assert item["workload"]
+        assert item["severity"]
+        assert isinstance(item["mode"], str) and item["mode"]
+        assert item["state"] in {"enabled", "disabled"}
+        assert isinstance(item["capabilities"], list)
+        assert isinstance(item["profiles"], list)
 
 
 def test_quickstart_invalid_profile_exits_2_before_auth(monkeypatch):

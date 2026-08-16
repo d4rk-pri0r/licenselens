@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import os
+from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
+from typing import Final
 
 import typer
 from rich.console import Console
@@ -35,7 +38,7 @@ from licenselens.engine.loader import load_checks
 from licenselens.engine.profiles import ResolvedProfile, load_builtin_profiles
 from licenselens.engine.runner import run_scan
 from licenselens.errors import AuthConfigError, AuthError, GraphError, LicenseLensError
-from licenselens.models import CheckPack, ScanResult, Workload
+from licenselens.models import CheckDefinition, CheckPack, ScanResult, Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 from licenselens.schema_contracts import CollectionStatus
 
@@ -52,6 +55,22 @@ app = typer.Typer(
     rich_markup_mode="rich",
 )
 console = Console()
+
+
+@app.callback(invoke_without_command=True)
+def _version_callback(
+    version: bool = typer.Option(
+        False,
+        "--version",
+        help="Print the version and exit.",
+        is_eager=True,
+    ),
+) -> None:
+    """Handle top-level options shared by every command."""
+    if version:
+        console.print(f"{__cli_name__} {__version__}")
+        raise typer.Exit(code=0)
+
 
 #: Cool technical-blue identity accent — reserved for identity and
 #: informational CLI framing. Never used for semantic status outcomes.
@@ -176,6 +195,27 @@ def _effective_redaction_settings(
     return settings
 
 
+#: Canonical report artifact filenames. Any existing file means a prior run's
+#: baseline lives in the output dir and must not be silently clobbered.
+_REPORT_ARTIFACT_NAMES: Final = (
+    "security-license-lens-report.html",
+    "security-license-lens-report.json",
+    "security-license-lens-report.md",
+    "security-license-lens-report.zip",
+)
+
+
+def _divert_to_fresh_subdir(output_dir: Path) -> Path:
+    """Return a fresh per-run subdirectory so a prior scan is preserved."""
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    candidate = output_dir / f"scan-{stamp}"
+    counter = 1
+    while candidate.exists():
+        counter += 1
+        candidate = output_dir / f"scan-{stamp}-{counter}"
+    return candidate
+
+
 def _write_scan_artifacts(
     result: ScanResult,
     output_dir: Path,
@@ -183,7 +223,24 @@ def _write_scan_artifacts(
     report_archive: bool,
     redaction: RedactionSettings,
 ) -> tuple[Path, Path, Path, Path | None]:
-    """Write HTML/JSON/Markdown reports and optional deterministic ZIP archive."""
+    """Write HTML/JSON/Markdown reports and optional deterministic ZIP archive.
+
+    When the output dir already holds report artifacts from a prior run, this
+    run is written to a fresh timestamped subdirectory instead of clobbering
+    the previous scan's files (which are the diff baseline).
+    """
+    existing = [
+        output_dir / name
+        for name in _REPORT_ARTIFACT_NAMES
+        if (output_dir / name).is_file()
+    ]
+    if existing:
+        prior_dir = output_dir
+        output_dir = _divert_to_fresh_subdir(output_dir)
+        console.print(
+            f"[yellow]Prior report files found in {prior_dir} — preserving them "
+            f"for diffing. Writing this run to {output_dir}[/yellow]"
+        )
     output_dir.mkdir(parents=True, exist_ok=True)
     html_path = write_html_report(
         result, output_dir / "security-license-lens-report.html", redaction=redaction
@@ -311,10 +368,45 @@ def setup_cmd() -> None:
     raise typer.Exit(code=0)
 
 
+def _checks_json_payload(checks: list[CheckDefinition]) -> list[dict[str, object]]:
+    """Machine-readable check inventory with full (untruncated) ids."""
+    payload: list[dict[str, object]] = []
+    for check, (_id, workload, severity, profiles_csv, backend, mode, state) in zip(
+        checks, checks_listing_rows(checks), strict=True
+    ):
+        payload.append(
+            {
+                "id": check.id,
+                "title": check.title,
+                "workload": workload,
+                "capabilities": list(check.required_capabilities),
+                "severity": severity,
+                "mode": mode,
+                "state": state,
+                "backend": backend,
+                "profiles": [
+                    profile_id
+                    for profile_id in profiles_csv.split(",")
+                    if profile_id and profile_id != "—"
+                ],
+            }
+        )
+    return payload
+
+
 @app.command("checks")
-def checks_cmd() -> None:
+def checks_cmd(
+    json_output: bool = typer.Option(
+        False,
+        "--json",
+        help="Emit a JSON array of checks with full ids (no table truncation).",
+    ),
+) -> None:
     """List registered checks with profile, backend, mode, and state."""
     checks = load_checks()
+    if json_output:
+        console.file.write(json.dumps(_checks_json_payload(checks), indent=2) + "\n")
+        raise typer.Exit(code=0)
     if not checks:
         console.print("[yellow]No checks found.[/yellow]")
         raise typer.Exit(code=0)
@@ -778,6 +870,10 @@ def scan_cmd(
     console.print(f"  MD    {md_path}")
     if archive_path is not None:
         console.print(f"  ZIP   {archive_path}")
+    console.print(
+        "[dim]To compare against a prior assessment: "
+        "`licenselens diff <old.json> <new.json>`[/dim]"
+    )
 
     if wizard.open_browser:
         import webbrowser
