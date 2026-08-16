@@ -4,6 +4,7 @@ customer_title: Restrict Power BI API access for service principals
 customer_summary: >
   Service principals can call Power BI / Fabric APIs for the whole organization
   instead of being limited to specific security groups.
+expected_state: Service principal API access is disabled or limited to specific security groups.
 customer_next_step: >
   Restrict service principal API access to specific security groups or disable it.
 description: >

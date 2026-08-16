@@ -7,6 +7,7 @@ from licenselens.catalog.capability_meta import (
     CatalogLoadError,
     EntitlementKind,
 )
+from licenselens.catalog.expected_states import expected_state_map
 from licenselens.catalog.loader import (
     capability_summaries_for,
     catalog_cloud_values,
@@ -22,6 +23,7 @@ __all__ = [
     "EntitlementKind",
     "capability_summaries_for",
     "catalog_cloud_values",
+    "expected_state_map",
     "load_capabilities",
     "resolve_owned_capabilities",
 ]

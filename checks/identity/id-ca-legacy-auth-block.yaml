@@ -3,6 +3,7 @@ title: Legacy authentication not blocked by Conditional Access
 customer_title: Block outdated sign-in methods
 customer_summary: >
   Older email and client sign-in methods skip modern multi-factor checks. If they are still allowed, stolen passwords are easier to abuse.
+expected_state: Legacy authentication clients are blocked tenant-wide.
 customer_next_step: >
   Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.
 description: >

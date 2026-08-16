@@ -5,6 +5,7 @@ customer_summary: >
   Your plan can add threat protection to Azure resources, but the paid plan
   often stays at the free tier after sign-up. Free tier means fewer alerts
   and fewer hardening recommendations.
+expected_state: The paid Defender for Cloud plan is enabled on the subscription with continuous export of findings.
 customer_next_step: >
   Enable the Defender for Cloud plan (Standard tier) on the subscription that
   hosts your security workspace.

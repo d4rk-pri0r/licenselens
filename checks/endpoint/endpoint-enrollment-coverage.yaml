@@ -5,6 +5,7 @@ customer_summary: >
   Paying for device management only protects devices that are actually
   enrolled. A large gap means laptops and phones may be bypassing the cloud
   identity and compliance controls you already fund.
+expected_state: Licensed devices are enrolled in Intune management.
 customer_next_step: >
   Compare Intune licenses to enrolled devices and enroll the missing ones
   through the device management tools you already use.

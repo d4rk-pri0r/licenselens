@@ -3,6 +3,7 @@ title: Spam or phishing can still reach the inbox
 customer_title: Keep spam and phishing out of inboxes
 customer_summary: >
   Spam and phishing reduce productivity and deliver malware.
+expected_state: Spam and phishing messages land in quarantine, not the inbox.
 customer_next_step: >
   Set spam and phishing actions to quarantine or junk, not inbox delivery.
 description: >

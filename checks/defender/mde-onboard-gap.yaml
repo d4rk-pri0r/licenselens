@@ -5,6 +5,7 @@ customer_summary: >
   Paying for advanced device security only helps machines that are actually
   enrolled and healthy. A large gap means laptops or servers may be missing
   the deeper monitoring you already fund.
+expected_state: Licensed devices are onboarded to Defender for Endpoint with healthy sensors.
 customer_next_step: >
   Compare licensed seats to enrolled devices and enroll the missing ones
   (often through your device management tools).

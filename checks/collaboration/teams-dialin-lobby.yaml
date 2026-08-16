@@ -3,6 +3,7 @@ title: Dial-in callers can bypass the meeting lobby
 customer_title: Keep dial-in callers in the lobby
 customer_summary: >
   Dial-in callers who bypass the lobby reduce control over who joins.
+expected_state: Dial-in callers wait in the meeting lobby.
 customer_next_step: >
   Turn off 'People dialing in can bypass the lobby'.
 description: >

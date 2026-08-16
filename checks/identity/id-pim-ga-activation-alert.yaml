@@ -3,6 +3,7 @@ title: No alert on Global Administrator activation
 customer_title: Alert when Global Admin is turned on
 customer_summary: >
   Global Admin activation is a critical event and should never be silent.
+expected_state: Security is alerted the moment Global Administrator is activated.
 customer_next_step: >
   Enable notifications for Global Administrator activation.
 description: >

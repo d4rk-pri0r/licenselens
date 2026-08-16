@@ -3,6 +3,7 @@ title: Guest invite domains need profile allowlist review
 customer_title: Limit guest invites to approved partner domains
 customer_summary: >
   Open guest invites to any domain make it easy to bring untrusted external identities into your tenant.
+expected_state: Guest invites are limited to profile-approved external domains.
 customer_next_step: >
   List approved partner domains in the assessment profile and mirror them in Entra B2B allowlists.
 description: >

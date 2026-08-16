@@ -4,6 +4,7 @@ customer_title: Turn off service principal profiles
 customer_summary: >
   Service principals can create and use Power BI profiles, expanding automation
   surface beyond intended scope.
+expected_state: Service principals cannot create Power BI profiles.
 customer_next_step: >
   Disable service principal profile creation in the Power BI admin portal.
 description: >

@@ -4,6 +4,7 @@ customer_title: Turn on auto-labeling for sensitive content
 customer_summary: >
   Manual labeling is easy to skip, so sensitive files stay unprotected.
   Auto-labeling classifies content consistently without relying on people.
+expected_state: Sensitive content is classified automatically through auto-labeling policies.
 customer_next_step: >
   Configure auto-labeling policies or default labels so new and existing
   content is classified automatically, then monitor the results.

@@ -3,6 +3,7 @@ title: Automatic forwarding to external domains is not locked down
 customer_title: Stop automatic email forwarding to outside domains
 customer_summary: >
   Attackers use auto-forwarding to quietly copy mail outside your organization.
+expected_state: Automatic forwarding to external domains is blocked except approved partners.
 customer_next_step: >
   Disable automatic forwarding on remote domains except approved partners.
 description: >

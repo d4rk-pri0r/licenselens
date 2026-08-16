@@ -3,6 +3,7 @@ title: Calendar details are shared with all domains
 customer_title: Limit calendar sharing to approved domains
 customer_summary: >
   Open calendar sharing can leak meeting details outside your organization.
+expected_state: Calendar sharing policies exclude the all-domains scope.
 customer_next_step: >
   Remove sharing-with-all-domains from calendar sharing policies.
 description: >

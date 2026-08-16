@@ -4,6 +4,7 @@ customer_title: Turn off Python and R visuals
 customer_summary: >
   Python and R visuals are enabled, which can execute arbitrary code when a
   report is opened.
+expected_state: Python and R visuals are disabled in Power BI tenant settings.
 customer_next_step: >
   Disable Python and R visuals in the Power BI admin portal.
 description: >

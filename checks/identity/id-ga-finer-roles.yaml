@@ -3,6 +3,7 @@ title: Privileged work over-concentrated in Global Administrator
 customer_title: Use narrower admin roles instead of Global Admin
 customer_summary: >
   When most admin work uses Global Admin, every admin task carries maximum risk.
+expected_state: Privileged users hold fine-grained roles instead of standing Global Admin.
 customer_next_step: >
   Move routine admin duties to finer-grained directory roles and keep Global Admin rare.
 description: >

@@ -3,6 +3,7 @@ title: DMARC agency report contact is missing
 customer_title: Add your mailbox to DMARC reports
 customer_summary: >
   Spoofing attempts stay invisible if nobody receives DMARC reports.
+expected_state: DMARC records include the agency's internal report contact.
 customer_next_step: >
   Add an internal rua/ruf contact from your assessment profile to DMARC.
 description: >

@@ -3,6 +3,7 @@ title: No enforced DLP policy protects sensitive data
 customer_title: Create an enforced DLP policy for sensitive data
 customer_summary: >
   Credit cards, tax IDs, and SSNs can leave without DLP protection.
+expected_state: An enforced DLP policy protects agency-defined sensitive information.
 customer_next_step: >
   Create and enforce a DLP policy covering agency-defined sensitive information.
 description: >

@@ -4,6 +4,7 @@ customer_title: Turn on Power Platform tenant isolation
 customer_summary: >
   Tenant isolation is off, so connections can reach other tenants unless explicitly
   blocked by an inbound/outbound allowlist.
+expected_state: Tenant isolation blocks cross-tenant connections with an explicit allowlist.
 customer_next_step: >
   Enable tenant isolation in the Power Platform admin center and review allowlist exceptions.
 description: >

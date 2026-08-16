@@ -3,6 +3,7 @@ title: SPF is missing or does not fail unapproved senders
 customer_title: Publish a strict SPF record for every domain
 customer_summary: >
   Without SPF, receivers cannot tell which servers may send mail as you.
+expected_state: Every domain publishes an SPF record that fails unapproved senders.
 customer_next_step: >
   Publish SPF TXT records that end in -all or ~all for each custom domain.
 description: >

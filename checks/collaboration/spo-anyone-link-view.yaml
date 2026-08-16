@@ -3,6 +3,7 @@ title: Anyone links allow more than view-only permission
 customer_title: Make anyone links view-only
 customer_summary: >
   Anyone links that allow editing let anonymous users change files.
+expected_state: Anyone links grant view-only access to files and folders.
 customer_next_step: >
   Restrict anyone links to view-only for files and folders.
 description: >

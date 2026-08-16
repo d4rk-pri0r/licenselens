@@ -3,6 +3,7 @@ title: Phishing-resistant MFA not enforced for all users
 customer_title: Require strong phishing-resistant sign-in for everyone
 customer_summary: >
   Ordinary multi-factor methods can still be phished. Stronger methods such as FIDO2 or certificate-based auth close that gap.
+expected_state: Every user signs in with phishing-resistant MFA enforced by Conditional Access.
 customer_next_step: >
   Enforce phishing-resistant authentication strength for all users where feasible.
 description: >

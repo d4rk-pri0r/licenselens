@@ -4,6 +4,7 @@ customer_title: Block Power BI resource key authentication
 customer_summary: >
   Resource key authentication is allowed, which can let embedded content use
   less-secure key-based access.
+expected_state: Resource key authentication is blocked in Power BI tenant settings.
 customer_next_step: >
   Block resource key authentication in the Power BI admin portal.
 description: >

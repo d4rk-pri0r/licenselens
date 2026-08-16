@@ -5,6 +5,7 @@ customer_summary: >
   Connecting Intune to Defender for Endpoint lets you enforce machine risk
   scores in access policy and see devices in advanced protection. Without it,
   enrolled devices may stay invisible to EDR.
+expected_state: The Intune to Defender for Endpoint connector is active with healthy devices.
 customer_next_step: >
   Enable the Intune to Defender for Endpoint connector and confirm devices
   appear onboarded.

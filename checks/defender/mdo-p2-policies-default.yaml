@@ -5,6 +5,7 @@ customer_summary: >
   Your license can open suspicious attachments and links safely and stop
   many phishing attacks. If those features are off, in test mode, or only
   applied to a pilot group, most people still lack the stronger shield.
+expected_state: Safe Attachments and Safe Links run in block mode for all recipients.
 customer_next_step: >
   Turn on Preset security policies (Standard) for all users in the
   Defender portal — Safe Links and Safe Attachments included.

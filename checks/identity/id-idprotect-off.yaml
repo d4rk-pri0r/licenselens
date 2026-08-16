@@ -5,6 +5,7 @@ customer_summary: >
   Your plan can flag odd sign-in behavior (like a login from an unusual country
   right after one at the office). If those protections are off or "report only,"
   risky logins may still succeed.
+expected_state: Identity Protection user-risk and sign-in-risk policies are enforced.
 customer_next_step: >
   Turn on risk-based sign-in protection in stages — start by requiring extra
   verification when Microsoft marks a sign-in as risky.

@@ -4,6 +4,7 @@ customer_title: Turn off external Power BI invitations
 customer_summary: >
   Users can invite external people to collaborate on Power BI content, widening
   distribution beyond the organization.
+expected_state: External user invitations are disabled in Power BI tenant settings.
 customer_next_step: >
   Disable external invitations in the Power BI admin portal.
 description: >

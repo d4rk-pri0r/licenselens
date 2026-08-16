@@ -3,6 +3,7 @@ title: Contact folders are shared with all domains
 customer_title: Limit contact sharing to approved domains
 customer_summary: >
   Open contact sharing can leak directory data outside your organization.
+expected_state: Contact sharing policies exclude the all-domains scope.
 customer_next_step: >
   Remove sharing-with-all-domains from contact sharing policies.
 description: >

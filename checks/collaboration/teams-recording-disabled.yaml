@@ -3,6 +3,7 @@ title: Meeting recording is enabled
 customer_title: Disable meeting recording by default
 customer_summary: >
   Recording meetings can expose audio, video, and shared screens without authorization.
+expected_state: Meeting recording is off by default in meeting policies.
 customer_next_step: >
   Turn off 'Meeting recording' unless a specific group needs it.
 description: >

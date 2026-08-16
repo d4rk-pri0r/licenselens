@@ -3,6 +3,7 @@ title: Risky AI agents not clearly blocked
 customer_title: Block risky AI agents when the control is available
 customer_summary: >
   AI agents with broad permissions can move quickly if compromised. Blocking risky agents reduces that blast radius.
+expected_state: Risky AI agents are blocked by Conditional Access or identity protection.
 customer_next_step: >
   Review Entra AI agent risk controls and enforce blocks where licensed and supported.
 description: >

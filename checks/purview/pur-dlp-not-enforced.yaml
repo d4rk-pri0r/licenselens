@@ -5,6 +5,7 @@ customer_summary: >
   Your plan can warn or stop people from sharing sensitive information
   (like payment cards or personal data) in the wrong place. If rules are
   missing or still in test mode, everyday mistakes can still walk out the door.
+expected_state: DLP policies are enforced in production across mail, files, and endpoints.
 customer_next_step: >
   Start with a simple policy for email and cloud files that detects obvious
   sensitive data, then move from "test" to "enforce" after a short tuning period.

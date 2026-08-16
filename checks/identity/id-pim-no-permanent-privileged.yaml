@@ -3,6 +3,7 @@ title: Permanent highly privileged role assignments present
 customer_title: Remove always-on powerful admin assignments
 customer_summary: >
   Permanent high-power roles stay dangerous even when unused. Just-in-time access shrinks that window.
+expected_state: No permanent active assignments remain for highly privileged roles.
 customer_next_step: >
   Convert highly privileged standing assignments to PIM-eligible where possible.
 description: >

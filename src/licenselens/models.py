@@ -248,6 +248,7 @@ class CheckDefinition(BaseModel):
     enabled: bool = True
     customer_title: str = ""
     customer_summary: str = ""
+    expected_state: str = ""
     customer_next_step: str = ""
     source_path: str | None = None
 

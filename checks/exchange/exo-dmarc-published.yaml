@@ -3,6 +3,7 @@ title: DMARC is not published for every domain
 customer_title: Publish a DMARC record for every domain
 customer_summary: >
   Without DMARC, receivers do not know what to do with failed authentication.
+expected_state: Every domain publishes a DMARC record at _dmarc.
 customer_next_step: >
   Publish a DMARC TXT record at _dmarc for each second-level domain.
 description: >

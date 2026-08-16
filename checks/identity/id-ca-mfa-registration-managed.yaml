@@ -3,6 +3,7 @@ title: MFA registration not limited to managed devices
 customer_title: Only allow multi-factor setup from managed devices
 customer_summary: >
   If anyone can register a second factor from a personal phone after stealing a password, attackers can lock the real user out.
+expected_state: Security-information registration happens only from managed devices.
 customer_next_step: >
   Require a managed device when users register security information.
 description: >

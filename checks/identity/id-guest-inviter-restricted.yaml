@@ -3,6 +3,7 @@ title: Guest invitations not limited to inviter roles
 customer_title: Stop everyone from inviting external guests
 customer_summary: >
   When any employee can invite guests, partner sprawl and accidental data sharing grow quickly.
+expected_state: Only Guest Inviter role members and admins can invite guests.
 customer_next_step: >
   Allow only admins and Guest Inviter role holders to invite guests.
 description: >

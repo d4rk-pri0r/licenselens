@@ -4,6 +4,7 @@ customer_title: Confirm eDiscovery is set up
 customer_summary: >
   eDiscovery cases and legal holds preserve evidence when it matters. They are
   portal-configured and need a specialist to confirm the workflow is ready.
+expected_state: Case and hold workflows are tested and eDiscovery roles are assigned.
 customer_next_step: >
   Confirm eDiscovery administrators are assigned and legal hold workflows are
   configured in the Purview portal.

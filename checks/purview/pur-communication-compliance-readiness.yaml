@@ -4,6 +4,7 @@ customer_title: Confirm communication compliance is set up
 customer_summary: >
   Communication compliance detects harassment, threats, and risky sharing in
   email and Teams. It is portal-configured and needs a specialist to confirm.
+expected_state: Communication compliance policies cover key channels and route matches to reviewers.
 customer_next_step: >
   Confirm communication compliance policies cover the channels that matter and
   route matches to the right reviewers in the Purview portal.

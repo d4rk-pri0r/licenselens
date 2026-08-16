@@ -5,6 +5,7 @@ customer_summary: >
   If you still run traditional office directory servers, special sensors
   watch for attackers moving through them. Without healthy sensors, that
   part of your environment can stay invisible.
+expected_state: Defender for Identity sensors are healthy on every domain controller.
 customer_next_step: >
   Confirm whether you still use on-site directory servers; if yes, install
   and health-check the identity sensors on each one.

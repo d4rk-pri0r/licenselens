@@ -3,6 +3,7 @@ title: SMTP AUTH is still enabled organization-wide
 customer_title: Turn off SMTP AUTH for the organization
 customer_summary: >
   Basic-auth email submission can bypass modern sign-in protections.
+expected_state: SMTP AUTH is disabled at the organization level.
 customer_next_step: >
   Disable SMTP AUTH at the organization level unless a legacy app truly needs it.
 description: >

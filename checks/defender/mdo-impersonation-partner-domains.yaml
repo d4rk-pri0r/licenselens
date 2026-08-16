@@ -3,6 +3,7 @@ title: Partner domain impersonation protection is off
 customer_title: Protect key partner domains from look-alikes
 customer_summary: >
   Spoofed partner domains can trick finance and operations staff.
+expected_state: Impersonation protection covers profile-listed partner domains.
 customer_next_step: >
   Enable targeted domain protection for profile-listed partner domains.
 description: >

@@ -3,6 +3,7 @@ title: Anyone links do not expire within the recommended window
 customer_title: Make anyone links expire within 30 days
 customer_summary: >
   Anyone links that never expire grant indefinite anonymous access to files.
+expected_state: Anyone links expire within 30 days of creation.
 customer_next_step: >
   Require anyone links to expire within 30 days.
 description: >

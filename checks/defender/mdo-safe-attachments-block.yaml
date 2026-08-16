@@ -3,6 +3,7 @@ title: Safe Attachments is not set to block
 customer_title: Block malware found by Safe Attachments
 customer_summary: >
   Suspicious attachments may still reach users if action is not block.
+expected_state: Safe Attachments blocks detected malware before delivery.
 customer_next_step: >
   Set Safe Attachments unknown malware response to Block or Dynamic Delivery.
 description: >

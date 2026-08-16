@@ -5,6 +5,7 @@ customer_summary: >
   Full cloud security posture management across every Azure resource is out of
   scope for this assessment. Use Defender for Cloud to review and remediate
   posture recommendations for your resources.
+expected_state: Azure resource posture is continuously reviewed and remediated in Defender for Cloud.
 customer_next_step: >
   Open Defender for Cloud recommendations and triage posture findings for your
   Azure resources with your cloud team.

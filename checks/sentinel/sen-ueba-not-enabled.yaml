@@ -5,6 +5,7 @@ customer_summary: >
   Modern security tools can learn normal patterns for people and devices,
   then flag unusual behavior. That intelligence is often left off after
   the workspace is created.
+expected_state: UEBA entity behavior analytics is enabled on the Sentinel workspace.
 customer_next_step: >
   Ask your security admin to turn on behavior analytics (UEBA) in the
   security workspace and connect the main data sources it needs.

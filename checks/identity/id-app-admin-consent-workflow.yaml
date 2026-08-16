@@ -3,6 +3,7 @@ title: Admin consent workflow not enabled
 customer_title: Turn on admin approval requests for apps
 customer_summary: >
   Without a request workflow, users either get blocked with no path forward or find unsafe workarounds.
+expected_state: Admin consent requests route to reviewers who monitor the queue.
 customer_next_step: >
   Enable the admin consent request workflow with monitored reviewers.
 description: >

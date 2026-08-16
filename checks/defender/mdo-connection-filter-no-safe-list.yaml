@@ -3,6 +3,7 @@ title: Connection filter safe list is enabled
 customer_title: Turn off the connection filter safe list
 customer_summary: >
   Safe list bypass weakens inbound filtering.
+expected_state: Connection filter policies disable the safe list.
 customer_next_step: >
   Disable EnableSafeList on connection filter policies.
 description: >

@@ -3,6 +3,7 @@ title: Weak authentication methods still enabled
 customer_title: Turn off SMS, voice, and email one-time codes
 customer_summary: >
   Text messages, phone calls, and email codes are the easiest multi-factor methods for attackers to intercept or social-engineer.
+expected_state: SMS, voice call, and email one-time codes are disabled.
 customer_next_step: >
   Disable SMS, Voice, and Email OTP authentication methods.
 description: >

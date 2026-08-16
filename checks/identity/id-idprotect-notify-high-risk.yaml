@@ -3,6 +3,7 @@ title: High-risk user admin notifications need manual confirmation
 customer_title: Confirm high-risk account alerts reach security
 customer_summary: >
   Automatic blocks help, but someone still needs to be notified when accounts are marked high risk.
+expected_state: High-risk user alerts reach a monitored security mailbox.
 customer_next_step: >
   In Identity Protection, send high-risk user alerts to a monitored security mailbox.
 description: >

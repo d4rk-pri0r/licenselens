@@ -3,6 +3,7 @@ title: High-risk users not blocked by Conditional Access
 customer_title: Block accounts Microsoft marks as high risk
 customer_summary: >
   Your stronger identity plan can automatically stop accounts that look compromised. If that rule is off, risky accounts may keep working.
+expected_state: Accounts marked high user risk by Identity Protection are blocked.
 customer_next_step: >
   Enforce a Conditional Access policy that blocks high user risk for all users.
 description: >

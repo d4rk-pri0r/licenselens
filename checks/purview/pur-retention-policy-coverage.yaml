@@ -4,6 +4,7 @@ customer_title: Apply retention policies to email and files
 customer_summary: >
   Without retention policies, content is either deleted too early or kept
   forever, which creates both legal risk and storage cost.
+expected_state: Retention policies govern content across mail and file workloads.
 customer_next_step: >
   Create retention policies with retention rules for Exchange, SharePoint,
   OneDrive, and Teams, then confirm the durations match your requirements.

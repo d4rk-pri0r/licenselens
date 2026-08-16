@@ -4,6 +4,7 @@ customer_title: Turn on Power BI sensitivity labels
 customer_summary: >
   Sensitivity labels are not applied to Power BI content, so reports may not
   inherit the data classification and protection controls you already pay for.
+expected_state: Sensitivity labels are enabled so Power BI content inherits classification.
 customer_next_step: >
   Enable sensitivity labels in the Power BI admin portal and publish label policies.
 description: >

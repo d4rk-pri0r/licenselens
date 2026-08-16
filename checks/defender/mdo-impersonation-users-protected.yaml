@@ -3,6 +3,7 @@ title: User impersonation protection is not enabled
 customer_title: Protect sensitive accounts from look-alike senders
 customer_summary: >
   Attackers impersonate executives and admins to phish staff.
+expected_state: User impersonation protection covers profile-listed sensitive accounts.
 customer_next_step: >
   Enable user impersonation protection for profile-listed sensitive accounts.
 description: >

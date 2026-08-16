@@ -4,6 +4,7 @@ customer_title: Keep security logs long enough to investigate
 customer_summary: >
   Security investigations often need weeks or months of history. A short
   retention window can erase the evidence before your team gets to it.
+expected_state: Sentinel workspace retention covers at least 90 days for investigations.
 customer_next_step: >
   Raise the workspace data retention to at least 90 days (and consider
   archive tiers for long-term storage).

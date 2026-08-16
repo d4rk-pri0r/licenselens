@@ -4,6 +4,7 @@ customer_title: Apply a DLP policy to every environment
 customer_summary: >
   One or more environments are not covered by a data loss prevention policy,
   leaving those makers free to connect business data to personal connectors.
+expected_state: Every environment, including the default, is covered by a DLP policy.
 customer_next_step: >
   Assign a DLP policy that covers every environment, including the default environment.
 description: >

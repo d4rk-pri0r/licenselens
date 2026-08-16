@@ -4,6 +4,7 @@ customer_title: Nothing may happen when a device falls out of compliance
 customer_summary: >
   Compliance checks are only useful if something happens when a device fails
   them. Without an action, an unhealthy device can keep accessing work data.
+expected_state: Every compliance policy has a scheduled action for noncompliant devices.
 customer_next_step: >
   Configure a noncompliance action (such as notify or block access) on each
   compliance policy.

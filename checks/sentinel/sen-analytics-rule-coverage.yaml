@@ -5,6 +5,7 @@ customer_summary: >
   A central security workspace only helps if detection rules are enabled.
   An empty or near-default setup means you pay for the building but leave
   most of the alarm system off.
+expected_state: Sentinel runs enabled scheduled rules covering identity, endpoint, and cloud sources.
 customer_next_step: >
   Enable a starter set of detection rules for sign-ins, email, and devices,
   then expand coverage with your IT or security partner.

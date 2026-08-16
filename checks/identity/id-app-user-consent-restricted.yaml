@@ -3,6 +3,7 @@ title: User consent to applications not restricted
 customer_title: Stop users from approving risky app permissions
 customer_summary: >
   Consent phishing works when users can grant apps broad access themselves. Restricting consent forces admin review.
+expected_state: User consent to applications is restricted so admins review risky permissions.
 customer_next_step: >
   Restrict user consent so only admins approve non-trivial permissions.
 description: >

@@ -3,6 +3,7 @@ title: Domain impersonation protection for owned domains is off
 customer_title: Protect your own domains from look-alikes
 customer_summary: >
   Look-alike domains can spoof your brand without detection.
+expected_state: Impersonation protection covers every owned organization domain.
 customer_next_step: >
   Enable organization domain impersonation protection.
 description: >

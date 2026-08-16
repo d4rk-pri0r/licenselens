@@ -3,6 +3,7 @@ title: SharePoint external sharing is broader than existing guests
 customer_title: Restrict SharePoint sharing to existing guests
 customer_summary: >
   SharePoint lets people share with anyone or any external user, which can leak files.
+expected_state: SharePoint sharing is limited to existing guests or internal users only.
 customer_next_step: >
   Set SharePoint sharing to existing guests or internal-only.
 description: >

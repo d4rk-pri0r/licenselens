@@ -4,6 +4,7 @@ customer_title: Publish sensitivity labels
 customer_summary: >
   Labels that classify and protect files and email only help if people can
   actually apply them. Unpublished labels are invisible in the apps.
+expected_state: Sensitivity labels are published to users through an enabled label policy.
 customer_next_step: >
   Create a label policy that publishes your sensitivity labels to the people
   who handle sensitive content, then confirm the labels appear in Office apps.

@@ -5,6 +5,7 @@ customer_summary: >
   Defender XDR ties identity, email, endpoint, and cloud signals into one
   incident story. If no incidents ever appear, that correlation may not be
   turned on or may not be receiving signals.
+expected_state: Defender XDR correlates signals from identity, email, and endpoint into incidents.
 customer_next_step: >
   Confirm XDR is enabled and that identity, email, and endpoint signals are
   connected in the Microsoft Defender portal.

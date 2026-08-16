@@ -3,6 +3,7 @@ title: No alert on highly privileged role assignment
 customer_title: Alert when powerful roles are assigned
 customer_summary: >
   If nobody is notified when a powerful role is granted, stealthy privilege escalation is easier.
+expected_state: Highly privileged role assignments trigger alerts.
 customer_next_step: >
   Enable PIM notifications for privileged role assignment events.
 description: >

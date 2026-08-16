@@ -4,6 +4,7 @@ customer_title: Turn off Power BI publish to web
 customer_summary: >
   Publish to web is on, which can expose reports to the public internet without
   authentication.
+expected_state: Publish to web is disabled in Power BI tenant settings.
 customer_next_step: >
   Disable publish to web in the Power BI admin portal.
 description: >

@@ -3,6 +3,7 @@ title: Privileged accounts synced from on-premises
 customer_title: Keep powerful admin accounts cloud-only
 customer_summary: >
   Admin accounts tied to on-premises directories inherit on-prem compromise paths.
+expected_state: Privileged accounts are cloud-only and separate from on-premises directories.
 customer_next_step: >
   Use separate cloud-only accounts for highly privileged roles.
 description: >

@@ -6,6 +6,7 @@ customer_summary: >
   needs powerful access, and to remove guest accounts that are no longer
   active. That process does not look like it has been set up or run yet,
   meaning unused accounts may remain open.
+expected_state: Periodic access reviews run for privileged roles and guest access.
 customer_next_step: >
   Create an Access Review for your Global Administrators and guest users
   (monthly or quarterly), then review the first round of results.

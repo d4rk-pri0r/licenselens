@@ -3,6 +3,7 @@ title: Microsoft app installation is not governed
 customer_title: Restrict Microsoft apps to approved ones
 customer_summary: >
   Letting users install any Microsoft app widens the attack surface without review.
+expected_state: Microsoft app installation is limited to agency-approved apps.
 customer_next_step: >
   Block all Microsoft apps or allow only approved ones.
 description: >

@@ -3,6 +3,7 @@ title: Device code authentication flow not blocked
 customer_title: Block device-code phishing sign-ins
 customer_summary: >
   The device-code sign-in flow is popular with phishing kits. Most organizations do not need it day to day.
+expected_state: Device-code sign-ins are blocked by an enforced Conditional Access policy.
 customer_next_step: >
   Enforce a Conditional Access policy that blocks device code flow.
 description: >

@@ -3,6 +3,7 @@ title: Required Defender alert policies need manual confirmation
 customer_title: Confirm suspicious-email alerts are enabled
 customer_summary: >
   Without alert policies, suspicious sending and forwarding may go unnoticed.
+expected_state: Required Defender alert policies are enabled for suspicious email activity.
 customer_next_step: >
   Enable the required suspicious email and connector alert policies in Defender.
 description: >

@@ -5,6 +5,7 @@ customer_summary: >
   Advanced device protection only works when its sensor is active on each
   device. Inactive or unhealthy sensors leave devices partly invisible to
   attack detection.
+expected_state: Every onboarded device reports an active, healthy Defender sensor.
 customer_next_step: >
   Review inactive and unhealthy sensors and remediate them (reinstall,
   connectivity, or policy) so every licensed device reports health.

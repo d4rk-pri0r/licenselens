@@ -6,6 +6,7 @@ customer_summary: >
   legacy-authentication blocking are in place. Your plan also includes
   Conditional Access for tailoring these protections, but that paid
   customization remains unused.
+expected_state: Conditional Access policies replace Security Defaults for MFA and legacy-authentication blocking.
 customer_next_step: >
   Create equivalent Conditional Access policies for MFA and legacy-authentication
   blocking in report-only mode. Validate coverage, exclusions, emergency access,

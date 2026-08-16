@@ -4,6 +4,7 @@ customer_title: Restrict Power Pages creation to admins
 customer_summary: >
   Non-admin users can create public Power Pages sites, exposing tenant data to
   the internet without review.
+expected_state: Only admins can create Power Pages sites.
 customer_next_step: >
   Turn off Power Pages creation by non-admin users in the Power Platform admin center.
 description: >

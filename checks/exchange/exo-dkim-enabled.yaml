@@ -3,6 +3,7 @@ title: DKIM signing is not enabled for all domains
 customer_title: Turn on DKIM signing for every domain
 customer_summary: >
   Unsigned mail is easier to spoof and harder for receivers to trust.
+expected_state: Every accepted domain publishes DKIM signing.
 customer_next_step: >
   Enable DKIM signing for each accepted domain in Defender.
 description: >

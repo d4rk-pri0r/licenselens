@@ -3,6 +3,7 @@ title: Default sharing links are not scoped to specific people
 customer_title: Default new links to specific people
 customer_summary: >
   New sharing links default to a broad audience, so users may overshare without noticing.
+expected_state: Default sharing links are scoped to specific people only.
 customer_next_step: >
   Set the default sharing link type to specific people.
 description: >

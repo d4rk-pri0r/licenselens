@@ -3,6 +3,7 @@ title: Unmanaged users can initiate contact with internal users
 customer_title: Block unmanaged users from contacting you first
 customer_summary: >
   Allowing unmanaged accounts to contact your team enables address harvesting and phishing.
+expected_state: Unmanaged Teams accounts cannot initiate contact with internal users.
 customer_next_step: >
   Block inbound contact from unmanaged Teams accounts.
 description: >

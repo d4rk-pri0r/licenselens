@@ -3,6 +3,7 @@ title: Guest directory access not limited
 customer_title: Limit what guests can see in your directory
 customer_summary: >
   Guests with member-like directory rights can enumerate users and groups they should not need.
+expected_state: Guests hold limited directory access as Guest or Restricted Guest users.
 customer_next_step: >
   Set guest user access to limited or restricted in Entra external collaboration settings.
 description: >

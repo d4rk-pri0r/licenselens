@@ -3,6 +3,7 @@ title: Authenticator login context not fully enabled
 customer_title: Show app and location on Authenticator prompts
 customer_summary: >
   When people approve a push without seeing which app and where it came from, they are more likely to approve a phishing prompt.
+expected_state: Authenticator prompts show the application name and sign-in location.
 customer_next_step: >
   Enable application name and geographic location in Microsoft Authenticator notifications.
 description: >

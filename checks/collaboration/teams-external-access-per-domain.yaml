@@ -3,6 +3,7 @@ title: Teams external access is open to all domains
 customer_title: Allow external access only for specific domains
 customer_summary: >
   Open federation lets users communicate with any external organization.
+expected_state: Teams external access is limited to approved domains only.
 customer_next_step: >
   Allow only specific external domains, not all.
 description: >

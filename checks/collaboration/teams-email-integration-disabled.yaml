@@ -3,6 +3,7 @@ title: Teams channel email integration is enabled
 customer_title: Disable channel email integration
 customer_summary: >
   Channel email routes sensitive Teams messages through an external email gateway.
+expected_state: Teams channel email integration is turned off.
 customer_next_step: >
   Turn off 'Users can send emails to a channel email address'.
 description: >

@@ -3,6 +3,7 @@ title: Verification-code users are not required to reauthenticate
 customer_title: Require verification-code reauthentication within 30 days
 customer_summary: >
   Verification-code access that never reauthenticates can stay open indefinitely.
+expected_state: Verification-code users reauthenticate within 30 days or fewer.
 customer_next_step: >
   Require verification-code users to reauthenticate within 30 days.
 description: >

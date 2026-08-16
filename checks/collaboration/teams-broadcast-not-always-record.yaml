@@ -3,6 +3,7 @@ title: Live events are set to always record
 customer_title: Stop live events from always recording
 customer_summary: >
   Always-on event recording removes the organizer's discretion and can leak content.
+expected_state: Live events are recorded only when the organizer chooses.
 customer_next_step: >
   Set 'Record an event' to organizer can record or never record.
 description: >

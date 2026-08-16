@@ -3,6 +3,7 @@ title: High-risk sign-ins not blocked by Conditional Access
 customer_title: Block suspicious high-risk sign-ins
 customer_summary: >
   Odd sign-ins can be stopped automatically when Microsoft marks them high risk. Without enforcement, those logins may still succeed.
+expected_state: Sign-ins marked high risk by Identity Protection are blocked.
 customer_next_step: >
   Enforce a Conditional Access policy that blocks high sign-in risk.
 description: >

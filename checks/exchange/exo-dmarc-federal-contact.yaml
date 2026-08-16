@@ -3,6 +3,7 @@ title: DMARC federal report contact is missing
 customer_title: Add the federal DMARC report mailbox when required
 customer_summary: >
   Federal tenants must share aggregate DMARC reports with CISA.
+expected_state: DMARC records include the required federal report contact.
 customer_next_step: >
   When your profile sets a federal contact, include it in every DMARC rua field.
 description: >

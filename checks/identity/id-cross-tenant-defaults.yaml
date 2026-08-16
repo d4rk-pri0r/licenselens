@@ -3,6 +3,7 @@ title: Cross-tenant collaboration defaults are permissive
 customer_title: Tighten default access from unknown external tenants
 customer_summary: >
   If unknown external tenants can collaborate by default, partner access may grow without intentional review.
+expected_state: Cross-tenant defaults block unknown external tenants until reviewed.
 customer_next_step: >
   Review and tighten default cross-tenant access settings.
 description: >

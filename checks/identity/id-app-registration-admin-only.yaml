@@ -3,6 +3,7 @@ title: Non-admin users can register applications
 customer_title: Stop regular users from creating apps
 customer_summary: >
   If anyone can register an application, it is easier for a compromised account to plant a persistent backdoor app.
+expected_state: Only administrators can register applications in the tenant.
 customer_next_step: >
   Disable user application registration in Entra user settings.
 description: >

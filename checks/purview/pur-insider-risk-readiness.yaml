@@ -4,6 +4,7 @@ customer_title: Confirm insider risk management is set up
 customer_summary: >
   Insider risk policies spot risky activity by people who already have access.
   They are portal-configured and need a specialist to confirm they are live.
+expected_state: An insider risk policy is live with analytics enabled.
 customer_next_step: >
   Confirm an insider risk policy is created, scoped to the right users, and
   analytics is enabled in the Purview portal.

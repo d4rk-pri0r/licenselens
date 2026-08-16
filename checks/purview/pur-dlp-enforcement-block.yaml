@@ -3,6 +3,7 @@ title: DLP does not block sharing sensitive information
 customer_title: Block sharing of sensitive information with DLP
 customer_summary: >
   Warn-only DLP still allows sensitive data to leave.
+expected_state: DLP rule actions block sharing of sensitive information.
 customer_next_step: >
   Set DLP rule actions to block access for sensitive information.
 description: >

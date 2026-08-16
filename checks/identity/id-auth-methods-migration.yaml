@@ -3,6 +3,7 @@ title: Authentication methods migration not complete
 customer_title: Finish consolidating sign-in method settings
 customer_summary: >
   Microsoft moved multi-factor and password-reset methods to one policy page. Leaving migration unfinished keeps two places to misconfigure.
+expected_state: Authentication methods policy migration is complete for MFA and SSPR.
 customer_next_step: >
   Complete authentication methods migration to Migration Complete.
 description: >

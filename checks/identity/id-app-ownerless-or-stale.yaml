@@ -3,6 +3,7 @@ title: Ownerless or stale applications present
 customer_title: Clean up abandoned apps
 customer_summary: >
   Apps with no owner or expired credentials often keep broad permissions long after the project ends.
+expected_state: Every application has an owner and current credentials.
 customer_next_step: >
   Assign owners to critical apps and remove abandoned registrations.
 description: >

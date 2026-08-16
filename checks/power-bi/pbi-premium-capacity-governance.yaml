@@ -5,6 +5,7 @@ customer_summary: >
   Power BI Premium seats and capacity change how widely reports scale.
   Entitlement assignment, capacity admins, and workspace governance are not
   fully readable here and need a specialist review.
+expected_state: Premium capacity admins are limited and workspace mapping is documented.
 customer_next_step: >
   Confirm Premium per-user or capacity entitlements are assigned intentionally,
   capacity admins are limited, and workspace provenance matches your policy.

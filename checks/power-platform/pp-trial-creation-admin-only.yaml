@@ -4,6 +4,7 @@ customer_title: Restrict trial environment creation to admins
 customer_summary: >
   Non-admin users can spin up trial environments, creating ungoverned containers
   that can connect to business data.
+expected_state: Only admins can create Power Platform trial environments.
 customer_next_step: >
   Turn off trial environment creation by non-admin users in the Power Platform admin center.
 description: >

@@ -3,6 +3,7 @@ title: OneDrive external sharing is broader than existing guests
 customer_title: Restrict OneDrive sharing to existing guests
 customer_summary: >
   OneDrive lets people share files broadly with external users, which can leak personal work files.
+expected_state: OneDrive sharing is limited to existing guests or internal users only.
 customer_next_step: >
   Set OneDrive sharing to existing guests or internal-only.
 description: >

@@ -4,6 +4,7 @@ customer_title: Automate part of the incident response
 customer_summary: >
   The security workspace can react to alerts automatically, but that is often
   left off. Without automation, every alert waits for a person to act.
+expected_state: Automation rules trigger playbooks for high-value alerts.
 customer_next_step: >
   Add automation rules that trigger playbooks for common alerts, so response
   starts without waiting for a person.

@@ -3,6 +3,7 @@ title: Connection filter IP allow list is in use
 customer_title: Clear the connection filter IP allow list
 customer_summary: >
   IP allow lists let mail skip malware and spam filters.
+expected_state: Connection filter policies keep the IP allow list empty.
 customer_next_step: >
   Remove entries from the connection filter IP allow list.
 description: >

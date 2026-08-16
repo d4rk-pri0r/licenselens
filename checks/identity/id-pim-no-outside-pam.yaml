@@ -3,6 +3,7 @@ title: Privileged provisioning appears outside PIM
 customer_title: Provision admin access only through just-in-time tools
 customer_summary: >
   If powerful roles are granted permanently outside PIM, your paid privileged-access controls are bypassed.
+expected_state: Privileged roles are granted only through PIM eligibility.
 customer_next_step: >
   Stop direct permanent privileged assignments and route access through PIM.
 description: >

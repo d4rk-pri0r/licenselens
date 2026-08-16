@@ -3,6 +3,7 @@ title: Anonymous and dial-in callers are auto-admitted to meetings
 customer_title: Hold anonymous and dial-in callers in the lobby
 customer_summary: >
   Auto-admitting unauthenticated callers weakens control over meeting participation.
+expected_state: Anonymous and dial-in callers are held in the meeting lobby.
 customer_next_step: >
   Keep 'Who can bypass the lobby' away from Everyone.
 description: >

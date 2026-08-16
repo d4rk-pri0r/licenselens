@@ -3,6 +3,7 @@ title: Managed devices not required by Conditional Access
 customer_title: Require company-managed devices for access
 customer_summary: >
   Allowing any personal device to reach work apps increases the chance that a lost or infected laptop becomes a foothold.
+expected_state: Cloud app access requires a compliant or hybrid-joined managed device.
 customer_next_step: >
   Enforce Conditional Access requiring compliant or hybrid-joined devices.
 description: >

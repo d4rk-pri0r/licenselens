@@ -3,6 +3,7 @@ title: Third-party app installation is not governed
 customer_title: Restrict third-party apps to approved ones
 customer_summary: >
   Unvetted third-party apps introduce supply-chain and data-access risk.
+expected_state: Third-party app installation is limited to agency-approved apps.
 customer_next_step: >
   Block all third-party apps or allow only approved ones.
 description: >

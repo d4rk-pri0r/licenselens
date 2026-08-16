@@ -3,6 +3,7 @@ title: Safe Links block-list checks are incomplete
 customer_title: Screen links in email Teams and Office apps
 customer_summary: >
   Known-malicious URLs can still be clicked without Safe Links.
+expected_state: Safe Links screens URLs in email, Teams, and Office applications.
 customer_next_step: >
   Enable Safe Links for email, Teams, and Office apps.
 description: >

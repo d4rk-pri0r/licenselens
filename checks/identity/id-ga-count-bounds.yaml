@@ -3,6 +3,7 @@ title: Global Administrator count outside recommended bounds
 customer_title: Keep Global Admin count between two and eight
 customer_summary: >
   Too few Global Admins creates lockout risk. Too many expands the blast radius of a single compromise.
+expected_state: Between two and eight Global Administrator principals exist in the tenant.
 customer_next_step: >
   Reduce or increase Global Administrator principals to land between 2 and 8.
 description: >

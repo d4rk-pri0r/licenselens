@@ -3,6 +3,7 @@ title: Unified audit logging is not enabled
 customer_title: Turn on unified audit logging
 customer_summary: >
   Without unified audit, user and admin activity is not recorded for investigation.
+expected_state: Unified audit logging records user and admin activity.
 customer_next_step: >
   Enable unified audit log ingestion.
 description: >

@@ -3,6 +3,7 @@ title: Mailbox auditing is disabled
 customer_title: Keep mailbox auditing turned on
 customer_summary: >
   Without mailbox audit logs, illicit mailbox access is harder to investigate.
+expected_state: Mailbox auditing is enabled organization-wide.
 customer_next_step: >
   Ensure organization mailbox auditing is enabled (AuditDisabled false).
 description: >

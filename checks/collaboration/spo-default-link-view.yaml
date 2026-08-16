@@ -3,6 +3,7 @@ title: Default sharing links grant edit permission
 customer_title: Default new links to view-only
 customer_summary: >
   New links default to edit permission, letting recipients modify files unexpectedly.
+expected_state: Default sharing links grant view-only permission.
 customer_next_step: >
   Set the default sharing link permission to view.
 description: >

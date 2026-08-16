@@ -5,6 +5,7 @@ customer_summary: >
   Antivirus, firewall, disk encryption, and attack surface reduction are the
   core endpoint protections. Missing any of them leaves devices exposed to
   common attacks.
+expected_state: Antivirus, firewall, disk-encryption, and ASR policies cover managed devices.
 customer_next_step: >
   Confirm endpoint-security policies exist for antivirus, firewall, disk
   encryption, and attack surface reduction, and that they are assigned.

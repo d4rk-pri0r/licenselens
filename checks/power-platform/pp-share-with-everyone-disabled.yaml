@@ -4,6 +4,7 @@ customer_title: Block sharing apps with everyone
 customer_summary: >
   Makers can share apps with everyone in the organization, broadening exposure
   beyond intended audiences.
+expected_state: Power Apps sharing with everyone is disabled.
 customer_next_step: >
   Disable share-with-everyone in the Power Platform admin center.
 description: >

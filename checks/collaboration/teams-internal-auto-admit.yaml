@@ -3,6 +3,7 @@ title: Internal users are not auto-admitted to meetings
 customer_title: Auto-admit internal users to meetings
 customer_summary: >
   Forcing internal users through the lobby causes admission fatigue for routine meetings.
+expected_state: Internal users are admitted to meetings without waiting in the lobby.
 customer_next_step: >
   Set 'Who can bypass the lobby' to People in my org.
 description: >

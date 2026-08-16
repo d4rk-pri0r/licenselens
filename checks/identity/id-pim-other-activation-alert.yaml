@@ -3,6 +3,7 @@ title: Privileged role activation alerts incomplete
 customer_title: Alert when other powerful admin roles activate
 customer_summary: >
   Roles short of Global Admin can still cause major damage and deserve activation alerts.
+expected_state: Alerts fire when other highly privileged roles activate.
 customer_next_step: >
   Enable PIM activation notifications for other highly privileged roles.
 description: >

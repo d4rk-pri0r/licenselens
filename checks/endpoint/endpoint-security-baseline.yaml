@@ -5,6 +5,7 @@ customer_summary: >
   Security baselines bundle proven hardening settings for Windows and other
   platforms. Without one, devices may run with weaker-than-recommended
   security settings.
+expected_state: Security baseline profiles are assigned to every managed platform.
 customer_next_step: >
   Deploy a Microsoft security baseline profile to your managed devices and
   monitor its adoption.

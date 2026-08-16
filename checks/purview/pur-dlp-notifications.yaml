@@ -3,6 +3,7 @@ title: DLP user notifications are not enabled
 customer_title: Notify users when they handle sensitive data
 customer_summary: >
   Users learn safer handling when DLP explains why an action was blocked.
+expected_state: DLP user notifications explain blocked actions to users.
 customer_next_step: >
   Enable user notifications on DLP rules.
 description: >

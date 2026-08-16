@@ -3,6 +3,7 @@ title: Internal users can initiate contact with unmanaged users
 customer_title: Block internal users from contacting unmanaged accounts
 customer_summary: >
   Outbound contact with unmanaged accounts can leak data through consumer chat.
+expected_state: Internal users cannot contact unmanaged Teams accounts.
 customer_next_step: >
   Block outbound contact to unmanaged Teams accounts.
 description: >

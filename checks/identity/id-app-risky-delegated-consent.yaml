@@ -3,6 +3,7 @@ title: Risky tenant-wide delegated app consent present
 customer_title: Review apps with broad permissions for everyone
 customer_summary: >
   Some apps hold mail, files, or directory permissions for the whole tenant. Those grants are high-impact if the app is abused.
+expected_state: Tenant-wide delegated consent grants hold no unused high-impact scopes.
 customer_next_step: >
   Review and remove high-impact AllPrincipals OAuth grants that are not required.
 description: >

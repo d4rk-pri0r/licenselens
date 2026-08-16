@@ -3,6 +3,7 @@ title: DLP does not cover key locations
 customer_title: Apply DLP across Exchange SharePoint OneDrive Teams
 customer_summary: >
   Partial location coverage leaves sensitive data unprotected in other apps.
+expected_state: DLP policies cover Exchange, SharePoint, OneDrive, Teams, and devices.
 customer_next_step: >
   Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.
 description: >

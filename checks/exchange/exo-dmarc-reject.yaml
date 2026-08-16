@@ -3,6 +3,7 @@ title: DMARC policy is weaker than reject
 customer_title: Set DMARC policy to reject
 customer_summary: >
   Weaker DMARC policies still let spoofed mail reach inboxes.
+expected_state: Every domain's DMARC policy is set to reject.
 customer_next_step: >
   Set p=reject on every domain DMARC record.
 description: >

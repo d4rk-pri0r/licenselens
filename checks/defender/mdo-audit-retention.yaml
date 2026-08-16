@@ -3,6 +3,7 @@ title: Audit log retention needs manual confirmation
 customer_title: Confirm audit logs are retained long enough
 customer_summary: >
   Short retention leaves gaps when investigating older incidents.
+expected_state: Audit logs stay searchable for at least 3 months and retrievable for 12.
 customer_next_step: >
   Confirm at least 3 months searchable and 12 months retrievable audit retention.
 description: >

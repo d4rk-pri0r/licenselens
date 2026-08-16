@@ -3,6 +3,7 @@ title: Safe Links click tracking is off
 customer_title: Track clicks on rewritten links
 customer_summary: >
   Without click tracking you cannot see who opened a later-malicious link.
+expected_state: Safe Links records who clicks rewritten URLs.
 customer_next_step: >
   Enable Track user clicks in Safe Links policies.
 description: >

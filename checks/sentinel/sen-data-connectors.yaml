@@ -5,6 +5,7 @@ customer_summary: >
   A security workspace only helps if data actually flows into it. With few or
   no data connectors, you pay for a command center that is mostly watching
   empty screens.
+expected_state: High-value data sources stream into the Sentinel workspace.
 customer_next_step: >
   Connect the main data sources (Entra ID, Microsoft 365, and Defender) to the
   security workspace, then confirm logs start arriving.

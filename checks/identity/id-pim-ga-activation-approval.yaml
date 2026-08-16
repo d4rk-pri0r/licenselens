@@ -3,6 +3,7 @@ title: Global Administrator activation does not require approval
 customer_title: Require approval to turn on Global Admin
 customer_summary: >
   A second person approving Global Admin activation makes solo account takeover harder.
+expected_state: A second approver signs off on every Global Administrator activation.
 customer_next_step: >
   Require approval on Global Administrator PIM activation.
 description: >

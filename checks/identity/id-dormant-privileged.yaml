@@ -4,6 +4,7 @@ customer_title: Powerful accounts that nobody uses are still switched on
 customer_summary: >
   Admin or high-privilege accounts that sit unused are favorite targets.
   Attackers love quiet accounts because nobody notices when they suddenly wake up.
+expected_state: Dormant privileged accounts are disabled or moved to just-in-time access.
 customer_next_step: >
   Review enabled admin accounts that have not signed in for a long time;
   disable or remove access you no longer need.

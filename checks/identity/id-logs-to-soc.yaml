@@ -3,6 +3,7 @@ title: Entra security log shipping needs manual confirmation
 customer_title: Confirm identity logs reach your security team
 customer_summary: >
   Without sign-in and audit logs in your monitoring platform, identity attacks are harder to detect and investigate.
+expected_state: Entra sign-in and audit logs flow to the SOC pipeline.
 customer_next_step: >
   Confirm Entra sign-in and audit logs are exported to your SOC or SIEM.
 description: >

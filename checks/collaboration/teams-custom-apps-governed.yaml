@@ -3,6 +3,7 @@ title: Custom app installation is not governed
 customer_title: Restrict custom apps to approved ones
 customer_summary: >
   Sideloaded custom apps bypass store review and can carry unvetted code.
+expected_state: Custom app installation is limited to agency-approved apps.
 customer_next_step: >
   Block all custom apps or allow only approved ones.
 description: >

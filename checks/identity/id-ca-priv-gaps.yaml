@@ -5,6 +5,7 @@ customer_summary: >
   You can require multi-factor authentication and block outdated sign-in methods.
   Gaps here mean admin or other high-value accounts might get in with weaker proof
   than your license already allows.
+expected_state: Privileged sign-ins require phishing-resistant MFA with legacy auth blocked.
 customer_next_step: >
   Require multi-factor authentication for admins and block legacy email sign-in
   methods that skip modern security prompts.

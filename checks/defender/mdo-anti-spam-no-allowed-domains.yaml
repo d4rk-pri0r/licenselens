@@ -3,6 +3,7 @@ title: Anti-spam allow lists bypass filtering
 customer_title: Remove broad anti-spam allow lists
 customer_summary: >
   Allowed senders and domains skip important spam protections.
+expected_state: Anti-spam policies keep allowed sender and domain lists empty.
 customer_next_step: >
   Clear AllowedSenders and AllowedSenderDomains from anti-spam policies.
 description: >

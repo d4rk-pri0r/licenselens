@@ -3,6 +3,7 @@ title: Application certificates last too long
 customer_title: Shorten long-lived app certificates
 customer_summary: >
   Certificates that stay valid for years are hard to revoke cleanly after a leak.
+expected_state: Application certificates expire within 365 days of issuance.
 customer_next_step: >
   Keep application certificate lifetimes at 365 days or less and rotate on schedule.
 description: >

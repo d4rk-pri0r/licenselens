@@ -3,6 +3,7 @@ title: Safe Links real-time URL scanning is off
 customer_title: Scan download links in real time
 customer_summary: >
   Direct download links can deliver malware without real-time scanning.
+expected_state: Safe Links scans link destinations in real time before delivery.
 customer_next_step: >
   Enable real-time URL scanning and wait-for-scan before delivery.
 description: >
