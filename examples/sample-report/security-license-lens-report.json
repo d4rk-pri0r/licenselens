@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "tool": "security-license-lens",
   "tool_display_name": "Security License Lens",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "tenant_id": "00000000-0000-0000-0000-000000000000",
   "tenant_display_name": "Contoso Demo (dry-run)",
   "tenant_slug": null,

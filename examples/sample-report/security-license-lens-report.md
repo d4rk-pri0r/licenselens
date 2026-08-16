@@ -2,7 +2,7 @@
 
 A plain-language view of security capabilities you already pay for — and whether they are set up to help your organization.
 
-- **Version:** 0.3.0
+- **Version:** 0.4.0
 - **Scanned at:** 2026-08-13T00:00:00+00:00
 - **Mode:** dry_run / dry_run
 - **Organization:** Contoso Demo (dry-run)
@@ -599,7 +599,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Powerful accounts that nobody uses are still switched on
 
 - **Status:** Needs attention
-- **In plain English:** Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.
+- **In plain English:** Some powerful accounts are still switched on but have not been used recently. Unused admin accounts and workload identities are a favorite target for attackers.
 - **Suggested next step:** Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph

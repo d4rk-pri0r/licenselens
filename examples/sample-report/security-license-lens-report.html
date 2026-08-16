@@ -1529,7 +1529,7 @@ body.revealed .reveal-target.is-revealed {
       </div>
     </div>
     <div class="meta">
-      <div class="meta-row">Version <code>0.3.0</code></div>
+      <div class="meta-row">Version <code>0.4.0</code></div>
       <div class="meta-row">Scanned <code>August 13, 2026 at 12:00 AM UTC</code></div>
       <div class="meta-row">Mode <code>dry_run</code></div>
       <div class="meta-row">Organization <code>Contoso Demo (dry-run)</code></div>
@@ -1555,7 +1555,7 @@ body.revealed .reveal-target.is-revealed {
         <p class="display-line opening-stage opening-identity">Contoso Demo (dry-run) <span class="mono opening-tenant-id">00000000-0000-0000-0000-000000000000</span> &mdash; Security License Lens assessment</p>
 
         
-        <p class="opening-meta opening-stage">Version <code>0.3.0</code> <span aria-hidden="true">&middot;</span> <time datetime="2026-08-13T00:00:00+00:00">August 13, 2026 at 12:00 AM UTC</time> <span aria-hidden="true">&middot;</span> Mode <code>dry_run</code> <span aria-hidden="true">&middot;</span> identity, endpoint priority packs</p>
+        <p class="opening-meta opening-stage">Version <code>0.4.0</code> <span aria-hidden="true">&middot;</span> <time datetime="2026-08-13T00:00:00+00:00">August 13, 2026 at 12:00 AM UTC</time> <span aria-hidden="true">&middot;</span> Mode <code>dry_run</code> <span aria-hidden="true">&middot;</span> identity, endpoint priority packs</p>
 
         
         <div class="posture">
@@ -3791,6 +3791,9 @@ body.revealed .reveal-target.is-revealed {
               <li><code>privileged_permanent_principals</code>: 4</li>
               <li><code>privileged_eligible_principals</code>: 0</li>
               <li><code>global_admin_standing_assignments</code>: 2</li>
+              <li><code>break_glass_standing_assignments</code>: 0</li>
+              <li><code>standing_non_break_glass_assignments</code>: 4</li>
+              <li><code>uncovered_standing_roles</code>: Security Administrator, Global Administrator, Helpdesk Administrator</li>
               <li><code>sample_standing_roles</code>: Global Administrator, Helpdesk Administrator, Security Administrator</li>
               
             </ul>
@@ -4170,6 +4173,9 @@ body.revealed .reveal-target.is-revealed {
             <ul class="evidence-keys">
               <li><code>definition_count</code>: 0</li>
               <li><code>definition_ids</code>: None reported</li>
+              <li><code>privileged_scoped_count</code>: 0</li>
+              <li><code>recurring_count</code>: 0</li>
+              <li><code>privileged_recurring_count</code>: 0</li>
               
             </ul>
             
@@ -4615,6 +4621,7 @@ body.revealed .reveal-target.is-revealed {
               <li><code>authenticator_state</code>: enabled</li>
               <li><code>show_app_name</code>: False</li>
               <li><code>show_location</code>: False</li>
+              <li><code>number_matching_enabled</code>: None reported</li>
               
             </ul>
             
@@ -4802,7 +4809,7 @@ body.revealed .reveal-target.is-revealed {
       </div>
 
       
-      <p class="finding-summary">Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.</p>
+      <p class="finding-summary">Some powerful accounts are still switched on but have not been used recently. Unused admin accounts and workload identities are a favorite target for attackers.</p>
 
       <div class="belief-slot">
         <span class="belief-label">Expected</span>
@@ -4812,7 +4819,7 @@ body.revealed .reveal-target.is-revealed {
       <div class="belief-slot">
         <span class="belief-label">Observed</span>
         
-        <p>Found 2 enabled privileged user(s) with no successful sign-in in the last 90 days (of 4 privileged principal(s)).</p>
+        <p>Found 2 enabled privileged principal(s) with no successful sign-in or workload activity in the last 90 days (2 user(s), 0 workload identities of 4 privileged principal(s)).</p>
         
       </div>
 
@@ -4844,11 +4851,15 @@ body.revealed .reveal-target.is-revealed {
               <li><code>privileged_principal_count</code>: 4</li>
               <li><code>active_privileged_users</code>: 2</li>
               <li><code>dormant_privileged_users</code>: 2</li>
+              <li><code>active_workload_identities</code>: 0</li>
+              <li><code>dormant_workload_identities</code>: 0</li>
+              <li><code>unverifiable_workload_identities</code>: 0</li>
               <li><code>non_user_privileged_principals</code>: 0</li>
               <li><code>disabled_or_unresolved</code>: 0</li>
               <li><code>lookback_days</code>: 90</li>
               <li><code>signin_sample_truncated</code>: False</li>
               <li><code>dormant_sample</code>: {&#39;id&#39;: &#39;user-admin-2&#39;, &#39;userPrincipalName&#39;: &#39;a***@contoso.com&#39;}, {&#39;id&#39;: &#39;user-help-dormant&#39;, &#39;userPrincipalName&#39;: &#39;o***@contoso.com&#39;}</li>
+              <li><code>dormant_workload_sample</code>: None reported</li>
               
             </ul>
             
@@ -5753,6 +5764,7 @@ body.revealed .reveal-target.is-revealed {
               <li><code>mfa_report_only_policies</code>: None reported</li>
               <li><code>legacy_block_enforced</code>: None reported</li>
               <li><code>legacy_block_report_only</code>: None reported</li>
+              <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>privileged_principal_count</code>: 4</li>
               <li><code>global_admin_standing_count</code>: 2</li>
               <li><code>mfa_covers_privileged</code>: True</li>
@@ -13821,7 +13833,7 @@ Purview</span>
             <span>Workload: Identity</span>
             <code>id-dormant-privileged</code>
           </div>
-          <p class="explore-row__summary">Found 2 enabled privileged user(s) with no successful sign-in in the last 90 days (of 4 privileged principal(s)).</p>
+          <p class="explore-row__summary">Found 2 enabled privileged principal(s) with no successful sign-in or workload activity in the last 90 days (2 user(s), 0 workload identities of 4 privileged principal(s)).</p>
         </article><article class="explore-row" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-guest-directory-access-limited">
           <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
           <h3 class="explore-row__title"><a href="#finding-id-guest-directory-access-limited">Limit what guests can see in your directory</a></h3>
