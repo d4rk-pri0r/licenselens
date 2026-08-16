@@ -335,11 +335,15 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
    §7. Constellation — deterministic field, grouped by workload.
    Group captions are buttons (cross-filter); nodes are buttons (capability
    selection); status color + glyph + always-visible label, never color-only.
+   The field carries ONLY the group columns; the status legend is a sibling
+   block below it (see `.constellation-legend`) — never a grid column.
+   Desktop: auto-fill wrap with a 160px column floor so no caption ever
+   squeezes below its text width at 1280px; ≤640px the field becomes a
+   single-row column flow that scrolls horizontally inside itself.
    -------------------------------------------------------------------------- */
 .constellation {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(150px, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 16px;
   overflow-x: auto;
   padding-block: 12px;
@@ -441,9 +445,11 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 .constellation-legend {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px 16px;
-  grid-column: 1 / -1;
-  margin-block-start: 8px;
+  /* Sibling block BELOW the field (todo 5): the negative block-start margin
+     closes the field's own bottom margin so the two read as one unit. */
+  margin-block: -8px 16px;
 }
 .constellation-legend-chip {
   display: inline-flex;
@@ -1331,12 +1337,13 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .pagination,
   footer { display: none !important; }
 
-  /* Hero, move items, capability rows, findings, and the constellation
-     stay whole across pages. */
+  /* Hero, move items, capability rows, findings, the constellation, and its
+     legend stay whole across pages. */
   .hero,
   .card,
   .finding,
   .constellation,
+  .constellation-legend,
   .chart {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -1372,6 +1379,11 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .posture-figure { font-size: 2.5rem; }
   .display-line { font-size: 1.5rem; }
   .constellation {
+    /* The field returns to a single-row column flow that scrolls inside
+       itself (the §4 affordance language); the legend stays a wrapping
+       sibling row below it and never scrolls with the field. */
+    grid-template-columns: none;
+    grid-auto-flow: column;
     grid-auto-columns: minmax(180px, 72vw);
     scrollbar-width: thin;
   }

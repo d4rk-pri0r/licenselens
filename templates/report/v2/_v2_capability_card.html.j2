@@ -36,6 +36,11 @@
       gains `is-selected`; "All" restores the default enum order.
     - Nodes resolve from neutral to their status color column by column
       (450ms ease-out, 50ms per column via inline animation-delay).
+    - The status legend renders as a SIBLING BLOCK BELOW the field (a wrapping
+      row at every width), never as a grid column: `.constellation` contains
+      ONLY the `.constellation-group` columns, because the renderers' JS
+      reorders those children in place and the bundle's app.css owns the
+      `.constellation` grid/scroll/print rules.
 
   Determinism contract (DESIGN_V2.md section 7): server-rendered static
   markup. No randomness, no node-link topology, no canvas. Workload groups
@@ -83,6 +88,11 @@
 ] -%}
 
 
+{#- §7 field: `.constellation` is the grid of group columns ONLY (the renderers'
+    JS reorder its `.constellation-group` children in place, and the bundle's
+    app.css still owns the `.constellation` grid/scroll/print rules, so the grid
+    element must keep this class). The status legend is a SIBLING BLOCK BELOW the
+    field, never a grid column — a wrapping row at every width. #}
 {%- macro capability_constellation(constellation, workload_svg_map=none, workload_icon_urls=none) -%}
 {%- if constellation -%}
 <div class="constellation" data-constellation role="group" aria-label="Capability constellation">
@@ -111,11 +121,13 @@
       <span class="constellation-label">{{ entry.plain_name }}</span>
     </button>  {%- endfor -%}
   {%- if ns.group_open %}</div>{% endif -%}
-  <div class="constellation-legend" aria-label="Capability status legend">
-    {%- for variant, word in STATUS_LEGEND -%}
-    <span class="constellation-legend-chip status-{{ variant }}"><span class="constellation-legend-swatch" aria-hidden="true"></span>{{ word }}</span>
-    {%- endfor -%}
-  </div>
+</div>
+{#- Legend: sibling block BELOW the field (todo 5 — was a grid column because
+    `grid-column: 1 / -1` is meaningless in an implicit-column grid). #}
+<div class="constellation-legend" aria-label="Capability status legend">
+  {%- for variant, word in STATUS_LEGEND -%}
+  <span class="constellation-legend-chip status-{{ variant }}"><span class="constellation-legend-swatch" aria-hidden="true"></span>{{ word }}</span>
+  {%- endfor -%}
 </div>
 {%- else -%}
 <p class="caption">No capability outcomes were resolved from entitlements.</p>

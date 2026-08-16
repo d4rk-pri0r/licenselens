@@ -507,3 +507,147 @@ def test_owned_skus_table_scrolls_inside_wrapper(page: Page, report_uri: str) ->
         assert cell["left"] >= -1 and cell["right"] >= -1, (
             f"license-count cell not fully visible after scrollLeft=scrollWidth: {cell}"
         )
+
+
+# ---------------------------------------------------------------------------
+# GROUP E — v2 constellation field/legend restructure locks (todo 5). The
+# status legend renders as a sibling block BELOW the field (never a grid
+# column), the field scrolls inside itself at 375px, the last group's caption
+# never clips at 1280px, and the first group column is `identity` at every
+# width — for BOTH renderers (single-file and bundle).
+# ---------------------------------------------------------------------------
+
+# Constellation field/legend layout under the current viewport. Chips report
+# their computed status colors keyed by variant (the shared two-class cascade).
+_CONSTELLATION_LAYOUT_JS = """() => {
+    const field = document.querySelector('.constellation');
+    const legend = document.querySelector('.constellation-legend');
+    const groups = Array.from(document.querySelectorAll('.constellation-group'));
+    const last = groups[groups.length - 1] || null;
+    const caption = last ? last.querySelector('.constellation-caption') : null;
+    const label = last ? last.querySelector('.constellation-caption-label') : null;
+    const fieldRect = field.getBoundingClientRect();
+    const legendRect = legend.getBoundingClientRect();
+    const lastRect = last ? last.getBoundingClientRect() : null;
+    const captionRect = caption ? caption.getBoundingClientRect() : null;
+    const chips = {};
+    document.querySelectorAll('.constellation-legend-chip').forEach((el) => {
+        const match = /(?:^|\\s)status-([a-z_]+)/.exec(el.className);
+        if (match) chips[match[1]] = getComputedStyle(el).color;
+    });
+    return {
+        groupCount: groups.length,
+        groupLefts: groups.map((el) => el.getBoundingClientRect().left),
+        firstWorkload: groups.length ? groups[0].getAttribute('data-workload') : null,
+        legendTop: legendRect.top,
+        fieldBottom: fieldRect.bottom,
+        fieldRight: fieldRect.right,
+        legendRight: legendRect.right,
+        fieldScrollWidth: field.scrollWidth,
+        fieldClientWidth: field.clientWidth,
+        lastCaptionText: label ? label.textContent.trim() : null,
+        lastCaptionOverflow: caption ? caption.scrollWidth - caption.clientWidth : null,
+        lastCaptionLeft: captionRect ? captionRect.left : null,
+        lastCaptionRight: captionRect ? captionRect.right : null,
+        lastGroupLeft: lastRect ? lastRect.left : null,
+        lastGroupRight: lastRect ? lastRect.right : null,
+        chipColors: chips,
+        docScrollWidth: document.documentElement.scrollWidth,
+        innerWidth: window.innerWidth,
+    };
+}"""
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_constellation_legend_sits_below_scrolling_field(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    state = page.evaluate(_CONSTELLATION_LAYOUT_JS)
+    assert state["groupCount"] >= 3, f"{renderer}: fixture constellation unexpectedly small"
+    assert state["legendTop"] >= state["fieldBottom"], (
+        f"{renderer}: legend is not below the field: legend top {state['legendTop']}px "
+        f"< field bottom {state['fieldBottom']}px"
+    )
+    assert state["legendRight"] <= state["innerWidth"] + 1, (
+        f"{renderer}: legend clips past the viewport: right {state['legendRight']}px "
+        f"> innerWidth {state['innerWidth']}px"
+    )
+    assert state["docScrollWidth"] <= state["innerWidth"], (
+        f"{renderer}: constellation pushed the page wider than the viewport: "
+        f"{state['docScrollWidth']}px > {state['innerWidth']}px"
+    )
+    assert state["fieldScrollWidth"] > state["fieldClientWidth"], (
+        f"{renderer}: the field does not scroll inside itself at 375px: "
+        f"scrollWidth={state['fieldScrollWidth']}px <= clientWidth={state['fieldClientWidth']}px"
+    )
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_constellation_legend_chip_colors_distinct_per_status(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    state = page.evaluate(_CONSTELLATION_LAYOUT_JS)
+    chips = state["chipColors"]
+    for variant in ("gap", "partial", "ok", "not_licensed", "skipped", "error"):
+        assert chips.get(variant), f"{renderer}: missing legend chip for status {variant!r}"
+    representative = {chips[variant] for variant in ("gap", "partial", "ok", "not_licensed")}
+    assert len(representative) == 4, (
+        f"{renderer}: legend chip colors do not differ per status: {chips}"
+    )
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_constellation_last_caption_never_clips_at_1280(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": 1280, "height": 900})
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    state = page.evaluate(_CONSTELLATION_LAYOUT_JS)
+    assert state["lastCaptionText"], f"{renderer}: last group caption label is empty"
+    assert state["lastCaptionOverflow"] <= 0, (
+        f"{renderer}: last group caption overflows its own box at 1280px: "
+        f"scrollWidth exceeds clientWidth by {state['lastCaptionOverflow']}px"
+    )
+    assert state["lastCaptionLeft"] >= state["lastGroupLeft"] - 1, (
+        f"{renderer}: last group caption starts left of its column at 1280px"
+    )
+    assert state["lastCaptionRight"] <= state["lastGroupRight"] + 1, (
+        f"{renderer}: last group caption clips past its column at 1280px: "
+        f"{state['lastCaptionRight']}px > {state['lastGroupRight']}px"
+    )
+    assert state["lastCaptionRight"] <= state["fieldRight"] + 1, (
+        f"{renderer}: last group caption clips past the field at 1280px: "
+        f"{state['lastCaptionRight']}px > {state['fieldRight']}px"
+    )
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+@pytest.mark.parametrize("width", [375, 1280])
+def test_constellation_first_group_is_identity_at_every_width(
+    page: Page, tmp_path: Path, renderer: str, width: int
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.set_viewport_size({"width": width, "height": 900})
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    state = page.evaluate(_CONSTELLATION_LAYOUT_JS)
+    assert state["firstWorkload"] == "identity", (
+        f"{renderer}@{width}px: first constellation group is {state['firstWorkload']!r}, "
+        "expected 'identity'"
+    )
+    assert state["groupLefts"][0] <= min(state["groupLefts"]) + 0.5, (
+        f"{renderer}@{width}px: the identity group is not the leftmost column"
+    )
