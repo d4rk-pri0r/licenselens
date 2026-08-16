@@ -828,3 +828,410 @@ def test_findings_sort_control_reorders_deterministically(
             f"{renderer}: {key} sort is not deterministic across reloads: "
             f"{first_run} != {second_run}"
         )
+
+
+# ---------------------------------------------------------------------------
+# GROUP G — a11y + print regression gates (todo 26). Heading hierarchy
+# (no skipped levels), keyboard reachability + visible focus + accessible
+# names for the primary controls (search, sort, filters, constellation
+# captions), textual equivalents for every visualization, and print-media
+# emulation (content present, disclosures expanded, chart fallbacks visible,
+# no blank sections). Both renderers.
+#
+# Note: the bundle has no custom non-forced-colors :focus-visible rule, so its
+# visible focus indicator is Chromium's default ring (outline auto 1px). The
+# gate therefore requires "a visible indicator exists" (style != none,
+# width >= 1px) for the bundle and the DESIGN ring (solid >= 2px) for the
+# single-file renderer, which owns one.
+# ---------------------------------------------------------------------------
+
+# Heading levels in DOM order. Levels only — wording is locked elsewhere.
+_HEADING_LEVELS_JS = """() => Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'))
+    .map((el) => +el.tagName[1])"""
+
+# Every keyboard-focusable element in tab order, restricted to elements with
+# a layout box (display/visibility/rect mirror the browser's own tab filter).
+_FOCUSABLE_JS = """() => Array.from(document.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), ' +
+      'select:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'))
+    .filter((el) => {
+        const style = getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden'
+            && rect.width > 0 && rect.height > 0;
+    })
+    .map((el) => ({
+        tag: el.tagName.toLowerCase(),
+        id: el.id,
+        cls: el.getAttribute('class') || '',
+    }))"""
+
+# Focused-element state read after each Tab press: identity, computed focus
+# ring, accessible name (aria-label -> label[for] -> aria-labelledby ->
+# text content), and the aria-pressed tri-state for toggle controls.
+_FOCUSED_STOP_JS = """() => {
+    const el = document.activeElement;
+    if (!el || el === document.body) return null;
+    const style = getComputedStyle(el);
+    let name = el.getAttribute('aria-label');
+    if (!name && el.id) {
+        const label = document.querySelector('label[for="' + el.id + '"]');
+        if (label) name = label.textContent.trim();
+    }
+    if (!name && el.getAttribute('aria-labelledby')) {
+        const ref = document.getElementById(el.getAttribute('aria-labelledby'));
+        if (ref) name = ref.textContent.trim();
+    }
+    if (!name) name = (el.textContent || '').trim();
+    return {
+        tag: el.tagName.toLowerCase(),
+        id: el.id,
+        cls: el.getAttribute('class') || '',
+        outlineStyle: style.outlineStyle,
+        outlineWidth: parseFloat(style.outlineWidth) || 0,
+        pressed: el.getAttribute('aria-pressed'),
+        name: name.slice(0, 80),
+    };
+}"""
+
+_PRIMARY_CONTROLS = ("search", "sort", "filter", "caption")
+
+# Textual equivalents of the visualizations: every role="img" visual's
+# accessible name/description resolution, every chart data table's caption
+# and row count, the constellation nodes' aria-labels, and the field/legend
+# group labels.
+_CHART_EQUIVALENTS_JS = """() => {
+    const resolve = (id) => {
+        const ref = id ? document.getElementById(id) : null;
+        return ref ? ref.textContent.trim() : null;
+    };
+    const visuals = Array.from(document.querySelectorAll('[role="img"]')).map((el) => ({
+        name: resolve(el.getAttribute('aria-labelledby')) || el.getAttribute('aria-label') || '',
+        desc: resolve(el.getAttribute('aria-describedby')) || '',
+    }));
+    const tables = Array.from(
+        document.querySelectorAll('.chart-table, [data-chart-table]')
+    ).map((table) => {
+        const caption = table.querySelector('caption');
+        return {
+            caption: caption ? caption.textContent.trim() : '',
+            rows: table.querySelectorAll('tbody tr').length,
+        };
+    });
+    const nodes = Array.from(document.querySelectorAll('.constellation-point'))
+        .map((el) => (el.getAttribute('aria-label') || '').trim());
+    const field = document.querySelector('.constellation');
+    const legend = document.querySelector('.constellation-legend');
+    return {
+        visuals,
+        tables,
+        nodes,
+        fieldLabel: field ? field.getAttribute('aria-label') || '' : null,
+        legendLabel: legend ? legend.getAttribute('aria-label') || '' : null,
+        srDescs: {
+            radial: resolve('radial-desc'),
+            dist: resolve('dist-desc'),
+            status: resolve('chart-status-desc'),
+            workload: resolve('chart-workload-desc'),
+            severity: resolve('chart-severity-desc'),
+            gauge: resolve('posture-gauge-desc'),
+        },
+    };
+}"""
+
+# Print-media state: per-section visibility (a blank section is a print
+# regression), chart-table fallback visibility, radial replacement, finding
+# visibility, disclosure expansion, and hidden print chrome.
+_PRINT_STATE_JS = """() => {
+    const style = (selector) => {
+        const el = document.querySelector(selector);
+        return el ? getComputedStyle(el) : null;
+    };
+    const sections = Array.from(document.querySelectorAll('main section')).map((s) => {
+        const computed = getComputedStyle(s);
+        const rect = s.getBoundingClientRect();
+        return {
+            id: s.id,
+            display: computed.display,
+            opacity: computed.opacity,
+            height: Math.round(rect.height),
+            text: (s.innerText || '').trim().length,
+        };
+    });
+    return {
+        sections,
+        chartTables: Array.from(
+            document.querySelectorAll('.chart-table, [data-chart-table]')
+        ).map((t) => ({
+            position: getComputedStyle(t).position,
+            display: getComputedStyle(t).display,
+        })),
+        radialSvg: style('.radial-svg') ? style('.radial-svg').display : null,
+        radialLine: style('.radial-print-line') ? style('.radial-print-line').position : null,
+        gaugeViz: style('.posture-gauge__viz') ? style('.posture-gauge__viz').display : null,
+        gaugePrint: style('.posture-gauge__print') ? style('.posture-gauge__print').display : null,
+        findingDisplays: Array.from(
+            document.querySelectorAll('.finding, .explore-row, .print-finding')
+        ).map((el) => getComputedStyle(el).display),
+        closedDetailsBodies: Array.from(
+            document.querySelectorAll('details.tech:not([open]) .tech-body')
+        ).map((el) => getComputedStyle(el).display),
+        printListDisplay: style('[data-print-list]') ? style('[data-print-list]').display : null,
+        searchBox: style('.search-box') ? style('.search-box').display : null,
+    };
+}"""
+
+
+def _primary_kind(stop: dict[str, str] | None) -> str | None:
+    if stop is None:
+        return None
+    if stop["id"] == "finding-search":
+        return "search"
+    if stop["id"] == "finding-sort":
+        return "sort"
+    if "filter-button" in stop["cls"] or "filter-chip" in stop["cls"]:
+        return "filter"
+    if "constellation-caption" in stop["cls"]:
+        return "caption"
+    return None
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_heading_hierarchy_never_skips_a_level(page: Page, tmp_path: Path, renderer: str) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    levels = page.evaluate(_HEADING_LEVELS_JS)
+    assert levels, f"{renderer}: no headings found in the rendered report"
+    assert levels.count(1) == 1, (
+        f"{renderer}: expected exactly one h1, got {levels.count(1)}"
+    )
+    assert levels[0] == 1, f"{renderer}: the document must open with the h1"
+    for previous, current in zip(levels, levels[1:], strict=False):
+        assert current <= previous + 1, (
+            f"{renderer}: heading hierarchy skips from h{previous} to h{current}"
+        )
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_primary_controls_tab_reachable_with_focus_and_names(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+    page.evaluate("() => document.activeElement && document.activeElement.blur()")
+
+    focusable = page.evaluate(_FOCUSABLE_JS)
+    seen: dict[str, dict[str, object]] = {}
+    # Real Tab navigation from an unfocused document: every primary control
+    # must appear in the actual keyboard sequence, not merely be focusable.
+    for _ in range(len(focusable) + 1):
+        page.keyboard.press("Tab")
+        stop = page.evaluate(_FOCUSED_STOP_JS)
+        kind = _primary_kind(stop)
+        if kind is not None and kind not in seen:
+            seen[kind] = stop
+    missing = [kind for kind in _PRIMARY_CONTROLS if kind not in seen]
+    assert not missing, (
+        f"{renderer}: primary controls not reached via Tab navigation: {missing}"
+    )
+
+    for kind in _PRIMARY_CONTROLS:
+        stop = seen[kind]
+        assert stop["name"], f"{renderer}: {kind} control has no accessible name"
+        assert stop["outlineStyle"] != "none" and stop["outlineWidth"] >= 1, (
+            f"{renderer}: {kind} control shows no visible focus indicator: "
+            f"outline={stop['outlineStyle']!r} width={stop['outlineWidth']}"
+        )
+        if renderer == "single":
+            assert stop["outlineStyle"] == "solid" and stop["outlineWidth"] >= 2, (
+                f"{renderer}: {kind} control lost the DESIGN focus ring (solid >= 2px): "
+                f"outline={stop['outlineStyle']!r} width={stop['outlineWidth']}"
+            )
+        if kind in ("filter", "caption"):
+            assert stop["pressed"] in ("true", "false"), (
+                f"{renderer}: {kind} control missing aria-pressed='true'|'false'"
+            )
+
+    assert seen["search"]["name"] == "Search findings", (
+        f"{renderer}: search input accessible name is {seen['search']['name']!r}"
+    )
+    assert seen["sort"]["name"] == "Sort findings", (
+        f"{renderer}: sort select accessible name is {seen['sort']['name']!r}"
+    )
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_primary_controls_respond_to_keyboard_activation(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    def visible_count() -> str:
+        return page.locator("[data-visible-count]").inner_text().strip()
+
+    page.locator("#finding-search").focus()
+    page.keyboard.type("Conditional")
+    assert visible_count() == "1", (
+        f"{renderer}: typing a search term did not narrow to 1 finding "
+        f"(got {visible_count()})"
+    )
+    page.locator("#finding-search").fill("")
+    assert visible_count() == "6", (
+        f"{renderer}: clearing the search did not restore all findings "
+        f"(got {visible_count()})"
+    )
+
+    page.locator("#finding-sort").focus()
+    page.keyboard.type("s")
+    assert page.locator("#finding-sort").input_value() == "severity", (
+        f"{renderer}: keyboard typeahead did not move the sort select to the severity key"
+    )
+
+    filter_selector = (
+        "button[data-filter='gap']" if renderer == "single" else "button[data-filter-value='gap']"
+    )
+    toggle = page.locator(filter_selector).first
+    toggle.focus()
+    page.keyboard.press("Enter")
+    assert toggle.get_attribute("aria-pressed") == "true", (
+        f"{renderer}: Enter did not press the status filter button"
+    )
+    assert visible_count() == "1", (
+        f"{renderer}: pressed status filter did not narrow to 1 finding "
+        f"(got {visible_count()})"
+    )
+    page.keyboard.press("Enter")
+    assert toggle.get_attribute("aria-pressed") == "false", (
+        f"{renderer}: second Enter did not unpress the status filter button"
+    )
+    assert visible_count() == "6", (
+        f"{renderer}: unpressed status filter did not restore all findings "
+        f"(got {visible_count()})"
+    )
+
+    caption = page.locator(".constellation-caption").first
+    caption.focus()
+    page.keyboard.press("Enter")
+    assert caption.get_attribute("aria-pressed") == "true", (
+        f"{renderer}: Enter did not activate the constellation caption"
+    )
+    # Activating the caption reorders the constellation columns in place, which
+    # detaches the focused button; restore focus before toggling back.
+    caption.focus()
+    page.keyboard.press("Enter")
+    assert caption.get_attribute("aria-pressed") == "false", (
+        f"{renderer}: second Enter did not deactivate the constellation caption"
+    )
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_visualizations_have_textual_equivalents(page: Page, tmp_path: Path, renderer: str) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    state = page.evaluate(_CHART_EQUIVALENTS_JS)
+    assert len(state["visuals"]) >= 4, (
+        f"{renderer}: expected at least 4 role=img visualizations, got {len(state['visuals'])}"
+    )
+    for index, visual in enumerate(state["visuals"]):
+        assert visual["name"], f"{renderer}: visualization {index} has no accessible name"
+        assert visual["desc"], f"{renderer}: visualization {index} has no accessible description"
+
+    expected_tables = 5 if renderer == "single" else 4
+    assert len(state["tables"]) == expected_tables, (
+        f"{renderer}: expected {expected_tables} chart data tables, got {len(state['tables'])}"
+    )
+    for table in state["tables"]:
+        assert table["caption"], f"{renderer}: chart data table missing a caption"
+        assert table["rows"] >= 1, f"{renderer}: chart data table has no data rows"
+
+    assert state["fieldLabel"], f"{renderer}: constellation field group has no aria-label"
+    assert state["legendLabel"], f"{renderer}: constellation legend has no aria-label"
+    assert state["nodes"], f"{renderer}: no constellation nodes rendered"
+    for node_label in state["nodes"]:
+        assert node_label, f"{renderer}: constellation node missing its aria-label"
+
+    # Renderer-specific sr-only descriptions referenced by the visuals.
+    if renderer == "single":
+        for key in ("radial", "dist", "status", "workload", "severity"):
+            assert state["srDescs"][key], f"{renderer}: missing sr-only description {key!r}"
+    else:
+        assert state["srDescs"]["gauge"], f"{renderer}: posture gauge sr-only description missing"
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_print_emulation_renders_complete_expanded_artifact(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    # Reduced motion keeps the opening choreography at its instant final state,
+    # so the print assertions never race an animation.
+    page.emulate_media(media="print", reduced_motion="reduce")
+    page.goto(_renderer_uri(renderer, tmp_path))
+    page.wait_for_load_state("load")
+
+    state = page.evaluate(_PRINT_STATE_JS)
+
+    # No blank sections: every section is displayed, fully opaque, laid out,
+    # and carries real content.
+    for section in state["sections"]:
+        assert section["display"] != "none", (
+            f"{renderer}: section {section['id']!r} is display:none in print"
+        )
+        assert section["opacity"] == "1", (
+            f"{renderer}: section {section['id']!r} is not fully opaque in print"
+        )
+        assert section["height"] >= 40, (
+            f"{renderer}: section {section['id']!r} has no layout height in print"
+        )
+        assert section["text"] >= 20, (
+            f"{renderer}: section {section['id']!r} is blank in print "
+            f"({section['text']} chars)"
+        )
+
+    # Every finding (D articles + E/print rows) stays in the printed artifact.
+    assert len(state["findingDisplays"]) == 12, (
+        f"{renderer}: expected 12 finding articles in print, got {len(state['findingDisplays'])}"
+    )
+    assert all(display != "none" for display in state["findingDisplays"]), (
+        f"{renderer}: a finding is hidden in the printed artifact"
+    )
+
+    # Chart data tables become the visible print fallback (position static,
+    # never clipped or display:none).
+    assert state["chartTables"], f"{renderer}: no chart data tables rendered"
+    for table in state["chartTables"]:
+        assert table["position"] == "static" and table["display"] != "none", (
+            f"{renderer}: chart data table is not a visible print fallback: {table}"
+        )
+
+    # Radial gauge is replaced by its textual line; screen chrome is removed.
+    if renderer == "single":
+        assert state["radialSvg"] == "none", f"{renderer}: radial svg prints"
+        assert state["radialLine"] == "static", (
+            f"{renderer}: radial print line is not the visible fallback"
+        )
+        # The single-file print stylesheet expands every closed disclosure.
+        assert state["closedDetailsBodies"], (
+            f"{renderer}: no closed disclosures found to expand in print"
+        )
+        assert all(display == "block" for display in state["closedDetailsBodies"]), (
+            f"{renderer}: a closed disclosure's content is hidden in print"
+        )
+    else:
+        assert state["gaugeViz"] == "none", f"{renderer}: posture gauge svg prints"
+        assert state["gaugePrint"] == "block", (
+            f"{renderer}: posture gauge print line is not visible"
+        )
+        assert state["printListDisplay"] == "block", (
+            f"{renderer}: the dedicated print list is not displayed"
+        )
+
+    assert state["searchBox"] == "none", (
+        f"{renderer}: the search control is not removed from the printed artifact"
+    )
