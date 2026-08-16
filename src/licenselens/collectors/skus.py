@@ -16,16 +16,41 @@ _DEMO_SKUS: list[SubscribedSku] = [
         prepaid_units=100,
         consumed_units=87,
         service_plans=[
-            ServicePlan(service_plan_name="AAD_PREMIUM_P2", provisioning_status="Success"),
-            ServicePlan(service_plan_name="MFA_PREMIUM", provisioning_status="Success"),
             ServicePlan(
+                service_plan_id="eec0eb4f-6444-4f95-aba0-50c24d67f998",
+                service_plan_name="AAD_PREMIUM_P2",
+                provisioning_status="Success",
+            ),
+            ServicePlan(
+                service_plan_id="8a256a2b-b617-496d-b51b-e76466e88db0",
+                service_plan_name="MFA_PREMIUM",
+                provisioning_status="Success",
+            ),
+            ServicePlan(
+                service_plan_id="8c098270-9dd4-4350-9b30-ba4703f3b36b",
                 service_plan_name="ADALLOM_S_O365",
                 provisioning_status="Success",
             ),
-            ServicePlan(service_plan_name="EQUIVIO_ANALYTICS", provisioning_status="Success"),
-            ServicePlan(service_plan_name="LOCKBOX_ENTERPRISE", provisioning_status="Success"),
-            ServicePlan(service_plan_name="MIP_S_CLP2", provisioning_status="Success"),
-            ServicePlan(service_plan_name="THREAT_INTELLIGENCE", provisioning_status="Success"),
+            ServicePlan(
+                service_plan_id="4de31727-a228-4ec3-a5bf-8e45b5ca48cc",
+                service_plan_name="EQUIVIO_ANALYTICS",
+                provisioning_status="Success",
+            ),
+            ServicePlan(
+                service_plan_id="9f431833-0334-42de-a7dc-70aa40db46db",
+                service_plan_name="LOCKBOX_ENTERPRISE",
+                provisioning_status="Success",
+            ),
+            ServicePlan(
+                service_plan_id="efb0351d-3b08-4503-993d-383af8de41e3",
+                service_plan_name="MIP_S_CLP2",
+                provisioning_status="Success",
+            ),
+            ServicePlan(
+                service_plan_id="8e0c0a52-6a6c-4d40-8370-dd62790dcd70",
+                service_plan_name="THREAT_INTELLIGENCE",
+                provisioning_status="Success",
+            ),
             ServicePlan(
                 service_plan_name="DEFENDER_ENDPOINT_P2",
                 provisioning_status="Success",

@@ -27,6 +27,8 @@ capabilities:
       - AAD_PREMIUM_P2
     service_plan_aliases:
       - AAD_PREMIUM_P2_FOR_FACULTY
+    service_plan_ids:
+      - eec0eb4f-6444-4f95-aba0-50c24d67f998
     sku_part_numbers:
       - AAD_PREMIUM_P2
       - SPE_E5
@@ -58,6 +60,9 @@ capabilities:
     service_plan_names:
       - AAD_PREMIUM
       - AAD_PREMIUM_P2
+    service_plan_ids:
+      - 41781fb2-bc02-4b7c-bd55-b576c07bb09d
+      - eec0eb4f-6444-4f95-aba0-50c24d67f998
     sku_part_numbers:
       - AAD_PREMIUM
       - AAD_PREMIUM_P2
@@ -89,6 +94,8 @@ capabilities:
     entitlement_kind: included
     service_plan_names:
       - AAD_PREMIUM_P2
+    service_plan_ids:
+      - eec0eb4f-6444-4f95-aba0-50c24d67f998
     sku_part_numbers:
       - AAD_PREMIUM_P2
       - SPE_E5
@@ -120,6 +127,9 @@ capabilities:
       - ATP_ENTERPRISE
     service_plan_aliases:
       - THREAT_INTELLIGENCE_GOV
+    service_plan_ids:
+      - 8e0c0a52-6a6c-4d40-8370-dd62790dcd70
+      - f20fedf3-f3c3-43c3-8267-2bfdd51c0939
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
@@ -151,6 +161,8 @@ capabilities:
       - MDATP_XPLAT
     service_plan_aliases:
       - WINDEFATP
+    service_plan_ids:
+      - 871d91ec-ec1a-452b-a83f-bd76c7d770ef
     sku_part_numbers:
       - SPE_E5
       - IDENTITY_THREAT_PROTECTION
@@ -182,6 +194,8 @@ capabilities:
       - MDI_Service_Plan
     service_plan_aliases:
       - Microsoft_Defender_for_Identity
+    service_plan_ids:
+      - 14ab5db5-e6c4-4b20-b4bc-13e36fd2227f
     sku_part_numbers:
       - SPE_E5
       - EMSPREMIUM
@@ -209,6 +223,8 @@ capabilities:
       - MICROSOFT_SENTINEL
     service_plan_aliases:
       - Azure_Sentinel
+    # No servicePlanId GUIDs: Sentinel is Azure-only and not licensed via subscribedSkus plans.
+    service_plan_ids: []
     sku_part_numbers:
       - MICROSOFT_SENTINEL
       - AZURE_SENTINEL
@@ -236,6 +252,10 @@ capabilities:
       - INFORMATION_BARRIERS
     service_plan_aliases:
       - MIP_S_CLP1
+    service_plan_ids:
+      - efb0351d-3b08-4503-993d-383af8de41e3
+      - c4801e8a-cb58-4c35-aca6-f2dcc106f287
+      - 5136a095-5cf0-4aff-bec3-e84448b38ea5
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
@@ -266,6 +286,9 @@ capabilities:
     service_plan_aliases:
       - EXCHANGE_S_ENTERPRISE_GOV
       - EXCHANGE_S_STANDARD_GOV
+    service_plan_ids:
+      - efb87545-963c-4e0d-99df-69c6916d9eb0
+      - 9aaf7827-d63c-4b61-89c3-182f06f82e5c
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -300,6 +323,10 @@ capabilities:
       - EXCHANGE_S_FOUNDATION
     service_plan_aliases:
       - EOP_ENTERPRISE_PREMIUM
+    service_plan_ids:
+      - 326e2b78-9d27-42c9-8509-46c827743a17
+      - 113feb6c-3fe4-4440-bddc-54d774bf0318
+      - 75badc48-628e-4446-8460-41344d73abd6
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -327,6 +354,8 @@ capabilities:
     entitlement_kind: add_on
     service_plan_names:
       - ATP_ENTERPRISE
+    service_plan_ids:
+      - f20fedf3-f3c3-43c3-8267-2bfdd51c0939
     sku_part_numbers:
       - ATP_ENTERPRISE
       - IDENTITY_THREAT_PROTECTION
@@ -356,6 +385,10 @@ capabilities:
       - SHAREPOINTSTANDARD
     service_plan_aliases:
       - SHAREPOINTENTERPRISE_GOV
+    service_plan_ids:
+      - 5dbe027f-2339-4123-9542-606e4d348a72
+      - e95bec33-7c88-4a70-8e19-b10bd9d0c014
+      - c7699d2e-19aa-44de-8edf-1736da088ca1
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -388,6 +421,10 @@ capabilities:
       - ONEDRIVESTANDARD
       - SHAREPOINTENTERPRISE
       - SHAREPOINTWAC
+    service_plan_ids:
+      - 13696edf-5a08-49f6-8134-03083ed8ba30
+      - 5dbe027f-2339-4123-9542-606e4d348a72
+      - e95bec33-7c88-4a70-8e19-b10bd9d0c014
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -419,6 +456,9 @@ capabilities:
     service_plan_aliases:
       - TEAMS_GOV
       - MCOSTANDARD_GOV
+    service_plan_ids:
+      - 57ff2da0-773e-42df-b2af-ffb7a2317929
+      - 0feaeb32-d00e-4d66-bd5a-43b5b83db82c
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -454,6 +494,11 @@ capabilities:
     service_plan_aliases:
       - POWERAPPS_PER_USER
       - FLOW_PER_USER
+    service_plan_ids:
+      - 76846ad7-7776-4c40-a281-a386362dd1b9
+      - c68f8d98-5534-41c8-bf36-22fa496fa792
+      - 07699545-9485-468e-95b6-2fca3738be01
+      - 9c0dab89-a30c-4117-86e7-97bda240acd2
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -485,6 +530,8 @@ capabilities:
       - POWER_BI_STANDARD
     service_plan_aliases:
       - BI_AZURE_P_2_GOV
+    service_plan_ids:
+      - 70d33638-9c74-4d01-bfd3-562de28bd4ba
     sku_part_numbers:
       - POWER_BI_PRO
       - SPE_E5
@@ -511,6 +558,8 @@ capabilities:
     service_plan_names:
       - POWER_BI_PREMIUM_PER_USER
       - BI_AZURE_P3
+    service_plan_ids:
+      - 0bf3c642-7bb5-4ccc-884e-59d09df0266c
     sku_part_numbers:
       - POWER_BI_PREMIUM_PER_USER
       - PBI_PREMIUM_PER_USER
@@ -539,6 +588,10 @@ capabilities:
     service_plan_aliases:
       - INTUNE_EDU
       - INTUNE_A_GOV
+    service_plan_ids:
+      - c1ec4a95-1f05-45b3-a911-aa3fa01094f5
+      - 3e170737-c728-4eae-bbb9-3f3360f7184c
+      - 3413916e-ee66-4071-be30-6f94d4adfeda
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -570,6 +623,9 @@ capabilities:
     service_plan_names:
       - DEFENDER_ENDPOINT_P1
       - MDE_P1
+    # No sourced servicePlanId GUIDs: DEFENDER_ENDPOINT_P1 / MDE_P1 are product
+    # String_Ids; the underlying plan in the licensing reference is MDE_LITE.
+    service_plan_ids: []
     sku_part_numbers:
       - DEFENDER_ENDPOINT_P1
       - MDE_P1
@@ -600,6 +656,10 @@ capabilities:
       - ATA
     service_plan_aliases:
       - WINDEFATP
+    service_plan_ids:
+      - 8e0c0a52-6a6c-4d40-8370-dd62790dcd70
+      - 14ab5db5-e6c4-4b20-b4bc-13e36fd2227f
+      - 871d91ec-ec1a-452b-a83f-bd76c7d770ef
     sku_part_numbers:
       - SPE_E5
       - IDENTITY_THREAT_PROTECTION
@@ -629,6 +689,9 @@ capabilities:
       - EQUIVIO_ANALYTICS
     service_plan_aliases:
       - AUDIT_ENTERPRISE
+    service_plan_ids:
+      - 2f442157-a11c-46b9-ae5b-6e39ff4e5849
+      - 4de31727-a228-4ec3-a5bf-8e45b5ca48cc
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
@@ -654,6 +717,9 @@ capabilities:
       - MIP_S_CLP1
       - MIP_S_CLP2
       - INFORMATION_PROTECTION_COMPLIANCE
+    service_plan_ids:
+      - 5136a095-5cf0-4aff-bec3-e84448b38ea5
+      - efb0351d-3b08-4503-993d-383af8de41e3
     sku_part_numbers:
       - SPE_E3
       - SPE_E5
@@ -682,6 +748,8 @@ capabilities:
     service_plan_names:
       - Data_Lifecycle_Management
       - Records_Management
+    service_plan_ids:
+      - 65cc641f-cccd-4643-97e0-a17e3045e541
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
@@ -708,6 +776,8 @@ capabilities:
     service_plan_names:
       - INSIDER_RISK_MANAGEMENT
       - MIR_SERVICE
+    service_plan_ids:
+      - 9d0c4ee5-e4a1-4625-ab39-d82b619b1a34
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
@@ -736,6 +806,11 @@ capabilities:
       - EXCHANGE_ANALYTICS
     service_plan_aliases:
       - M365_ADVANCED_AUDITING
+    service_plan_ids:
+      - 4de31727-a228-4ec3-a5bf-8e45b5ca48cc
+      - 9f431833-0334-42de-a7dc-70aa40db46db
+      - 34c0d7a0-a70f-4668-9238-47f9fc208882
+      - 2f442157-a11c-46b9-ae5b-6e39ff4e5849
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
@@ -760,6 +835,9 @@ capabilities:
     service_plan_names:
       - COMMUNICATION_COMPLIANCE
       - COMM_COMPLIANCE
+    # No sourced servicePlanId GUIDs: the licensing reference uses
+    # MICROSOFT_COMMUNICATION_COMPLIANCE / COMMUNICATIONS_COMPLIANCE instead.
+    service_plan_ids: []
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM

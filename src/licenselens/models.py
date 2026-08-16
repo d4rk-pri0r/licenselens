@@ -204,6 +204,7 @@ class Capability(BaseModel):
     if_unused: str = ""
     workloads: list[Workload] = Field(default_factory=list)
     service_plan_names: list[str] = Field(default_factory=list)
+    service_plan_ids: list[str] = Field(default_factory=list)
     sku_part_numbers: list[str] = Field(default_factory=list)
     service_plan_aliases: list[str] = Field(default_factory=list)
     sku_aliases: list[str] = Field(default_factory=list)
@@ -222,6 +223,10 @@ class Capability(BaseModel):
         return frozenset(
             name.upper() for name in (*self.service_plan_names, *self.service_plan_aliases)
         )
+
+    @property
+    def matching_service_plan_ids(self) -> frozenset[str]:
+        return frozenset(guid.lower() for guid in self.service_plan_ids if guid)
 
     @property
     def matching_sku_part_numbers(self) -> frozenset[str]:

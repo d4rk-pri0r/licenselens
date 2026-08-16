@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Final
 
@@ -16,6 +17,10 @@ from licenselens.catalog.capability_meta import (
 )
 from licenselens.models import Capability, CapabilitySummary, ServicePlan, SubscribedSku, Workload
 from licenselens.paths import catalog_dir
+
+_GUID_PATTERN: Final = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
 
 _ACTIVE_PLAN_STATUSES: Final[frozenset[str]] = frozenset({"success", "enabled", ""})
 _INACTIVE_SKU_STATUSES: Final[frozenset[str]] = frozenset(
@@ -93,6 +98,7 @@ def _capability_from_item(item: dict[str, object]) -> Capability:
         if_unused=_clean(str(item["if_unused"]) if item.get("if_unused") else None),
         workloads=workloads,
         service_plan_names=_string_list(item.get("service_plan_names")),
+        service_plan_ids=_string_list(item.get("service_plan_ids")),
         sku_part_numbers=_string_list(item.get("sku_part_numbers")),
         service_plan_aliases=_string_list(item.get("service_plan_aliases")),
         sku_aliases=_string_list(item.get("sku_aliases")),
@@ -111,6 +117,18 @@ def _validate_capabilities(capabilities: list[Capability]) -> None:
         if cap.id in seen_ids:
             diagnostics.append(f"duplicate_capability_id:{cap.id}")
         seen_ids.add(cap.id)
+        # A service plan GUID may legitimately unlock multiple capabilities
+        # (e.g. AAD_PREMIUM_P2 -> entra_id_p2 + conditional_access), so only
+        # duplicates *within* a single capability's list are catalog errors.
+        seen_cap_guids: set[str] = set()
+        for guid in cap.service_plan_ids:
+            normalized = guid.strip().lower()
+            if not _GUID_PATTERN.fullmatch(normalized):
+                diagnostics.append(f"invalid_service_plan_id:{cap.id}:{guid}")
+                continue
+            if normalized in seen_cap_guids:
+                diagnostics.append(f"duplicate_service_plan_id:{cap.id}:{normalized}")
+            seen_cap_guids.add(normalized)
         plan_tokens = {name.upper() for name in cap.service_plan_names}
         plan_aliases = {name.upper() for name in cap.service_plan_aliases}
         overlap = sorted(plan_tokens & plan_aliases)
@@ -154,6 +172,11 @@ def resolve_owned_capabilities(
 ) -> list[str]:
     """Return capability ids unlocked by the tenant's subscribed SKUs/plans.
 
+    Matching is GUID-first: active service plans carrying a ``servicePlanId``
+    unlock capabilities by GUID intersection (stable across plan renames), then
+    the legacy free-text name / skuPartNumber intersection applies as a fallback
+    so capabilities without cataloged GUIDs keep working.
+
     Unknown service plans and disabled plans/SKUs never unlock capabilities.
     Optional ``cloud`` filters capabilities that declare a non-empty clouds list.
     """
@@ -164,15 +187,22 @@ def resolve_owned_capabilities(
         for plan in sku.service_plans
         if _service_plan_is_active(plan) and plan.service_plan_name
     }
+    plan_ids = {
+        (plan.service_plan_id or "").strip().lower()
+        for sku in active_skus
+        for plan in sku.service_plans
+        if _service_plan_is_active(plan) and plan.service_plan_id
+    }
     part_numbers = {sku.sku_part_number.upper() for sku in active_skus if sku.sku_part_number}
 
     owned: list[str] = []
     for cap in capabilities:
         if not _cloud_allows(cap, cloud):
             continue
+        guid_hit = bool(cap.matching_service_plan_ids & plan_ids)
         plan_hit = bool(cap.matching_plan_names & plan_names)
         sku_hit = bool(cap.matching_sku_part_numbers & part_numbers)
-        if plan_hit or sku_hit:
+        if guid_hit or plan_hit or sku_hit:
             owned.append(cap.id)
     return sorted(set(owned))
 
@@ -198,6 +228,7 @@ def capability_summaries_for(
         if cap is None:
             continue
         plan_keys = cap.matching_plan_names
+        guid_keys = cap.matching_service_plan_ids
         sku_keys = cap.matching_sku_part_numbers
 
         matched_service_plans = sorted(
@@ -205,7 +236,15 @@ def capability_summaries_for(
                 plan.service_plan_name
                 for sku in active_skus
                 for plan in sku.service_plans
-                if _service_plan_is_active(plan) and plan.service_plan_name.upper() in plan_keys
+                if _service_plan_is_active(plan)
+                and plan.service_plan_name
+                and (
+                    plan.service_plan_name.upper() in plan_keys
+                    or (
+                        plan.service_plan_id
+                        and (plan.service_plan_id or "").strip().lower() in guid_keys
+                    )
+                )
             }
         )
 

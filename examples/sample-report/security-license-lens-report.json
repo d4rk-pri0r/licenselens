@@ -396,37 +396,37 @@
       "consumed_units": 87,
       "service_plans": [
         {
-          "service_plan_id": null,
+          "service_plan_id": "eec0eb4f-6444-4f95-aba0-50c24d67f998",
           "service_plan_name": "AAD_PREMIUM_P2",
           "provisioning_status": "Success"
         },
         {
-          "service_plan_id": null,
+          "service_plan_id": "8a256a2b-b617-496d-b51b-e76466e88db0",
           "service_plan_name": "MFA_PREMIUM",
           "provisioning_status": "Success"
         },
         {
-          "service_plan_id": null,
+          "service_plan_id": "8c098270-9dd4-4350-9b30-ba4703f3b36b",
           "service_plan_name": "ADALLOM_S_O365",
           "provisioning_status": "Success"
         },
         {
-          "service_plan_id": null,
+          "service_plan_id": "4de31727-a228-4ec3-a5bf-8e45b5ca48cc",
           "service_plan_name": "EQUIVIO_ANALYTICS",
           "provisioning_status": "Success"
         },
         {
-          "service_plan_id": null,
+          "service_plan_id": "9f431833-0334-42de-a7dc-70aa40db46db",
           "service_plan_name": "LOCKBOX_ENTERPRISE",
           "provisioning_status": "Success"
         },
         {
-          "service_plan_id": null,
+          "service_plan_id": "efb0351d-3b08-4503-993d-383af8de41e3",
           "service_plan_name": "MIP_S_CLP2",
           "provisioning_status": "Success"
         },
         {
-          "service_plan_id": null,
+          "service_plan_id": "8e0c0a52-6a6c-4d40-8370-dd62790dcd70",
           "service_plan_name": "THREAT_INTELLIGENCE",
           "provisioning_status": "Success"
         },
@@ -1048,6 +1048,13 @@
         "privileged_permanent_principals": 4,
         "privileged_eligible_principals": 0,
         "global_admin_standing_assignments": 2,
+        "break_glass_standing_assignments": 0,
+        "standing_non_break_glass_assignments": 4,
+        "uncovered_standing_roles": [
+          "Security Administrator",
+          "Global Administrator",
+          "Helpdesk Administrator"
+        ],
         "sample_standing_roles": [
           "Global Administrator",
           "Helpdesk Administrator",
@@ -1261,7 +1268,10 @@
       "summary": "No access review definitions were found. Access Reviews are included in the tenant's plan but have never been configured.",
       "evidence": {
         "definition_count": 0,
-        "definition_ids": []
+        "definition_ids": [],
+        "privileged_scoped_count": 0,
+        "recurring_count": 0,
+        "privileged_recurring_count": 0
       },
       "entitlements_used": [
         "entra_id_p2"
@@ -1504,7 +1514,8 @@
       "evidence": {
         "authenticator_state": "enabled",
         "show_app_name": false,
-        "show_location": false
+        "show_location": false,
+        "number_matching_enabled": null
       },
       "entitlements_used": [
         "conditional_access"
@@ -1626,11 +1637,14 @@
       "pack": "identity",
       "exposure_class": "none",
       "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/SignInEventsBlade",
-      "summary": "Found 2 enabled privileged user(s) with no successful sign-in in the last 90 days (of 4 privileged principal(s)).",
+      "summary": "Found 2 enabled privileged principal(s) with no successful sign-in or workload activity in the last 90 days (2 user(s), 0 workload identities of 4 privileged principal(s)).",
       "evidence": {
         "privileged_principal_count": 4,
         "active_privileged_users": 2,
         "dormant_privileged_users": 2,
+        "active_workload_identities": 0,
+        "dormant_workload_identities": 0,
+        "unverifiable_workload_identities": 0,
         "non_user_privileged_principals": 0,
         "disabled_or_unresolved": 0,
         "lookback_days": 90,
@@ -1644,7 +1658,8 @@
             "id": "user-help-dormant",
             "userPrincipalName": "o***@contoso.com"
           }
-        ]
+        ],
+        "dormant_workload_sample": []
       },
       "entitlements_used": [
         "entra_id_p2"
@@ -1654,7 +1669,7 @@
         "https://attack.mitre.org/techniques/T1078/004/"
       ],
       "customer_title": "Powerful accounts that nobody uses are still switched on",
-      "customer_summary": "Some powerful accounts are still switched on but have not been used recently. Unused admin accounts are a favorite target for attackers.",
+      "customer_summary": "Some powerful accounts are still switched on but have not been used recently. Unused admin accounts and workload identities are a favorite target for attackers.",
       "customer_next_step": "Review enabled admin accounts that have not signed in for a long time; disable or remove access you no longer need.",
       "status_label": "Needs attention",
       "confidence": "high",
@@ -2195,6 +2210,7 @@
         "mfa_report_only_policies": [],
         "legacy_block_enforced": [],
         "legacy_block_report_only": [],
+        "unjustified_exclusion_issues": [],
         "privileged_principal_count": 4,
         "global_admin_standing_count": 2,
         "mfa_covers_privileged": true,
