@@ -6,6 +6,7 @@ from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
 
+from licenselens.catalog.expected_states import expected_state_map
 from licenselens.models import (
     EXPOSURE_PLAIN_LABELS,
     TAGLINE,
@@ -24,13 +25,19 @@ def report_environment() -> Environment:
     )
 
 
-def build_report_context(result: ScanResult) -> dict[str, object]:
+def build_report_context(
+    result: ScanResult,
+    expected_by_check_id: dict[str, str] | None = None,
+) -> dict[str, object]:
     """Build the render context shared by the legacy and bundle entry templates.
 
     Delegates all view-model work to :mod:`licenselens.report.viewmodel`; this
     function only assembles the flat keys the templates (and the bundle) consume.
+    ``expected_by_check_id`` threads the catalog ``check_id -> expected_state``
+    mapping into the D-section belief blocks; when omitted the view model
+    resolves it once itself.
     """
-    sections = build_sections(result)
+    sections = build_sections(result, expected_by_check_id)
     return {
         "result": result,
         "tagline": TAGLINE,
@@ -51,7 +58,7 @@ def build_report_context(result: ScanResult) -> dict[str, object]:
 
 def write_html_report(result: ScanResult, path: Path) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    context = build_report_context(result)
+    context = build_report_context(result, expected_state_map())
     context["workload_svg_map"] = workload_svg_map()
     html = report_environment().get_template("report.html.j2").render(**context)
     path.write_text(html, encoding="utf-8")

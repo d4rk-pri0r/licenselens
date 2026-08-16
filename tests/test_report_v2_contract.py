@@ -2,7 +2,7 @@
 
 Covers the NEW v2 surface not already locked elsewhere: ``test_report_viewmodel``
 owns belief-block field binding + determinism, and ``test_report_render`` owns the
-DOM/design signature. This file adds five contracts over the same frozen fixtures:
+DOM/design signature. This file adds six contracts over the same frozen fixtures:
 
 1. Constellation determinism + exact entry shape + workload ordering.
 2. Belief-block labels render in HTML and are bound to fixture data (never
@@ -14,15 +14,21 @@ DOM/design signature. This file adds five contracts over the same frozen fixture
    motion reveals.
 5. ``app.js`` binds ``realized_percent`` from data and never hardcodes a
    percent literal.
+6. The three belief prose slots (summary line, Expected, Observed) stay
+   distinct in the rendered HTML: Expected never equals Observed, and no two
+   adjacent belief paragraphs within one article are byte-identical.
 """
 
 from __future__ import annotations
 
+import html as html_lib
+import re
 from pathlib import Path
 
 import pytest
 from playwright.sync_api import Browser, Page
 
+from licenselens.catalog.expected_states import expected_state_map
 from licenselens.models import CapabilityRollup, ScanResult
 from licenselens.paths import templates_dir
 from licenselens.report.bundle import build_report_bundle
@@ -118,9 +124,10 @@ def test_belief_block_labels_render_and_bind_to_data(tmp_path: Path) -> None:
     """The D-section belief-block labels render and are bound to fixture data.
 
     The five static labels always appear; "Admin destination" appears because every
-    comprehensive finding carries a ``deep_link``; and the fixture's actual
-    ``customer_next_step`` and ``summary`` strings (not hardcoded copy) appear in
-    the rendered HTML for the first finding.
+    comprehensive finding carries a ``deep_link``; and the fixture's actual prose
+    (``customer_summary`` for the summary line, the catalog ``expected_state`` for
+    the Expected slot, and ``summary`` for the Observed slot) appears in the
+    rendered HTML for the first finding.
     """
     result = comprehensive_report()
     html = _render(result, tmp_path)
@@ -132,6 +139,12 @@ def test_belief_block_labels_render_and_bind_to_data(tmp_path: Path) -> None:
         "recommended-action slot is not bound to customer_next_step"
     )
     assert finding.summary in html, "observed slot is not bound to the finding summary"
+    assert finding.customer_summary in html, (
+        "summary line is not bound to the finding customer_summary"
+    )
+    assert expected_state_map()[finding.check_id] in html, (
+        "expected slot is not bound to the catalog expected_state"
+    )
 
 
 def test_admin_destination_absent_without_deep_link(tmp_path: Path) -> None:
@@ -140,6 +153,60 @@ def test_admin_destination_absent_without_deep_link(tmp_path: Path) -> None:
     assert "Admin destination" not in html, (
         "admin-destination slot rendered for a finding with no deep_link"
     )
+
+
+def _article_chunks(rendered: str) -> list[str]:
+    """Split rendered HTML into one chunk per complete finding article."""
+    return re.findall(r'<article class="finding [^>]*>.*?</article>', rendered, re.DOTALL)
+
+
+def _plain(text: str) -> str:
+    """Strip tags/entities and collapse whitespace from a rendered fragment."""
+    text = re.sub(r"<[^>]+>", "", text)
+    return " ".join(html_lib.unescape(text).split())
+
+
+def _belief_slot_text(chunk: str, label: str) -> str:
+    """Return the normalized paragraph text of one belief slot in an article."""
+    pattern = re.compile(
+        r'<div class="belief-slot">\s*<span class="belief-label">'
+        + re.escape(label)
+        + r"</span>\s*<p>(.*?)</p>",
+        re.DOTALL,
+    )
+    match = pattern.search(chunk)
+    assert match is not None, f"belief slot {label!r} not found in the finding article"
+    return _plain(match.group(1))
+
+
+def test_belief_prose_slots_are_distinct(tmp_path: Path) -> None:
+    """The summary line, Expected, and Observed stay three different sentences.
+
+    For every finding article of the comprehensive fixture: the rendered Expected
+    text differs from the rendered Observed text, and no two adjacent belief
+    paragraphs within one article are byte-identical after normalization.
+    """
+    result = comprehensive_report()
+    rendered = _render(result, tmp_path)
+    chunks = _article_chunks(rendered)
+    assert len(chunks) == len(result.findings), (
+        f"expected one article per finding, got {len(chunks)} chunks for "
+        f"{len(result.findings)} findings"
+    )
+    for chunk, finding in zip(chunks, result.findings, strict=True):
+        expected = _belief_slot_text(chunk, "Expected")
+        observed = _belief_slot_text(chunk, "Observed")
+        assert expected != observed, (
+            f"Expected and Observed collapsed to the same sentence for "
+            f"{finding.check_id}: {expected!r}"
+        )
+        paragraphs = [
+            _plain(match) for match in re.findall(r"<p\b[^>]*>(.*?)</p>", chunk, re.DOTALL)
+        ]
+        for left, right in zip(paragraphs, paragraphs[1:], strict=False):
+            assert left != right, (
+                f"adjacent identical belief paragraphs for {finding.check_id}: {left!r}"
+            )
 
 
 # ---------------------------------------------------------------------------

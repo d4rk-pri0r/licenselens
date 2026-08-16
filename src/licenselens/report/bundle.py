@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Final
 
+from licenselens.catalog.expected_states import expected_state_map
 from licenselens.models import ScanResult
 from licenselens.paths import templates_dir
 from licenselens.report.html import build_report_context, report_environment
@@ -58,13 +59,14 @@ def build_report_bundle(result: ScanResult, output_dir: Path) -> ReportBundle:
     js = _read_asset(f"report_app/v{REPORT_APP_VERSION}/{_JS_LOGICAL}")
     image_files = icon_bundle_files()
     icon_urls = workload_icon_urls(image_files)
-    data_js = _serialize_data_js(result, icon_urls)
+    expected_by_check_id = expected_state_map()
+    data_js = _serialize_data_js(result, icon_urls, expected_by_check_id)
 
     css_name = _hashed_asset_name(_CSS_LOGICAL, css)
     js_name = _hashed_asset_name(_JS_LOGICAL, js)
     data_name = _hashed_asset_name(_DATA_LOGICAL, data_js)
 
-    context = build_report_context(result)
+    context = build_report_context(result, expected_by_check_id)
     context.update(
         assets_dir=ASSET_DIRNAME,
         css_name=css_name,
@@ -153,7 +155,11 @@ def _read_asset(relative_name: str) -> bytes:
     return path.read_bytes()
 
 
-def _serialize_data_js(result: ScanResult, icon_urls: dict[str, str]) -> bytes:
+def _serialize_data_js(
+    result: ScanResult,
+    icon_urls: dict[str, str],
+    expected_by_check_id: dict[str, str],
+) -> bytes:
     payload = json.dumps(
         result.model_dump(mode="json"),
         ensure_ascii=True,
@@ -163,7 +169,7 @@ def _serialize_data_js(result: ScanResult, icon_urls: dict[str, str]) -> bytes:
     icons = json.dumps(icon_urls, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
     # build_sections returns ``C`` as ``result.moves`` (list[TopMove]); serialize
     # those models so the view-model payload is a pure JSON value.
-    sections = build_sections(result)
+    sections = build_sections(result, expected_by_check_id)
     sections["C"] = [move.model_dump(mode="json") for move in result.moves]
     viewmodel = json.dumps(
         {"sections": sections, "constellation": build_constellation(result)},

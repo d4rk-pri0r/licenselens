@@ -14,6 +14,7 @@ from collections import Counter
 from collections.abc import Iterable
 from typing import Final
 
+from licenselens.catalog.expected_states import expected_state_map
 from licenselens.models import (
     CapabilityOutcome,
     CapabilitySummary,
@@ -23,8 +24,9 @@ from licenselens.models import (
 
 # allow: SIZE_OK — shared view-model module; consumers (html.py, bundle.py,
 # test_report_viewmodel.py, test_report_v2_contract.py) import builders from
-# here, and the T3/T4 constraint forbids changing existing builder signatures,
-# so the module is extended in place rather than split.
+# here, and the T3/T4 constraint forbids changing existing builder signatures
+# (the todo-7 ``expected_by_check_id`` threading is the one sanctioned
+# extension), so the module is extended in place rather than split.
 
 #: Fixed workload ordering for the capability constellation. Reuses the v1
 #: renderer's ``_WORKLOAD_PRIORITY`` idea (identity first, then endpoint, then
@@ -178,13 +180,17 @@ def build_constellation(result: ScanResult) -> list[dict[str, str | int | None]]
 def build_belief_block(
     finding: Finding,
     capability_summaries: list[CapabilitySummary],
+    expected_by_check_id: dict[str, str],
 ) -> dict[str, object]:
     """Map one finding to its six D-section belief-block slots.
 
     Slot bindings (in fallback order):
 
-    * ``expected`` — the matching capability's ``outcome``; empty string when no
-      capability matches.
+    * ``expected`` — the catalog ``expected_state`` for ``finding.check_id``,
+      looked up in ``expected_by_check_id``; ``"Not reported"`` when the check
+      id is absent from the mapping. A pure lookup, never a derived conclusion.
+    * ``summary_line`` — ``finding.customer_summary`` (may be an empty string;
+      the renderer omits the line entirely when empty).
     * ``observed`` — ``finding.summary`` plus ``finding.evidence`` (a dict).
     * ``why_it_matters`` — the matching capability's ``why_it_matters`` plus the
       ``severity``/``value_impact``/``blast_radius`` enum values.
@@ -197,7 +203,7 @@ def build_belief_block(
     The "matching capability" is the first ``CapabilitySummary`` whose ``id``
     appears in ``finding.entitlements_used`` (the engine stores the check's owned
     ``required_capabilities`` there). When that list is empty or names no
-    summary, the capability-dependent slots fall back to empty strings.
+    summary, the capability-dependent slot falls back to an empty string.
     """
     summary_by_id: dict[str, CapabilitySummary] = {
         summary.id: summary for summary in capability_summaries
@@ -208,7 +214,8 @@ def build_belief_block(
             matched = summary_by_id[capability_id]
             break
     return {
-        "expected": matched.outcome if matched else "",
+        "expected": expected_by_check_id.get(finding.check_id, "Not reported"),
+        "summary_line": finding.customer_summary,
         "observed": {
             "summary": finding.summary,
             "evidence": finding.evidence,
@@ -283,7 +290,10 @@ def _sorted_unique(values: Iterable[str]) -> list[str]:
     return sorted(set(values))
 
 
-def build_sections(result: ScanResult) -> dict[str, object]:
+def build_sections(
+    result: ScanResult,
+    expected_by_check_id: dict[str, str] | None = None,
+) -> dict[str, object]:
     """Build the A/B/C/D/E section payloads for the report template.
 
     * ``A`` — the posture figure plus the rollup counts (``you_own``,
@@ -298,7 +308,14 @@ def build_sections(result: ScanResult) -> dict[str, object]:
     * ``E`` — the full findings list plus filter facet metadata (status,
       severity, confidence, evaluation mode, pack, workload), each facet the
       distinct values present in the findings, sorted deterministically.
+
+    ``expected_by_check_id`` threads the catalog ``check_id -> expected_state``
+    mapping into the D-section blocks; when omitted it is resolved once here via
+    :func:`licenselens.catalog.expected_states.expected_state_map` (never per
+    finding).
     """
+    if expected_by_check_id is None:
+        expected_by_check_id = expected_state_map()
     rollup = result.capability_rollup
     outcome_by_id: dict[str, CapabilityOutcome] = {
         outcome.id: outcome for outcome in result.capability_outcomes
@@ -320,7 +337,10 @@ def build_sections(result: ScanResult) -> dict[str, object]:
             for summary in result.capability_summaries
         ],
         "C": result.moves,
-        "D": [build_belief_block(finding, result.capability_summaries) for finding in findings],
+        "D": [
+            build_belief_block(finding, result.capability_summaries, expected_by_check_id)
+            for finding in findings
+        ],
         "E": {
             "findings": [_finding_entry(finding) for finding in findings],
             "filters": {

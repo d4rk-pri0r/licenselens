@@ -3,24 +3,27 @@
 
    Renders ONE finding article from the v2 view-model payload built by
    src/licenselens/report/viewmodel.py. The body is the six-slot belief block
-   from build_belief_block(finding, capability_summaries) with progressive
-   disclosure per DESIGN_V2.md section 8: the summary line and slots 1-2
-   (Expected / Observed) first, slots 3-4 (Why it matters / Recommended
+   from build_belief_block(finding, capability_summaries, expected_by_check_id)
+   with progressive disclosure per DESIGN_V2.md section 8: the summary line and
+   slots 1-2 (Expected / Observed) first, slots 3-4 (Why it matters / Recommended
    action) next, then the technical evidence inside a native
    <details class="tech"> disclosure.
 
    Include contract (consumed by both the single-file and bundle renderers):
      - `block` — one dict from build_sections(result)["D"], ordered the same
-       as result.findings. Keys: expected (str), observed (summary + evidence),
-       why_it_matters (capability / severity / value_impact / blast_radius),
-       recommended_action (str), evidence (data_sources / confidence_label /
-       limitations), admin_destination (str | None).
+       as result.findings. Keys: expected (str, catalog expected_state for the
+       check id, "Not reported" when unmapped), summary_line (str, the finding
+       customer_summary — omitted entirely when empty), observed (summary +
+       evidence), why_it_matters (capability / severity / value_impact /
+       blast_radius), recommended_action (str), evidence (data_sources /
+       confidence_label / limitations), admin_destination (str | None).
      - `f` — the paired serialized finding from build_sections(result)["E"]
        ["findings"] at the same index (see _finding_entry in viewmodel.py).
        Supplies the article's id, data-status / data-workload / data-check-id
-       and facet attributes, the status marker, the title, and the head meta
-       row. The six belief slots below bind strictly to `block`, never to
-       hardcoded copy.
+       and facet attributes, the status marker, the title, the head meta
+       row, and the Observed slot prose (f.summary). The summary line and the
+       remaining belief slots bind strictly to `block`, never to hardcoded
+       copy.
      - `prim` — imported below from report/v2/_v2_primitives.html.j2.
 
    Deep-linking contract (DESIGN_V2.md section 5E): the article carries
@@ -44,8 +47,10 @@
         {% if f.evaluation_mode %}<span class="meta-item"><span class="meta-key">Evaluation:</span> {{ f.evaluation_mode | replace('_', ' ') }}</span>{% endif %}
       </div>
 
-      {# Progressive disclosure level 1: the summary line, before the slots. #}
-      <p class="finding-summary">{{ block.observed.summary or "Not reported" }}</p>
+      {# Progressive disclosure level 1: the executive summary line, before the
+         slots. Bound to block.summary_line (finding.customer_summary) and
+         omitted entirely when empty. #}
+      {% if block.summary_line %}<p class="finding-summary">{{ block.summary_line }}</p>{% endif %}
 
       <div class="belief-slot">
         <span class="belief-label">Expected</span>
@@ -54,8 +59,8 @@
 
       <div class="belief-slot">
         <span class="belief-label">Observed</span>
-        {% if block.observed.summary %}
-        <p>{{ block.observed.summary }}</p>
+        {% if f.summary %}
+        <p>{{ f.summary }}</p>
         {% else %}
         <p>Not reported</p>
         {% endif %}

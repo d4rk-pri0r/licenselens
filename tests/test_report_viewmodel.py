@@ -13,6 +13,7 @@ Locks the view-model contracts over the frozen ``report_fixtures`` inputs:
 
 from __future__ import annotations
 
+from licenselens.catalog.expected_states import expected_state_map
 from licenselens.report.viewmodel import (
     build_belief_block,
     build_constellation,
@@ -166,8 +167,11 @@ def test_sections_empty_report_safety() -> None:
 def test_belief_block_field_binding() -> None:
     result = comprehensive_report()
     finding = result.findings[0]
-    block = build_belief_block(finding, result.capability_summaries)
+    expected_by_check_id = expected_state_map()
+    block = build_belief_block(finding, result.capability_summaries, expected_by_check_id)
     assert block["observed"] == {"summary": finding.summary, "evidence": finding.evidence}
+    assert block["summary_line"] == finding.customer_summary
+    assert block["expected"] == expected_by_check_id[finding.check_id]
     assert block["why_it_matters"]["severity"] == finding.severity.value
     assert block["why_it_matters"]["value_impact"] == finding.value_impact.value
     assert block["why_it_matters"]["blast_radius"] == finding.blast_radius.value
@@ -177,17 +181,24 @@ def test_belief_block_field_binding() -> None:
     assert block["evidence"]["limitations"] == finding.limitations
     assert block["admin_destination"] == finding.deep_link
     # Fixture findings carry no entitlements_used -> capability slots fall back.
-    assert block["expected"] == ""
     assert block["why_it_matters"]["capability"] == ""
 
 
-def test_belief_block_expected_from_matching_capability() -> None:
+def test_belief_block_expected_ignores_capability_match() -> None:
     result = comprehensive_report()
     summary = result.capability_summaries[0]
     finding = result.findings[0].model_copy(update={"entitlements_used": [summary.id]})
-    block = build_belief_block(finding, result.capability_summaries)
-    assert block["expected"] == summary.outcome
+    block = build_belief_block(finding, result.capability_summaries, expected_state_map())
+    assert block["expected"] == expected_state_map()[finding.check_id]
+    assert block["expected"] != summary.outcome
     assert block["why_it_matters"]["capability"] == summary.why_it_matters
+
+
+def test_belief_block_expected_not_reported_for_unknown_check() -> None:
+    result = comprehensive_report()
+    finding = result.findings[0].model_copy(update={"check_id": "check-not-in-catalog"})
+    block = build_belief_block(finding, result.capability_summaries, expected_state_map())
+    assert block["expected"] == "Not reported"
 
 
 def test_belief_block_recommended_action_falls_back_to_remediation() -> None:
@@ -195,17 +206,19 @@ def test_belief_block_recommended_action_falls_back_to_remediation() -> None:
     finding = result.findings[0].model_copy(
         update={"customer_next_step": "", "remediation": "Remediate it."}
     )
-    block = build_belief_block(finding, result.capability_summaries)
+    block = build_belief_block(finding, result.capability_summaries, expected_state_map())
     assert block["recommended_action"] == "Remediate it."
 
 
 def test_belief_block_sparse_optional_fields() -> None:
     result = sparse_optional_fields_report()
     finding = result.findings[0]
-    block = build_belief_block(finding, result.capability_summaries)
+    block = build_belief_block(finding, result.capability_summaries, expected_state_map())
     assert block["admin_destination"] is None
     assert block["recommended_action"] == ""
     assert block["evidence"]["data_sources"] == []
     assert block["evidence"]["limitations"] == []
     assert block["observed"]["evidence"] == {}
     assert block["observed"]["summary"] == finding.summary
+    assert block["summary_line"] == finding.customer_summary
+    assert block["expected"] == "Not reported"
