@@ -91,6 +91,14 @@ packages = ["src/licenselens"]
 "templates/report/v2" = "licenselens/data/templates/report/v2"
 "templates/report_app" = "licenselens/data/templates/report_app"
 "assets/vendor/microsoft-cloud" = "licenselens/data/vendor/microsoft-cloud"
+# The PowerShell collector bridge (email/collaboration/power-data packs) is
+# PowerShell-only data. Ship the runtime module — manifest, module body, entry
+# script, and adapters — so pip/pipx installs can run it. The module's Pester
+# tests must NOT ship (the release gate rejects any wheel member under tests/).
+"powershell/LicenseLens.Collectors/LicenseLens.Collectors.psd1" = "licenselens/data/powershell/LicenseLens.Collectors/LicenseLens.Collectors.psd1"
+"powershell/LicenseLens.Collectors/LicenseLens.Collectors.psm1" = "licenselens/data/powershell/LicenseLens.Collectors/LicenseLens.Collectors.psm1"
+"powershell/LicenseLens.Collectors/Invoke-LicenseLensBridge.ps1" = "licenselens/data/powershell/LicenseLens.Collectors/Invoke-LicenseLensBridge.ps1"
+"powershell/LicenseLens.Collectors/adapters" = "licenselens/data/powershell/LicenseLens.Collectors/adapters"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

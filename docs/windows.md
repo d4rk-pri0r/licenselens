@@ -42,6 +42,29 @@ licenselens demo -o reports
 Use PowerShell or Windows Terminal for the interactive prompts; in CI or a
 non-interactive session the tool falls back to dry-run and never hangs.
 
+### pip and pipx installs ship the bridge too (wheel)
+
+`pip install licenselens` and `pipx install licenselens` install the **wheel**.
+Since 0.4.0 the wheel bundles the PowerShell collector bridge under
+`licenselens/data/powershell/LicenseLens.Collectors`, so the email pack runs
+from a plain pip/pipx install on Windows. Earlier wheels carried only the
+catalog, checks, and templates — the bridge lived in the source distribution
+only, so pip/pipx users silently lost every PowerShell-only pack.
+
+Verify the bridge made it into an installed copy:
+
+```powershell
+# pip install: inside the venv
+$bridge = python -c "from licenselens.collectors.powershell import powershell_module_root; print(powershell_module_root())"
+Test-Path "$bridge\LicenseLens.Collectors.psd1"   # must print True
+
+# pipx keeps its own venv; point at its interpreter instead of `python`,
+# e.g. %LOCALAPPDATA%\pipx\venvs\licenselens\Scripts\python.exe
+```
+
+The CLI resolves that directory automatically (checkout first, package data
+fallback), so nothing extra needs importing.
+
 ## Standalone distribution
 
 A Windows x64 **one-folder** distribution (no Python required) is built from
@@ -55,6 +78,7 @@ pyinstaller --clean --noconfirm packaging/windows/licenselens.spec
 This bundles the catalog, checks, report templates, and the PowerShell collector
 module into `dist/licenselens/` and writes a deterministic `test-only` ZIP.
 One-file mode is deliberately unsupported (no temp-extraction executable).
+The pip/pipx wheel carries the same bridge — see the wheel note above.
 
 - **Support matrix:** Windows x64, Python 3.12/3.13. PyInstaller is not a
   cross-compiler, so the exe must be built on Windows (CI), never on macOS/Linux.
