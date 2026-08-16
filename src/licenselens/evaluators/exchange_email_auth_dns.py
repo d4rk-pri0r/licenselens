@@ -194,9 +194,11 @@ def _profile_contact_check(
     if not contact.strip():
         return Evaluation(
             status=FindingStatus.SKIPPED,
-            summary=f"No {field} contact configured in the assessment profile.",
+            summary=f"No {field} contact configured in your settings, so this DMARC field was not checked.",
             evidence={"configured": False, "field": field},
-            customer_summary="Provide the contact in your profile to check this DMARC field.",
+            customer_summary=(
+                "Add the contact to your configured settings so this DMARC field can be checked."
+            ),
             confidence=Confidence.LOW,
         )
     if _no_domains(records):

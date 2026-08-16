@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: User consent to applications is restricted so admins review risky permissions.
 customer_next_step: >
   Restrict user consent so only admins approve non-trivial permissions.
+why_it_matters: >
+  User-approved app permissions are the classic consent-phishing path: one wrong click gives an attacker lasting access to mail and files.
 description: >
   User consent to applications should be restricted.
 workload: identity

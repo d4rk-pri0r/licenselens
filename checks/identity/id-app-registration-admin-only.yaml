@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Only administrators can register applications in the tenant.
 customer_next_step: >
   Disable user application registration in Entra user settings.
+why_it_matters: >
+  When anyone can register apps, unvetted apps pile up holding permissions nobody tracks.
 description: >
   Only administrators should be allowed to register applications.
 workload: identity

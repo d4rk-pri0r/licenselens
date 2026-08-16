@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Tenant-wide delegated consent grants hold no unused high-impact scopes.
 customer_next_step: >
   Review and remove high-impact AllPrincipals OAuth grants that are not required.
+why_it_matters: >
+  An app approved for everyone with broad permissions can read or send business data on behalf of the whole organization.
 description: >
   Tenant-wide delegated grants with high-impact scopes indicate risky consent.
 workload: identity

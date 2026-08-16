@@ -5,7 +5,7 @@ customer_summary: >
   Spoofing attempts stay invisible if nobody receives DMARC reports.
 expected_state: DMARC records include the agency's internal report contact.
 customer_next_step: >
-  Add an internal rua/ruf contact from your assessment profile to DMARC.
+  Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.
 description: >
   DMARC agency report contact is missing.
 workload: exchange
@@ -21,7 +21,7 @@ exposure_class: none
 deep_link: https://admin.microsoft.com/#/Domains
 collector: exchange_collector
 remediation: >
-  Add an internal rua/ruf contact from your assessment profile to DMARC.
+  Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.
 references:
   - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
 enabled: true

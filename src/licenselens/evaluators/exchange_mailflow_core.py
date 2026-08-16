@@ -86,7 +86,7 @@ def evaluate_exo_forwarding_external_disabled(
     if forwarding:
         return Evaluation(
             status=FindingStatus.OK,
-            summary=("Automatic forwarding is limited to profile-approved external domains only."),
+            summary=("Automatic forwarding is limited to your approved external domains only."),
             evidence=evidence_out,
             customer_summary="External mail forwarding matches your approved allowlist.",
             **direct_meta(),

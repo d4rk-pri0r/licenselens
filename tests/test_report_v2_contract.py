@@ -30,6 +30,7 @@ from playwright.sync_api import Browser, Page
 
 from licenselens.catalog.expected_states import expected_state_map
 from licenselens.models import (
+    BlastRadius,
     CapabilityRollup,
     Finding,
     FindingStatus,
@@ -42,6 +43,7 @@ from licenselens.paths import templates_dir
 from licenselens.report.bundle import build_report_bundle
 from licenselens.report.html import write_html_report
 from licenselens.report.viewmodel import build_constellation
+from licenselens.schema_contracts import EvaluationMode
 from tests.report_fixtures import (
     comprehensive_report,
     empty_report,
@@ -191,8 +193,10 @@ def test_belief_prose_slots_are_distinct(tmp_path: Path) -> None:
     """The summary line, Expected, and Observed stay three different sentences.
 
     For every finding article of the comprehensive fixture: the rendered Expected
-    text differs from the rendered Observed text, and no two adjacent belief
-    paragraphs within one article are byte-identical after normalization.
+    text differs from the rendered Observed text (for skipped/"Not assessed"
+    findings the Observed slot is replaced by "Why this was skipped" — todo 21),
+    and no two adjacent belief paragraphs within one article are byte-identical
+    after normalization.
     """
     result = comprehensive_report()
     rendered = _render(result, tmp_path)
@@ -203,9 +207,12 @@ def test_belief_prose_slots_are_distinct(tmp_path: Path) -> None:
     )
     for chunk, finding in zip(chunks, result.findings, strict=True):
         expected = _belief_slot_text(chunk, "Expected")
-        observed = _belief_slot_text(chunk, "Observed")
+        observed_label = (
+            "Why this was skipped" if finding.status == FindingStatus.SKIPPED else "Observed"
+        )
+        observed = _belief_slot_text(chunk, observed_label)
         assert expected != observed, (
-            f"Expected and Observed collapsed to the same sentence for "
+            f"Expected and {observed_label} collapsed to the same sentence for "
             f"{finding.check_id}: {expected!r}"
         )
         paragraphs = [
@@ -366,3 +373,132 @@ def test_app_js_binds_posture_not_hardcoded_percent() -> None:
     app_js = (templates_dir() / "report_app" / "v2" / "app.js").read_text(encoding="utf-8")
     assert "realized_percent" in app_js, "app.js does not bind the posture percent from data"
     assert "% realized" not in app_js, "app.js hardcodes a posture percent literal"
+
+
+# ---------------------------------------------------------------------------
+# 6. Enum -> human copy in the exec area (masthead, meta rows, posture)
+# ---------------------------------------------------------------------------
+
+
+def test_exec_area_renders_human_enum_copy(tmp_path: Path) -> None:
+    """Exec surfaces render human copy and never the raw enum values.
+
+    The masthead mode label, the finding meta row (Scope / Evaluation), the
+    Value-impact slot, and the posture sentence all carry presentation copy.
+    Raw enum values may only remain in the technical drill-down / data
+    attributes; the labeled exec surfaces never print them.
+    """
+    result = comprehensive_report()
+    result.findings[0] = result.findings[0].model_copy(
+        update={
+            "blast_radius": BlastRadius.ADMIN,
+            "evaluation_mode": EvaluationMode.PROXY,
+        }
+    )
+    html = _render(result, tmp_path)
+    plain = _plain(html)
+
+    # Masthead / opening mode copy (dry_run scan).
+    assert "Demo scan (synthetic data)" in html
+    assert "dry_run" not in html, "raw scan-mode enum leaked into the single-file report"
+
+    # Finding meta row: evaluation + scope.
+    assert "Evaluation: Read directly" in plain, "direct mode did not render its human copy"
+    assert (
+        "Evaluation: Approximated — verify in portal" in plain
+    ), "proxy mode did not render its human copy"
+    assert "Scope: Administrator scope" in plain, "admin blast radius did not render its human copy"
+    assert "Scope: All users" in plain, "all_users blast radius did not render its human copy"
+    assert "Evaluation: direct" not in plain, "raw direct enum leaked into the meta row"
+    assert "Evaluation: proxy" not in plain, "raw proxy enum leaked into the meta row"
+    assert "Scope: admin" not in plain, "raw admin enum leaked into the meta row"
+    assert "Scope: all_users" not in plain, "raw all_users enum leaked into the meta row"
+
+    # Value-impact slot capitalization.
+    assert "Value impact: High" in plain
+    assert "Value impact: high" not in plain, "raw lowercase impact value leaked"
+
+    # Posture sentence: data-driven reword, no awkward fragment.
+    assert "2 of 3 priority capabilities still need attention" in plain
+    assert "still not fully working" not in plain, "awkward posture fragment still rendered"
+
+    # The bundle entry masthead uses the same copy mapping.
+    bundle = build_report_bundle(result, tmp_path / "bundle")
+    entry_html = bundle.entry_path.read_text(encoding="utf-8")
+    assert "Demo scan (synthetic data)" in entry_html
+    assert "dry_run" not in entry_html, "raw scan-mode enum leaked into the bundle entry"
+
+
+# ---------------------------------------------------------------------------
+# 7. Provenance footer (todo 20)
+# ---------------------------------------------------------------------------
+
+
+def _footer_region(html_text: str) -> str:
+    """Extract the first ``<footer>…</footer>`` region from rendered HTML."""
+    start = html_text.index("<footer")
+    return html_text[start : html_text.index("</footer>", start)]
+
+
+def test_provenance_footer_renders_data_driven_and_keeps_print(tmp_path: Path) -> None:
+    """The provenance footer renders the mode legend, methodology, sampling
+    disclosure, identity, and generated timestamp — all sourced from the model.
+
+    The legend derives from the modes actually present in the findings (never a
+    fixed list), the methodology sentence covers exactly the evidence paths in
+    play, the identity is the tenant display name, and the timestamp flows from
+    the frozen fixture's ``scanned_at``. No raw enum token may appear anywhere
+    in the footer region, and the print stylesheet keeps the footer.
+    """
+    result = comprehensive_report()
+    result.findings[0] = result.findings[0].model_copy(
+        update={"evaluation_mode": EvaluationMode.PROXY}
+    )
+    result.findings[1] = result.findings[1].model_copy(
+        update={"evaluation_mode": EvaluationMode.MANUAL}
+    )
+    html = _render(result, tmp_path)
+    footer = _footer_region(html)
+
+    # Legend: only the modes present, in human copy.
+    assert "Direct read" in footer
+    assert "Approximated (proxy) — verify in portal" in footer
+    assert "Manual review" in footer
+    assert "Read directly" not in footer, "filter-button copy leaked into the legend"
+    assert "unsupported" not in footer
+
+    # Methodology: the evidence paths actually in play.
+    assert "Graph and PowerShell read configuration directly" in footer
+    assert "Secure Score approximates where direct evidence is unavailable" in footer
+    assert "manual review covers settings no API exposes" in footer
+
+    # Sampling disclosure.
+    assert "No sampling or truncation recorded for this scan." in footer
+
+    # Identity + generated timestamp, both straight from the model.
+    assert html_lib.escape(result.tenant_display_name) in footer
+    assert result.display_scanned_at in footer
+    assert f'datetime="{result.scanned_at}"' in footer
+
+    # The existing advisory line survives.
+    assert "read-only advisory, review before acting" in footer
+
+    # No raw enum anywhere in the footer region.
+    for raw in ("dry_run", "direct_with_proxy_fallback", "not_licensed", "evaluation_mode"):
+        assert raw not in footer, f"raw enum {raw!r} leaked into the footer"
+
+    # Print keeps the footer: the single-file stylesheet no longer hides it.
+    assert "footer { display: none" not in html, "print stylesheet hides the provenance footer"
+
+
+def test_provenance_footer_demo_fallback_and_print_css(tmp_path: Path) -> None:
+    """A nameless dry-run scan labels its footer identity ``demo (synthetic)``,
+    and the bundle stylesheet also keeps the footer in print."""
+    result = empty_report()
+    html = _render(result, tmp_path)
+    footer = _footer_region(html)
+    assert "demo (synthetic)" in footer
+    assert "Your tenant" not in footer
+
+    bundle_css = (templates_dir() / "report_app" / "v2" / "app.css").read_text(encoding="utf-8")
+    assert "footer { display: none" not in bundle_css, "bundle print stylesheet hides the footer"

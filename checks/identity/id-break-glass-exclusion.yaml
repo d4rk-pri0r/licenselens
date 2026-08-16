@@ -9,8 +9,8 @@ customer_summary: >
 expected_state: A documented break-glass account exists with justified sign-in rule exclusions.
 customer_next_step: >
   Create two cloud-only, Global Administrator emergency accounts excluded from
-  Conditional Access, declare them as break-glass principals in the assessment
-  profile, and remove any other unexplained exclusions.
+  Conditional Access, declare them as break-glass principals in your configured
+  settings, and remove any other unexplained exclusions.
 description: >
   Break-glass (emergency access) accounts are the last resort when conditional
   access, MFA, or federation fails. They must exist, and the accounts that
@@ -33,8 +33,8 @@ collector: graph_ca
 remediation: >
   Create break-glass Global Administrator accounts following Microsoft's
   emergency-access guidance, exclude only those principals from Conditional
-  Access policies, and record them as break_glass exclusions with owner and
-  reason in the assessment profile.
+  Access policies, and record them as break-glass exclusions with owner and
+  reason in your configured settings.
 references:
   - https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access
   - https://learn.microsoft.com/entra/identity/conditional-access/concept-conditional-access-policies

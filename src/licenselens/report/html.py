@@ -16,7 +16,13 @@ from licenselens.models import (
 from licenselens.paths import templates_dir
 from licenselens.report.icons import workload_svg_map
 from licenselens.report.redaction import derive_redaction_targets, redact_text
-from licenselens.report.viewmodel import build_constellation, build_opening, build_sections
+from licenselens.report.viewmodel import (
+    EXEC_COPY,
+    build_constellation,
+    build_opening,
+    build_provenance,
+    build_sections,
+)
 
 
 def report_environment() -> Environment:
@@ -55,6 +61,8 @@ def build_report_context(
         "counts": result.counts_by_status,
         "status_order": ["gap", "partial", "ok", "not_licensed", "skipped", "error"],
         "exposure_labels": EXPOSURE_PLAIN_LABELS,
+        "exec_copy": EXEC_COPY,
+        "provenance": build_provenance(result),
     }
 
 

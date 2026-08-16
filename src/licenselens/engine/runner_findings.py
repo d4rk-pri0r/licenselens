@@ -37,6 +37,7 @@ def customer_fields(check: CheckDefinition) -> dict[str, str]:
         "customer_title": check.customer_title or check.title,
         "customer_summary": check.customer_summary or check.description,
         "customer_next_step": check.customer_next_step or check.remediation,
+        "why_it_matters": check.why_it_matters,
     }
 
 
@@ -92,6 +93,7 @@ def base_finding(
         customer_title=customer["customer_title"],
         customer_summary=customer_summary or customer["customer_summary"],
         customer_next_step=customer_next_step or customer["customer_next_step"],
+        why_it_matters=customer["why_it_matters"],
         status_label=STATUS_PLAIN_LABELS[status.value],
         evidence=evidence or {},
         entitlements_used=[c for c in check.required_capabilities if c in owned],

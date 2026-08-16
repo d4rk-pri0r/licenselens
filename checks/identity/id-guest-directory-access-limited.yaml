@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Guests hold limited directory access as Guest or Restricted Guest users.
 customer_next_step: >
   Set guest user access to limited or restricted in Entra external collaboration settings.
+why_it_matters: >
+  Guests browsing your directory can collect names, groups, and contacts — the raw material for targeted phishing.
 description: >
   Guest users should have limited or restricted access to directory objects.
 workload: identity

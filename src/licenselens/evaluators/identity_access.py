@@ -18,7 +18,7 @@ _BREAK_GLASS_NOTE: Final = (
 )
 _UNJUSTIFIED_EXCLUSION_NOTE: Final = (
     "Some enforced Conditional Access policies exclude accounts without a "
-    "documented break-glass rationale in the assessment profile, so those "
+    "documented break-glass rationale in your configured settings, so those "
     "accounts may still sign in without the required protection."
 )
 

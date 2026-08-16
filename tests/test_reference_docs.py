@@ -180,7 +180,7 @@ def test_sanitize_sample_result_redacts_identifiers(mod) -> None:
     mod.sanitize_sample_result(result)
 
     assert result.tenant_id == ZERO_TENANT_ID
-    assert result.tenant_display_name == "Contoso Demo (dry-run)"
+    assert result.tenant_display_name == "Demo (synthetic data)"
     assert result.tenant_slug is None
     assert result.workspace_resource_id is None
 

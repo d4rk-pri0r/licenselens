@@ -7,6 +7,7 @@ from pathlib import Path
 from licenselens.config_models import RedactionSettings
 from licenselens.models import STATUS_PLAIN_LABELS, ScanResult
 from licenselens.report.redaction import derive_redaction_targets, redact_text
+from licenselens.report.viewmodel import human_copy
 
 
 def write_markdown_report(
@@ -25,7 +26,12 @@ def write_markdown_report(
         "",
         f"- **Version:** {result.version}",
         f"- **Scanned at:** {result.scanned_at}",
-        f"- **Mode:** {result.scan_mode}" + (f" / {result.auth_mode}" if result.auth_mode else ""),
+        f"- **Mode:** {human_copy('scan_mode', result.scan_mode)}"
+        + (
+            f" / {result.auth_mode}"
+            if result.auth_mode and result.auth_mode != result.scan_mode
+            else ""
+        ),
         f"- **Organization:** {result.tenant_display_name or result.tenant_id or 'n/a (dry-run)'}",
         "",
     ]

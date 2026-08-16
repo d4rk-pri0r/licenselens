@@ -114,12 +114,12 @@ def evaluate_teams_external_access_per_domain(
             return Evaluation(
                 status=FindingStatus.GAP,
                 summary=(
-                    "Teams external access includes domains outside the profile-approved "
+                    "Teams external access includes domains outside your approved "
                     f"partner list: {', '.join(sorted(unapproved))}."
                 ),
                 evidence=evidence_out,
                 customer_summary=(
-                    "External access includes domains not approved in the assessment profile."
+                    "External access includes domains not approved in this report's configuration."
                 ),
                 **direct_meta(),
             )

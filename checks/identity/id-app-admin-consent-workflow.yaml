@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Admin consent requests route to reviewers who monitor the queue.
 customer_next_step: >
   Enable the admin consent request workflow with monitored reviewers.
+why_it_matters: >
+  Requiring admin approval for app requests stops shadow-IT apps from quietly gaining access to company data.
 description: >
   An admin consent request workflow should be configured.
 workload: identity

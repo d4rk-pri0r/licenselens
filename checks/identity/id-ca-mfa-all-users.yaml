@@ -21,7 +21,7 @@ exposure_class: none
 deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies
 collector: graph_ca
 remediation: >
-  Create and enforce an all-user MFA Conditional Access policy; document break-glass exclusions in the assessment profile.
+  Create and enforce an all-user MFA Conditional Access policy; document break-glass exclusions in your configured settings.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa
 enabled: true

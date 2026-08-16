@@ -4,7 +4,7 @@
   "tool_display_name": "Security License Lens",
   "version": "0.4.0",
   "tenant_id": "00000000-0000-0000-0000-000000000000",
-  "tenant_display_name": "Contoso Demo (dry-run)",
+  "tenant_display_name": "Demo (synthetic data)",
   "tenant_slug": null,
   "scan_mode": "dry_run",
   "auth_mode": "dry_run",
@@ -676,7 +676,7 @@
       "pack": "identity",
       "exposure_class": "none",
       "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers",
-      "summary": "No break-glass account was identified among the Global Administrators; no principal is declared as break-glass in the assessment profile.",
+      "summary": "No break-glass account was identified among the Global Administrators; no principal is declared as break-glass in this report's configuration.",
       "evidence": {
         "global_admin_principal_count": 2,
         "declared_break_glass_principal_count": 0,
@@ -691,14 +691,14 @@
         "entra_id_p2",
         "conditional_access"
       ],
-      "remediation": "Create break-glass Global Administrator accounts following Microsoft's emergency-access guidance, exclude only those principals from Conditional Access policies, and record them as break_glass exclusions with owner and reason in the assessment profile.",
+      "remediation": "Create break-glass Global Administrator accounts following Microsoft's emergency-access guidance, exclude only those principals from Conditional Access policies, and record them as break-glass exclusions with owner and reason in your configured settings.",
       "references": [
         "https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access",
         "https://learn.microsoft.com/entra/identity/conditional-access/concept-conditional-access-policies"
       ],
       "customer_title": "No documented emergency admin account, or exclusions without a reason",
       "customer_summary": "We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.",
-      "customer_next_step": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in the assessment profile, and remove any other unexplained exclusions.",
+      "customer_next_step": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions.",
       "status_label": "Needs attention",
       "confidence": "high",
       "confidence_label": "High confidence",
@@ -2950,7 +2950,7 @@
       "pack": "email",
       "exposure_class": "none",
       "deep_link": "https://admin.microsoft.com/#/Domains",
-      "summary": "No agency contact configured in the assessment profile.",
+      "summary": "No agency contact configured in your settings, so this DMARC field was not checked.",
       "evidence": {
         "configured": false,
         "field": "agency"
@@ -2958,13 +2958,13 @@
       "entitlements_used": [
         "exchange_online"
       ],
-      "remediation": "Add an internal rua/ruf contact from your assessment profile to DMARC.",
+      "remediation": "Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.",
       "references": [
         "https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure"
       ],
       "customer_title": "Add your mailbox to DMARC reports",
-      "customer_summary": "Provide the contact in your profile to check this DMARC field.",
-      "customer_next_step": "Add an internal rua/ruf contact from your assessment profile to DMARC.",
+      "customer_summary": "Add the contact to your configured settings so this DMARC field can be checked.",
+      "customer_next_step": "Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.",
       "status_label": "Check pending",
       "confidence": "low",
       "confidence_label": "Low confidence \u2014 verify in portal",
@@ -2987,7 +2987,7 @@
       "pack": "email",
       "exposure_class": "none",
       "deep_link": "https://admin.microsoft.com/#/Domains",
-      "summary": "No federal contact configured in the assessment profile.",
+      "summary": "No federal contact configured in your settings, so this DMARC field was not checked.",
       "evidence": {
         "configured": false,
         "field": "federal"
@@ -2995,13 +2995,13 @@
       "entitlements_used": [
         "exchange_online"
       ],
-      "remediation": "When your profile sets a federal contact, include it in every DMARC rua field.",
+      "remediation": "When your configured settings include a federal contact, add it to every DMARC aggregate-report (rua) field.",
       "references": [
         "https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure"
       ],
       "customer_title": "Add the federal DMARC report mailbox when required",
-      "customer_summary": "Provide the contact in your profile to check this DMARC field.",
-      "customer_next_step": "When your profile sets a federal contact, include it in every DMARC rua field.",
+      "customer_summary": "Add the contact to your configured settings so this DMARC field can be checked.",
+      "customer_next_step": "When your configured settings include a federal contact, add it to every DMARC aggregate-report (rua) field.",
       "status_label": "Check pending",
       "confidence": "low",
       "confidence_label": "Low confidence \u2014 verify in portal",
@@ -3143,7 +3143,7 @@
       "pack": "email",
       "exposure_class": "none",
       "deep_link": "https://security.microsoft.com/antiphishing",
-      "summary": "Partner-domain impersonation requires a profile list of partner domains.",
+      "summary": "Partner-domain impersonation requires a configured list of partner domains.",
       "evidence": {
         "partner_domains": []
       },
@@ -3155,7 +3155,7 @@
         "https://learn.microsoft.com/defender-office-365/anti-phishing-policies-about"
       ],
       "customer_title": "Protect key partner domains from look-alikes",
-      "customer_summary": "List your key partner domains in the profile to check their impersonation protection.",
+      "customer_summary": "List your key partner domains in your configured settings to check their impersonation protection.",
       "customer_next_step": "Enable targeted domain protection for profile-listed partner domains.",
       "status_label": "Check pending",
       "confidence": "low",
@@ -3179,7 +3179,7 @@
       "pack": "email",
       "exposure_class": "none",
       "deep_link": "https://security.microsoft.com/antiphishing",
-      "summary": "Sensitive user impersonation requires a profile list of sensitive accounts.",
+      "summary": "Sensitive user impersonation requires a configured list of sensitive accounts.",
       "evidence": {
         "sensitive_users": []
       },
@@ -3191,7 +3191,7 @@
         "https://learn.microsoft.com/defender-office-365/anti-phishing-policies-about"
       ],
       "customer_title": "Protect sensitive accounts from look-alike senders",
-      "customer_summary": "List your high-value accounts (executives, admins) in the profile to check user impersonation protection.",
+      "customer_summary": "List your high-value accounts (executives, admins) in your configured settings to check user impersonation protection.",
       "customer_next_step": "Enable user impersonation protection for profile-listed sensitive accounts.",
       "status_label": "Check pending",
       "confidence": "low",
@@ -3291,7 +3291,7 @@
       "pack": "identity",
       "exposure_class": "none",
       "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade",
-      "summary": "Guest invite domain allowlisting requires profile-approved domains (sensitive_domains / organization profile).",
+      "summary": "Guest invite domain allowlisting requires approved partner domains in your configured settings.",
       "evidence": {
         "approved_guest_domains": [],
         "cross_tenant_default_present": true,
@@ -3300,13 +3300,13 @@
       "entitlements_used": [
         "conditional_access"
       ],
-      "remediation": "Configure B2B collaboration allowlists from profile-approved domains; do not guess defaults.",
+      "remediation": "Configure B2B collaboration allowlists from your approved partner domains; do not guess defaults.",
       "references": [
         "https://learn.microsoft.com/entra/external-id/allow-deny-list"
       ],
       "customer_title": "Limit guest invites to approved partner domains",
-      "customer_summary": "We cannot judge guest invite domains until your organization lists approved partner domains in the assessment profile.",
-      "customer_next_step": "List approved partner domains in the assessment profile and mirror them in Entra B2B allowlists.",
+      "customer_summary": "We cannot judge guest invite domains until your organization lists approved partner domains in your configured settings.",
+      "customer_next_step": "List approved partner domains in your configured settings and mirror them in Entra B2B allowlists.",
       "status_label": "Check pending",
       "confidence": "low",
       "confidence_label": "Low confidence \u2014 verify in portal",
@@ -4166,7 +4166,7 @@
       "entitlements_used": [
         "conditional_access"
       ],
-      "remediation": "Create and enforce an all-user MFA Conditional Access policy; document break-glass exclusions in the assessment profile.",
+      "remediation": "Create and enforce an all-user MFA Conditional Access policy; document break-glass exclusions in your configured settings.",
       "references": [
         "https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa"
       ],
@@ -5804,7 +5804,7 @@
       "entitlements_used": [
         "sharepoint_online"
       ],
-      "remediation": "Enable 'Limit external sharing by domain' and add only profile-approved partner domains.",
+      "remediation": "Enable 'Limit external sharing by domain' and add only your approved partner domains.",
       "references": [
         "https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off"
       ],
@@ -7755,7 +7755,7 @@
   "recommended_next_steps": [
     "Restrict user consent so only admins approve non-trivial permissions.",
     "Disable SMS, Voice, and Email OTP authentication methods.",
-    "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in the assessment profile, and remove any other unexplained exclusions."
+    "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions."
   ],
   "warnings": [],
   "limitations": [
@@ -7817,7 +7817,7 @@
         "id-break-glass-exclusion"
       ],
       "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers",
-      "customer_next_step": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in the assessment profile, and remove any other unexplained exclusions."
+      "customer_next_step": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions."
     }
   ],
   "capability_rollup": {

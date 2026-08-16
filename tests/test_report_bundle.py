@@ -8,6 +8,7 @@ missing/tampered assets, and traversal/symlink-safe archive extraction.
 
 from __future__ import annotations
 
+import html as html_lib
 import json
 import re
 import zipfile
@@ -272,3 +273,30 @@ def test_extract_roundtrips_a_real_bundle(tmp_path: Path) -> None:
     dest = extract_report_archive(bundle.archive_path, tmp_path / "extracted")
     assert (dest / ENTRY_FILENAME).is_file()
     assert verify_report_bundle(dest) == []
+
+
+# ---------------------------------------------------------------------------
+# Provenance footer (todo 20)
+# ---------------------------------------------------------------------------
+
+
+def test_entry_footer_carries_provenance(tmp_path: Path) -> None:
+    """The bundle entry renders the same data-driven provenance footer as the
+    single-file report: mode legend, methodology, sampling disclosure, and the
+    escaped tenant identity with the generated timestamp."""
+    result = comprehensive_report()
+    bundle = build_report_bundle(result, tmp_path / "bundle")
+    entry = _read_entry(bundle.root)
+    start = entry.index("<footer")
+    footer = entry[start : entry.index("</footer>", start)]
+
+    assert "Direct read" in footer
+    assert "Graph and PowerShell read configuration directly" in footer
+    assert "No sampling or truncation recorded for this scan." in footer
+    assert result.display_scanned_at in footer
+    assert html_lib.escape(result.tenant_display_name) in footer
+    assert "<script>alert(1)</script>" not in footer
+    assert "read-only advisory, review before acting" in footer
+
+    for raw in ("dry_run", "direct_with_proxy_fallback", "evaluation_mode"):
+        assert raw not in footer, f"raw enum {raw!r} leaked into the bundle footer"

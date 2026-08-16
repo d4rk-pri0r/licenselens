@@ -52,7 +52,7 @@ SAMPLE_JSON_PATH = Path("examples") / "sample-report" / "security-license-lens-r
 # Frozen scan timestamp so the sample bundle is byte-reproducible across runs.
 SAMPLE_SCANNED_AT: Final = "2026-08-13T00:00:00+00:00"
 ZERO_TENANT_ID: Final = "00000000-0000-0000-0000-000000000000"
-SAMPLE_DISPLAY_NAME: Final = "Contoso Demo (dry-run)"
+SAMPLE_DISPLAY_NAME: Final = "Demo (synthetic data)"
 
 GENERATOR_NAME: Final = "scripts/generate_reference_docs.py"
 

@@ -17,14 +17,22 @@
        evidence), why_it_matters (capability / severity / value_impact /
        blast_radius), recommended_action (str), evidence (data_sources /
        confidence_label / limitations), admin_destination (str | None).
-     - `f` — the paired serialized finding from build_sections(result)["E"]
-       ["findings"] at the same index (see _finding_entry in viewmodel.py).
-       Supplies the article's id, data-status / data-workload / data-check-id
-       and facet attributes, the status marker, the title, the head meta
-       row, and the Observed slot prose (f.summary). The summary line and the
-       remaining belief slots bind strictly to `block`, never to hardcoded
-       copy.
-     - `prim` — imported below from report/v2/_v2_primitives.html.j2.
+      - `f` — the paired serialized finding from build_sections(result)["E"]
+        ["findings"] at the same index (see _finding_entry in viewmodel.py).
+        Supplies the article's id, data-status / data-workload / data-check-id
+        and facet attributes, the status marker, the title, the head meta
+        row, and the Observed slot prose (f.summary). The summary line and the
+        remaining belief slots bind strictly to `block`, never to hardcoded
+        copy.
+      - Skipped findings (f.status == "skipped", the "Not assessed" marker)
+        are rendered unassessed, never as if they were evaluated: the meta
+        row annotates Severity with "(potential impact — not yet assessed)"
+        and omits Confidence and Evaluation (there was no evaluation); the
+        Observed slot is replaced by a "Why this was skipped" slot bound to
+        block.skip_reason (the check's own manual / insufficient-evidence /
+        environment-specific rationale, built by build_skip_reason in
+        viewmodel.py). Non-skipped findings are unchanged.
+      - `prim` — imported below from report/v2/_v2_primitives.html.j2.
 
    Deep-linking contract (DESIGN_V2.md section 5E): the article carries
    id="finding-<check_id>"; `#finding-<check_id>` selects, reveals, and
@@ -33,19 +41,20 @@
    values.
    ========================================================================== #}
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
-    <article class="finding {{ f.status }}" id="finding-{{ f.check_id }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-check-id="{{ f.check_id }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}">
-      <div class="finding-head">
-        {{ prim.status_marker(f.status) }}
-        <h3>{{ f.title }}</h3>
-      </div>
-      <div class="finding-meta">
-        {% if f.severity %}<span class="meta-item"><span class="meta-key">Severity:</span> {{ f.severity | capitalize }}</span>{% endif %}
-        {% if f.effort_label %}<span class="meta-item"><span class="meta-key">Effort:</span> {{ f.effort_label }}</span>{% endif %}
-        {% if f.blast_radius %}<span class="meta-item"><span class="meta-key">Scope:</span> {{ f.blast_radius | replace('_', ' ') }}</span>{% endif %}
-        {% if f.workload %}<span class="meta-item"><span class="meta-key">Workload:</span> {{ f.workload | capitalize }}</span>{% endif %}
-        {% if f.confidence_label %}<span class="meta-item"><span class="meta-key">Confidence:</span> {{ f.confidence_label }}</span>{% endif %}
-        {% if f.evaluation_mode %}<span class="meta-item"><span class="meta-key">Evaluation:</span> {{ f.evaluation_mode | replace('_', ' ') }}</span>{% endif %}
-      </div>
+{%- set _skipped = f.status == 'skipped' -%}
+     <article class="finding {{ f.status }}" id="finding-{{ f.check_id }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-check-id="{{ f.check_id }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}">
+       <div class="finding-head">
+         {{ prim.status_marker(f.status) }}
+         <h3>{{ f.title }}</h3>
+       </div>
+       <div class="finding-meta">
+         {% if f.severity %}<span class="meta-item"><span class="meta-key">Severity:</span> {{ f.severity | capitalize }}{% if _skipped %} <span class="meta-note">(potential impact — not yet assessed)</span>{% endif %}</span>{% endif %}
+         {% if f.effort_label %}<span class="meta-item"><span class="meta-key">Effort:</span> {{ f.effort_label }}</span>{% endif %}
+         {% if f.blast_radius %}<span class="meta-item"><span class="meta-key">Scope:</span> {{ exec_copy["scope"].get(f.blast_radius, f.blast_radius | replace('_', ' ')) }}</span>{% endif %}
+         {% if f.workload %}<span class="meta-item"><span class="meta-key">Workload:</span> {{ f.workload | capitalize }}</span>{% endif %}
+         {% if not _skipped %}{% if f.confidence_label %}<span class="meta-item"><span class="meta-key">Confidence:</span> {{ f.confidence_label }}</span>{% endif %}{% endif %}
+         {% if not _skipped %}{% if f.evaluation_mode %}<span class="meta-item"><span class="meta-key">Evaluation:</span> {{ exec_copy["evaluation_mode"].get(f.evaluation_mode, f.evaluation_mode | replace('_', ' ')) }}</span>{% endif %}{% endif %}
+       </div>
 
       {# Progressive disclosure level 1: the executive summary line, before the
          slots. Bound to block.summary_line (finding.customer_summary) and
@@ -57,6 +66,16 @@
         <p>{{ block.expected or "Not reported" }}</p>
       </div>
 
+      {% if _skipped %}
+      {# A skipped finding was never assessed: instead of an "Observed"
+         sentence there is the check's own skip rationale (manual check,
+         insufficient evidence, environment-specific — whatever the producer
+         authored), bound to block.skip_reason. #}
+      <div class="belief-slot">
+        <span class="belief-label">Why this was skipped</span>
+        <p>{{ block.skip_reason or "Not reported" }}</p>
+      </div>
+      {% else %}
       <div class="belief-slot">
         <span class="belief-label">Observed</span>
         {% if f.summary %}
@@ -65,6 +84,7 @@
         <p>Not reported</p>
         {% endif %}
       </div>
+      {% endif %}
 
       {# Progressive disclosure level 2: why it matters + recommended action. #}
       <div class="belief-slot">
@@ -73,7 +93,7 @@
         <div class="belief-meta">
           {# Severity and Scope already appear once in the header meta row;
              this slot keeps only the value impact (the meta single-source rule). #}
-          <span class="meta-item"><span class="meta-key">Value impact:</span> {{ block.why_it_matters.value_impact | replace('_', ' ') }}</span>
+          <span class="meta-item"><span class="meta-key">Value impact:</span> {{ exec_copy["value_impact"].get(block.why_it_matters.value_impact, block.why_it_matters.value_impact | replace('_', ' ')) }}</span>
         </div>
       </div>
 

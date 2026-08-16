@@ -19,8 +19,11 @@ from licenselens.report.viewmodel import (
     build_constellation,
     build_opening,
     build_posture,
+    build_provenance,
     build_sections,
+    build_skip_reason,
 )
+from licenselens.schema_contracts import CollectionStatus, CollectionSummary, EvaluationMode
 from tests.report_fixtures import (
     SCANNED_AT,
     comprehensive_report,
@@ -222,3 +225,149 @@ def test_belief_block_sparse_optional_fields() -> None:
     assert block["observed"]["summary"] == finding.summary
     assert block["summary_line"] == finding.customer_summary
     assert block["expected"] == "Not reported"
+
+
+# ---------------------------------------------------------------------------
+# Provenance footer payload (todo 20)
+# ---------------------------------------------------------------------------
+
+
+def test_provenance_legend_derives_from_findings_not_a_fixed_list() -> None:
+    result = comprehensive_report()
+    payload = build_provenance(result)
+    assert [entry["mode"] for entry in payload["mode_legend"]] == ["direct"]
+
+
+def test_provenance_legend_lists_only_present_modes_in_canonical_order() -> None:
+    result = comprehensive_report()
+    finding = result.findings[0]
+    result.findings = [
+        finding.model_copy(update={"evaluation_mode": EvaluationMode.PROXY}),
+        finding.model_copy(update={"evaluation_mode": EvaluationMode.MANUAL}),
+        finding.model_copy(update={"evaluation_mode": EvaluationMode.DIRECT}),
+    ]
+    legend = build_provenance(result)["mode_legend"]
+    assert [entry["mode"] for entry in legend] == ["direct", "proxy", "manual"]
+    assert [entry["label"] for entry in legend] == [
+        "Direct read",
+        "Approximated (proxy) — verify in portal",
+        "Manual review",
+    ]
+
+
+def test_provenance_methodology_tracks_present_modes() -> None:
+    result = comprehensive_report()
+    finding = result.findings[0]
+    result.findings = [finding.model_copy(update={"evaluation_mode": EvaluationMode.PROXY})]
+    methodology = build_provenance(result)["methodology"]
+    assert "Secure Score" in methodology
+    assert "Graph and PowerShell" not in methodology
+    assert "manual review" not in methodology
+
+
+def test_provenance_methodology_covers_all_three_paths() -> None:
+    result = comprehensive_report()
+    finding = result.findings[0]
+    result.findings = [
+        finding.model_copy(update={"evaluation_mode": EvaluationMode.DIRECT}),
+        finding.model_copy(update={"evaluation_mode": EvaluationMode.PROXY}),
+        finding.model_copy(update={"evaluation_mode": EvaluationMode.MANUAL}),
+    ]
+    methodology = build_provenance(result)["methodology"]
+    assert "Graph and PowerShell" in methodology
+    assert "Secure Score approximates" in methodology
+    assert "manual review covers settings no API exposes" in methodology
+
+
+def test_provenance_empty_report_safety() -> None:
+    payload = build_provenance(empty_report())
+    assert payload["mode_legend"] == []
+    assert payload["methodology"] == "No findings were evaluated in this scan."
+
+
+def test_provenance_identity_synthetic_fallback_for_nameless_dry_run() -> None:
+    result = empty_report()
+    identity = build_provenance(result)["identity"]
+    assert identity["name"] == "demo (synthetic)"
+    assert identity["scanned_at"] == SCANNED_AT
+    assert identity["display_scanned_at"] == result.display_scanned_at
+
+
+def test_provenance_identity_prefers_tenant_display_name() -> None:
+    result = comprehensive_report()
+    identity = build_provenance(result)["identity"]
+    assert identity["name"] == result.tenant_display_name
+
+
+def test_provenance_identity_neutral_fallback_for_nameless_live_scan() -> None:
+    result = empty_report()
+    result.scan_mode = "live"
+    identity = build_provenance(result)["identity"]
+    assert identity["name"] == "Your tenant"
+
+
+def test_provenance_sampling_flags_partial_collections() -> None:
+    result = empty_report()
+    result.collection_summaries = [
+        CollectionSummary(collector="apps", status=CollectionStatus.SUCCESS),
+        CollectionSummary(collector="signins", status=CollectionStatus.PARTIAL),
+    ]
+    sampling = build_provenance(result)["sampling"]
+    assert sampling["sampled"] is True
+    assert "sampled or truncated" in sampling["text"]
+
+
+def test_provenance_sampling_enumerated_when_all_complete() -> None:
+    result = empty_report()
+    result.collection_summaries = [
+        CollectionSummary(collector="apps", status=CollectionStatus.SUCCESS),
+    ]
+    sampling = build_provenance(result)["sampling"]
+    assert sampling["sampled"] is False
+    assert "enumerated in full" in sampling["text"]
+
+
+def test_provenance_sampling_discloses_when_nothing_recorded() -> None:
+    sampling = build_provenance(empty_report())["sampling"]
+    assert sampling["sampled"] is False
+    assert sampling["text"] == "No sampling or truncation recorded for this scan."
+
+
+def test_provenance_deterministic() -> None:
+    result = comprehensive_report()
+    assert build_provenance(result) == build_provenance(result)
+
+
+# ---------------------------------------------------------------------------
+# Skip reason (todo 21)
+# ---------------------------------------------------------------------------
+
+
+def test_skip_reason_binds_finding_summary_for_skipped() -> None:
+    """A skipped finding's rationale is its own summary text — never invented."""
+    result = comprehensive_report()
+    finding = next(f for f in result.findings if f.status.value == "skipped")
+    block = build_belief_block(finding, result.capability_summaries, expected_state_map())
+    assert block["skip_reason"] == finding.summary
+    assert block["skip_reason"], "skipped finding produced an empty skip reason"
+
+
+def test_skip_reason_falls_back_to_limitations_when_summary_empty() -> None:
+    """With no summary, the rationale reuses the existing limitations text."""
+    result = comprehensive_report()
+    finding = next(f for f in result.findings if f.status.value == "skipped")
+    bare = finding.model_copy(update={"summary": ""})
+    assert build_skip_reason(bare) == "; ".join(
+        limit.rstrip(".") for limit in finding.limitations
+    )
+
+
+def test_skip_reason_empty_for_non_skipped_findings() -> None:
+    result = comprehensive_report()
+    for finding in result.findings:
+        if finding.status.value == "skipped":
+            continue
+        block = build_belief_block(finding, result.capability_summaries, expected_state_map())
+        assert block["skip_reason"] == "", (
+            f"non-skipped {finding.check_id} must carry an empty skip_reason"
+        )

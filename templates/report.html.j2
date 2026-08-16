@@ -6,7 +6,7 @@
 {%- set _moves = moves -%}
 {%- set _findings = findings -%}
 {%- set _filters = _sections["E"]["filters"] -%}
-{%- set mode_str = result.scan_mode -%}
+{%- set mode_str = exec_copy["scan_mode"].get(result.scan_mode, result.scan_mode) -%}
 {%- if result.auth_mode and result.auth_mode != result.scan_mode -%}
 {%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}
 {%- endif -%}
@@ -186,7 +186,7 @@ body.revealed .reveal-target.is-revealed {
       <div class="meta-row">Version <code>{{ result.version }}</code></div>
       <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
       <div class="meta-row">Mode <code>{{ mode_str }}</code></div>
-      <div class="meta-row">Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
+      <div class="meta-row">Organization <code>{{ opening.tenant_name }}</code></div>
     </div>
     {% if result.warnings %}
     <div class="intro">
@@ -637,8 +637,26 @@ body.revealed .reveal-target.is-revealed {
     </section>
   </main>
 
-  <footer>
-    {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
+  <footer class="report-footer">
+    <div class="report-footer__grid">
+      <div class="report-footer__block">
+        <h2 class="report-footer__heading">Evidence modes</h2>
+        <ul class="report-footer__legend">
+          {%- for entry in provenance.mode_legend %}
+          <li>{{ entry.label }}</li>
+          {%- else %}
+          <li>No findings evaluated in this scan.</li>
+          {%- endfor %}
+        </ul>
+        <p class="report-footer__method">{{ provenance.methodology }}</p>
+      </div>
+      <div class="report-footer__block">
+        <h2 class="report-footer__heading">Coverage</h2>
+        <p class="report-footer__coverage">{{ provenance.sampling.text }}</p>
+      </div>
+    </div>
+    <p class="report-footer__identity"><span class="report-footer__name">{{ provenance.identity.name }}</span> <span aria-hidden="true">&mdash;</span> generated <time datetime="{{ provenance.identity.scanned_at }}">{{ provenance.identity.display_scanned_at }}</time></p>
+    <p class="report-footer__tagline">{{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.</p>
   </footer>
   <script>
     (function () {

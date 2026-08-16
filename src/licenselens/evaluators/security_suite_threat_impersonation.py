@@ -38,11 +38,11 @@ def evaluate_mdo_impersonation_users_protected(
     if not sensitive_users:
         return Evaluation(
             status=FindingStatus.SKIPPED,
-            summary="Sensitive user impersonation requires a profile list of sensitive accounts.",
+            summary="Sensitive user impersonation requires a configured list of sensitive accounts.",
             evidence={"sensitive_users": []},
             customer_summary=(
-                "List your high-value accounts (executives, admins) in the profile "
-                "to check user impersonation protection."
+                "List your high-value accounts (executives, admins) in your configured "
+                "settings to check user impersonation protection."
             ),
             confidence=Confidence.LOW,
         )
@@ -114,11 +114,11 @@ def evaluate_mdo_impersonation_partner_domains(
     if not partner_domains:
         return Evaluation(
             status=FindingStatus.SKIPPED,
-            summary="Partner-domain impersonation requires a profile list of partner domains.",
+            summary="Partner-domain impersonation requires a configured list of partner domains.",
             evidence={"partner_domains": []},
             customer_summary=(
-                "List your key partner domains in the profile to check their "
-                "impersonation protection."
+                "List your key partner domains in your configured settings to check "
+                "their impersonation protection."
             ),
             confidence=Confidence.LOW,
         )

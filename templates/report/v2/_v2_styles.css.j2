@@ -559,6 +559,7 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 .finding-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
 .meta-item { font-size: 0.8125rem; color: var(--text-2); }
 .meta-key { color: var(--text-3); }
+.meta-note { color: var(--text-3); font-style: italic; }
 .finding-summary { margin-block: 8px 0; }
 .belief-slot { margin-block: 12px 0; }
 .belief-label {
@@ -1218,6 +1219,7 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   main,
   section,
   article,
+  footer,
   .card,
   .finding,
   details.tech,
@@ -1329,13 +1331,13 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
     border: 0;
   }
 
-  /* Hide technical chrome (nav, filters, pager, footer). */
+  /* Hide technical chrome (nav, filters, pager). The provenance footer
+     stays: it is part of the printed provenance record. */
   .toc,
   .search-box,
   .sort-box,
   .filter-bar,
-  .pagination,
-  footer { display: none !important; }
+  .pagination { display: none !important; }
 
   /* Hero, move items, capability rows, findings, the constellation, and its
      legend stay whole across pages. */
@@ -1412,4 +1414,39 @@ footer {
   padding-inline: 32px;
   color: var(--text-3);
   font-size: 0.8125rem;
+}
+
+/* Provenance footer: evidence-mode legend, methodology note, sampled-vs-
+   enumerated disclosure, and the assessment identity + generated timestamp.
+   Deliberately quiet — one hairline above, muted ink, small caps headings. */
+.report-footer { border-block-start: 1px solid var(--border); padding-block-start: 12px; }
+.report-footer__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px 32px;
+  margin-block-end: 12px;
+}
+.report-footer__heading {
+  margin-block: 0 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.report-footer__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.report-footer__method { margin-block: 8px 0; }
+.report-footer__coverage { margin-block: 0; }
+.report-footer__identity { margin-block: 8px 0; }
+.report-footer__tagline { margin-block: 4px 0; }
+
+@media (max-width: 640px) {
+  .report-footer { padding-inline: 16px; }
 }

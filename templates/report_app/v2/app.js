@@ -45,7 +45,14 @@
   };
   var SEVERITY_LABEL = { critical: "Critical", high: "High", medium: "Medium", low: "Low", info: "Info" };
   var CONFIDENCE_LABEL = { high: "High", medium: "Medium", low: "Low" };
-  var MODE_LABEL = { direct: "Direct", proxy: "Proxy", manual: "Manual", unsupported: "Unsupported" };
+  var SCOPE_LABEL = { admin: "Administrator scope", all_users: "All users", devices: "All devices", data: "Tenant data" };
+  var MODE_LABEL = {
+    direct: "Read directly",
+    proxy: "Approximated — verify in portal",
+    manual: "Manual review",
+    direct_with_proxy_fallback: "Read directly (with fallback)",
+    unsupported: "Unsupported"
+  };
   var EFFORT_LABEL = { minutes: "~minutes", hours: "~a few hours", half_day: "~half a day", days: "~days" };
   var WORKLOAD_LABEL = {
     identity: "Identity", endpoint: "Endpoint", defender: "Defender", sentinel: "Sentinel",
@@ -60,7 +67,7 @@
   var STATUS_ORDER = ["gap", "partial", "ok", "not_licensed", "skipped", "error"];
   var SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"];
   var CONFIDENCE_ORDER = ["high", "medium", "low"];
-  var MODE_ORDER = ["direct", "proxy", "manual", "unsupported"];
+  var MODE_ORDER = ["direct", "proxy", "manual", "direct_with_proxy_fallback", "unsupported"];
   // Effort sort ranks least effort first (most actionable); deterministic.
   var EFFORT_ORDER = ["minutes", "hours", "half_day", "days"];
 
@@ -556,7 +563,7 @@
     if (f.confidence) meta.appendChild(metaItem("Confidence", CONFIDENCE_LABEL[f.confidence] || cap(f.confidence)));
     if (f.evaluation_mode) meta.appendChild(metaItem("Mode", MODE_LABEL[f.evaluation_mode] || cap(f.evaluation_mode)));
     if (f.effort) meta.appendChild(metaItem("Effort", EFFORT_LABEL[f.effort] || f.effort));
-    if (f.blast_radius) meta.appendChild(metaItem("Scope", String(f.blast_radius).replace(/_/g, " ")));
+    if (f.blast_radius) meta.appendChild(metaItem("Scope", SCOPE_LABEL[f.blast_radius] || String(f.blast_radius).replace(/_/g, " ")));
     if (f.workload) meta.appendChild(metaItem("Workload", WORKLOAD_LABEL[f.workload] || cap(f.workload)));
     if (meta.childNodes.length) article.appendChild(meta);
 

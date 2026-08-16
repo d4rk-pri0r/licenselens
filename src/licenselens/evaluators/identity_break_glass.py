@@ -80,7 +80,7 @@ def evaluate_break_glass_exclusion(
                 ),
                 evidence=evidence_out,
                 customer_summary=(
-                    "Your assessment profile names emergency accounts, but we "
+                    "Your configured settings name emergency accounts, but we "
                     "could not match them to any Global Administrator account "
                     "we scanned — please verify the accounts exist."
                 ),
@@ -119,7 +119,7 @@ def evaluate_break_glass_exclusion(
                 ),
                 evidence=evidence_out,
                 customer_summary=(
-                    "Your assessment profile names emergency accounts, but we "
+                    "Your configured settings name emergency accounts, but we "
                     "could not match them to a Global Administrator account we "
                     "scanned — please verify the accounts and their exclusions."
                 ),
@@ -145,8 +145,8 @@ def evaluate_break_glass_exclusion(
             status=FindingStatus.GAP,
             summary=(
                 "No break-glass account was identified among the Global "
-                "Administrators; no principal is declared as break-glass in the "
-                "assessment profile."
+                "Administrators; no principal is declared as break-glass in "
+                "this report's configuration."
             ),
             evidence=evidence_out,
             customer_summary=(

@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Entra sign-in and audit logs flow to the SOC pipeline.
 customer_next_step: >
   Confirm Entra sign-in and audit logs are exported to your SOC or SIEM.
+why_it_matters: >
+  Identity attacks hide in sign-in patterns; without logs flowing to your security team, the evidence never reaches the people who can act.
 description: >
   Security logs should be sent to the organization's SOC. This control is manual.
 workload: identity

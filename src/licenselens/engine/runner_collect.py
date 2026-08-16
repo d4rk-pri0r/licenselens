@@ -217,7 +217,7 @@ def collect_scan_state(
             workloads=workloads,
             registry=registry,
             tenant_id=tenant_id or "00000000-0000-0000-0000-000000000000",
-            tenant_display_name="Contoso Demo (dry-run)",
+            tenant_display_name="Demo (synthetic data)",
             progress=progress,
         )
 

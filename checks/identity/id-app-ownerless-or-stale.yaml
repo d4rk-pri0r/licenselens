@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Every application has an owner and current credentials.
 customer_next_step: >
   Assign owners to critical apps and remove abandoned registrations.
+why_it_matters: >
+  Abandoned apps still hold permissions and are never reviewed, so they become quiet backdoors into business data.
 description: >
   Applications should have owners and not remain stale with dead credentials.
 workload: identity

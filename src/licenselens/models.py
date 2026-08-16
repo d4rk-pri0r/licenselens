@@ -255,6 +255,9 @@ class CheckDefinition(BaseModel):
     customer_summary: str = ""
     expected_state: str = ""
     customer_next_step: str = ""
+    #: Check-specific "why it matters" sentence for the report D-slot. When
+    #: absent the view model falls back to the matched capability's blurb.
+    why_it_matters: str = ""
     source_path: str | None = None
 
     @property
@@ -297,6 +300,7 @@ class Finding(BaseModel):
     customer_title: str = ""
     customer_summary: str = ""
     customer_next_step: str = ""
+    why_it_matters: str = Field(default="", exclude=True)  # render-only: keeps artifact shape
     status_label: str = ""
     confidence: Confidence = Confidence.MEDIUM
     confidence_label: str = ""
@@ -383,7 +387,7 @@ class CapabilityRollup(BaseModel):
             return "No assessed protections were owned."
         if missing <= 0:
             return f"All {self.you_own} assessed protections are fully working."
-        return f"{missing} of {self.you_own} still not fully working"
+        return f"{missing} of {self.you_own} priority capabilities still need attention"
 
 
 class CapabilityOutcome(BaseModel):

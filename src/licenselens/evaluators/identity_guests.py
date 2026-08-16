@@ -106,26 +106,26 @@ def evaluate_guest_invite_domains(
         return Evaluation(
             status=FindingStatus.SKIPPED,
             summary=(
-                "Guest invite domain allowlisting requires profile-approved domains "
-                "(sensitive_domains / organization profile)."
+                "Guest invite domain allowlisting requires approved partner "
+                "domains in your configured settings."
             ),
             evidence=evidence_out,
             customer_summary=(
                 "We cannot judge guest invite domains until your organization lists "
-                "approved partner domains in the assessment profile."
+                "approved partner domains in your configured settings."
             ),
             confidence=Confidence.LOW,
         )
     return Evaluation(
         status=FindingStatus.PARTIAL,
         summary=(
-            "Approved guest domains are configured in the profile; confirm Entra "
-            "B2B collaboration allowlist matches them."
+            "Approved guest domains are configured in your settings; confirm the "
+            "Entra B2B collaboration allowlist matches them."
         ),
         evidence=evidence_out,
         customer_summary=(
-            "Partner domains are listed in your profile — verify the live Entra "
-            "allowlist matches that list."
+            "Partner domains are listed in your configured settings — verify the "
+            "live Entra allowlist matches that list."
         ),
     )
 

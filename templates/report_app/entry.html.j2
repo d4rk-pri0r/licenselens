@@ -29,7 +29,7 @@
   {%- set opening = opening or {} -%}
   {%- set o_identity = opening.get('assessment_identity') or {} -%}
   {%- set o_tenant = opening.get('tenant_name') or result.tenant_display_name or result.tenant_id or 'demo / dry-run' -%}
-  {%- set o_tenant_id = opening.get('tenant_id') or result.tenant_id -%}
+  {%- set o_tenant_id = opening.get('tenant_id') if 'tenant_id' in opening else result.tenant_id -%}
   {%- set o_tool = o_identity.get('tool_display_name') or result.tool_display_name or 'Security License Lens' -%}
   {%- set o_version = o_identity.get('version') or result.version -%}
   {%- set o_scanned = opening.get('scanned_at') or result.display_scanned_at -%}
@@ -40,7 +40,7 @@
   {%- set GAUGE_R = 52 -%}
   {%- set GAUGE_C = (2 * 3.141592653589793 * GAUGE_R) | round(2) -%}
   {%- set GAUGE_OFFSET = (GAUGE_C * (1 - o_pct / 100)) | round(2) -%}
-  {%- set mode_str = result.scan_mode -%}
+  {%- set mode_str = exec_copy["scan_mode"].get(result.scan_mode, result.scan_mode) -%}
   {%- if result.auth_mode and result.auth_mode != result.scan_mode -%}{%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}{%- endif -%}
   {%- set packs = result.packs_scanned | join(', ') -%}
   {%- set rail_items = [] -%}
@@ -67,7 +67,7 @@
         <div class="meta-row">Version <code>{{ result.version }}</code></div>
         <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
         <div class="meta-row">Mode <code>{{ mode_str }}</code></div>
-        <div class="meta-row">Organization <code>{{ result.tenant_display_name or result.tenant_id or "demo / dry-run" }}</code></div>
+        <div class="meta-row">Organization <code>{{ o_tenant }}</code></div>
       </div>
     </div>
     {% if result.warnings %}
@@ -496,8 +496,26 @@
     </div>
   </main>
 
-  <footer>
-    {{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.
+  <footer class="report-footer">
+    <div class="report-footer__grid">
+      <div class="report-footer__block">
+        <h2 class="report-footer__heading">Evidence modes</h2>
+        <ul class="report-footer__legend">
+          {%- for entry in provenance.mode_legend %}
+          <li>{{ entry.label }}</li>
+          {%- else %}
+          <li>No findings evaluated in this scan.</li>
+          {%- endfor %}
+        </ul>
+        <p class="report-footer__method">{{ provenance.methodology }}</p>
+      </div>
+      <div class="report-footer__block">
+        <h2 class="report-footer__heading">Coverage</h2>
+        <p class="report-footer__coverage">{{ provenance.sampling.text }}</p>
+      </div>
+    </div>
+    <p class="report-footer__identity"><span class="report-footer__name">{{ provenance.identity.name }}</span> <span aria-hidden="true">&mdash;</span> generated <time datetime="{{ provenance.identity.scanned_at }}">{{ provenance.identity.display_scanned_at }}</time></p>
+    <p class="report-footer__tagline">{{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.</p>
   </footer>
 
   <script src="{{ assets_dir }}/{{ data_name }}"></script>

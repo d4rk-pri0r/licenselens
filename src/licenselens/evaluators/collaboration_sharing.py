@@ -231,13 +231,13 @@ def evaluate_spo_domain_restrictions(
             return Evaluation(
                 status=FindingStatus.GAP,
                 summary=(
-                    "Domain allowlist contains domains outside the profile-approved "
+                    "Domain allowlist contains domains outside your approved "
                     f"partner list: {', '.join(sorted(unapproved))}."
                 ),
                 evidence=evidence_out,
                 customer_summary=(
-                    "Your sharing allowlist includes domains not approved in the "
-                    "assessment profile."
+                    "Your sharing allowlist includes domains not approved in this "
+                    "report's configuration."
                 ),
                 **direct_meta(),
             )

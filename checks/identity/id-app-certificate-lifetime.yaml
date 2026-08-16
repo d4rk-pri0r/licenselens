@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Application certificates expire within 365 days of issuance.
 customer_next_step: >
   Keep application certificate lifetimes at 365 days or less and rotate on schedule.
+why_it_matters: >
+  A stolen app certificate stays valid until it expires; short lifetimes shrink that damage window from years to days.
 description: >
   Application certificate credentials should not exceed 365 days.
 workload: identity

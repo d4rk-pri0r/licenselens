@@ -6,6 +6,8 @@ customer_summary: >
 expected_state: Only Guest Inviter role members and admins can invite guests.
 customer_next_step: >
   Allow only admins and Guest Inviter role holders to invite guests.
+why_it_matters: >
+  If any user can invite guests, one careless invite can give an outsider access to internal teams and files.
 description: >
   Only users with the Guest Inviter role or admins should invite guest users.
 workload: identity

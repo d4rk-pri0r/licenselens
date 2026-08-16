@@ -100,7 +100,7 @@ def ca_coverage_result(
             status=FindingStatus.PARTIAL,
             summary=(
                 f"{label}: enforced policy present, but exclusions lack named "
-                "break-glass rationale in the assessment profile."
+                "break-glass rationale in this report's configuration."
             ),
             evidence=evidence_out,
             customer_summary=(

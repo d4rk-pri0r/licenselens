@@ -303,7 +303,13 @@ def test_confidence_and_mode_chart_counts(app_uri: str, page: Page) -> None:
     page.goto(app_uri(viz_report()))
     assert _chart_table_counts(page, "confidence") == {"High": 2, "Medium": 2, "Low": 2}
     mode = _chart_table_counts(page, "evaluation_mode")
-    assert mode == {"Direct": 2, "Proxy": 1, "Manual": 2, "Unsupported": 1}
+    assert mode == {
+        "Read directly": 2,
+        "Approximated — verify in portal": 1,
+        "Manual review": 2,
+        "Read directly (with fallback)": 0,
+        "Unsupported": 1,
+    }
 
 
 def test_chart_equivalents_are_nonvisual(app_uri: str, page: Page) -> None:

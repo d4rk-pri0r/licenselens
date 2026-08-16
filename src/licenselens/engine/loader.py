@@ -94,6 +94,7 @@ def load_checks(root: Path | None = None) -> list[CheckDefinition]:
                 customer_summary=_clean(raw.get("customer_summary")),
                 expected_state=_clean(raw.get("expected_state")),
                 customer_next_step=_clean(raw.get("customer_next_step")),
+                why_it_matters=_clean(raw.get("why_it_matters")),
                 source_path=str(path),
             )
         )

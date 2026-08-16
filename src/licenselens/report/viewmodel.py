@@ -19,6 +19,7 @@ from licenselens.models import (
     CapabilityOutcome,
     CapabilitySummary,
     Finding,
+    FindingStatus,
     ScanResult,
 )
 
@@ -51,6 +52,47 @@ _WORKLOAD_RANK: Final[dict[str, int]] = {
     workload: rank for rank, workload in enumerate(_WORKLOAD_PRIORITY)
 }
 
+#: Exec-facing copy for enum facet values: facet name -> {raw value -> human
+#: label}. Raw enum values stay untouched in the payload (JSON/view-model and
+#: technical drill-down); only presentation surfaces (masthead, finding meta
+#: rows, charts) consume these labels.
+EXEC_COPY: Final[dict[str, dict[str, str]]] = {
+    "scan_mode": {
+        "dry_run": "Demo scan (synthetic data)",
+        "live": "Live tenant scan",
+    },
+    "evaluation_mode": {
+        "direct": "Read directly",
+        "proxy": "Approximated — verify in portal",
+        "manual": "Manual review",
+        "direct_with_proxy_fallback": "Read directly (with fallback)",
+        "unsupported": "Unsupported",
+    },
+    "scope": {
+        "admin": "Administrator scope",
+        "all_users": "All users",
+        "devices": "All devices",
+        "data": "Tenant data",
+    },
+    "value_impact": {
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low",
+    },
+}
+
+
+def human_copy(facet: str, value: str | None) -> str:
+    """Return the human presentation label for one raw enum facet value.
+
+    Empty/``None`` values return ``""`` so renderers can omit the slot. Unknown
+    values fall back to a light prettification (underscores become spaces, the
+    first letter is capitalized) so a new enum member never surfaces raw.
+    """
+    if not value:
+        return ""
+    return EXEC_COPY.get(facet, {}).get(value, value.replace("_", " ").capitalize())
+
 
 def build_posture(result: ScanResult) -> dict[str, int | str]:
     """Build the A-section posture figure from the capability rollup.
@@ -70,6 +112,21 @@ def build_posture(result: ScanResult) -> dict[str, int | str]:
 #: Neutral tenant label when the scan carries no tenant display name to show.
 _FALLBACK_TENANT_NAME: Final[str] = "Your tenant"
 
+#: Zero-value tenant id that dry-run and sanitized-sample scans carry. It is
+#: never rendered as org identity — a raw all-zero GUID in the hero reads as a
+#: placeholder leak, not an identifier.
+_ZERO_TENANT_ID: Final[str] = "00000000-0000-0000-0000-000000000000"
+
+#: Clean org label for demo/dry-run renders: plain words, no internal jargon.
+_DEMO_TENANT_NAME: Final[str] = "Demo (synthetic data)"
+
+#: Legacy demo display names (the pre-1.0 dry-run default and older sanitized
+#: samples) mapped to the clean demo label so historical fixtures and stale
+#: scan artifacts stay presentable without a regeneration pass.
+_LEGACY_DEMO_TENANT_NAMES: Final[frozenset[str]] = frozenset(
+    {"Contoso Demo (dry-run)", "demo / dry-run"}
+)
+
 
 def build_opening(result: ScanResult) -> dict[str, object]:
     """Build the v2 signature-opening payload (org identity + assessment identity).
@@ -78,10 +135,14 @@ def build_opening(result: ScanResult) -> dict[str, object]:
     "assessment_identity": dict, "scanned_at": str, "realized_percent": int,
     "realized_sentence": str}``:
 
-    * ``tenant_name`` — ``result.tenant_display_name``; when the model carries no
-      display name the neutral ``_FALLBACK_TENANT_NAME`` is returned, never
-      ``None``. The raw ``tenant_id`` is surfaced separately under its own key so
-      the renderer can show it as secondary context.
+    * ``tenant_name`` — the org identity for the hero. The tenant display name
+      wins when real; legacy demo display names ("Contoso Demo (dry-run)" and
+      friends) map to the clean ``Demo (synthetic data)`` label; when the model
+      carries no display name the neutral ``_FALLBACK_TENANT_NAME`` is
+      returned, never ``None``.
+    * ``tenant_id`` — the raw tenant id as secondary context, but the
+      all-zero placeholder GUID is suppressed (``None``) so the hero never
+      shows it.
     * ``assessment_identity`` — the generator ``tool_display_name``, ``tool``,
       and ``version`` straight from the model.
     * ``scanned_at`` — the scan timestamp verbatim from the model.
@@ -92,9 +153,15 @@ def build_opening(result: ScanResult) -> dict[str, object]:
     Deterministic: identical ``ScanResult`` in, identical dict out.
     """
     posture = build_posture(result)
+    raw_name = result.tenant_display_name
+    if raw_name in _LEGACY_DEMO_TENANT_NAMES:
+        tenant_name = _DEMO_TENANT_NAME
+    else:
+        tenant_name = raw_name or _FALLBACK_TENANT_NAME
+    tenant_id = result.tenant_id if result.tenant_id != _ZERO_TENANT_ID else None
     return {
-        "tenant_name": result.tenant_display_name or _FALLBACK_TENANT_NAME,
-        "tenant_id": result.tenant_id,
+        "tenant_name": tenant_name,
+        "tenant_id": tenant_id,
         "assessment_identity": {
             "tool": result.tool,
             "tool_display_name": result.tool_display_name,
@@ -192,13 +259,19 @@ def build_belief_block(
     * ``summary_line`` — ``finding.customer_summary`` (may be an empty string;
       the renderer omits the line entirely when empty).
     * ``observed`` — ``finding.summary`` plus ``finding.evidence`` (a dict).
-    * ``why_it_matters`` — the matching capability's ``why_it_matters`` plus the
-      ``severity``/``value_impact``/``blast_radius`` enum values.
+    * ``why_it_matters`` — the finding's own check-specific ``why_it_matters``
+      sentence when the check author wrote one; otherwise the matching
+      capability's ``why_it_matters``, plus the ``severity``/``value_impact``/
+      ``blast_radius`` enum values.
     * ``recommended_action`` — ``finding.customer_next_step`` else
       ``finding.remediation``.
     * ``evidence`` — ``finding.data_sources``, ``finding.confidence_label``, and
       ``finding.limitations``.
     * ``admin_destination`` — ``finding.deep_link`` (``None`` when absent).
+    * ``skip_reason`` — :func:`build_skip_reason`; the plain-language rationale
+      for status ``skipped`` findings, empty for every other status. The
+      finding-card template renders a "Why this was skipped" slot (replacing
+      "Observed") only when this carries text.
 
     The "matching capability" is the first ``CapabilitySummary`` whose ``id``
     appears in ``finding.entitlements_used`` (the engine stores the check's owned
@@ -221,7 +294,8 @@ def build_belief_block(
             "evidence": finding.evidence,
         },
         "why_it_matters": {
-            "capability": matched.why_it_matters if matched else "",
+            "capability": finding.why_it_matters
+            or (matched.why_it_matters if matched else ""),
             "severity": finding.severity.value,
             "value_impact": finding.value_impact.value,
             "blast_radius": finding.blast_radius.value,
@@ -233,7 +307,32 @@ def build_belief_block(
             "limitations": finding.limitations,
         },
         "admin_destination": finding.deep_link,
+        "skip_reason": build_skip_reason(finding),
     }
+
+
+def build_skip_reason(finding: Finding) -> str:
+    """Build the "why this was skipped" rationale for a skipped finding.
+
+    Bound strictly to model text the skip-producing paths already author —
+    never invented here:
+
+    * ``finding.summary`` — every skipped-finding producer
+      (:func:`licenselens.engine.runner_findings.skipped_finding`, the
+      email-proxy skip in ``runner_evaluate``, and the manual /
+      environment-specific evaluators) authors the skip rationale as its
+      summary ("not implemented yet", "requires manual verification", "out
+      of scope", …).
+    * ``finding.limitations`` — the fallback when the summary is empty.
+
+    Any non-skipped finding returns the empty string (the finding-card
+    template renders the skip slot only for status ``skipped``).
+    """
+    if finding.status != FindingStatus.SKIPPED:
+        return ""
+    if finding.summary:
+        return finding.summary
+    return "; ".join(limit.rstrip(".") for limit in finding.limitations if limit)
 
 
 def _capability_entry(
@@ -352,4 +451,163 @@ def build_sections(
                 "workload": _sorted_unique(f.workload.value for f in findings),
             },
         },
+    }
+
+
+#: Canonical display order for the footer evidence-mode legend. The legend is
+#: derived from the modes actually present in the findings — modes absent from
+#: the scan never appear, and any future mode not listed here sorts after the
+#: known ones in its own byte order.
+_EVIDENCE_LEGEND_ORDER: Final[tuple[str, ...]] = (
+    "direct",
+    "proxy",
+    "direct_with_proxy_fallback",
+    "manual",
+    "unsupported",
+)
+
+#: Human copy for each evaluation-mode enum value (footer evidence legend).
+#: Raw enum strings never reach the template — only these labels do.
+_EVIDENCE_LEGEND_LABELS: Final[dict[str, str]] = {
+    "direct": "Direct read",
+    "proxy": "Approximated (proxy) — verify in portal",
+    "manual": "Manual review",
+    "unsupported": "Not evaluated (no supported API path)",
+    "direct_with_proxy_fallback": "Direct read, proxy fallback",
+}
+
+#: Methodology clauses keyed by the evaluation mode that triggers them. The
+#: footer sentence is assembled only from the modes present in the findings,
+#: so a report with no proxy checks never claims a proxy path.
+_METHODOLOGY_CLAUSES: Final[dict[str, str]] = {
+    "direct": "Graph and PowerShell read configuration directly where available",
+    "proxy": "Secure Score approximates where direct evidence is unavailable",
+    "manual": "manual review covers settings no API exposes",
+    "unsupported": "remaining checks are marked unsupported in the reference",
+}
+
+#: Collection statuses that mean a collector's data is incomplete (sampled,
+#: truncated, or failed) rather than fully enumerated. A collector that
+#: recorded warnings or errors is also treated as incomplete.
+_INCOMPLETE_COLLECTION_STATUSES: Final[frozenset[str]] = frozenset(
+    {"partial", "failed"}
+)
+
+#: Identity label for a scan that carries no tenant display name and ran in
+#: dry-run mode (synthetic fixture data).
+_SYNTHETIC_DEMO_LABEL: Final[str] = "demo (synthetic)"
+
+
+def _humanize_enum(value: str) -> str:
+    """Humanize an unknown enum value so the template never leaks raw tokens."""
+    return " ".join(part.capitalize() for part in value.split("_"))
+
+
+def _methodology_sentence(modes: set[str]) -> str:
+    """Assemble the methodology note from the clauses of the modes present.
+
+    ``direct_with_proxy_fallback`` contributes both the direct and the proxy
+    clause, matching the dual evidence path that mode describes.
+    """
+    clauses: list[str] = []
+    if "direct" in modes or "direct_with_proxy_fallback" in modes:
+        clauses.append(_METHODOLOGY_CLAUSES["direct"])
+    if "proxy" in modes or "direct_with_proxy_fallback" in modes:
+        clauses.append(_METHODOLOGY_CLAUSES["proxy"])
+    if "manual" in modes:
+        clauses.append(_METHODOLOGY_CLAUSES["manual"])
+    if "unsupported" in modes:
+        clauses.append(_METHODOLOGY_CLAUSES["unsupported"])
+    if not clauses:
+        return "No findings were evaluated in this scan."
+    return "; ".join(clauses) + "."
+
+
+def _sampling_disclosure(result: ScanResult) -> tuple[bool, str]:
+    """Return ``(sampled, text)`` for the sampled-vs-enumerated disclosure.
+
+    ``sampled`` is True when any collection summary is partial/failed or
+    carries warnings/errors; the text states which case applies. A scan with
+    no collection summaries discloses that nothing was recorded rather than
+    claiming full enumeration.
+    """
+    summaries = result.collection_summaries
+    if not summaries:
+        return False, "No sampling or truncation recorded for this scan."
+    incomplete = [
+        summary
+        for summary in summaries
+        if summary.status.value in _INCOMPLETE_COLLECTION_STATUSES
+        or summary.warnings
+        or summary.errors
+    ]
+    if not incomplete:
+        return (
+            False,
+            "All inventories enumerated in full — no sampling or truncation"
+            " recorded for this scan.",
+        )
+    return (
+        True,
+        f"Some inventories were sampled or truncated ({len(incomplete)} of"
+        f" {len(summaries)} collectors returned partial data) — verify the"
+        " affected findings in the portal.",
+    )
+
+
+def _assessment_identity(result: ScanResult) -> dict[str, str]:
+    """Return the footer assessment identity plus the generated timestamp.
+
+    The tenant display name wins when present; a nameless dry-run scan is
+    labeled ``demo (synthetic)``; anything else falls back to the neutral
+    tenant label. The timestamp flows verbatim from the model (never a
+    wall-clock read here).
+    """
+    if result.tenant_display_name:
+        name = result.tenant_display_name
+    elif result.scan_mode == "dry_run":
+        name = _SYNTHETIC_DEMO_LABEL
+    else:
+        name = _FALLBACK_TENANT_NAME
+    return {
+        "name": name,
+        "scanned_at": result.scanned_at,
+        "display_scanned_at": result.display_scanned_at,
+    }
+
+
+def build_provenance(result: ScanResult) -> dict[str, object]:
+    """Build the footer provenance payload.
+
+    Returns ``{"mode_legend": list[dict], "methodology": str,
+    "sampling": dict, "identity": dict}``:
+
+    * ``mode_legend`` — one ``{"mode", "label"}`` entry per evaluation mode
+      actually present in the findings, ordered canonically (see
+      ``_EVIDENCE_LEGEND_ORDER``) and never a fixed list. Labels are human
+      copy; raw enum values stay out of the template.
+    * ``methodology`` — the evidence-path note assembled from the clauses of
+      the modes present (direct, proxy, manual, unsupported).
+    * ``sampling`` — ``{"sampled": bool, "text": str}`` from
+      :func:`_sampling_disclosure`.
+    * ``identity`` — ``{"name", "scanned_at", "display_scanned_at"}`` from
+      :func:`_assessment_identity`.
+
+    Deterministic: identical ``ScanResult`` in, identical dict out.
+    """
+    modes = {finding.evaluation_mode.value for finding in result.findings}
+    ordered_modes = [mode for mode in _EVIDENCE_LEGEND_ORDER if mode in modes]
+    ordered_modes.extend(mode for mode in sorted(modes - set(_EVIDENCE_LEGEND_ORDER)))
+    sampled, sampling_text = _sampling_disclosure(result)
+    return {
+        "mode_legend": [
+            {
+                "mode": mode,
+                "label": _EVIDENCE_LEGEND_LABELS.get(mode, _humanize_enum(mode)),
+            }
+            for mode in ordered_modes
+        ],
+        "methodology": _methodology_sentence(modes),
+        "sampling": {"sampled": sampled, "text": sampling_text},
+        "identity": _assessment_identity(result),
     }

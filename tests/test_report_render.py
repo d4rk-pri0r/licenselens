@@ -851,7 +851,13 @@ def _finding_article_chunks(html: str) -> list[str]:
 def test_meta_keys_single_source_per_finding_article(tmp_path: Path) -> None:
     """Severity, Scope, and Confidence appear exactly ONCE per finding article,
     in the header meta-key span — the Why-it-matters belief-meta repeats
-    (Severity/Scope) and the tech-body Confidence line are gone."""
+    (Severity/Scope) and the tech-body Confidence line are gone.
+
+    Skipped ("Not assessed") articles are the one exception (todo 21): they
+    render no Confidence at all (nothing was evaluated), and their single
+    Severity occurrence carries the "(potential impact — not yet assessed)"
+    annotation instead of posing as an assessed result.
+    """
     result = comprehensive_report()
     html = render(result, tmp_path)
     chunks = _finding_article_chunks(html)
@@ -860,16 +866,43 @@ def test_meta_keys_single_source_per_finding_article(tmp_path: Path) -> None:
     )
     for chunk in chunks:
         assert chunk.strip(), "empty finding article body"
-    for key in META_SINGLE_SOURCE_KEYS:
-        for chunk in chunks:
+    for finding, chunk in zip(result.findings, chunks, strict=True):
+        skipped = finding.status == FindingStatus.SKIPPED
+        for key in META_SINGLE_SOURCE_KEYS:
             count = chunk.count(f">{key}:")
-            assert count == 1, (
-                f"{key!r} appears {count} times in one finding article — "
-                "it must be single-sourced in the header meta row"
+            expected = 0 if (skipped and key == "Confidence") else 1
+            assert count == expected, (
+                f"{key!r} appears {count} times in the {finding.status.value} article "
+                f"for {finding.check_id} — expected {expected}"
             )
-            assert f'meta-key">{key}:' in chunk, (
-                f"{key!r} single occurrence is not the header meta-key span"
-            )
+            if count:
+                assert f'meta-key">{key}:' in chunk, (
+                    f"{key!r} single occurrence is not the header meta-key span"
+                )
+
+
+def test_skipped_finding_explains_why_and_never_poses_as_assessed(tmp_path: Path) -> None:
+    """A skipped ("Not assessed") finding explains itself and stays unassessed.
+
+    The card renders the "Not assessed" marker word, a "Why this was skipped"
+    slot bound to the finding's own rationale (its summary — no invented copy),
+    an annotated severity, and neither a bare "Severity:" posing as an assessed
+    result nor any Confidence/Evaluation meta (todo 21).
+    """
+    result = comprehensive_report()
+    html = render(result, tmp_path)
+    skipped = next(f for f in result.findings if f.status == FindingStatus.SKIPPED)
+    chunks = _finding_article_chunks(html)
+    chunk = next(c for c in chunks if f'id="finding-{skipped.check_id}"' in c)
+    assert "Not assessed" in chunk, "skipped article missing the Not assessed marker word"
+    assert "Why this was skipped" in chunk, "skipped article missing the skip-reason slot"
+    assert skipped.summary in chunk, "skip-reason slot is not bound to the finding summary"
+    assert "Observed" not in chunk, "skipped article must not render an Observed slot"
+    assert "(potential impact — not yet assessed)" in chunk, (
+        "skipped severity is not annotated as unassessed"
+    )
+    assert "Confidence:" not in chunk, "skipped article must not render Confidence meta"
+    assert "Evaluation:" not in chunk, "skipped article must not render Evaluation meta"
 
 
 def test_empty_evidence_values_render_none_reported(tmp_path: Path) -> None:
