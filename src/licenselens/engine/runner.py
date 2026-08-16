@@ -9,6 +9,7 @@ from licenselens.auth import AuthContext, AuthMode
 from licenselens.catalog.loader import capability_summaries_for, load_capabilities
 from licenselens.engine.custom_rules import CustomRuleContext, evaluate_custom_rules
 from licenselens.engine.loader import load_checks
+from licenselens.engine.planner import ProgressCallback
 from licenselens.engine.profiles import (
     ResolvedProfile,
     accepted_risk_annotations,
@@ -47,6 +48,7 @@ def run_scan(
     packs: list[CheckPack] | list[str] | None = None,
     profile: ResolvedProfile | None = None,
     scanned_at: datetime | None = None,
+    progress: ProgressCallback | None = None,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
@@ -66,6 +68,7 @@ def run_scan(
         workloads=workloads,
         registry=registry,
         tenant_id=auth.tenant_id,
+        progress=progress,
     )
     evidence = state.evidence
     evidence["scanned_at"] = scan_time.isoformat()

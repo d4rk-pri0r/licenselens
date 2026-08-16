@@ -25,6 +25,7 @@ from licenselens.cli_scan_config import (
     resolve_scan_profile,
     write_report_archive,
 )
+from licenselens.collectors.contracts import EvidenceEnvelope
 from licenselens.collectors.arm import build_workspace_resource_id
 from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
 from licenselens.config_models import RedactionSettings
@@ -36,6 +37,7 @@ from licenselens.engine.runner import run_scan
 from licenselens.errors import AuthConfigError, AuthError, GraphError, LicenseLensError
 from licenselens.models import CheckPack, ScanResult, Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
+from licenselens.schema_contracts import CollectionStatus
 
 app = typer.Typer(
     name=__cli_name__,
@@ -475,6 +477,56 @@ def doctor_cmd(
     raise typer.Exit(code=0)
 
 
+_COLLECTION_STATUS_LABELS: dict[CollectionStatus, str] = {
+    CollectionStatus.SUCCESS: "[green]ok[/green]",
+    CollectionStatus.PARTIAL: "[yellow]partial[/yellow]",
+    CollectionStatus.FAILED: "[red]failed[/red]",
+    CollectionStatus.SKIPPED: "[dim]skipped[/dim]",
+    CollectionStatus.UNSUPPORTED: "[dim]unsupported[/dim]",
+}
+
+
+def _emit_collection_progress(
+    collector_id: str,
+    index: int,
+    total: int,
+    envelope: EvidenceEnvelope,
+) -> None:
+    """Print one line per collected data source, with its outcome."""
+    label = _COLLECTION_STATUS_LABELS[envelope.collection_status]
+    items = envelope.metadata.items_collected
+    item_text = f" ({items} items)" if items else ""
+    console.print(f"  {index + 1:>2}/{total:<2} {str(envelope.key)} {label}{item_text}")
+
+
+def _print_collection_summary(result: ScanResult) -> None:
+    """Surface per-data-source collection outcomes after the scan."""
+    summaries = result.collection_summaries
+    if not summaries:
+        return
+    counts: dict[str, int] = {}
+    for summary in summaries:
+        counts[summary.status.value] = counts.get(summary.status.value, 0) + 1
+    ok = counts.get("success", 0)
+    flagged = [summary for summary in summaries if summary.status is not CollectionStatus.SUCCESS]
+    if flagged:
+        details = ", ".join(
+            f"{status}={count}"
+            for status, count in sorted(counts.items())
+            if status != "success"
+        )
+        console.print(
+            f"[dim]Collection summary: {len(summaries)} data sources — {ok} ok; {details}[/dim]"
+        )
+    else:
+        console.print(f"[dim]Collection summary: {len(summaries)} data sources — all ok[/dim]")
+    for summary in flagged:
+        for warning in summary.warnings:
+            console.print(f"[yellow]  {summary.collector}: {warning}[/yellow]")
+        for error in summary.errors:
+            console.print(f"[red]  {summary.collector}: {error}[/red]")
+
+
 @app.command("scan")
 def scan_cmd(
     output_dir: Path = typer.Option(
@@ -596,7 +648,7 @@ def scan_cmd(
     In an interactive terminal, missing options are prompted. Flags and env vars
     always win when already set.
     """
-    from licenselens.cli_prompts import resolve_scan_inputs
+    from licenselens.cli_prompts import is_interactive, resolve_scan_inputs
 
     resolved_profile = _resolve_profile_or_exit(
         profile=profile, config=config, rules=rules, backend=backend
@@ -634,6 +686,15 @@ def scan_cmd(
         workspace_resource_id=workspace,
         open_browser=open_browser,
     )
+
+    if live is None and not is_interactive():
+        console.print(
+            "[bold yellow]No terminal and no auth mode specified — running the "
+            "offline demo (dry-run).[/bold yellow]"
+        )
+        console.print(
+            "[bold yellow]Pass --live --tenant-id … for a real scan.[/bold yellow]"
+        )
 
     try:
         auth_ctx = build_auth_context(
@@ -685,6 +746,7 @@ def scan_cmd(
             packs=packs,
             allow_email_proxy=allow_email_proxy,
             profile=resolved_profile,
+            progress=_emit_collection_progress,
         )
     except (AuthError, GraphError) as exc:
         if wizard.live:
@@ -695,6 +757,8 @@ def scan_cmd(
     for warning in result.warnings:
         if warning not in auth_ctx.warnings:
             console.print(f"[yellow]Warning:[/yellow] {warning}")
+
+    _print_collection_summary(result)
 
     html_path, json_path, md_path, archive_path = _write_scan_artifacts(
         result, wizard.output_dir, report_archive=report_archive, redaction=redaction

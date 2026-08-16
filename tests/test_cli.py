@@ -169,6 +169,31 @@ def test_scan_non_tty_defaults_to_dry_run(tmp_path: Path):
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
 
 
+def test_scan_dry_run_emits_progress_and_collection_summary(tmp_path: Path):
+    result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 1, result.output
+    out = result.stdout
+    assert re.search(r"\b\d+/\d+ ", out)
+    assert "access_review_definitions" in out
+    assert " ok" in out
+    assert "Collection summary:" in out
+    assert "data sources" in out
+
+
+def test_scan_non_tty_without_mode_flag_warns_about_demo_dry_run(tmp_path: Path):
+    result = runner.invoke(app, ["scan", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 1, result.output
+    assert "No terminal and no auth mode specified" in result.stdout
+    assert "running the offline demo (dry-run)" in result.stdout
+    assert "Pass --live --tenant-id" in result.stdout
+
+
+def test_scan_explicit_dry_run_skips_demo_warning(tmp_path: Path):
+    result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 1, result.output
+    assert "No terminal and no auth mode specified" not in result.stdout
+
+
 def test_scan_live_non_tty_missing_auth_exits_2(tmp_path: Path, monkeypatch):
     monkeypatch.delenv("AZURE_TENANT_ID", raising=False)
     monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)

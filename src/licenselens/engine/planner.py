@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -30,6 +30,12 @@ class CollectionContext:
 
 class EvidenceCollector(Protocol):
     def __call__(self, context: CollectionContext) -> CollectionOutcome: ...
+
+
+#: Progress hook signature: (collector_id, step_index, step_count, envelope).
+#: Invoked after every collection step so callers can render live per-source
+#: status instead of hanging silently during long scans.
+ProgressCallback = Callable[[CollectorId, int, int, EvidenceEnvelope], None]
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,12 +147,17 @@ class EvidencePlanner:
         checks: Sequence[CheckEvidenceRequirement],
         *,
         profile_ids: tuple[str, ...] = (),
+        progress: ProgressCallback | None = None,
     ) -> CollectionResult:
         plan = self.build_plan(checks, profile_ids=profile_ids)
         envelopes: dict[EvidenceKey, EvidenceEnvelope] = {}
-        for step in plan.steps:
+        total = len(plan.steps)
+        for index, step in enumerate(plan.steps):
             spec = step.collector
-            envelopes[spec.produces] = self._collect_one(spec, envelopes)
+            envelope = self._collect_one(spec, envelopes)
+            envelopes[spec.produces] = envelope
+            if progress is not None:
+                progress(spec.collector_id, index, total, envelope)
         return CollectionResult(envelopes=envelopes, checks=plan.checks)
 
     def _visit(self, key: EvidenceKey, state: PlanBuildState) -> None:

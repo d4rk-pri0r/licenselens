@@ -7,10 +7,18 @@ from typing import Any
 
 from licenselens.auth import AuthContext
 from licenselens.catalog.loader import resolve_owned_capabilities
-from licenselens.collectors.runtime import collect_selected_evidence
+from licenselens.collectors.runtime_envelopes import (
+    collection_summaries_from,
+    envelopes_to_evidence,
+)
+from licenselens.collectors.runtime_specs import (
+    build_runtime_collector_specs,
+    check_requirements_for,
+)
 from licenselens.collectors.skus import collect_subscribed_skus, collect_subscribed_skus_live
 from licenselens.engine.collection_context import ScanCollectionContext
 from licenselens.engine.loader import load_checks
+from licenselens.engine.planner import EvidencePlanner, ProgressCallback
 from licenselens.engine.profiles import ResolvedProfile
 from licenselens.engine.registry import AssessmentRegistry
 from licenselens.errors import GraphError
@@ -125,6 +133,7 @@ def _run_collection(
     registry: AssessmentRegistry,
     tenant_id: str | None,
     tenant_display_name: str | None,
+    progress: ProgressCallback | None = None,
 ) -> CollectedScanState:
     owned = resolve_owned_capabilities(capabilities, skus)
     owned_set = set(owned)
@@ -151,12 +160,16 @@ def _run_collection(
         discover_workspaces=discover_workspaces,
         extras=profile_collection_extras(profile),
     )
-    evidence, collection_summaries, _result = collect_selected_evidence(
-        ctx,
-        registry,
+    profile_ids = tuple(profile.profile_ids) if profile is not None else ()
+    planner = EvidencePlanner(collectors=build_runtime_collector_specs(ctx, registry))
+    requirements = check_requirements_for(
         check_ids=[c.id for c in checks],
-        profile_ids=tuple(profile.profile_ids) if profile is not None else (),
+        registry=registry,
+        profile_ids=profile_ids,
     )
+    result = planner.collect(requirements, profile_ids=profile_ids, progress=progress)
+    evidence = envelopes_to_evidence(result, ctx)
+    collection_summaries = collection_summaries_from(result)
     return CollectedScanState(
         tenant_id=tenant_id,
         tenant_display_name=tenant_display_name,
@@ -184,6 +197,7 @@ def collect_scan_state(
     workloads: list[Workload] | None,
     registry: AssessmentRegistry,
     tenant_id: str | None,
+    progress: ProgressCallback | None = None,
 ) -> CollectedScanState:
     """Resolve entitlements and collect evidence for the selected checks."""
     tenant_display_name: str | None = None
@@ -204,6 +218,7 @@ def collect_scan_state(
             registry=registry,
             tenant_id=tenant_id or "00000000-0000-0000-0000-000000000000",
             tenant_display_name="Contoso Demo (dry-run)",
+            progress=progress,
         )
 
     import importlib
@@ -235,4 +250,5 @@ def collect_scan_state(
             registry=registry,
             tenant_id=tenant_id,
             tenant_display_name=tenant_display_name,
+            progress=progress,
         )
