@@ -29,7 +29,15 @@ import pytest
 from playwright.sync_api import Browser, Page
 
 from licenselens.catalog.expected_states import expected_state_map
-from licenselens.models import CapabilityRollup, ScanResult
+from licenselens.models import (
+    CapabilityRollup,
+    Finding,
+    FindingStatus,
+    ScanResult,
+    Severity,
+    ValueImpact,
+    Workload,
+)
 from licenselens.paths import templates_dir
 from licenselens.report.bundle import build_report_bundle
 from licenselens.report.html import write_html_report
@@ -207,6 +215,65 @@ def test_belief_prose_slots_are_distinct(tmp_path: Path) -> None:
             assert left != right, (
                 f"adjacent identical belief paragraphs for {finding.check_id}: {left!r}"
             )
+
+
+# The todo-12 follow-up: four checks once carried expected_state copy that was
+# byte-identical to the evaluator's ok summary, so compliant findings rendered
+# Expected == Observed. The renderer is correct (Expected binds the catalog,
+# Observed binds the finding summary) — this locks the rendered slots for those
+# exact compliant findings.
+_OK_FINDING_SUMMARIES: dict[str, str] = {
+    "exo-smtp-auth-disabled": "SMTP AUTH is disabled at the organization level.",
+    "teams-anonymous-start-disabled": "Anonymous users cannot start meetings.",
+    "spo-default-link-view": "Default sharing links grant view-only permission.",
+    "teams-external-control-disabled": (
+        "External participants cannot request control of shared content."
+    ),
+}
+
+
+def test_belief_prose_distinct_for_compliant_findings(tmp_path: Path) -> None:
+    """Compliant (ok) findings for the four formerly-colliding checks stay distinct.
+
+    Each finding carries the evaluator's real ok summary as its Observed text;
+    the Expected slot must bind the catalog expected_state and must never
+    collapse to the same sentence.
+    """
+    result = empty_report()
+    result.findings = [
+        Finding(
+            check_id=check_id,
+            title=f"Compliant control {check_id}",
+            workload=Workload.IDENTITY,
+            status=FindingStatus.OK,
+            severity=Severity.HIGH,
+            value_impact=ValueImpact.HIGH,
+            summary=ok_summary,
+            deep_link=None,
+            customer_title=f"Compliant control {check_id}",
+            customer_summary="Plain-English compliant state for a busy admin.",
+            customer_next_step="Nothing to do here.",
+            confidence_label="High confidence",
+            data_sources=["microsoft.graph"],
+            limitations=[],
+        )
+        for check_id, ok_summary in _OK_FINDING_SUMMARIES.items()
+    ]
+    rendered = _render(result, tmp_path)
+    chunks = _article_chunks(rendered)
+    assert len(chunks) == len(result.findings), (
+        f"expected one article per finding, got {len(chunks)} chunks for "
+        f"{len(result.findings)} findings"
+    )
+    for chunk, finding in zip(chunks, result.findings, strict=True):
+        expected = _belief_slot_text(chunk, "Expected")
+        observed = _belief_slot_text(chunk, "Observed")
+        assert expected == expected_state_map()[finding.check_id], (
+            f"Expected slot drifted from the catalog for {finding.check_id}: {expected!r}"
+        )
+        assert expected != observed, (
+            f"Expected and Observed collapsed for compliant {finding.check_id}: {expected!r}"
+        )
 
 
 # ---------------------------------------------------------------------------

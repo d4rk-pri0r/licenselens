@@ -3,7 +3,7 @@ title: Anonymous users can start meetings
 customer_title: Block anonymous users from starting meetings
 customer_summary: >
   Anonymous users who start meetings can scrape internal contacts and invite others.
-expected_state: Anonymous users cannot start meetings.
+expected_state: Meeting policies block anonymous users from starting any meeting.
 customer_next_step: >
   Turn off 'Anonymous users and dial-in callers can start a meeting'.
 description: >

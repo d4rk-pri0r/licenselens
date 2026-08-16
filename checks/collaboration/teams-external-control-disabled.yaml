@@ -3,7 +3,7 @@ title: External meeting participants can request control of shared content
 customer_title: Block external participants from taking control
 customer_summary: >
   An external participant with screen control could act on the shared desktop or window.
-expected_state: External participants cannot request control of shared content.
+expected_state: Meeting policies deny external participants control over shared screens.
 customer_next_step: >
   Turn off 'External participants can give or request control'.
 description: >
