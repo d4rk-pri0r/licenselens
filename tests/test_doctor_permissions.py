@@ -113,3 +113,40 @@ def test_graph_permissions_denied_is_optional_and_ready(monkeypatch: pytest.Monk
     assert row.optional is True
     assert "cannot verify granted permissions" in row.detail
     assert report.ready is True
+
+
+def test_device_code_mode_reports_delegated_note_without_app_role_probe(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    # _base_fake registers no servicePrincipal routes, so any appRoleAssignments
+    # probe would raise — the delegated note proves the probe never ran.
+    fake = _base_fake()
+    monkeypatch.setattr("licenselens.doctor.GraphClient", lambda auth: fake)
+
+    cred = MagicMock()
+    cred.get_token.return_value = _FakeToken()
+    ctx = AuthContext(
+        mode=AuthMode.DEVICE_CODE, tenant_id="t1", client_id=None, credential=cred
+    )
+    report = run_doctor(ctx)
+    row = _check(report, "graphPermissions")
+    assert row.ok is True
+    assert row.optional is True
+    assert "cannot be pre-verified" in row.detail
+    assert "Missing application permission" not in row.detail
+    assert "licenselens setup" in row.detail
+    assert report.ready is True
+
+
+def test_token_acquisition_failure_fix_is_actionable():
+    cred = MagicMock()
+    cred.get_token.side_effect = Exception("interaction required")
+    ctx = AuthContext(
+        mode=AuthMode.CLIENT_SECRET, tenant_id="t1", client_id=CLIENT_ID, credential=cred
+    )
+    report = run_doctor(ctx)
+    row = _check(report, "token")
+    assert row.ok is False
+    assert "--client-secret" in row.fix
+    assert "AZURE_CLIENT_SECRET" in row.fix
+    assert "licenselens setup" in row.fix

@@ -110,7 +110,9 @@ def build_credential(
             raise AuthConfigError(
                 "Client-secret auth requires tenant id, client id, and client secret. "
                 "Pass --tenant-id / --client-id or set AZURE_TENANT_ID, "
-                "AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET."
+                "AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET. "
+                "Run `licenselens setup` for a guided app registration "
+                "(docs/app-registration.md)."
             )
         return ClientSecretCredential(
             tenant_id=tenant_id,
@@ -121,7 +123,9 @@ def build_credential(
     if mode == AuthMode.DEVICE_CODE:
         if not tenant_id:
             raise AuthConfigError(
-                "Device-code auth requires a tenant id (--tenant-id or AZURE_TENANT_ID)."
+                "Device-code auth requires a tenant id (--tenant-id or "
+                "AZURE_TENANT_ID). Run `licenselens setup` for a guided app "
+                "registration (docs/app-registration.md)."
             )
         public_client = client_id or DEFAULT_PUBLIC_CLIENT_ID
         warnings_note = client_id is None

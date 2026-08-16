@@ -7,7 +7,7 @@ from typing import Any, Final
 
 import httpx
 
-from licenselens.auth import AuthContext
+from licenselens.auth import AuthContext, AuthMode
 from licenselens.cloud_endpoints import CloudEndpoints, endpoints_for, graph_base_url
 from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
@@ -240,8 +240,7 @@ class GraphClient:
             next_link_seen=next_path is not None,
         )
 
-    @staticmethod
-    def _error_from_response(response: httpx.Response) -> GraphError:
+    def _error_from_response(self, response: httpx.Response) -> GraphError:
         request_id = response.headers.get("request-id") or response.headers.get(
             "x-ms-ags-diagnostic"
         )
@@ -260,10 +259,18 @@ class GraphClient:
         if detail:
             msg = f"{msg} — {detail}"
         if response.status_code in {401, 403}:
-            msg += (
-                " Check app permissions and admin consent "
-                "(see docs/app-registration.md and docs/permissions.md)."
-            )
+            if self._auth.mode == AuthMode.DEVICE_CODE:
+                msg += (
+                    " Delegated permissions cannot be pre-verified: this "
+                    "401/403 names the missing scope — grant it and sign in "
+                    "again, or run `licenselens setup` for app-only access "
+                    "(see docs/app-registration.md)."
+                )
+            else:
+                msg += (
+                    " Check app permissions and admin consent "
+                    "(see docs/app-registration.md and docs/permissions.md)."
+                )
         return GraphError(msg, status_code=response.status_code, request_id=request_id)
 
 

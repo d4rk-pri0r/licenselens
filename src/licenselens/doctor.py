@@ -97,8 +97,12 @@ def run_doctor(
     profile="basic" runs core Graph checks; profile="full" also probes the
     Defender for Endpoint API and the optional Sentinel workspace.
 
-    Always reports a graphPermissions row: granted application permissions vs
-    REQUIRED_GRAPH_APP_PERMISSIONS (optional, never blocks report.ready).
+    Always reports a graphPermissions row. App-only modes compare granted
+    application permissions (service principal appRoleAssignments) against
+    REQUIRED_GRAPH_APP_PERMISSIONS. Device-code (delegated) mode cannot
+    introspect application roles, so it reports a note instead — delegated
+    scopes cannot be pre-verified. Either way the row is optional and never
+    blocks report.ready.
     """
     try:
         profile_value = DoctorProfile(profile)
@@ -137,7 +141,16 @@ def run_doctor(
 
     if auth.credential is None:
         report.checks.append(
-            DoctorCheck(name="credential", ok=False, detail="No credential configured.")
+            DoctorCheck(
+                name="credential",
+                ok=False,
+                detail="No credential configured.",
+                fix=(
+                    "Pass --tenant-id/--client-id/--client-secret (or set "
+                    "AZURE_TENANT_ID/AZURE_CLIENT_ID/AZURE_CLIENT_SECRET), or run "
+                    "`licenselens setup` to scaffold an app registration."
+                ),
+            )
         )
         return report
 
@@ -162,7 +175,16 @@ def run_doctor(
         )
     except Exception as exc:  # noqa: BLE001
         report.checks.append(
-            DoctorCheck(name="token", ok=False, detail=f"Token acquisition failed: {exc}")
+            DoctorCheck(
+                name="token",
+                ok=False,
+                detail=f"Token acquisition failed: {exc}",
+                fix=(
+                    "Verify --tenant-id/--client-id/--client-secret (or "
+                    "AZURE_TENANT_ID/AZURE_CLIENT_ID/AZURE_CLIENT_SECRET), then "
+                    "re-run `licenselens setup` and `licenselens doctor --live`."
+                ),
+            )
         )
         return report
 
@@ -302,51 +324,77 @@ def run_doctor(
             )
 
             # Enforcement/reporting: are the required Graph application
-            # permissions actually granted on this app? Optional — never
-            # blocks report.ready (the per-collector ✗ rows gate that).
-            try:
-                granted = _read_granted_graph_app_permissions(client, auth.client_id or "")
-                missing = [p for p in REQUIRED_GRAPH_APP_PERMISSIONS if p not in granted]
-                if missing:
+            # permissions actually granted on this app? Only app-only modes
+            # can introspect appRoleAssignments; device-code (delegated)
+            # scopes cannot be pre-verified, so that mode gets an honest note
+            # instead. Optional either way — never blocks report.ready (the
+            # per-collector ✗ rows gate that).
+            if auth.mode == AuthMode.DEVICE_CODE:
+                report.checks.append(
+                    DoctorCheck(
+                        name="graphPermissions",
+                        ok=True,
+                        optional=True,
+                        detail=(
+                            "Delegated (device-code) permissions cannot be "
+                            "pre-verified — a 403 mid-scan will name the missing "
+                            "scope. For pre-verifiable app-only permissions, run "
+                            "`licenselens setup` and re-run with "
+                            "--auth client_secret."
+                        ),
+                    )
+                )
+            else:
+                try:
+                    granted = _read_granted_graph_app_permissions(client, auth.client_id or "")
+                    missing = [p for p in REQUIRED_GRAPH_APP_PERMISSIONS if p not in granted]
+                    if missing:
+                        report.checks.append(
+                            DoctorCheck(
+                                name="graphPermissions",
+                                ok=False,
+                                optional=True,
+                                detail=f"Missing application permission(s): {', '.join(missing)}.",
+                                fix=f"Grant {', '.join(missing)} and re-consent.",
+                            )
+                        )
+                    else:
+                        report.checks.append(
+                            DoctorCheck(
+                                name="graphPermissions",
+                                ok=True,
+                                optional=True,
+                                detail=("All required Graph application permissions granted."),
+                            )
+                        )
+                except GraphError as exc:
                     report.checks.append(
                         DoctorCheck(
                             name="graphPermissions",
                             ok=False,
                             optional=True,
-                            detail=f"Missing application permission(s): {', '.join(missing)}.",
-                            fix=f"Grant {', '.join(missing)} and re-consent.",
+                            detail=f"cannot verify granted permissions — {exc}",
+                            fix=(
+                                "Verify the required application permissions in Entra "
+                                "admin center and re-consent (docs/app-registration.md)."
+                            ),
                         )
                     )
-                else:
-                    report.checks.append(
-                        DoctorCheck(
-                            name="graphPermissions",
-                            ok=True,
-                            optional=True,
-                            detail=("All required Graph application permissions granted."),
-                        )
-                    )
-            except GraphError as exc:
-                report.checks.append(
-                    DoctorCheck(
-                        name="graphPermissions",
-                        ok=False,
-                        optional=True,
-                        detail=f"cannot verify granted permissions — {exc}",
-                        fix=(
-                            "Verify the required application permissions in Entra "
-                            "admin center and re-consent (docs/app-registration.md)."
-                        ),
-                    )
-                )
     except (AuthError, GraphError) as exc:
-        report.checks.append(
-            DoctorCheck(
-                name="graph",
-                ok=False,
-                detail=str(exc),
-                fix="Confirm credentials and that the app has admin consent.",
+        if auth.mode == AuthMode.DEVICE_CODE:
+            fix = (
+                "Grant the delegated scope named in the error and sign in "
+                "again, or switch to app-only: run `licenselens setup` and "
+                "re-run with --auth client_secret."
             )
+        else:
+            fix = (
+                "Confirm --tenant-id/--client-id/--client-secret (or "
+                "AZURE_TENANT_ID/AZURE_CLIENT_ID/AZURE_CLIENT_SECRET) and that "
+                "the app has admin consent (docs/app-registration.md)."
+            )
+        report.checks.append(
+            DoctorCheck(name="graph", ok=False, detail=str(exc), fix=fix)
         )
 
     # Optional Defender for Endpoint API (separate resource) — full profile only
