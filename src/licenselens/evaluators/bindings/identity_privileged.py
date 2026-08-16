@@ -30,6 +30,7 @@ def register_identity_privileged(catalog: RegistrationCatalog) -> None:
             input_models=(
                 "role_assignments",
                 "role_eligibilities",
+                "break_glass_principal_ids",
             ),
             collector_id="graph_pim",
             evaluation_mode=EvaluationMode.DIRECT,

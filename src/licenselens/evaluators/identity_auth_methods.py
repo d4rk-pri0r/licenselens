@@ -131,27 +131,47 @@ def evaluate_auth_authenticator_context(
     geo = feature.get("displayLocationInformationRequiredState") or {}
     app_on = str((app_name or {}).get("state") or "").lower() == "enabled"
     geo_on = str((geo or {}).get("state") or "").lower() == "enabled"
+    number_setting = feature.get("numberMatchingRequiredState")
+    has_number_setting = isinstance(number_setting, dict)
+    number_on = str((number_setting or {}).get("state") or "").lower() == "enabled"
     evidence_out = {
         "authenticator_state": state,
         "show_app_name": app_on,
         "show_location": geo_on,
+        "number_matching_enabled": number_on if has_number_setting else None,
     }
     if state != "enabled":
         return Evaluation(
-            status=FindingStatus.OK,
-            summary="Microsoft Authenticator is not enabled tenant-wide.",
+            status=FindingStatus.GAP,
+            summary=(
+                "Microsoft Authenticator is not enabled tenant-wide, so sign-in "
+                "context protection is absent."
+            ),
             evidence=evidence_out,
             customer_summary=(
-                "Authenticator is not the active method, so context settings do not apply."
+                "Authenticator is not active, so users are not protected by "
+                "number-matching push notifications that show app and location context."
             ),
         )
-    if app_on and geo_on:
+    if app_on and geo_on and (number_on or not has_number_setting):
         return Evaluation(
             status=FindingStatus.OK,
             summary=("Microsoft Authenticator shows application name and geographic location."),
             evidence=evidence_out,
             customer_summary=(
                 "Authenticator prompts show which app and where the sign-in is from."
+            ),
+        )
+    if not number_on and has_number_setting:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                "Microsoft Authenticator is enabled but number matching is disabled."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Without number matching, users can approve a sign-in without "
+                "typing the code shown on screen, which makes push phishing easier."
             ),
         )
     return Evaluation(

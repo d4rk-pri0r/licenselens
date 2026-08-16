@@ -26,7 +26,7 @@ def test_pim_demo_is_gap():
     assert result.evidence["privileged_eligible_schedules"] == 0
 
 
-def test_pim_ok_when_eligible_dominates():
+def test_pim_ok_when_standing_is_break_glass_justified():
     assignments = [
         {
             "principalId": "u1",
@@ -39,7 +39,11 @@ def test_pim_ok_when_eligible_dominates():
     ]
     result = evaluate_pim_unused(
         _check("id-pim-unused"),
-        {"role_assignments": assignments, "role_eligibilities": eligibilities},
+        {
+            "role_assignments": assignments,
+            "role_eligibilities": eligibilities,
+            "break_glass_principal_ids": ["u1"],
+        },
     )
     assert result.status == FindingStatus.OK
 

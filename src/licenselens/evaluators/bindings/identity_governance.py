@@ -23,7 +23,7 @@ def register_identity_governance(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="id-security-defaults-on",
             evaluate=evaluate_security_defaults_on,
-            input_models=("security_defaults_policy",),
+            input_models=("security_defaults_policy", "ca_policies"),
             collector_id="graph_security_defaults",
             evaluation_mode=EvaluationMode.DIRECT,
         )

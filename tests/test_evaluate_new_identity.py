@@ -34,12 +34,12 @@ def test_security_defaults_on_records_baseline_protection():
     assert result.evidence["conditional_access_customization_unused"] is True
 
 
-def test_security_defaults_off_is_ok():
+def test_security_defaults_off_without_ca_evidence_is_partial():
     result = evaluate_security_defaults_on(
         _check("id-security-defaults-on"),
         {"security_defaults_policy": {"id": "p", "isEnabled": False}},
     )
-    assert result.status == FindingStatus.OK
+    assert result.status == FindingStatus.PARTIAL
 
 
 def test_security_defaults_missing_data():
@@ -47,7 +47,7 @@ def test_security_defaults_missing_data():
         _check("id-security-defaults-on"),
         {"security_defaults_policy": {}},
     )
-    assert result.status == FindingStatus.OK  # absent = off = OK
+    assert result.status == FindingStatus.PARTIAL  # absent = off, CA unverified = PARTIAL
 
 
 def test_security_defaults_collection_error_returns_error():
@@ -68,7 +68,7 @@ def test_security_defaults_off_does_not_claim_ca_customization():
         _check("id-security-defaults-on"),
         {"security_defaults_policy": {"id": "p", "isEnabled": False}},
     )
-    assert result.status == FindingStatus.OK
+    assert result.status != FindingStatus.OK
     assert result.evidence["conditional_access_customization_unused"] is None
 
 
@@ -102,7 +102,7 @@ def test_access_reviews_none_is_gap():
     assert result.evidence["definition_count"] == 0
 
 
-def test_access_reviews_some_is_ok():
+def test_access_reviews_some_without_privileged_recurring_scope_is_partial():
     result = evaluate_access_reviews_unused(
         _check("id-access-reviews-unused"),
         {
@@ -112,7 +112,7 @@ def test_access_reviews_some_is_ok():
             ]
         },
     )
-    assert result.status == FindingStatus.OK
+    assert result.status == FindingStatus.PARTIAL
     assert result.evidence["definition_count"] == 2
     assert "ar-1" in str(result.evidence["definition_ids"])
 
