@@ -1,0 +1,2649 @@
+{
+  "version": 1,
+  "tenant": {
+    "id": "00000000-0000-0000-0000-000000000001",
+    "display_name": "GoldenCo",
+    "workspace_resource_id": "/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel",
+    "subscription_id": "11111111-2222-3333-4444-555555555555"
+  },
+  "graph": {
+    "list": {
+      "/organization": {
+        "value": [
+          {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "displayName": "GoldenCo"
+          }
+        ]
+      },
+      "/subscribedSkus": {
+        "value": [
+          {
+            "skuId": "golden-e5",
+            "skuPartNumber": "SPE_E5",
+            "capabilityStatus": "Enabled",
+            "consumedUnits": 87,
+            "prepaidUnits": {
+              "enabled": 100
+            },
+            "servicePlans": [
+              {
+                "servicePlanId": "eec0eb4f-6444-4f95-aba0-50c24d67f998",
+                "servicePlanName": "AAD_PREMIUM_P2",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "8a256a2b-b617-496d-b51b-e76466e88db0",
+                "servicePlanName": "MFA_PREMIUM",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "8c098270-9dd4-4350-9b30-ba4703f3b36b",
+                "servicePlanName": "ADALLOM_S_O365",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "4de31727-a228-4ec3-a5bf-8e45b5ca48cc",
+                "servicePlanName": "EQUIVIO_ANALYTICS",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "9f431833-0334-42de-a7dc-70aa40db46db",
+                "servicePlanName": "LOCKBOX_ENTERPRISE",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "efb0351d-3b08-4503-993d-383af8de41e3",
+                "servicePlanName": "MIP_S_CLP2",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "8e0c0a52-6a6c-4d40-8370-dd62790dcd70",
+                "servicePlanName": "THREAT_INTELLIGENCE",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "00f9a5c4-5c3d-4a6f-8f2e-6e1b1c1a1b1c",
+                "servicePlanName": "DEFENDER_ENDPOINT_P2",
+                "provisioningStatus": "Success"
+              },
+              {
+                "servicePlanId": "5a990da1-4d0f-4c22-9b0a-0e3e5d5d5d5d",
+                "servicePlanName": "INTUNE_A",
+                "provisioningStatus": "Success"
+              }
+            ]
+          },
+          {
+            "skuId": "golden-sentinel",
+            "skuPartNumber": "MICROSOFT_SENTINEL",
+            "capabilityStatus": "Enabled",
+            "consumedUnits": 1,
+            "prepaidUnits": {
+              "enabled": 1
+            },
+            "servicePlans": [
+              {
+                "servicePlanId": "6fbf1f0f-2b0e-4b6a-9b1a-1c2d3e4f5a6b",
+                "servicePlanName": "MICROSOFT_SENTINEL",
+                "provisioningStatus": "Success"
+              }
+            ]
+          }
+        ]
+      },
+      "/identity/conditionalAccess/policies": {
+        "value": [
+          {
+            "id": "golden-or-grant",
+            "displayName": "Golden: MFA or password change (OR grant)",
+            "state": "enabled",
+            "conditions": {
+              "users": {
+                "includeUsers": [
+                  "All"
+                ],
+                "includeRoles": []
+              },
+              "clientAppTypes": [
+                "all"
+              ],
+              "signInRiskLevels": [],
+              "userRiskLevels": []
+            },
+            "grantControls": {
+              "operator": "OR",
+              "builtInControls": [
+                "mfa",
+                "passwordChange"
+              ]
+            }
+          },
+          {
+            "id": "golden-block-legacy",
+            "displayName": "Golden: Block legacy auth (excludes break-glass)",
+            "state": "enabled",
+            "conditions": {
+              "users": {
+                "includeUsers": [
+                  "All"
+                ],
+                "excludeUsers": [
+                  "dddddddd-0000-0000-0000-000000000001"
+                ],
+                "includeRoles": []
+              },
+              "clientAppTypes": [],
+              "signInRiskLevels": [],
+              "userRiskLevels": []
+            },
+            "grantControls": {
+              "operator": "OR",
+              "builtInControls": [
+                "block"
+              ]
+            }
+          }
+        ]
+      },
+      "/roleManagement/directory/roleAssignments": {
+        "value": [
+          {
+            "id": "asg-ga1",
+            "principalId": "aaaaaaaa-0000-0000-0000-000000000001",
+            "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+            "directoryScopeId": "/"
+          },
+          {
+            "id": "asg-ga2",
+            "principalId": "aaaaaaaa-0000-0000-0000-000000000002",
+            "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+            "directoryScopeId": "/"
+          },
+          {
+            "id": "asg-sec1",
+            "principalId": "bbbbbbbb-0000-0000-0000-000000000001",
+            "roleDefinitionId": "194ae4cb-b126-40b2-bd5b-6091b380977d",
+            "directoryScopeId": "/"
+          },
+          {
+            "id": "asg-sp1",
+            "principalId": "cccccccc-0000-0000-0000-000000000001",
+            "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+            "directoryScopeId": "/"
+          }
+        ]
+      },
+      "/roleManagement/directory/roleEligibilitySchedules": {
+        "value": [
+          {
+            "id": "elig-ga1",
+            "principalId": "aaaaaaaa-0000-0000-0000-000000000001",
+            "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+            "directoryScopeId": "/"
+          },
+          {
+            "id": "elig-ga2",
+            "principalId": "aaaaaaaa-0000-0000-0000-000000000002",
+            "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+            "directoryScopeId": "/"
+          }
+        ]
+      },
+      "/auditLogs/signIns": {
+        "value": [
+          {
+            "userId": "aaaaaaaa-0000-0000-0000-000000000001",
+            "createdDateTime": "2026-08-01T10:00:00Z",
+            "status": {
+              "errorCode": 0
+            }
+          },
+          {
+            "userId": "bbbbbbbb-0000-0000-0000-000000000001",
+            "createdDateTime": "2026-08-02T10:00:00Z",
+            "status": {
+              "errorCode": 0
+            }
+          }
+        ]
+      },
+      "/policies/roleManagementPolicies": {
+        "value": [
+          {
+            "id": "policy-ga",
+            "displayName": "DirectoryRole",
+            "scopeId": "/",
+            "scopeType": "DirectoryRole",
+            "rules": [
+              {
+                "id": "Expiration_EndUser_Assignment",
+                "@odata.type": "#microsoft.graph.unifiedRoleManagementPolicyExpirationRule",
+                "isExpirationRequired": false,
+                "maximumDuration": "PT8H"
+              }
+            ]
+          }
+        ]
+      },
+      "/policies/roleManagementPolicyAssignments": {
+        "value": [
+          {
+            "id": "assign-ga",
+            "policyId": "policy-ga",
+            "roleDefinitionId": "62e90394-69f5-4237-9190-012177145e10",
+            "scopeId": "/",
+            "scopeType": "DirectoryRole"
+          }
+        ]
+      },
+      "/policies/authenticationStrengthPolicies": {
+        "value": [
+          {
+            "id": "00000000-0000-0000-0000-000000000004",
+            "displayName": "Passwordless MFA",
+            "policyType": "builtIn"
+          }
+        ]
+      },
+      "/policies/authenticationMethodsPolicy/authenticationMethodConfigurations": {
+        "value": [
+          {
+            "id": "microsoftAuthenticator",
+            "state": "enabled"
+          },
+          {
+            "id": "sms",
+            "state": "enabled"
+          },
+          {
+            "id": "fido2",
+            "state": "disabled"
+          }
+        ]
+      },
+      "/applications": {
+        "value": [
+          {
+            "id": "app-1",
+            "appId": "11111111-1111-1111-1111-111111111111",
+            "displayName": "Legacy Line-of-Business",
+            "passwordCredentials": [
+              {
+                "displayName": "old-secret",
+                "endDateTime": "2024-01-01"
+              }
+            ],
+            "keyCredentials": []
+          }
+        ]
+      },
+      "/servicePrincipals": {
+        "value": [
+          {
+            "id": "sp-1",
+            "appId": "11111111-1111-1111-1111-111111111111",
+            "displayName": "Legacy Line-of-Business",
+            "accountEnabled": true
+          }
+        ]
+      },
+      "/oauth2PermissionGrants": {
+        "value": [
+          {
+            "id": "grant-1",
+            "clientId": "sp-1",
+            "consentType": "AllPrincipals",
+            "scope": "User.Read Mail.Read"
+          }
+        ]
+      },
+      "/policies/crossTenantAccessPolicy/partners": {
+        "value": []
+      },
+      "/users": {
+        "value": [
+          {
+            "id": "guest-1",
+            "userPrincipalName": "alice_contoso.com#EXT#@fabrikam.onmicrosoft.com",
+            "userType": "Guest",
+            "accountEnabled": true
+          }
+        ]
+      },
+      "/domains": {
+        "value": [
+          {
+            "id": "goldenco.onmicrosoft.com",
+            "isVerified": true,
+            "isDefault": true,
+            "passwordValidityPeriodInDays": 90
+          },
+          {
+            "id": "goldenco.com",
+            "isVerified": true,
+            "isDefault": false,
+            "passwordValidityPeriodInDays": 90
+          }
+        ]
+      },
+      "/identity/conditionalAccess/namedLocations": {
+        "value": [
+          {
+            "id": "nl-corp",
+            "displayName": "Corporate egress",
+            "@odata.type": "#microsoft.graph.ipNamedLocation",
+            "isTrusted": true,
+            "ipRanges": [
+              {
+                "cidrAddress": "203.0.113.0/24"
+              }
+            ]
+          },
+          {
+            "id": "nl-blocked-countries",
+            "displayName": "Blocked countries",
+            "@odata.type": "#microsoft.graph.countryNamedLocation",
+            "countriesAndRegions": [
+              "KP",
+              "RU"
+            ],
+            "includeUnknownCountriesAndRegions": false
+          }
+        ]
+      },
+      "/security/incidents": {
+        "value": [
+          {
+            "id": "inc-1",
+            "displayName": "Golden multi-stage incident",
+            "status": "active",
+            "severity": "medium"
+          }
+        ]
+      },
+      "/security/alerts_v2": {
+        "value": [
+          {
+            "id": "alert-1",
+            "title": "Golden suspicious sign-in",
+            "severity": "medium",
+            "status": "new",
+            "serviceSource": "azureAdIdentityProtection"
+          }
+        ]
+      },
+      "/identityGovernance/accessReviews/definitions": {
+        "value": []
+      },
+      "/identityGovernance/entitlementManagement/accessPackages": {
+        "value": [
+          {
+            "id": "demo-access-package-1",
+            "displayName": "Demo: Contractor starter access",
+            "description": "Baseline access for contractors",
+            "isHidden": false,
+            "isRoleScopesVisible": false,
+            "catalogId": "demo-catalog-1",
+            "createdDateTime": "2026-01-15T00:00:00Z",
+            "modifiedDateTime": "2026-02-01T00:00:00Z"
+          }
+        ]
+      },
+      "/identityProtection/riskyServicePrincipals": {
+        "value": []
+      },
+      "/deviceManagement/managedDevices": {
+        "value": [
+          {
+            "id": "dev-1",
+            "deviceName": "GOLDEN-WIN-01",
+            "complianceState": "compliant",
+            "operatingSystem": "Windows"
+          },
+          {
+            "id": "dev-2",
+            "deviceName": "GOLDEN-IOS-01",
+            "complianceState": "compliant",
+            "operatingSystem": "iOS"
+          }
+        ]
+      },
+      "/deviceManagement/deviceCompliancePolicies": {
+        "value": [
+          {
+            "id": "comp-1",
+            "displayName": "Golden Windows compliance baseline",
+            "platforms": "windows10"
+          },
+          {
+            "id": "comp-2",
+            "displayName": "Golden iOS compliance",
+            "platforms": "ios"
+          }
+        ]
+      },
+      "/deviceManagement/configurationPolicies": {
+        "value": [
+          {
+            "id": "ep-av",
+            "name": "Endpoint security - Antivirus",
+            "templateReference": {
+              "templateFamily": "endpointSecurityAntivirus"
+            }
+          },
+          {
+            "id": "ep-fw",
+            "name": "Endpoint security - Firewall",
+            "templateReference": {
+              "templateFamily": "endpointSecurityFirewall"
+            }
+          },
+          {
+            "id": "ep-de",
+            "name": "Endpoint security - Disk encryption",
+            "templateReference": {
+              "templateFamily": "endpointSecurityDiskEncryption"
+            }
+          },
+          {
+            "id": "ep-asr",
+            "name": "Endpoint security - ASR",
+            "templateReference": {
+              "templateFamily": "endpointSecurityAttackSurfaceReduction"
+            }
+          }
+        ]
+      },
+      "/deviceManagement/deviceConfigurations": {
+        "value": [
+          {
+            "id": "cfg-bl",
+            "displayName": "Golden BitLocker encryption",
+            "@odata.type": "#microsoft.graph.windows10EndpointProtectionConfiguration",
+            "bitLockerEncryptDevice": true
+          },
+          {
+            "id": "cfg-atp",
+            "displayName": "Golden Defender ATP config",
+            "@odata.type": "#microsoft.graph.windowsDefenderAdvancedThreatProtectionConfiguration"
+          }
+        ]
+      },
+      "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies": {
+        "value": [
+          {
+            "id": "asr-1",
+            "displayName": "Golden ASR rules",
+            "settings": [
+              {
+                "id": "s1",
+                "settingInstance": {
+                  "settingDefinitionId": "device_vendor_msft_policy_config_defender_attacksurfacereductionrules"
+                }
+              },
+              {
+                "id": "s2",
+                "settingInstance": {
+                  "settingDefinitionId": "device_vendor_msft_policy_config_defender_attacksurfacereductionrules"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "/deviceAppManagement/managedAppProtections": {
+        "value": [
+          {
+            "id": "mam-ios",
+            "displayName": "Golden iOS app protection",
+            "@odata.type": "#microsoft.graph.iosManagedAppProtection"
+          },
+          {
+            "id": "mam-android",
+            "displayName": "Golden Android app protection",
+            "@odata.type": "#microsoft.graph.androidManagedAppProtection"
+          }
+        ]
+      },
+      "/deviceManagement/deviceCompliancePolicies/comp-1/assignments": {
+        "value": [
+          {
+            "id": "a1",
+            "target": {
+              "groupId": "g-all"
+            }
+          }
+        ]
+      },
+      "/deviceManagement/deviceCompliancePolicies/comp-2/assignments": {
+        "value": [
+          {
+            "id": "a2",
+            "target": {
+              "groupId": "g-all"
+            }
+          }
+        ]
+      },
+      "/deviceManagement/deviceCompliancePolicies/comp-1/scheduledActionsForRule": {
+        "value": [
+          {
+            "id": "sar1"
+          }
+        ]
+      },
+      "/deviceManagement/deviceConfigurations/cfg-bl/assignments": {
+        "value": [
+          {
+            "id": "ba1",
+            "target": {
+              "groupId": "g-all"
+            }
+          }
+        ]
+      },
+      "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies/asr-1/assignments": {
+        "value": [
+          {
+            "id": "aa1",
+            "target": {
+              "groupId": "g-all"
+            }
+          }
+        ]
+      },
+      "/deviceAppManagement/iosManagedAppProtections/mam-ios/assignments": {
+        "value": [
+          {
+            "id": "ma1",
+            "target": {
+              "groupId": "g-all"
+            }
+          }
+        ]
+      },
+      "/security/dataLossPreventionPolicies": {
+        "value": [
+          {
+            "id": "dlp-1",
+            "name": "Golden data leak protection",
+            "mode": "enforce"
+          }
+        ]
+      },
+      "/security/dataLossPreventionApps": {
+        "value": [
+          {
+            "id": "dlpapp-1",
+            "state": "enabled"
+          }
+        ]
+      },
+      "/security/cases/ediscoveryCases": {
+        "value": [
+          {
+            "id": "case-1",
+            "displayName": "Golden investigation 2026-Q1"
+          }
+        ]
+      },
+      "/security/insiderRiskManagement/policies": {
+        "value": [
+          {
+            "id": "ir-1",
+            "name": "Golden data leak by departing users"
+          }
+        ]
+      }
+    },
+    "get": {
+      "/security/secureScores": {
+        "value": [
+          {
+            "id": "demo-score",
+            "azureTenantId": "00000000-0000-0000-0000-000000000000",
+            "createdDateTime": "2026-08-01T00:00:00Z",
+            "currentScore": 42.0,
+            "maxScore": 100.0,
+            "controlScores": [
+              {
+                "controlName": "SafeLinks_Enabled",
+                "description": "Safe Links is enabled for email",
+                "score": 1.0,
+                "maxScore": 1.0
+              },
+              {
+                "controlName": "SafeAttachments_Enabled",
+                "description": "Safe Attachments not fully rolled out",
+                "score": 0.0,
+                "maxScore": 1.0
+              },
+              {
+                "controlName": "AntiPhish_Policy",
+                "description": "Anti-phishing policy in audit mode",
+                "score": 0.35,
+                "maxScore": 1.0
+              },
+              {
+                "controlName": "DefenderForEndpoint_Onboard",
+                "description": "Devices onboarded to Defender for Endpoint",
+                "score": 0.4,
+                "maxScore": 1.0
+              },
+              {
+                "controlName": "DLP_Policies_Enabled",
+                "description": "Data loss prevention policies not enforced",
+                "score": 0.1,
+                "maxScore": 1.0
+              },
+              {
+                "controlName": "Information_Protection_DLP",
+                "description": "Information protection and DLP",
+                "score": 0.15,
+                "maxScore": 1.0
+              }
+            ]
+          }
+        ]
+      },
+      "/policies/identitySecurityDefaultsEnforcementPolicy": {
+        "id": "00000000-0000-0000-0000-000000000005",
+        "isEnabled": true
+      },
+      "/policies/authorizationPolicy": {
+        "id": "authorizationPolicy",
+        "defaultUserRolePermissions": {
+          "allowedToCreateApps": true,
+          "permissionGrantPoliciesAssigned": [
+            "ManagePermissionGrantsForSelf.microsoft-user-default-legacy"
+          ]
+        },
+        "allowInvitesFrom": "everyone",
+        "guestUserRoleId": "a0b1b346-4d3e-4e8b-98f8-753987be4970"
+      },
+      "/policies/adminConsentRequestPolicy": {
+        "isEnabled": false,
+        "notifyReviewers": false,
+        "remindersEnabled": false
+      },
+      "/policies/crossTenantAccessPolicy": {
+        "displayName": "CrossTenantAccessPolicy"
+      },
+      "/policies/crossTenantAccessPolicy/default": {
+        "b2bCollaborationInbound": {
+          "usersAndGroups": {
+            "accessType": "allowed"
+          }
+        },
+        "invitationRedemptionIdentityProviderConfiguration": {
+          "primaryIdentityProviderPrecedenceOrder": [
+            "azureActiveDirectory"
+          ]
+        }
+      },
+      "/policies/authenticationMethodsPolicy": {
+        "id": "authenticationMethodsPolicy",
+        "policyMigrationState": "migrationInProgress",
+        "reportSuspiciousActivitySettings": {
+          "state": "default"
+        }
+      },
+      "/deviceManagement/advancedThreatProtectionOnboardingStateSummary": {
+        "onboardedDeviceCount": 40,
+        "unknownDeviceCount": 0,
+        "unhealthyDeviceCount": 0
+      },
+      "/deviceManagement/deviceCompliancePolicyDeviceStateSummary": {
+        "compliantDeviceCount": 90,
+        "nonCompliantDeviceCount": 0,
+        "unknownDeviceCount": 0,
+        "errorDeviceCount": 0,
+        "conflictDeviceCount": 0,
+        "inGracePeriodCount": 0,
+        "notApplicableDeviceCount": 8
+      },
+      "/deviceManagement/managedDevices/dev-1/windowsProtectionState": {
+        "tamperProtectionEnabled": true
+      },
+      "/deviceManagement/managedDevices/dev-2/windowsProtectionState": {
+        "tamperProtectionEnabled": false
+      }
+    },
+    "post": {
+      "/directoryObjects/getByIds": {
+        "value": [
+          {
+            "id": "aaaaaaaa-0000-0000-0000-000000000001",
+            "accountEnabled": true,
+            "userPrincipalName": "alice.admin@goldenco.example",
+            "@odata.type": "#microsoft.graph.user"
+          },
+          {
+            "id": "aaaaaaaa-0000-0000-0000-000000000002",
+            "accountEnabled": true,
+            "userPrincipalName": "bob.admin@goldenco.example",
+            "@odata.type": "#microsoft.graph.user"
+          },
+          {
+            "id": "bbbbbbbb-0000-0000-0000-000000000001",
+            "accountEnabled": true,
+            "userPrincipalName": "sec.ops@goldenco.example",
+            "@odata.type": "#microsoft.graph.user"
+          },
+          {
+            "id": "cccccccc-0000-0000-0000-000000000001",
+            "accountEnabled": true,
+            "appId": "cccccccc-1111-0000-0000-000000000001",
+            "displayName": "Golden legacy automation SP",
+            "keyCredentials": [],
+            "passwordCredentials": [],
+            "@odata.type": "#microsoft.graph.servicePrincipal"
+          }
+        ]
+      }
+    }
+  },
+  "arm": {
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/providers/Microsoft.SecurityInsights/alertRules": {
+      "value": [
+        {
+          "id": "rule-1",
+          "name": "Golden brute-force spike",
+          "kind": "Scheduled",
+          "properties": {
+            "enabled": true,
+            "displayName": "Golden brute-force spike",
+            "tactics": [
+              "InitialAccess",
+              "CredentialAccess"
+            ]
+          }
+        },
+        {
+          "id": "rule-2",
+          "name": "Golden rare process",
+          "kind": "Scheduled",
+          "properties": {
+            "enabled": true,
+            "displayName": "Golden rare process",
+            "tactics": [
+              "Execution"
+            ]
+          }
+        },
+        {
+          "id": "rule-3",
+          "name": "Golden disabled rule",
+          "kind": "Scheduled",
+          "properties": {
+            "enabled": false,
+            "displayName": "Disabled rule"
+          }
+        }
+      ]
+    },
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/providers/Microsoft.SecurityInsights/settings": {
+      "value": [
+        {
+          "id": "ea",
+          "name": "EntityAnalytics",
+          "kind": "EntityAnalytics",
+          "properties": {
+            "isEnabled": true
+          }
+        }
+      ]
+    },
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/providers/Microsoft.SecurityInsights/dataConnectors": {
+      "value": [
+        {
+          "id": "dc-o365",
+          "name": "Office365",
+          "kind": "Office365",
+          "properties": {}
+        },
+        {
+          "id": "dc-aad",
+          "name": "AzureActiveDirectory",
+          "kind": "AzureActiveDirectory",
+          "properties": {}
+        }
+      ]
+    },
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/providers/Microsoft.SecurityInsights/automationRules": {
+      "value": [
+        {
+          "id": "ar-1",
+          "name": "Golden auto-close",
+          "properties": {
+            "triggeringLogic": {
+              "isEnabled": true
+            },
+            "actions": [
+              {
+                "actionType": "RunPlaybook"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel": {
+      "properties": {
+        "retentionInDays": 90
+      },
+      "sku": {
+        "name": "PerGB2018"
+      }
+    },
+    "subscriptions/11111111-2222-3333-4444-555555555555/providers/Microsoft.Security/pricings": {
+      "value": [
+        {
+          "name": "VirtualMachines",
+          "properties": {
+            "pricingTier": "Standard"
+          }
+        },
+        {
+          "name": "KeyVaults",
+          "properties": {
+            "pricingTier": "Free"
+          }
+        }
+      ]
+    }
+  },
+  "mde": {
+    "/machines": {
+      "@odata.count": 40,
+      "value": [
+        {
+          "id": "mde-000",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-001",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-002",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-003",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-004",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-005",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-006",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-007",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-008",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-009",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-010",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-011",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-012",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-013",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-014",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-015",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-016",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-017",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-018",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-019",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-020",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-021",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-022",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-023",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-024",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-025",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-026",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-027",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-028",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-029",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-030",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-031",
+          "healthStatus": "Active",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-032",
+          "healthStatus": "ImpairedCommunication",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-033",
+          "healthStatus": "ImpairedCommunication",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-034",
+          "healthStatus": "ImpairedCommunication",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-035",
+          "healthStatus": "ImpairedCommunication",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-036",
+          "healthStatus": "ImpairedCommunication",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-037",
+          "healthStatus": "NoSensorData",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-038",
+          "healthStatus": "NoSensorData",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        },
+        {
+          "id": "mde-039",
+          "healthStatus": "NoSensorData",
+          "onboardingStatus": "Onboarded",
+          "riskScore": "Medium"
+        }
+      ]
+    }
+  },
+  "powershell": {
+    "exo_threat_policies": {
+      "adapter": "exo_threat_policies",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_threat_policies",
+      "surfaces": {
+        "safe_links": {
+          "surface": "safe_links",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Standard Preset Security Policy",
+              "identity": "Standard Preset Security Policy",
+              "kind": "preset_standard",
+              "enabled": true,
+              "properties": {
+                "EnableSafeLinksForEmail": true,
+                "EnableSafeLinksForTeams": true,
+                "EnableSafeLinksForOffice": true,
+                "ScanUrls": true,
+                "DeliverMessageAfterScan": true,
+                "TrackClicks": true,
+                "AllowClickThrough": false
+              },
+              "assignments": [
+                "All"
+              ]
+            },
+            {
+              "name": "Custom Safe Links",
+              "identity": "Custom Safe Links",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "EnableSafeLinksForEmail": true,
+                "AllowClickThrough": false
+              },
+              "assignments": [
+                "finance@contoso.com"
+              ]
+            }
+          ]
+        },
+        "safe_attachments": {
+          "surface": "safe_attachments",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Standard Preset Security Policy",
+              "identity": "Standard Preset Security Policy",
+              "kind": "preset_standard",
+              "enabled": true,
+              "properties": {
+                "Enable": true,
+                "Action": "Block"
+              },
+              "assignments": [
+                "All"
+              ]
+            }
+          ]
+        },
+        "preset_security": {
+          "surface": "preset_security",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Standard Preset Security Policy",
+              "identity": "Standard Preset Security Policy",
+              "kind": "preset_standard",
+              "enabled": true,
+              "properties": {
+                "State": "Enabled",
+                "Priority": 0
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "anti_malware": {
+          "surface": "anti_malware",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default",
+              "identity": "Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "EnableFileFilter": true,
+                "ZapEnabled": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "anti_phish": {
+          "surface": "anti_phish",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Office365 AntiPhish Default",
+              "identity": "Office365 AntiPhish Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "EnableSpoofIntelligence": true,
+                "EnableMailboxIntelligence": true,
+                "EnableMailboxIntelligenceProtection": true,
+                "EnableFirstContactSafetyTips": true,
+                "EnableSimilarUsersSafetyTips": true,
+                "EnableSimilarDomainsSafetyTips": true,
+                "EnableUnusualCharactersSafetyTips": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "impersonation": {
+          "surface": "impersonation",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Office365 AntiPhish Default",
+              "identity": "Office365 AntiPhish Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "EnableTargetedUserProtection": true,
+                "EnableTargetedDomainsProtection": true,
+                "EnableOrganizationDomainsProtection": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "anti_spam": {
+          "surface": "anti_spam",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default",
+              "identity": "Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "SpamAction": "Quarantine",
+                "HighConfidenceSpamAction": "Quarantine",
+                "PhishSpamAction": "Quarantine",
+                "HighConfidencePhishAction": "Quarantine",
+                "BulkSpamAction": "Quarantine",
+                "AllowedSenders": [],
+                "AllowedSenderDomains": []
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "connection_filter": {
+          "surface": "connection_filter",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default",
+              "identity": "Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "IPAllowList": [],
+                "IPBlockList": [],
+                "EnableSafeList": false
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "outbound_spam": {
+          "surface": "outbound_spam",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default",
+              "identity": "Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "AutoForwardingEnabled": false,
+                "IsDefault": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "atp_global": {
+          "surface": "atp_global",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default",
+              "identity": "Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "EnableATPForSPOTeamsODB": true,
+                "EnableSafeDocs": true,
+                "AllowSafeDocsOpen": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "quarantine": {
+          "surface": "quarantine",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default Quarantine Policy",
+              "identity": "Default Quarantine Policy",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "EsnEnabled": true,
+                "QuarantinePolicyType": "QuarantinePolicyDefault",
+                "EndUserQuarantinePermissionsValue": "LimitedAccess",
+                "RetentionDurationInDays": 30
+              },
+              "assignments": []
+            }
+          ]
+        }
+      },
+      "collected_at": "2026-08-14T00:00:00Z"
+    },
+    "exo_remote_domains": {
+      "adapter": "exo_remote_domains",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_remote_domains",
+      "surfaces": {
+        "remote_domains": {
+          "surface": "remote_domains",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default",
+              "identity": "Default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "DomainName": "*",
+                "AutoForwardEnabled": false
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "exo_transport": {
+      "adapter": "exo_transport",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_transport",
+      "surfaces": {
+        "transport_rules": {
+          "surface": "transport_rules",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "External sender warning",
+              "identity": "External sender warning",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "State": "Enabled",
+                "FromScope": "NotInOrganization",
+                "PrependSubject": "[External]"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "external_warning": {
+          "surface": "external_warning",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "OrganizationConfig",
+              "identity": "OrganizationConfig",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "MailTipsExternalRecipientsTipsEnabled": true
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "exo_smtp_auth": {
+      "adapter": "exo_smtp_auth",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_smtp_auth",
+      "surfaces": {
+        "smtp_auth": {
+          "surface": "smtp_auth",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "TransportConfig",
+              "identity": "TransportConfig",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "SmtpClientAuthenticationDisabled": true
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "exo_sharing": {
+      "adapter": "exo_sharing",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_sharing",
+      "surfaces": {
+        "sharing_policies": {
+          "surface": "sharing_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Default Sharing Policy",
+              "identity": "Default Sharing Policy",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "Domains": [
+                  "partner.example.com:CalendarSharingFreeBusySimple"
+                ],
+                "Default": true
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "exo_accepted_domains": {
+      "adapter": "exo_accepted_domains",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_accepted_domains",
+      "surfaces": {
+        "accepted_domains": {
+          "surface": "accepted_domains",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "contoso.com",
+              "identity": "contoso.com",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "DomainName": "contoso.com",
+                "DomainType": "Authoritative"
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "exo_dkim": {
+      "adapter": "exo_dkim",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_dkim",
+      "surfaces": {
+        "dkim": {
+          "surface": "dkim",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "contoso.com",
+              "identity": "contoso.com",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Domain": "contoso.com",
+                "Enabled": true,
+                "Status": "Valid"
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "exo_audit": {
+      "adapter": "exo_audit",
+      "module": "ExchangeOnlineManagement",
+      "collection": "exchange_audit",
+      "surfaces": {
+        "organization_audit": {
+          "surface": "organization_audit",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "OrganizationConfig",
+              "identity": "OrganizationConfig",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "AuditDisabled": false
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "mailbox_audit": {
+          "surface": "mailbox_audit",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AdminAuditLogConfig",
+              "identity": "AdminAuditLogConfig",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "UnifiedAuditLogIngestionEnabled": true
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "scc_compliance": {
+      "adapter": "scc_compliance",
+      "module": "ExchangeOnlineManagement",
+      "collection": "scc_compliance",
+      "surfaces": {
+        "dlp_policies": {
+          "surface": "dlp_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Protect PII",
+              "identity": "Protect PII",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Mode": "Enable",
+                "Workload": "Exchange,SharePoint,OneDrive"
+              },
+              "assignments": []
+            },
+            {
+              "name": "Protect endpoints",
+              "identity": "Protect endpoints",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Mode": "Enable",
+                "Workload": "Devices"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "dlp_rules": {
+          "surface": "dlp_rules",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Block SSN and credit card",
+              "identity": "Block SSN and credit card",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Disabled": false,
+                "BlockAccess": true,
+                "NotifyUser": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "audit_config": {
+          "surface": "audit_config",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AdminAuditLogConfig",
+              "identity": "AdminAuditLogConfig",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "UnifiedAuditLogIngestionEnabled": true
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "spo_tenant": {
+      "adapter": "spo_tenant",
+      "module": "Microsoft.Online.SharePoint.PowerShell",
+      "collection": "sharepoint_tenant",
+      "surfaces": {
+        "sharing_capability": {
+          "surface": "sharing_capability",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "TenantSharing",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "SharingCapability": "ExistingExternalUserSharingOnly",
+                "ShowPeoplePickerSuggestionsForGuestUsers": false
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "onedrive_sharing": {
+          "surface": "onedrive_sharing",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "OneDriveSharing",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "OneDriveSharingCapability": "ExistingExternalUserSharingOnly"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "domain_restrictions": {
+          "surface": "domain_restrictions",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "DomainRestrictions",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "SharingDomainRestrictionMode": "AllowList",
+                "SharingAllowedDomainList": "contoso.com partner.gov",
+                "SharingBlockedDomainList": ""
+              },
+              "assignments": [
+                "sg-external-share@contoso.com"
+              ]
+            }
+          ]
+        },
+        "default_link": {
+          "surface": "default_link",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "DefaultLink",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "DefaultSharingLinkType": "Direct",
+                "DefaultLinkPermission": "View"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "anyone_link_expiration": {
+          "surface": "anyone_link_expiration",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AnyoneLinkExpiration",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "RequireAnonymousLinksExpireInDays": 30,
+                "SharingCapability": "ExistingExternalUserSharingOnly"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "anyone_link_permissions": {
+          "surface": "anyone_link_permissions",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AnyoneLinkPermissions",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "FileAnonymousLinkType": "View",
+                "FolderAnonymousLinkType": "View"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "reauth_days": {
+          "surface": "reauth_days",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "EmailAttestationReAuth",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "EmailAttestationRequired": true,
+                "EmailAttestationReAuthDays": 30
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "unmanaged_device_policy": {
+          "surface": "unmanaged_device_policy",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "UnmanagedDevicePolicy",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "ConditionalAccessPolicy": "BlockAccess"
+              },
+              "assignments": []
+            }
+          ]
+        }
+      },
+      "collected_at": "2026-08-14T00:00:00Z"
+    },
+    "teams_meeting": {
+      "adapter": "teams_meeting",
+      "module": "MicrosoftTeams",
+      "collection": "teams_meeting",
+      "surfaces": {
+        "meeting_policies": {
+          "surface": "meeting_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Global",
+              "identity": "Global",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "AllowExternalParticipantGiveRequestControl": false,
+                "AllowAnonymousUsersToStartMeeting": false,
+                "AutoAdmittedUsers": "EveryoneInCompany",
+                "AllowPSTNUsersToBypassLobby": false,
+                "AllowCloudRecording": false
+              },
+              "assignments": [
+                "All"
+              ]
+            },
+            {
+              "name": "ExecRecording",
+              "identity": "Tag:ExecRecording",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "AllowExternalParticipantGiveRequestControl": false,
+                "AllowAnonymousUsersToStartMeeting": false,
+                "AutoAdmittedUsers": "EveryoneInCompany",
+                "AllowPSTNUsersToBypassLobby": false,
+                "AllowCloudRecording": true
+              },
+              "assignments": [
+                "sg-executives@contoso.com"
+              ]
+            }
+          ]
+        },
+        "broadcast_policies": {
+          "surface": "broadcast_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Global",
+              "identity": "Global",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "BroadcastRecordingMode": "UserOverride"
+              },
+              "assignments": [
+                "All"
+              ]
+            },
+            {
+              "name": "AlwaysRecordEvents",
+              "identity": "Tag:AlwaysRecordEvents",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "BroadcastRecordingMode": "AlwaysEnabled"
+              },
+              "assignments": [
+                "sg-comms@contoso.com"
+              ]
+            }
+          ]
+        }
+      },
+      "collected_at": "2026-08-14T00:00:00Z"
+    },
+    "teams_federation": {
+      "adapter": "teams_federation",
+      "module": "MicrosoftTeams",
+      "collection": "teams_federation",
+      "surfaces": {
+        "federation": {
+          "surface": "federation",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "TenantFederation",
+              "identity": "Global",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "AllowFederatedUsers": true,
+                "AllowedDomains": [
+                  "partner.gov"
+                ],
+                "BlockedDomains": [],
+                "SharedSipAddressSpace": false
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "unmanaged_users": {
+          "surface": "unmanaged_users",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "national_cloud_limited": true,
+          "items": [
+            {
+              "name": "Global",
+              "identity": "Global",
+              "kind": "default",
+              "enabled": false,
+              "properties": {
+                "EnableTeamsConsumerAccess": false,
+                "EnableTeamsConsumerInbound": false
+              },
+              "assignments": [
+                "All"
+              ]
+            }
+          ]
+        }
+      },
+      "collected_at": "2026-08-14T00:00:00Z"
+    },
+    "teams_client": {
+      "adapter": "teams_client",
+      "module": "MicrosoftTeams",
+      "collection": "teams_client",
+      "surfaces": {
+        "email_integration": {
+          "surface": "email_integration",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "national_cloud_limited": true,
+          "items": [
+            {
+              "name": "ClientConfiguration",
+              "identity": "Global",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "AllowEmailIntoChannel": false,
+                "RestrictedSenderList": null
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "guest_access": {
+          "surface": "guest_access",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "national_cloud_limited": true,
+          "items": [
+            {
+              "name": "GuestAccess",
+              "identity": "Global",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "AllowGuestUser": false,
+                "AllowGuestCalling": false,
+                "AllowGuestChat": false
+              },
+              "assignments": []
+            }
+          ]
+        }
+      },
+      "collected_at": "2026-08-14T00:00:00Z"
+    },
+    "teams_apps": {
+      "adapter": "teams_apps",
+      "module": "MicrosoftTeams",
+      "collection": "teams_apps",
+      "surfaces": {
+        "app_permission_policies": {
+          "surface": "app_permission_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Global",
+              "identity": "Global",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "DefaultCatalogAppsType": "BlockedAppList",
+                "GlobalCatalogAppsType": "BlockedAppList",
+                "PrivateCatalogAppsType": "BlockedAppList"
+              },
+              "assignments": [
+                "All"
+              ]
+            },
+            {
+              "name": "PowerUsers",
+              "identity": "Tag:PowerUsers",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "DefaultCatalogAppsType": "AllowedAppList",
+                "GlobalCatalogAppsType": "BlockedAppList",
+                "PrivateCatalogAppsType": "BlockedAppList"
+              },
+              "assignments": [
+                "sg-power-users@contoso.com"
+              ]
+            }
+          ]
+        },
+        "app_settings_v2": {
+          "surface": "app_settings_v2",
+          "status": "unsupported",
+          "reason": "Get-M365UnifiedTenantSettings not present (v2 org-wide app settings)",
+          "raw_count": 0,
+          "national_cloud_limited": true,
+          "items": []
+        }
+      },
+      "collected_at": "2026-08-14T00:00:00Z"
+    },
+    "pp_tenant": {
+      "adapter": "pp_tenant",
+      "module": "Microsoft.PowerApps.Administration.PowerShell",
+      "collection": "power_platform_tenant",
+      "surfaces": {
+        "environment_creation": {
+          "surface": "environment_creation",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "EnvironmentCreation",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "disableEnvironmentCreationByNonAdminUsers": true,
+                "disableTrialEnvironmentCreationByNonAdminUsers": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "power_pages": {
+          "surface": "power_pages",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "PowerPagesCreation",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "disablePortalsCreationByNonAdminUsers": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "share_with_everyone": {
+          "surface": "share_with_everyone",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "ShareWithEveryone",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "disableShareWithEveryone": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "content_security_policy": {
+          "surface": "content_security_policy",
+          "status": "unsupported",
+          "reason": "portal-only: CSP is per-environment Privacy+Security (Dataverse); no tenant Get-* cmdlet",
+          "raw_count": 0,
+          "items": [],
+          "portal_only": true
+        }
+      }
+    },
+    "pp_environments": {
+      "adapter": "pp_environments",
+      "module": "Microsoft.PowerApps.Administration.PowerShell",
+      "collection": "power_platform_environments",
+      "surfaces": {
+        "environments": {
+          "surface": "environments",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 3,
+          "items": [
+            {
+              "name": "contoso (default)",
+              "identity": "env-default",
+              "kind": "default",
+              "enabled": true,
+              "properties": {
+                "IsDefault": true,
+                "EnvironmentType": "Default",
+                "HasDataverse": true,
+                "Location": "unitedstates"
+              },
+              "assignments": []
+            },
+            {
+              "name": "Prod Finance",
+              "identity": "env-prod-finance",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "IsDefault": false,
+                "EnvironmentType": "Production",
+                "HasDataverse": true,
+                "Location": "unitedstates"
+              },
+              "assignments": []
+            },
+            {
+              "name": "Sandbox No Dataverse",
+              "identity": "env-sandbox-nodv",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "IsDefault": false,
+                "EnvironmentType": "Sandbox",
+                "HasDataverse": false,
+                "Location": "europe"
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "pp_dlp": {
+      "adapter": "pp_dlp",
+      "module": "Microsoft.PowerApps.Administration.PowerShell",
+      "collection": "power_platform_dlp",
+      "surfaces": {
+        "dlp_policies": {
+          "surface": "dlp_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Default Environment Lockdown",
+              "identity": "dlp-default",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "EnvironmentType": "OnlyEnvironments",
+                "EnvironmentCount": 1,
+                "Environments": [
+                  "env-default"
+                ]
+              },
+              "assignments": [
+                "env-default"
+              ]
+            },
+            {
+              "name": "All Non-Default",
+              "identity": "dlp-all-others",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "EnvironmentType": "ExceptEnvironments",
+                "EnvironmentCount": 1,
+                "Environments": [
+                  "env-default"
+                ]
+              },
+              "assignments": [
+                "env-default"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "pp_isolation": {
+      "adapter": "pp_isolation",
+      "module": "Microsoft.PowerApps.Administration.PowerShell",
+      "collection": "power_platform_isolation",
+      "surfaces": {
+        "tenant_isolation": {
+          "surface": "tenant_isolation",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "TenantIsolation",
+              "identity": "tenant",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "isDisabled": false,
+                "isolationEnabled": true,
+                "allowedTenants": [
+                  "11111111-1111-1111-1111-111111111111"
+                ]
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "pbi_tenant": {
+      "adapter": "pbi_tenant",
+      "module": "MicrosoftPowerBIMgmt",
+      "collection": "power_bi_tenant",
+      "surfaces": {
+        "publish_to_web": {
+          "surface": "publish_to_web",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "PublishToWeb",
+              "identity": "PublishToWeb",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "enabled": false,
+                "settingName": "PublishToWeb"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "guest_access": {
+          "surface": "guest_access",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AllowAzureAdGuestUserAccess",
+              "identity": "AllowAzureAdGuestUserAccess",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "enabled": false,
+                "settingName": "AllowAzureAdGuestUserAccess"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "external_invite": {
+          "surface": "external_invite",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AllowExternalUsersToCollaborateThroughItemSharing",
+              "identity": "AllowExternalUsersToCollaborateThroughItemSharing",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "enabled": false,
+                "settingName": "AllowExternalUsersToCollaborateThroughItemSharing"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "service_principal_api": {
+          "surface": "service_principal_api",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "servicePrincipalsCanCallFabricPublicAPIs",
+              "identity": "servicePrincipalsCanCallFabricPublicAPIs",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "enabled": true,
+                "settingName": "servicePrincipalsCanCallFabricPublicAPIs",
+                "securityGroups": [
+                  "sg-pbi-sp"
+                ]
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "service_principal_profiles": {
+          "surface": "service_principal_profiles",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AllowServicePrincipalsCreateAndUseProfiles",
+              "identity": "AllowServicePrincipalsCreateAndUseProfiles",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "enabled": false,
+                "settingName": "AllowServicePrincipalsCreateAndUseProfiles"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "resource_key_auth": {
+          "surface": "resource_key_auth",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "BlockResourceKeyAuthentication",
+              "identity": "BlockResourceKeyAuthentication",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "enabled": true,
+                "settingName": "BlockResourceKeyAuthentication"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "python_r_visuals": {
+          "surface": "python_r_visuals",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "InteractWithRVisuals",
+              "identity": "InteractWithRVisuals",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "enabled": false,
+                "settingName": "InteractWithRVisuals"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "sensitivity_labels": {
+          "surface": "sensitivity_labels",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "allowUsersToApplySensitivityLabelsForContent",
+              "identity": "allowUsersToApplySensitivityLabelsForContent",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "enabled": true,
+                "settingName": "allowUsersToApplySensitivityLabelsForContent"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "export_data": {
+          "surface": "export_data",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "ExportToExcel",
+              "identity": "ExportToExcel",
+              "kind": "effective",
+              "enabled": false,
+              "properties": {
+                "enabled": false,
+                "settingName": "ExportToExcel"
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    },
+    "purview_governance": {
+      "adapter": "purview_governance",
+      "module": "ExchangeOnlineManagement",
+      "collection": "purview_governance",
+      "surfaces": {
+        "dlp_policies": {
+          "surface": "dlp_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "U.S. Financial Data",
+              "identity": "dlp-fin",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Mode": "Enable",
+                "Enabled": true,
+                "Workload": "Exchange, SharePoint, OneDrive, Teams",
+                "DistributionStatus": "Success"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "dlp_rules": {
+          "surface": "dlp_rules",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Block external finance",
+              "identity": "rule-fin",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Disabled": false,
+                "Mode": "Enforce",
+                "Policy": "U.S. Financial Data",
+                "BlockAccess": true,
+                "NotifyUser": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "sensitivity_labels": {
+          "surface": "sensitivity_labels",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 2,
+          "items": [
+            {
+              "name": "Confidential",
+              "identity": "label-conf",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "DisplayName": "Confidential",
+                "Priority": 2,
+                "Disabled": false
+              },
+              "assignments": []
+            },
+            {
+              "name": "Public",
+              "identity": "label-pub",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "DisplayName": "Public",
+                "Priority": 0,
+                "Disabled": false
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "label_policies": {
+          "surface": "label_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Global labels",
+              "identity": "lp-global",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Enabled": true,
+                "ExchangeLocation": "All",
+                "ModernGroupLocation": "All",
+                "Settings": [
+                  "DefaultLabelId:label-conf",
+                  "Mandatory:true"
+                ]
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "retention_policies": {
+          "surface": "retention_policies",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "7-year mailbox",
+              "identity": "ret-7y",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Enabled": true,
+                "Mode": "Enable",
+                "Workload": "Exchange",
+                "RestrictiveRetention": true
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "retention_rules": {
+          "surface": "retention_rules",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "Keep 2555 days",
+              "identity": "retrule-7y",
+              "kind": "custom",
+              "enabled": true,
+              "properties": {
+                "Disabled": false,
+                "RetentionDuration": 2555,
+                "RetentionComplianceAction": "Keep",
+                "Policy": "7-year mailbox"
+              },
+              "assignments": []
+            }
+          ]
+        },
+        "audit_config": {
+          "surface": "audit_config",
+          "status": "ok",
+          "reason": "",
+          "raw_count": 1,
+          "items": [
+            {
+              "name": "AdminAuditLogConfig",
+              "identity": "AdminAuditLogConfig",
+              "kind": "effective",
+              "enabled": true,
+              "properties": {
+                "UnifiedAuditLogIngestionEnabled": true,
+                "AdminAuditLogEnabled": true
+              },
+              "assignments": []
+            }
+          ]
+        }
+      }
+    }
+  },
+  "pbi": {
+    "capacity_count": 1,
+    "capacities": [
+      {
+        "id": "pbi-cap-1",
+        "display_name": "Golden Premium P1",
+        "sku": "P1",
+        "state": "Active",
+        "admin_count": 1,
+        "admins": [
+          "capacity-admin@goldenco.example"
+        ]
+      }
+    ],
+    "tenant_setting_count": 42,
+    "total_admin_count": 1,
+    "source": "powerbi.admin.rest",
+    "direct": true,
+    "proxy": false
+  },
+  "dns": {
+    "domains": [
+      "goldenco.com"
+    ],
+    "records": {
+      "goldenco.com": {
+        "domain": "goldenco.com",
+        "spf": {
+          "present": true,
+          "hard_fail": true,
+          "raw": [
+            "v=spf1 include:spf.protection.outlook.com -all"
+          ]
+        },
+        "dmarc": {
+          "present": true,
+          "policy": "reject",
+          "rua": [
+            "reports@goldenco.com"
+          ],
+          "ruf": [
+            "reports@goldenco.com"
+          ],
+          "raw": [
+            "v=DMARC1; p=reject; rua=mailto:reports@goldenco.com"
+          ]
+        },
+        "error": null
+      }
+    }
+  }
+}

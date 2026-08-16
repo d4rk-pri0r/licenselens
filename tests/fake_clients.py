@@ -300,3 +300,179 @@ class FakeMdeClient:
 
     def __exit__(self, *args: object) -> None:
         pass
+
+
+class FixturePsRunner:
+    """``ProcessRunner`` that replays the PowerShell bridge from a fixture.
+
+    Reads the adapter name out of the stdin request JSON and returns the
+    matching fixture payload as a successful bridge response, so the real
+    ``map_process_result`` → ``normalize_adapter_payload`` path runs unchanged.
+    """
+
+    def __init__(self, payloads: dict[str, Any]) -> None:
+        self._payloads = payloads
+        self.calls: list[str] = []
+
+    def run(
+        self,
+        argv: list[str],
+        *,
+        stdin: bytes,
+        timeout_seconds: float,
+        max_stdout_bytes: int,
+        max_stderr_bytes: int,
+        cwd: Any,
+        env: Any,
+    ) -> Any:
+        import json as _json
+
+        from licenselens.collectors.powershell_process import BridgeProcessResult
+
+        request = _json.loads(stdin.decode("utf-8"))
+        adapter = str(request.get("adapter") or "")
+        self.calls.append(adapter)
+        data = self._payloads.get(adapter)
+        body: dict[str, Any] = {
+            "protocol_version": "1.0",
+            "ok": data is not None,
+            "adapter": adapter,
+            "module_version": "1.0.0",
+            "cloud": "public",
+            "data": data,
+            "error": (
+                None
+                if data is not None
+                else {"code": "module_missing", "message": f"no fixture for {adapter!r}"}
+            ),
+        }
+        raw = _json.dumps(body, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        return BridgeProcessResult(
+            exit_code=0,
+            stdout=raw,
+            stderr=b"",
+            timed_out=False,
+            stdout_truncated=False,
+            stderr_truncated=False,
+        )
+
+
+class ReplayClients:
+    """Fake clients + seam payloads built from a golden-tenant fixture JSON."""
+
+    def __init__(self, payload: dict[str, Any]) -> None:
+        self.payload = payload
+        self.graph = _graph_client_from_fixture(payload, allow_preview=False)
+        self.graph_preview = _graph_client_from_fixture(payload, allow_preview=True)
+        self.arm = _arm_client_from_fixture(payload)
+        self.mde = _mde_client_from_fixture(payload)
+        self.ps_runner = FixturePsRunner(dict(payload.get("powershell") or {}))
+        self.dns_evidence = dict(payload.get("dns") or {})
+        self.pbi_bundle = dict(payload.get("pbi") or {})
+
+
+def _graph_client_from_fixture(payload: dict[str, Any], *, allow_preview: bool) -> FakeGraphClient:
+    fake = FakeGraphClient(allow_preview=allow_preview)
+    graph = payload.get("graph") or {}
+    for method in ("list", "get", "post"):
+        routes = graph.get(method) or {}
+        for path, body in routes.items():
+            if method == "list":
+                fake.register_list(path, ok(body))
+            elif method == "get":
+                fake.register_get(path, ok(body))
+            else:
+                fake.register_post(path, ok(body))
+    return fake
+
+
+def _arm_client_from_fixture(payload: dict[str, Any]) -> FakeArmClient:
+    fake = FakeArmClient()
+    for path, body in (payload.get("arm") or {}).items():
+        fake.register_get(path, ok(body))
+    return fake
+
+
+def _mde_client_from_fixture(payload: dict[str, Any]) -> FakeMdeClient:
+    fake = FakeMdeClient()
+    for path, body in (payload.get("mde") or {}).items():
+        fake.register_get(path, ok(body))
+    return fake
+
+
+def build_replay_clients(payload: dict[str, Any]) -> ReplayClients:
+    """Build the fake client bundle for a golden-tenant fixture payload."""
+    return ReplayClients(payload)
+
+
+def wire_golden_seams(monkeypatch: Any, replay: ReplayClients) -> None:
+    """Monkeypatch every non-Graph live-collection seam to the replay bundle.
+
+    Graph collectors flow through ``ctx.client`` (the ``ReplayClients.graph``
+    fake, injected by patching ``engine.runner.GraphClient``). ARM, MDE,
+    PowerShell-bridge, DNS, and Power BI each have their own module-level seam,
+    patched here so the *real* collector code runs against fixture data.
+    """
+    from pathlib import Path
+
+    from licenselens.collectors import mde as _mde
+    from licenselens.collectors import mde_health as _mde_health
+
+    # Graph: the live branch reads the class off this module at call time.
+    monkeypatch.setattr(
+        "licenselens.engine.runner.GraphClient",
+        lambda _auth, **_kw: replay.graph,
+    )
+    # Preview (beta) client for Insider Risk Management.
+    monkeypatch.setattr(
+        "licenselens.collectors.runtime_collect_endpoint._preview_client",
+        lambda _ctx, _base: replay.graph_preview,
+    )
+    # ARM: sentinel bundle + extended + defender pricings each bind ``ArmClient``.
+    monkeypatch.setattr(
+        "licenselens.collectors.sentinel.ArmClient",
+        lambda _auth, **_kw: replay.arm,
+    )
+    monkeypatch.setattr(
+        "licenselens.collectors.sentinel_extended.ArmClient",
+        lambda _auth, **_kw: replay.arm,
+    )
+    monkeypatch.setattr(
+        "licenselens.collectors.arm.ArmClient",
+        lambda _auth, **_kw: replay.arm,
+    )
+    # MDE: wrap the real collectors with a FakeMdeClient (MdeClient.__init__
+    # requires a credential, which the fake scan does not provide).
+    monkeypatch.setattr(
+        "licenselens.collectors.runtime.collect_mde_machine_summary",
+        lambda _auth: _mde.collect_mde_machine_summary(_auth, client=replay.mde),
+    )
+    monkeypatch.setattr(
+        "licenselens.collectors.runtime_collect_endpoint.collect_mde_health_summary",
+        lambda _auth: _mde_health.collect_mde_health_summary(_auth, client=replay.mde),
+    )
+    # PowerShell bridge: replay responses from the fixture without a real pwsh.
+    monkeypatch.setattr(
+        "licenselens.collectors.powershell.BoundedProcessRunner",
+        lambda: replay.ps_runner,
+    )
+    monkeypatch.setattr(
+        "licenselens.collectors.powershell.find_powershell_executable",
+        lambda: Path("/usr/bin/pwsh"),
+    )
+    # DNS: serve checked-in evidence; the live _domain_state path is broken
+    # (SpfState is a slots dataclass, so `spf.__dict__` fails) — out of scope here.
+    monkeypatch.setattr(
+        "licenselens.collectors.runtime_collect_mail.collect_dns_evidence",
+        lambda _domains, _resolver: replay.dns_evidence,
+    )
+    # Power BI admin REST is a separate resource; serve the fixture bundle.
+    monkeypatch.setattr(
+        "licenselens.collectors.runtime_collect_endpoint.collect_pbi_capacity_bundle",
+        lambda _auth: replay.pbi_bundle,
+    )
+    # Sentinel auto-discovery stays off unless explicitly requested.
+    monkeypatch.setattr(
+        "licenselens.collectors.workspace_discover.discover_sentinel_workspaces",
+        lambda _auth: [],
+    )
