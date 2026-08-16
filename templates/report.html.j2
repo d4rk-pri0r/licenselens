@@ -1121,7 +1121,21 @@ body.revealed .reveal-target.is-revealed {
       }
 
       function reveal() {
-        if (reduceMotion) return;
+        if (reduceMotion) {
+          // §11: resolve to the instant final state — no animation, no
+          // neutral hold. `body.instant` lets the foundation's status-color
+          // rule color the constellation immediately, and the posture digits
+          // are pinned to their server-rendered final value (the radial gauge
+          // keeps its server-rendered stroke-dashoffset; this renderer has no
+          // JS that resets it).
+          document.body.classList.add('instant');
+          var countUpEl = document.querySelector('[data-count-up]');
+          if (countUpEl) {
+            var finalValue = parseInt(countUpEl.getAttribute('data-count-up'), 10);
+            if (isFinite(finalValue)) countUpEl.textContent = finalValue + '% realized';
+          }
+          return;
+        }
         document.body.classList.add('revealed');
         startCountUp();
       }

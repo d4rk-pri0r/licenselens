@@ -17,6 +17,7 @@ Two groups, deliberately partitioned:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -71,6 +72,36 @@ _PRINT_COLORS_JS = """el => {
         return [d[0], d[1], d[2]];
     };
     return { fg: pixel(s.color), bg: pixel(s.backgroundColor) };
+}"""
+
+# Constellation state under the current media emulation. Token colors are read
+# through probe elements so `#E5695F` custom-property values and computed
+# `rgb(...)` colors share one serialization and can be compared directly;
+# `digitsExpected` comes from server-rendered attributes, never a hardcoded figure.
+_CONSTELLATION_STATE_JS = """() => {
+    const probe = (prop) => {
+        const el = document.createElement('span');
+        el.style.color = 'var(' + prop + ')';
+        document.body.appendChild(el);
+        const color = getComputedStyle(el).color;
+        el.remove();
+        return color;
+    };
+    const node = document.querySelector('.constellation-point.status-gap');
+    const countUp = document.querySelector('[data-count-up]');
+    const figure = document.querySelector('.posture-figure[data-realized]');
+    let digitsExpected = null;
+    if (countUp) digitsExpected = countUp.getAttribute('data-count-up') + '% realized';
+    else if (figure) digitsExpected = figure.getAttribute('data-realized');
+    return {
+        nodeColor: node ? getComputedStyle(node).color : null,
+        actionColor: probe('--state-action'),
+        neutralColor: probe('--state-neutral'),
+        instant: document.body.classList.contains('instant'),
+        revealed: document.body.classList.contains('revealed'),
+        digitsText: (document.querySelector('.posture-digits') || {}).textContent || null,
+        digitsExpected,
+    };
 }"""
 
 
@@ -284,3 +315,117 @@ def test_bundle_entry_offline_no_network(page: Page, tmp_path: Path) -> None:
     assert page.locator(".finding").count() == 6, "bundle did not render all findings"
     stylesheets = page.evaluate("() => document.styleSheets.length")
     assert stylesheets >= 1, "external stylesheet was not applied"
+
+
+# ---------------------------------------------------------------------------
+# GROUP C — v2 design locks: constellation status colors under reduced motion
+# and with JavaScript disabled, for BOTH renderers (single-file and bundle).
+# ---------------------------------------------------------------------------
+
+_RGB_TRIPLE = re.compile(r"rgb\((\d+),\s*(\d+),\s*(\d+)\)")
+
+
+def _rgb_tuple(value: str) -> tuple[int, int, int]:
+    if value.startswith("#") and len(value) == 7:
+        return (int(value[1:3], 16), int(value[3:5], 16), int(value[5:7], 16))
+    match = _RGB_TRIPLE.fullmatch(value)
+    if match:
+        return tuple(int(group) for group in match.groups())
+    raise ValueError(f"unexpected color serialization: {value!r}")
+
+
+def _renderer_uri(renderer: str, tmp_path: Path) -> str:
+    if renderer == "single":
+        return write_html_report(browser_safe_report(), tmp_path / "report.html").as_uri()
+    return build_report_bundle(browser_safe_report(), tmp_path / "bundle").entry_path.as_uri()
+
+
+def _cdp_computed_props(page: Page, selector: str) -> dict[str, str]:
+    """Computed style via DevTools, which keeps working with page JavaScript off."""
+    session = page.context.new_cdp_session(page)
+    session.send("DOM.enable")
+    session.send("CSS.enable")
+    document = session.send("DOM.getDocument", {"depth": -1, "pierce": True})
+    node = session.send(
+        "DOM.querySelector", {"nodeId": document["root"]["nodeId"], "selector": selector}
+    )
+    assert node.get("nodeId"), f"{selector!r} not found in JS-disabled page"
+    styles = session.send("CSS.getComputedStyleForNode", {"nodeId": node["nodeId"]})
+    return {prop["name"]: prop["value"] for prop in styles["computedStyle"]}
+
+
+def _cdp_legend_chip_colors(page: Page) -> list[str]:
+    session = page.context.new_cdp_session(page)
+    session.send("DOM.enable")
+    session.send("CSS.enable")
+    document = session.send("DOM.getDocument", {"depth": -1, "pierce": True})
+    chips = session.send(
+        "DOM.querySelectorAll",
+        {"nodeId": document["root"]["nodeId"], "selector": ".constellation-legend-chip"},
+    )
+    colors: list[str] = []
+    for node_id in chips["nodeIds"]:
+        styles = session.send("CSS.getComputedStyleForNode", {"nodeId": node_id})
+        color = next(
+            (prop["value"] for prop in styles["computedStyle"] if prop["name"] == "color"),
+            None,
+        )
+        if color:
+            colors.append(color)
+    return colors
+
+
+def _assert_instant_resolve(state: dict[str, object]) -> None:
+    assert state["instant"] is True, "body.instant was not added under reduced motion"
+    assert state["revealed"] is False, "body.revealed must not be set under reduced motion"
+    assert state["nodeColor"] == state["actionColor"], (
+        f"status-gap node did not resolve to the action color: {state['nodeColor']!r}"
+    )
+    assert state["nodeColor"] != state["neutralColor"], (
+        f"status-gap node stayed at the neutral token: {state['nodeColor']!r}"
+    )
+    assert state["digitsText"] == state["digitsExpected"], (
+        "posture digits were not pinned to their server-rendered final value: "
+        f"{state['digitsText']!r} != {state['digitsExpected']!r}"
+    )
+
+
+def test_single_file_reduced_motion_instant_resolve(page: Page, report_uri: str) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(report_uri)
+    page.wait_for_load_state("load")
+    _assert_instant_resolve(page.evaluate(_CONSTELLATION_STATE_JS))
+
+
+def test_bundle_reduced_motion_instant_resolve(page: Page, tmp_path: Path) -> None:
+    page.emulate_media(reduced_motion="reduce")
+    page.goto(_renderer_uri("bundle", tmp_path))
+    page.wait_for_load_state("load")
+    _assert_instant_resolve(page.evaluate(_CONSTELLATION_STATE_JS))
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_js_disabled_constellation_status_colors(
+    page: Page, tmp_path: Path, renderer: str
+) -> None:
+    uri = _renderer_uri(renderer, tmp_path)
+    context = page.context.browser.new_context(java_script_enabled=False)
+    no_js = context.new_page()
+    no_js.goto(uri)
+    no_js.wait_for_load_state("load")
+
+    node = _cdp_computed_props(no_js, ".constellation-point.status-gap")
+    assert _rgb_tuple(node["color"]) == _rgb_tuple(node["--state-action"]), (
+        f"{renderer}: status-gap node is not the action color without JS: {node['color']!r}"
+    )
+    assert _rgb_tuple(node["color"]) != _rgb_tuple(node["--state-neutral"]), (
+        f"{renderer}: status-gap node fell back to the neutral token without JS"
+    )
+
+    chip_colors = _cdp_legend_chip_colors(no_js)
+    distinct = {_rgb_tuple(color) for color in chip_colors}
+    assert len(distinct) >= 2, (
+        f"{renderer}: legend chips do not carry distinct status colors without JS: "
+        f"{chip_colors}"
+    )
+    context.close()
