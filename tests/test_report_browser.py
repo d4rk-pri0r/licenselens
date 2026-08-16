@@ -4,7 +4,7 @@ The report is a single self-contained offline file opened via ``file://``, so th
 tests render the real artifact through ``write_html_report`` and navigate with
 ``Path.as_uri()`` — never a dev server, never an external request.
 
-Two groups, deliberately partitioned:
+Groups, deliberately partitioned:
 
 * **ESTABLISHED INVARIANTS — must PASS today**: regression guards locking the
   current offline/disclosure/section/overflow behavior. This includes the former
@@ -102,6 +102,42 @@ _CONSTELLATION_STATE_JS = """() => {
         digitsText: (document.querySelector('.posture-digits') || {}).textContent || null,
         digitsExpected,
     };
+}"""
+
+# Owned SKUs table under a narrow viewport. The wrapper must become the overflow
+# container (scrollWidth > clientWidth), the mono part number must occupy a single
+# line box, and the page itself must never grow wider than the viewport.
+_SKU_TABLE_STATE_JS = """() => {
+    const wrapper = document.querySelector('.sku-strip .table-scroll');
+    const code = wrapper.querySelector('tbody td code');
+    const cell = code.parentElement;
+    const cs = getComputedStyle(cell);
+    return {
+        scrollWidth: wrapper.scrollWidth,
+        clientWidth: wrapper.clientWidth,
+        codeRects: code.getClientRects().length,
+        cellHeight: cell.clientHeight,
+        cellLineHeight: parseFloat(cs.lineHeight),
+        cellPadding: parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom),
+        cellBorder: parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth),
+        docScrollWidth: document.documentElement.scrollWidth,
+        innerWidth: window.innerWidth,
+    };
+}"""
+
+# License-count cells: hidden past the wrapper edge before scrolling, fully inside
+# it after scrolling to the end (scrollLeft = scrollWidth).
+_SKU_TABLE_END_JS = """() => {
+    const wrapper = document.querySelector('.sku-strip .table-scroll');
+    const cells = [...wrapper.querySelectorAll('td.num')];
+    const wRect = wrapper.getBoundingClientRect();
+    const before = cells.map(el => el.getBoundingClientRect().right - wRect.right);
+    wrapper.scrollLeft = wrapper.scrollWidth;
+    const after = cells.map(el => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left - wRect.left, right: wRect.right - r.right };
+    });
+    return { beforeOverflow: Math.max(...before), after };
 }"""
 
 
@@ -429,3 +465,45 @@ def test_js_disabled_constellation_status_colors(
         f"{chip_colors}"
     )
     context.close()
+
+
+# ---------------------------------------------------------------------------
+# GROUP D — v2 mobile table lock: the Owned SKUs table scrolls inside its
+# .table-scroll wrapper at a 375px viewport instead of clipping at the page
+# edge; mono part numbers stay on one line and the license-count column is
+# reachable by scrolling, never by growing the page.
+# ---------------------------------------------------------------------------
+
+
+def test_owned_skus_table_scrolls_inside_wrapper(page: Page, report_uri: str) -> None:
+    page.set_viewport_size({"width": 375, "height": 812})
+    page.goto(report_uri)
+    page.wait_for_load_state("load")
+    _open_all_disclosures(page)
+
+    state = page.evaluate(_SKU_TABLE_STATE_JS)
+    assert state["scrollWidth"] > state["clientWidth"], (
+        "SKU table does not scroll inside its wrapper: "
+        f"scrollWidth={state['scrollWidth']} <= clientWidth={state['clientWidth']}"
+    )
+    assert state["codeRects"] == 1, (
+        f"part number wrapped in the scrollable table: {state['codeRects']} line boxes"
+    )
+    single_line = state["cellLineHeight"] + state["cellPadding"] + state["cellBorder"]
+    assert state["cellHeight"] <= single_line + 1, (
+        "part number cell is taller than a single line: "
+        f"{state['cellHeight']}px > {single_line}px (line + padding + border)"
+    )
+    assert state["docScrollWidth"] <= state["innerWidth"], (
+        "SKU table pushed the page wider than the viewport: "
+        f"scrollWidth={state['docScrollWidth']} > innerWidth={state['innerWidth']}"
+    )
+
+    end = page.evaluate(_SKU_TABLE_END_JS)
+    assert end["beforeOverflow"] > 0, (
+        "license-count cells were already visible before scrolling — table never overflowed"
+    )
+    for cell in end["after"]:
+        assert cell["left"] >= -1 and cell["right"] >= -1, (
+            f"license-count cell not fully visible after scrollLeft=scrollWidth: {cell}"
+        )

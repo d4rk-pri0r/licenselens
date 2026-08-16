@@ -961,7 +961,11 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 /* --------------------------------------------------------------------------
    Technical tables — radius 0, mono cells, scrollable at 640px.
    -------------------------------------------------------------------------- */
-.table-scroll { overflow-x: auto; }
+.table-scroll {
+  overflow-x: auto;
+  /* §4 visible scroll affordance — same language as the constellation. */
+  scrollbar-color: var(--surface-4) transparent;
+}
 table { border-collapse: collapse; width: 100%; }
 th, td {
   text-align: start;
@@ -1373,6 +1377,17 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   }
   .explore-row__meta { grid-column: 1 / -1; }
   .explore-row__summary { grid-column: 1 / -1; }
+
+  /* Tables grow to their content width and scroll inside the wrapper
+     instead of squeezing (§4); mono tokens (part numbers, check IDs)
+     never break mid-token — the wrapper is the overflow container. */
+  .table-scroll { scrollbar-width: thin; }
+  .table-scroll table { min-width: max-content; }
+  .table-scroll td code {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
 }
 
 /* --------------------------------------------------------------------------
