@@ -7,6 +7,7 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 
 from licenselens.catalog.expected_states import expected_state_map
+from licenselens.config_models import RedactionSettings
 from licenselens.models import (
     EXPOSURE_PLAIN_LABELS,
     TAGLINE,
@@ -14,6 +15,7 @@ from licenselens.models import (
 )
 from licenselens.paths import templates_dir
 from licenselens.report.icons import workload_svg_map
+from licenselens.report.redaction import derive_redaction_targets, redact_text
 from licenselens.report.viewmodel import build_constellation, build_opening, build_sections
 
 
@@ -56,10 +58,21 @@ def build_report_context(
     }
 
 
-def write_html_report(result: ScanResult, path: Path) -> Path:
+def write_html_report(
+    result: ScanResult,
+    path: Path,
+    *,
+    redaction: RedactionSettings | None = None,
+) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     context = build_report_context(result, expected_state_map())
     context["workload_svg_map"] = workload_svg_map()
     html = report_environment().get_template("report.html.j2").render(**context)
+    if redaction is not None:
+        html = redact_text(
+            html,
+            targets=derive_redaction_targets(result),
+            settings=redaction,
+        )
     path.write_text(html, encoding="utf-8")
     return path

@@ -67,6 +67,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   one animated opening, then calm; the report renders fully server-side and is
   readable with JavaScript disabled; `prefers-reduced-motion` renders the
   instant final state with zero information loss.
+- **Report redaction** — the profile `redaction` settings (schema default
+  `enabled: true`) now actually apply: the tenant id, user-principal-name-like
+  strings, and the tenant's own domains are replaced with the configured
+  `replacement` token across every report surface — HTML, JSON, Markdown, and
+  the report ZIP's embedded data assets. New `--redact`/`--no-redact` flags on
+  `scan`/`demo`/`quickstart` force redaction on or opt out per run (default:
+  the profile's settings, which default to on). `redact_domains` stays opt-in
+  on built-in profiles (the `email` profile enables it).
 
 ### Changed
 - `SECURITY.md` / `docs/security.md` supported-versions table now reflects the

@@ -4,10 +4,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from licenselens.config_models import RedactionSettings
 from licenselens.models import STATUS_PLAIN_LABELS, ScanResult
+from licenselens.report.redaction import derive_redaction_targets, redact_text
 
 
-def write_markdown_report(result: ScanResult, path: Path) -> Path:
+def write_markdown_report(
+    result: ScanResult,
+    path: Path,
+    *,
+    redaction: RedactionSettings | None = None,
+) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     counts = result.counts_by_status
     lines = [
@@ -134,5 +141,12 @@ def write_markdown_report(result: ScanResult, path: Path) -> Path:
             f"({sku.consumed_units or 0}/{sku.prepaid_units or '—'}): {plans}"
         )
 
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    text = "\n".join(lines) + "\n"
+    if redaction is not None:
+        text = redact_text(
+            text,
+            targets=derive_redaction_targets(result),
+            settings=redaction,
+        )
+    path.write_text(text, encoding="utf-8")
     return path

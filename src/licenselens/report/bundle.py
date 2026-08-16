@@ -21,6 +21,7 @@ from pathlib import Path, PurePosixPath
 from typing import Final
 
 from licenselens.catalog.expected_states import expected_state_map
+from licenselens.config_models import RedactionSettings
 from licenselens.models import ScanResult
 from licenselens.paths import templates_dir
 from licenselens.report.html import build_report_context, report_environment
@@ -32,6 +33,11 @@ from licenselens.report.manifest import (
     ReportBundle,
     escape_data_js,
     write_report_bundle,
+)
+from licenselens.report.redaction import (
+    RedactionTargets,
+    derive_redaction_targets,
+    redact_text,
 )
 from licenselens.report.viewmodel import build_constellation, build_sections
 
@@ -53,14 +59,26 @@ class ReportBundleError(Exception):
         return self.diagnostic
 
 
-def build_report_bundle(result: ScanResult, output_dir: Path) -> ReportBundle:
-    """Render and write a complete deterministic offline report bundle."""
+def build_report_bundle(
+    result: ScanResult,
+    output_dir: Path,
+    *,
+    redaction: RedactionSettings | None = None,
+) -> ReportBundle:
+    """Render and write a complete deterministic offline report bundle.
+
+    When ``redaction`` is given, both the entry HTML and the embedded
+    ``DATA_JS``/``VIEWMODEL_JS`` assets are passed through the shared
+    post-render transform, so a redacted bundle leaks no tenant id, UPN, or
+    tenant domain.
+    """
     css = _read_asset(f"report_app/v{REPORT_APP_VERSION}/{_CSS_LOGICAL}")
     js = _read_asset(f"report_app/v{REPORT_APP_VERSION}/{_JS_LOGICAL}")
     image_files = icon_bundle_files()
     icon_urls = workload_icon_urls(image_files)
     expected_by_check_id = expected_state_map()
-    data_js = _serialize_data_js(result, icon_urls, expected_by_check_id)
+    targets = derive_redaction_targets(result) if redaction is not None else None
+    data_js = _serialize_data_js(result, icon_urls, expected_by_check_id, redaction, targets)
 
     css_name = _hashed_asset_name(_CSS_LOGICAL, css)
     js_name = _hashed_asset_name(_JS_LOGICAL, js)
@@ -75,6 +93,8 @@ def build_report_bundle(result: ScanResult, output_dir: Path) -> ReportBundle:
         workload_icon_urls=icon_urls,
     )
     entry_html = report_environment().get_template("report_app/entry.html.j2").render(**context)
+    if redaction is not None:
+        entry_html = redact_text(entry_html, targets=targets, settings=redaction)
 
     return write_report_bundle(
         output_dir,
@@ -159,6 +179,8 @@ def _serialize_data_js(
     result: ScanResult,
     icon_urls: dict[str, str],
     expected_by_check_id: dict[str, str],
+    redaction: RedactionSettings | None = None,
+    targets: RedactionTargets | None = None,
 ) -> bytes:
     payload = json.dumps(
         result.model_dump(mode="json"),
@@ -177,11 +199,14 @@ def _serialize_data_js(
         sort_keys=True,
         separators=(",", ":"),
     )
-    return (
+    text = (
         f"{ICONS_JS_GLOBAL} = {escape_data_js(icons)};\n"
         f"{DATA_JS_GLOBAL} = {escape_data_js(payload)};\n"
         f"{VIEWMODEL_JS_GLOBAL} = {escape_data_js(viewmodel)};\n"
-    ).encode()
+    )
+    if redaction is not None:
+        text = redact_text(text, targets=targets, settings=redaction)
+    return text.encode()
 
 
 def _hashed_asset_name(logical_name: str, content: bytes) -> str:

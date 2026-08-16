@@ -15,6 +15,7 @@ from licenselens.config_models import (
     BackendPreferences,
     ConfigSchema,
     CustomRule,
+    RedactionSettings,
 )
 from licenselens.engine.profiles import ProfileReferenceError, ResolvedProfile, compose_profile
 from licenselens.models import ScanResult
@@ -122,9 +123,14 @@ def parse_backend_preferences(backends: list[str]) -> list[BackendPreference]:
     return parsed
 
 
-def write_report_archive(*, output_dir: Path, result: ScanResult) -> Path:
+def write_report_archive(
+    *,
+    output_dir: Path,
+    result: ScanResult,
+    redaction: RedactionSettings | None = None,
+) -> Path:
     try:
-        return build_report_bundle(result, output_dir).archive_path
+        return build_report_bundle(result, output_dir, redaction=redaction).archive_path
     except ReportBundleError as exc:
         raise ScanConfigError(str(exc)) from exc
 

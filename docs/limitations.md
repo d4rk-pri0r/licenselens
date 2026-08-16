@@ -40,9 +40,10 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 
 ## Reports and redaction
 
-- JSON and ZIP report artifacts contain **tenant identifiers** and finding **evidence samples**. Treat them as sensitive; do not commit live reports.
-- Profile `RedactionSettings` flags (`redact_tenant_ids`, `redact_user_principals`, `redact_domains`) are accepted on the profile schema but are **not applied** to HTML/JSON/MD reports today.
-- The only live UPN redaction is dormant-privileged local-part masking in identity evidence.
+- Reports are **redacted by default**: the resolved profile's `redaction` block (schema default `enabled: true`) strips the tenant id, user-principal-name-like strings, and the tenant's own domains from HTML, JSON, Markdown, and the report ZIP's embedded data, using the configured `replacement` token. `--no-redact` opts out per run; `--redact` forces it back on.
+- Redacted artifacts can still contain other sensitive material — finding evidence samples, object/group ids that are not the tenant id, and third-party host names — so still treat JSON/ZIP artifacts as sensitive; do not commit live reports.
+- `redact_domains` defaults to **false** on built-in profiles (the `email` profile enables it); turn it on via a profile overlay (`redaction: {redact_domains: true}`).
+- The dormant-privileged evaluator additionally masks UPN local parts inside its own evidence samples, independent of the report-level flags.
 
 ## PowerShell bridge cloud
 

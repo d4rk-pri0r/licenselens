@@ -101,16 +101,35 @@ than flagging them as a gap.
 
 ## Redaction
 
-`RedactionSettings` on the profile schema accepts `redact_tenant_ids`,
-`redact_user_principals`, and `redact_domains` (plus `enabled` and
-`replacement`). Those fields are validated and merged into the resolved profile,
-but they are **NOT applied** to HTML, JSON, or Markdown reports today.
+`RedactionSettings` on the profile schema accepts `enabled`,
+`redact_tenant_ids`, `redact_user_principals`, and `redact_domains` plus a
+`replacement` token (default `[redacted]`). The schema default is
+`enabled: true` with tenant-id and user-principal redaction on, and every
+built-in profile ships with those defaults (`redact_domains` is off except on
+the `email` profile).
 
-The only live UPN redaction in report evidence is the dormant-privileged
-evaluator's local-part masking (`user@contoso.com` → `u***@contoso.com` in
-dormant samples). Do not assume tenant IDs, domains, or other principals are
-stripped from reports when profile redaction flags are true. Treat JSON/ZIP
-artifacts as sensitive tenant data.
+The resolved profile's redaction block is applied at report-writing time to
+every output surface — HTML, JSON, Markdown, and the report ZIP's embedded
+`DATA_JS`/`VIEWMODEL_JS` — replacing the tenant id, any UPN-like string, and
+the tenant's own domains (harvested from the scan result) with the
+`replacement` token. Each class is gated by its flag under the master
+`enabled` switch, so a profile that keeps `redact_domains: false` still strips
+tenant ids and user principal names while leaving third-party URLs and host
+names intact.
+
+```yaml
+redaction:
+  enabled: true
+  redact_tenant_ids: true
+  redact_user_principals: true
+  redact_domains: true   # opt-in on built-in profiles
+  replacement: "[redacted]"
+```
+
+`--no-redact` opts out for a single run; `--redact` re-enables redaction when a
+profile turned it off. Redacted artifacts can still carry other sensitive
+material (evidence samples, non-tenant object ids, third-party host names), so
+treat JSON/ZIP artifacts as sensitive tenant data regardless.
 
 See [Permissions](permissions.md) for what each collector needs, and
 [Architecture](architecture.md) for how profiles flow through the engine.

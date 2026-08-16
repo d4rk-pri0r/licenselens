@@ -22,6 +22,7 @@ from licenselens.cli_scan_config import (
 )
 from licenselens.collectors.arm import build_workspace_resource_id
 from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
+from licenselens.config_models import RedactionSettings
 from licenselens.diff_report import write_diff_report
 from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
@@ -143,23 +144,49 @@ def _resolve_profile_or_exit(
         raise typer.Exit(code=2) from exc
 
 
+def _effective_redaction_settings(
+    resolved_profile: ResolvedProfile | None,
+    redact: bool | None,
+) -> RedactionSettings:
+    """Merge the --redact/--no-redact flag over the resolved profile's settings.
+
+    The base is the resolved profile's ``redaction`` block; when no profile is
+    in play the schema default (``enabled: True``) applies, so reports are
+    redacted by default and ``--no-redact`` is the explicit opt-out.
+    """
+    settings = (
+        resolved_profile.profile.redaction if resolved_profile is not None else RedactionSettings()
+    )
+    if redact is not None:
+        settings = settings.model_copy(update={"enabled": redact})
+    return settings
+
+
 def _write_scan_artifacts(
     result: ScanResult,
     output_dir: Path,
     *,
     report_archive: bool,
+    redaction: RedactionSettings,
 ) -> tuple[Path, Path, Path, Path | None]:
     """Write HTML/JSON/Markdown reports and optional deterministic ZIP archive."""
     output_dir.mkdir(parents=True, exist_ok=True)
-    html_path = write_html_report(result, output_dir / "security-license-lens-report.html")
-    json_path = write_json_report(result, output_dir / "security-license-lens-report.json")
-    md_path = write_markdown_report(result, output_dir / "security-license-lens-report.md")
+    html_path = write_html_report(
+        result, output_dir / "security-license-lens-report.html", redaction=redaction
+    )
+    json_path = write_json_report(
+        result, output_dir / "security-license-lens-report.json", redaction=redaction
+    )
+    md_path = write_markdown_report(
+        result, output_dir / "security-license-lens-report.md", redaction=redaction
+    )
     archive_path: Path | None = None
     if report_archive:
         try:
             archive_path = write_report_archive(
                 output_dir=output_dir,
                 result=result,
+                redaction=redaction,
             )
         except ScanConfigError as exc:
             console.print(f"[red]Report archive failed:[/red] {exc}")
@@ -438,6 +465,16 @@ def scan_cmd(
         "--report-archive/--no-report-archive",
         help="Also write a deterministic offline report ZIP beside HTML/JSON.",
     ),
+    redact: bool | None = typer.Option(
+        None,
+        "--redact/--no-redact",
+        help=(
+            "Redact tenant ids, user principal names, and tenant domains in "
+            "HTML/JSON/Markdown reports and the report ZIP (default: the "
+            "profile's redaction settings, which default to on). "
+            "Use --no-redact to keep raw values."
+        ),
+    ),
 ) -> None:
     """Run entitlement-aware checks and write a static HTML dashboard.
 
@@ -449,6 +486,7 @@ def scan_cmd(
     resolved_profile = _resolve_profile_or_exit(
         profile=profile, config=config, rules=rules, backend=backend
     )
+    redaction = _effective_redaction_settings(resolved_profile, redact)
 
     workloads: list[Workload] | None = None
     if workload:
@@ -544,7 +582,7 @@ def scan_cmd(
             console.print(f"[yellow]Warning:[/yellow] {warning}")
 
     html_path, json_path, md_path, archive_path = _write_scan_artifacts(
-        result, wizard.output_dir, report_archive=report_archive
+        result, wizard.output_dir, report_archive=report_archive, redaction=redaction
     )
 
     counts = result.counts_by_status
@@ -608,16 +646,25 @@ def demo_cmd(
         "--report-archive/--no-report-archive",
         help="Also write a deterministic offline report ZIP.",
     ),
+    redact: bool | None = typer.Option(
+        None,
+        "--redact/--no-redact",
+        help=(
+            "Redact tenant ids, user principal names, and tenant domains in "
+            "the reports (default: on). Use --no-redact to keep raw values."
+        ),
+    ),
 ) -> None:
     """Run the offline demo scan and print the HTML report path."""
     resolved_profile = _resolve_profile_or_exit(
         profile=profile, config=config, rules=rules, backend=backend
     )
+    redaction = _effective_redaction_settings(resolved_profile, redact)
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
     console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
     result = run_scan(auth, dry_run=True, profile=resolved_profile)
     html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
-        result, output_dir, report_archive=report_archive
+        result, output_dir, report_archive=report_archive, redaction=redaction
     )
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
@@ -675,11 +722,20 @@ def quickstart_cmd(
         "--report-archive/--no-report-archive",
         help="Also write a deterministic offline report ZIP.",
     ),
+    redact: bool | None = typer.Option(
+        None,
+        "--redact/--no-redact",
+        help=(
+            "Redact tenant ids, user principal names, and tenant domains in "
+            "the reports (default: on). Use --no-redact to keep raw values."
+        ),
+    ),
 ) -> None:
     """Walk through a read-only scan against your own tenant (no code needed)."""
     resolved_profile = _resolve_profile_or_exit(
         profile=profile, config=config, rules=rules, backend=backend
     )
+    redaction = _effective_redaction_settings(resolved_profile, redact)
     console.print(
         Panel(
             "Security License Lens only reads. It never changes policies, users, "
@@ -733,7 +789,7 @@ def quickstart_cmd(
         raise typer.Exit(code=2) from exc
 
     html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
-        result, output_dir, report_archive=report_archive
+        result, output_dir, report_archive=report_archive, redaction=redaction
     )
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
