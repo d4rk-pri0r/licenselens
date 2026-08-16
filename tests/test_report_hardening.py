@@ -231,3 +231,64 @@ def test_bundle_data_asset_is_escaped_and_global_named(tmp_path: Path) -> None:
     assert f"{DATA_JS_GLOBAL} = " in data
     assert "<script>alert(1)</script>" not in data
     assert "</script" not in data.lower()
+
+
+# ---------------------------------------------------------------------------
+# Constellation status-color cascade locks (design-v2 brief conformance,
+# todo 1). The shared foundation (inlined in entry.html) must supply the
+# status color cascade itself so the bundle never needs compensation rules
+# in app.css. These assertions run against the RENDERED bundle entry: the
+# drift tripwire for the bundle asset chain.
+# ---------------------------------------------------------------------------
+
+CONSTELLATION_STATUS_VARIANTS = ("gap", "partial", "ok", "not_licensed", "skipped", "error")
+
+
+def _inline_style_text(html: str) -> str:
+    chunks: list[str] = []
+    root = _parse_html(html)
+    for style_el in root.iter("style"):
+        for node in style_el.iter():
+            if node.text:
+                chunks.append(node.text)
+    return "\n".join(chunks)
+
+
+def test_constellation_cascade_point_base_has_no_color(tmp_path: Path) -> None:
+    """The foundation `.constellation-point` base block carries NO `color:` —
+    a base color (same specificity, later in source than `.status-*`) greys
+    every node server-side."""
+    style = _inline_style_text(_entry_html(tmp_path))
+    match = re.search(r"\.constellation-point\s*\{(?P<body>[^{}]*)\}", style)
+    assert match, "missing .constellation-point base block in the bundle entry CSS"
+    assert "color:" not in match.group("body"), (
+        ".constellation-point base block declares a color and will beat the "
+        ".status-* classes in the cascade: "
+        f"{match.group('body').strip()}"
+    )
+
+
+def test_constellation_cascade_legend_two_class_rules_present(tmp_path: Path) -> None:
+    """A `.constellation-legend-chip.status-<variant>` two-class rule must
+    exist for every legend variant; the chip base's `color: var(--text-2)`
+    beats single-class `.status-*` rules (same specificity, later in source)."""
+    style = _inline_style_text(_entry_html(tmp_path))
+    for variant in CONSTELLATION_STATUS_VARIANTS:
+        assert f".constellation-legend-chip.status-{variant}" in style, (
+            f"missing two-class legend rule for status {variant!r} in the bundle entry"
+        )
+
+
+def test_constellation_cascade_instant_final_state_rule(tmp_path: Path) -> None:
+    """The foundation must ship `body.instant .constellation-point` resolving
+    color via `--resolve-to` — the bundle's reduced-motion instant final state
+    (app.js adds `body.instant` instead of `body.revealed`)."""
+    style = _inline_style_text(_entry_html(tmp_path))
+    match = re.search(r"body\.instant \.constellation-point\s*\{(?P<body>[^{}]*)\}", style)
+    assert match, "missing body.instant .constellation-point rule in the bundle entry CSS"
+    body = match.group("body")
+    assert "color:" in body, "body.instant rule must declare the final node color"
+    assert "var(--resolve-to" in body, (
+        "body.instant rule must resolve the status color via --resolve-to: "
+        f"{body.strip()}"
+    )

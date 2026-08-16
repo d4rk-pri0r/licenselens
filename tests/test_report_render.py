@@ -748,3 +748,69 @@ def test_single_file_zero_network_and_zero_img(tmp_path: Path) -> None:
         "single-file report must not reference any http:// URL (inline SVG xmlns stripped)"
     )
     assert html.count("<script") == 1, "single-file report must carry exactly one inline <script>"
+
+
+# ---------------------------------------------------------------------------
+# Constellation status-color cascade locks (design-v2 brief conformance,
+# todo 1). The `.status-*` single-class rules must WIN the cascade against
+# `.constellation-point` and `.constellation-legend-chip` bases so the status
+# color is present server-side (zero JS, zero animation dependency). These
+# assertions run against the RENDERED single-file HTML: they are the drift
+# tripwire — re-adding a `color:` to the point base or dropping the two-class
+# legend rules must fail here.
+# ---------------------------------------------------------------------------
+
+CONSTELLATION_STATUS_VARIANTS = ("gap", "partial", "ok", "not_licensed", "skipped", "error")
+
+
+def _style_text(html: str) -> str:
+    """Concatenated text of every inline <style> block in the rendered output."""
+    root = parse_html(html)
+    return "\n".join(text_of(el) for el in root.iter("style"))
+
+
+def test_constellation_cascade_point_base_has_no_color(tmp_path: Path) -> None:
+    """The `.constellation-point` base block must carry NO `color:` declaration.
+
+    A base `color: var(--state-neutral)` (same specificity, later in source)
+    beats the earlier `.status-*` rules and greys every node — the committed
+    report-hero screenshot bug. The base block keeps layout only; static
+    status color comes from the shared `.status-*` classes.
+    """
+    style = _style_text(render(comprehensive_report(), tmp_path))
+    match = re.search(r"\.constellation-point\s*\{(?P<body>[^{}]*)\}", style)
+    assert match, "missing .constellation-point base block in the rendered CSS"
+    assert "color:" not in match.group("body"), (
+        ".constellation-point base block declares a color and will beat the "
+        ".status-* classes in the cascade: "
+        f"{match.group('body').strip()}"
+    )
+
+
+def test_constellation_cascade_legend_two_class_rules_present(tmp_path: Path) -> None:
+    """A `.constellation-legend-chip.status-<variant>` two-class rule must exist
+    for every legend variant (gap/partial/ok/not_licensed/skipped/error).
+
+    The chip base block's `color: var(--text-2)` beats the single-class
+    `.status-*` rules (same specificity, later in source); only the two-class
+    pair (0,2,0) restores the status color on the legend swatch.
+    """
+    style = _style_text(render(comprehensive_report(), tmp_path))
+    for variant in CONSTELLATION_STATUS_VARIANTS:
+        assert f".constellation-legend-chip.status-{variant}" in style, (
+            f"missing two-class legend rule for status {variant!r}"
+        )
+
+
+def test_constellation_cascade_instant_final_state_rule(tmp_path: Path) -> None:
+    """`body.instant .constellation-point` must exist and resolve color via
+    `--resolve-to` — the reduced-motion/instant final state (DESIGN_V2 §11)."""
+    style = _style_text(render(comprehensive_report(), tmp_path))
+    match = re.search(r"body\.instant \.constellation-point\s*\{(?P<body>[^{}]*)\}", style)
+    assert match, "missing body.instant .constellation-point rule in the rendered CSS"
+    body = match.group("body")
+    assert "color:" in body, "body.instant rule must declare the final node color"
+    assert "var(--resolve-to" in body, (
+        "body.instant rule must resolve the status color via --resolve-to: "
+        f"{body.strip()}"
+    )

@@ -396,7 +396,9 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 
 /* Node: 16×16 circle (pill radius authorized for this proportion-free
    decorative fill), 2px status ring + soft tinted fill, always-visible
-   label. Neutral by default; resolves to status color column by column. */
+   label. The base block declares NO color: the shared `.status-*` classes
+   carry the static status color (server-side, zero JS); the reveal
+   animation runs neutral -> `--resolve-to` (status) under `body.revealed`. */
 .constellation-point {
   display: inline-flex;
   align-items: center;
@@ -408,7 +410,6 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   font-size: 0.8125rem;
   line-height: 1.4;
   text-align: start;
-  color: var(--state-neutral);
   cursor: pointer;
 }
 
@@ -451,6 +452,15 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   font-size: 0.75rem;
   color: var(--text-2);
 }
+/* Legend swatches carry the status color via two-class rules: the single-
+   class `.status-*` selectors are beaten by the chip base block above
+   (same specificity, later in source), so the pair must target both. */
+.constellation-legend-chip.status-gap,
+.constellation-legend-chip.status-error { color: var(--state-action); }
+.constellation-legend-chip.status-partial { color: var(--state-incomplete); }
+.constellation-legend-chip.status-ok { color: var(--state-ok); }
+.constellation-legend-chip.status-not_licensed,
+.constellation-legend-chip.status-skipped { color: var(--state-neutral); }
 .constellation-legend-swatch {
   width: 8px;
   height: 8px;
@@ -1096,6 +1106,13 @@ summary {
   body.revealed .radial-arc { animation: none !important; }
   details.tech summary .caret { transform: none !important; }
 }
+
+/* Reduced motion + JS: the shared foundation keeps the node color coming
+   from the static `.status-*` class (no animation required for correctness);
+   under reduced motion the bundle app.js adds `body.instant` instead of
+   `body.revealed`, so the instant final state restores the status color
+   directly (zero information loss, DESIGN_V2 §11). */
+body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral)); }
 
 /* --------------------------------------------------------------------------
    §14. Forced colors — glyphs, node rings, and bars fall back to system
