@@ -579,13 +579,8 @@ button.constellation-caption[aria-pressed="true"] { color: var(--accent); }
 
 .constellation-label { color: var(--text-2); }
 
-/* Legend maps the six statuses to words + colors (never color-only). */
-.constellation-legend-chip.status-gap,
-.constellation-legend-chip.status-error { color: var(--state-action); }
-.constellation-legend-chip.status-partial { color: var(--state-incomplete); }
-.constellation-legend-chip.status-ok { color: var(--state-ok); }
-.constellation-legend-chip.status-not_licensed,
-.constellation-legend-chip.status-skipped { color: var(--state-neutral); }
+/* Legend maps the six statuses to words + colors (never color-only); the
+   status colors themselves come from the shared foundation. */
 
 /* Capability detail list: summary rows first, context on demand. */
 .capability-list {
@@ -1210,12 +1205,6 @@ main section.is-revealed {
   .constellation-point { opacity: 1 !important; transform: none !important; }
   details.tech summary .caret { transform: none !important; }
 }
-
-/* Reduced motion + JS: the shared foundation keeps node color neutral until
-   body.revealed opts the resolve animation in; under reduced motion app.js
-   never adds revealed, so the instant final state restores the status
-   colors directly (zero information loss, DESIGN_V2 11). */
-body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral)); }
 
 /* --------------------------------------------------------------------------
    14. Forced colors — chrome collapses to system colors; glyphs, node rings,
