@@ -25,6 +25,33 @@ STATUS_PRIORITY = {
     FindingStatus.NOT_LICENSED: 5,
 }
 
+#: Severity-ordered statuses for the post-scan finding summary.
+SUMMARY_STATUS_ORDER: tuple[str, ...] = (
+    FindingStatus.GAP.value,
+    FindingStatus.PARTIAL.value,
+    FindingStatus.ERROR.value,
+    FindingStatus.SKIPPED.value,
+    FindingStatus.NOT_LICENSED.value,
+    FindingStatus.OK.value,
+)
+
+
+def status_count_rows(counts: dict[str, int]) -> list[tuple[str, str, int]]:
+    """Ordered (status, plain label, count) rows for the post-scan summary.
+
+    Known statuses render first in severity order; unknown statuses follow
+    alphabetically so nothing is ever dropped from the summary.
+    """
+    rows: list[tuple[str, str, int]] = []
+    for status in SUMMARY_STATUS_ORDER:
+        count = counts.get(status, 0)
+        if count:
+            rows.append((status, STATUS_PLAIN_LABELS.get(status, status), count))
+    for status, count in sorted(counts.items()):
+        if status not in SUMMARY_STATUS_ORDER and count:
+            rows.append((status, STATUS_PLAIN_LABELS.get(status, status), count))
+    return rows
+
 
 def eligible(check: CheckDefinition, owned: set[str]) -> bool:
     if not check.required_capabilities:

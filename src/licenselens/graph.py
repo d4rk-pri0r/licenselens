@@ -80,7 +80,14 @@ class GraphClient:
         try:
             token = self._auth.credential.get_token(self.graph_scope)
         except Exception as exc:  # noqa: BLE001 - surface as AuthError
-            raise AuthError(f"Failed to acquire Graph token: {exc}") from exc
+            raise AuthError(
+                "Could not acquire a Microsoft Graph token. Verify "
+                "--tenant-id/--client-id/--client-secret (or the "
+                "AZURE_TENANT_ID/AZURE_CLIENT_ID/AZURE_CLIENT_SECRET env vars) "
+                "and admin consent — see docs/app-registration.md. Re-run "
+                "`licenselens doctor --live` to isolate the failure.",
+                detail=f"{type(exc).__name__}: {exc}",
+            ) from exc
         self._token = token.token
         return self._token
 
@@ -145,7 +152,13 @@ class GraphClient:
             except httpx.HTTPError as exc:
                 last_error = exc
                 if attempt >= self._max_retries:
-                    raise GraphError(f"Graph network error: {exc}") from exc
+                    raise GraphError(
+                        "Graph request could not be completed (network error). "
+                        "Check connectivity and proxy settings, then retry — or "
+                        "run `licenselens doctor --live` to preflight live "
+                        "connectivity.",
+                        detail=f"{type(exc).__name__}: {exc}",
+                    ) from exc
                 self._sleep(min(2**attempt, 8))
                 continue
 
@@ -177,7 +190,12 @@ class GraphClient:
             data = response.json()
             return data
 
-        raise GraphError(f"Graph request failed after retries: {last_error}")
+        raise GraphError(
+            "Graph request failed after retries (network errors). Check "
+            "connectivity and proxy settings, then retry — or run "
+            "`licenselens doctor --live` to preflight live connectivity.",
+            detail=f"last error: {type(last_error).__name__}: {last_error}",
+        )
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
         data = self.request("GET", path, params=params)

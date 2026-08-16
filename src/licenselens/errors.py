@@ -10,6 +10,10 @@ class LicenseLensError(Exception):
 class AuthError(LicenseLensError):
     """Authentication or credential configuration failed."""
 
+    def __init__(self, message: str, *, detail: str | None = None) -> None:
+        super().__init__(message)
+        self.detail = detail  # raw cause for verbose/debug only, never user-facing
+
 
 class AuthConfigError(AuthError):
     """Missing/incomplete auth configuration (tenant id, client id, secret).
@@ -29,7 +33,9 @@ class GraphError(LicenseLensError):
         *,
         status_code: int | None = None,
         request_id: str | None = None,
+        detail: str | None = None,
     ) -> None:
         super().__init__(message)
         self.status_code = status_code
         self.request_id = request_id
+        self.detail = detail  # raw cause for verbose/debug only, never user-facing

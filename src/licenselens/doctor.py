@@ -31,6 +31,7 @@ class DoctorCheck:
     detail: str
     fix: str = ""
     optional: bool = False  # True = nice-to-have (e.g. MDE API); failure is ⚠, not ✗
+    diagnostic: str = ""  # raw underlying error for debug contexts, never printed
 
 
 @dataclass
@@ -178,7 +179,11 @@ def run_doctor(
             DoctorCheck(
                 name="token",
                 ok=False,
-                detail=f"Token acquisition failed: {exc}",
+                detail=(
+                    "Token acquisition failed — no Microsoft Graph token was "
+                    "obtained from the configured credential."
+                ),
+                diagnostic=f"{type(exc).__name__}: {exc}",
                 fix=(
                     "Verify --tenant-id/--client-id/--client-secret (or "
                     "AZURE_TENANT_ID/AZURE_CLIENT_ID/AZURE_CLIENT_SECRET), then "
@@ -373,7 +378,13 @@ def run_doctor(
                             name="graphPermissions",
                             ok=False,
                             optional=True,
-                            detail=f"cannot verify granted permissions — {exc}",
+                            detail=(
+                                "cannot verify granted permissions — Entra "
+                                "denied the permission-introspection read "
+                                "(Directory.Read.All is required to read "
+                                "appRoleAssignments)."
+                            ),
+                            diagnostic=f"{type(exc).__name__}: {exc}",
                             fix=(
                                 "Verify the required application permissions in Entra "
                                 "admin center and re-consent (docs/app-registration.md)."

@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Final
 
 import typer
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -37,6 +38,7 @@ from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
 from licenselens.engine.profiles import ResolvedProfile, load_builtin_profiles
 from licenselens.engine.runner import run_scan
+from licenselens.engine.runner_findings import status_count_rows
 from licenselens.errors import AuthConfigError, AuthError, GraphError, LicenseLensError
 from licenselens.models import CheckDefinition, CheckPack, ScanResult, Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
@@ -591,6 +593,20 @@ def _emit_collection_progress(
     console.print(f"  {index + 1:>2}/{total:<2} {str(envelope.key)} {label}{item_text}")
 
 
+def _print_finding_status_summary(counts: dict[str, int]) -> None:
+    """Render the post-scan finding status counts as a small table."""
+    table = Table(
+        title="Finding status",
+        box=box.SIMPLE_HEAD,
+        header_style="dim",
+    )
+    table.add_column("Status")
+    table.add_column("Count", justify="right")
+    for _status, label, count in status_count_rows(counts):
+        table.add_row(label, str(count))
+    console.print(table)
+
+
 def _print_collection_summary(result: ScanResult) -> None:
     """Surface per-data-source collection outcomes after the scan."""
     summaries = result.collection_summaries
@@ -862,8 +878,9 @@ def scan_cmd(
         f"[green]Done.[/green] org={org} mode={result.scan_mode} "
         f"skus={len(result.subscribed_skus)} "
         f"capabilities={len(result.owned_capabilities)} "
-        f"findings={len(result.findings)} status_counts={counts}"
+        f"findings={len(result.findings)}"
     )
+    _print_finding_status_summary(counts)
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
     console.print(f"  JSON  {json_path}")

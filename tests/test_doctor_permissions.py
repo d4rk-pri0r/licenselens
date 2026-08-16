@@ -150,3 +150,20 @@ def test_token_acquisition_failure_fix_is_actionable():
     assert "--client-secret" in row.fix
     assert "AZURE_CLIENT_SECRET" in row.fix
     assert "licenselens setup" in row.fix
+    # Raw exception text stays out of the user-facing detail...
+    assert "interaction required" not in row.detail
+    assert "Token acquisition failed" in row.detail
+    # ...but is preserved for debug contexts on the diagnostic field.
+    assert "interaction required" in row.diagnostic
+
+
+def test_token_acquisition_failure_detail_names_operation_and_fix():
+    cred = MagicMock()
+    cred.get_token.side_effect = Exception("ADAL intermittent")
+    ctx = AuthContext(
+        mode=AuthMode.CLIENT_SECRET, tenant_id="t1", client_id=CLIENT_ID, credential=cred
+    )
+    report = run_doctor(ctx)
+    row = _check(report, "token")
+    assert "Microsoft Graph token" in row.detail
+    assert "doctor --live" in row.fix

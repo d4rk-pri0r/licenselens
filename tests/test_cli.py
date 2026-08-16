@@ -218,6 +218,31 @@ def test_scan_dry_run_emits_progress_and_collection_summary(tmp_path: Path):
     assert "data sources" in out
 
 
+def test_scan_summary_status_counts_render_as_table_without_repr_artifacts(tmp_path: Path):
+    result = runner.invoke(app, ["scan", "--dry-run", "--output-dir", str(tmp_path / "out")])
+    assert result.exit_code == 1, result.output
+    out = result.stdout
+    # No dict repr or raw exception artifacts anywhere in the scan summary.
+    assert "status_counts" not in out
+    assert "{'" not in out
+    assert "repr(" not in out
+    assert "Traceback" not in out
+    # The status counts render as a readable table with human labels.
+    assert "Finding status" in out
+    assert "Needs attention" in out
+    assert "Count" in out
+
+
+def test_status_count_rows_orders_known_statuses_and_keeps_unknown():
+    from licenselens.engine.runner_findings import status_count_rows
+
+    rows = status_count_rows({"ok": 40, "gap": 7, "error": 2, "mystery": 1})
+    assert [status for status, _label, _count in rows] == ["gap", "error", "ok", "mystery"]
+    assert rows[0][1] == "Needs attention"
+    assert rows[1][2] == 2
+    assert status_count_rows({}) == []
+
+
 def test_scan_non_tty_without_mode_flag_warns_about_demo_dry_run(tmp_path: Path):
     result = runner.invoke(app, ["scan", "--output-dir", str(tmp_path / "out")])
     assert result.exit_code == 1, result.output
