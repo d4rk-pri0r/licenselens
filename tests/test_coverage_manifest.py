@@ -56,6 +56,7 @@ def test_real_manifest_matches_pinned_policy_inventory() -> None:
     # a mapped policy row or as an explicitly untracked row with a rationale.
     assert result.policy_count == 131
     assert result.untracked_count == 4
+    assert result.excluded_count == 6
     assert result.baseline_total == 135
     assert result.product_counts == {
         "aad": 34,
@@ -97,6 +98,16 @@ def test_real_manifest_keeps_securitysuite_heading_and_excludes_rego_only_policy
         "MS.TEAMS.5.2v1",
         "MS.TEAMS.5.3v1",
     }
+    excluded = data.get("excluded_scope") or []
+    assert {entry["item"] for entry in excluded} == {
+        "Microsoft Sentinel depth",
+        "Azure Defender for Cloud / CSPM expansion",
+        "Azure resource posture (NSGs, key vaults, storage)",
+        "Entra Verified ID / decentralized identity",
+        "Automatic remediation / write-back",
+        "SaaS backend, dashboards, telemetry, database",
+    }
+    assert all(entry["reason"] for entry in excluded)
 
 
 def test_validator_rejects_duplicate_policy(tmp_path: Path) -> None:
@@ -237,6 +248,40 @@ def test_validator_rejects_untracked_row_that_is_already_mapped(tmp_path: Path) 
 
     # Then double-counting a mapped row is a typed failure.
     assert "untracked_already_mapped" in result.error_codes
+
+
+def test_validator_rejects_malformed_excluded_scope(tmp_path: Path) -> None:
+    # Given a manifest fixture whose excluded-scope list is malformed.
+    data = _manifest_data()
+    policies = [dict(policy) for policy in data["policies"]]
+    fixture = tmp_path / "bad-excluded.yaml"
+    fixture.write_text(
+        yaml.safe_dump(
+            {
+                "manifest_version": 1,
+                "source": "SCuBA markdown baselines",
+                "policies": policies,
+                "untracked_policies": data.get("untracked_policies") or [],
+                "excluded_scope": [
+                    {"item": "", "reason": ""},
+                    {"item": "SaaS backend", "reason": "Out of thesis.", "extra": "nope"},
+                    {"item": "SaaS backend", "reason": "Duplicate."},
+                ],
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    validator = _load_validator()
+
+    # When validation runs.
+    result = validator.validate_manifest(fixture)
+
+    # Then missing item/reason, unknown fields, and duplicates are typed failures.
+    assert "excluded_missing_item" in result.error_codes
+    assert "excluded_missing_reason" in result.error_codes
+    assert "excluded_unknown_field" in result.error_codes
+    assert "duplicate_excluded_item" in result.error_codes
 
 
 def validator_commit() -> str:

@@ -11,6 +11,7 @@ from pydantic import TypeAdapter
 from licenselens.catalog._reference_models import (
     CoverageDisposition,
     ReferenceCoverageRow,
+    ReferenceExcludedItem,
     ReferenceUntrackedRow,
 )
 from licenselens.models import PROXY_CHECK_IDS
@@ -31,6 +32,7 @@ PRODUCT_PATHS: Final = {
     "powerbi": "PowerShell/ScubaGear/baselines/powerbi.md",
 }
 UNTRACKED_FIELDS: Final = frozenset({"product", "policy_id", "source_url", "rationale"})
+EXCLUDED_FIELDS: Final = frozenset({"item", "reason"})
 
 
 class CoverageRow(TypedDict):
@@ -159,6 +161,37 @@ def load_untracked_rows(
             )
         )
     return untracked, errors
+
+
+def load_excluded_items(
+    path: Path,
+) -> tuple[list[ReferenceExcludedItem], list[str]]:
+    """Load the deliberately-excluded product-scope items with their reasons.
+
+    The "intentionally excluded" table (maturity contract K2) is sourced from
+    the same coverage manifest so it can never silently fall out of the
+    generated reference.
+    """
+    raw = YAML_OBJECT.validate_python(yaml.safe_load(path.read_text(encoding="utf-8")) or {})
+    entries = raw.get("excluded_scope") or []
+    errors: list[str] = []
+    excluded: list[ReferenceExcludedItem] = []
+    if not isinstance(entries, list):
+        return excluded, ["malformed_excluded_scope:root"]
+    for index, raw_entry in enumerate(entries):
+        if not isinstance(raw_entry, dict):
+            errors.append(f"malformed_excluded_item:{index}")
+            continue
+        unknown = sorted(set(raw_entry) - EXCLUDED_FIELDS)
+        errors.extend(f"unknown_excluded_field:{index}:{field}" for field in unknown)
+        item = str(raw_entry.get("item") or "").strip()
+        reason = str(raw_entry.get("reason") or "").strip()
+        if not item:
+            errors.append(f"missing_excluded_item:{index}")
+        if not reason:
+            errors.append(f"missing_excluded_reason:{index}")
+        excluded.append(ReferenceExcludedItem(item=item, reason=reason))
+    return excluded, errors
 
 
 def _any_source_path(source_url: str) -> str:

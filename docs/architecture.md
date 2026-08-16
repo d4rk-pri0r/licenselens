@@ -7,7 +7,7 @@ Auth → collect_scan_state → evaluate licensed checks
      → profile / custom rules → rank / rollup → HTML / JSON / MD (+ optional ZIP)
 ```
 
-1. **Auth** — implemented modes: device code (`device` / `device_code`), client
+1. **Auth** — implemented modes: device code (`device`), client
    secret (`client_secret`), and Azure CLI (`azure_cli`). Dry-run uses curated
    sample data without a live credential. See [CLI reference](cli.md) for flags
    and env vars.
@@ -18,7 +18,7 @@ Auth → collect_scan_state → evaluate licensed checks
 3. **Evaluate licensed checks** — YAML checks under `checks/<workload>/` run only
    when required capabilities are owned. Missing entitlements yield
    `not_licensed` instead of a false gap.
-4. **Profile / custom rules** — optional assessment profile overlays and custom
+4. **Profile / custom rules** — optional profile overlays and custom
    rules adjust findings after the base evaluation (accepted risk, pack scope,
    backend preferences). Profile `RedactionSettings` are accepted on the schema
    and merged into the resolved profile, but are **not** applied to HTML/JSON/MD

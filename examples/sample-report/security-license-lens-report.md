@@ -4,12 +4,12 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 - **Version:** 0.4.0
 - **Scanned at:** 2026-08-13T00:00:00+00:00
-- **Mode:** dry_run / dry_run
-- **Organization:** Contoso Demo (dry-run)
+- **Mode:** Demo scan (synthetic data)
+- **Organization:** Demo (synthetic data)
 
 ## At a glance
 
-**5 of 6 still not fully working.**
+**5 of 6 priority capabilities still need attention.**
 
 - **Licensed capabilities detected:** 25
 - **Prioritized capabilities:** 6 (priority packs: identity, endpoint)
@@ -22,16 +22,16 @@ A plain-language view of security capabilities you already pay for — and wheth
    - Next step: Restrict user consent so only admins approve non-trivial permissions.
 2. **Disable SMS, Voice, and Email OTP authentication methods** *(~a few hours)* — SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.
    - Next step: Disable SMS, Voice, and Email OTP authentication methods.
-3. **Enforce a Conditional Access policy that blocks device code flow** *(~a few hours)* — Device-code phishing can still complete a successful sign-in.
-   - Next step: Enforce a Conditional Access policy that blocks device code flow.
+3. **Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in…** *(~a few hours)* — We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.
+   - Next step: Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions.
 
 *Effort is a rough guide, not a quote.*
 
-- **Needs attention** (`gap`): 40
-- **Not in your plan** (`not_licensed`): 3
-- **Looking good** (`ok`): 71
-- **Partly set up** (`partial`): 12
-- **Check pending** (`skipped`): 14
+- **Needs attention** (`gap`): 42
+- **Not in your plan** (`not_licensed`): 6
+- **Looking good** (`ok`): 91
+- **Partly set up** (`partial`): 15
+- **Check pending** (`skipped`): 12
 
 ## What you already pay for
 
@@ -343,6 +343,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade)
 - **Technical id:** `id-auth-weak-methods-disabled`
 
+### No documented emergency admin account, or exclusions without a reason
+
+- **Status:** Needs attention
+- **In plain English:** We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.
+- **Suggested next step:** Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions.
+- **Confidence:** High confidence
+- **Data sources:** microsoft.graph
+- **Limitations:** The break-glass account could not be confidently identified from the scanned Global Administrator assignments and eligibilities — verify the emergency access account in the Entra portal before relying on this check
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers)
+- **Technical id:** `id-break-glass-exclusion`
+
 ### Block device-code phishing sign-ins
 
 - **Status:** Needs attention
@@ -397,6 +408,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-phishing-resistant-all`
+
+### Keep privileged-role activation short, explained, and context-bound
+
+- **Status:** Needs attention
+- **In plain English:** Some activation guardrails are missing, so an attacker with a stolen admin account can hold powerful access longer and with less traceability.
+- **Suggested next step:** In PIM role settings for each privileged role, require justification on activation, attach an authentication context, and set the maximum activation duration to a short window (8 hours or less).
+- **Confidence:** High confidence
+- **Data sources:** microsoft.graph
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/roleSettings)
+- **Technical id:** `id-pim-activation-controls`
 
 ### Alert when Global Admin is turned on
 
@@ -475,17 +497,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/machines)
 - **Technical id:** `mde-onboard-gap`
 
-### Apply DLP across Exchange SharePoint OneDrive Teams
-
-- **Status:** Needs attention
-- **In plain English:** We could not find DLP policies covering your data locations.
-- **Suggested next step:** Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.
-- **Confidence:** High confidence
-- **Data sources:** scc_compliance
-- **Limitations:** Per-location coverage is derived from policy workload flags, not a full location enumeration
-- **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
-- **Technical id:** `pur-dlp-locations-complete`
-
 ### Turn on auto-labeling for sensitive content
 
 - **Status:** Needs attention
@@ -496,6 +507,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/autolabeling)
 - **Technical id:** `pur-sensitivity-auto-labeling`
+
+### Prove your admin-role reviews actually run and repeat
+
+- **Status:** Needs attention
+- **In plain English:** Periodic confirmation of powerful admin access does not look set up at all, so privilege can accumulate without review.
+- **Suggested next step:** Create or correct an access review that targets privileged directory roles, set a recurring cadence (monthly or quarterly), and complete the first review round with decisions applied.
+- **Confidence:** High confidence
+- **Data sources:** microsoft.graph
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade)
+- **Technical id:** `id-access-reviews-scope`
 
 ### Set up periodic access reviews for admins and guests
 
@@ -750,6 +772,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/machines)
 - **Technical id:** `mde-sensor-health`
 
+### Apply DLP across Exchange SharePoint OneDrive Teams
+
+- **Status:** Partly set up
+- **In plain English:** DLP is not applied across Exchange, OneDrive, SharePoint, and Teams. Broaden policy locations.
+- **Suggested next step:** Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.
+- **Confidence:** Medium confidence
+- **Data sources:** Not reported
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
+- **Technical id:** `pur-dlp-locations-complete`
+
 ### Your security command center may have few alarms turned on
 
 - **Status:** Partly set up
@@ -805,6 +838,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade)
 - **Technical id:** `id-cross-tenant-defaults`
 
+### Do not take other tenants' word for multi-factor auth
+
+- **Status:** Partly set up
+- **In plain English:** We could not confirm whether your tenant accepts other tenants' multi-factor authentication claims by default.
+- **Suggested next step:** In Entra external collaboration cross-tenant access default settings, disable 'Trust multi-factor authentication from Microsoft Entra tenants' for inbound access, and re-enable it only for specific trusted partners.
+- **Confidence:** High confidence
+- **Data sources:** microsoft.graph
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade)
+- **Technical id:** `id-cross-tenant-mfa-trust`
+
 ### Use narrower admin roles instead of Global Admin
 
 - **Status:** Partly set up
@@ -815,6 +859,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-ga-finer-roles`
+
+### Make approvals require typing the on-screen number
+
+- **Status:** Partly set up
+- **In plain English:** We could not read the number-matching requirement, so please confirm it in the Entra authentication methods settings.
+- **Suggested next step:** In Authentication methods settings, set Microsoft Authenticator number matching to Enabled and confirm the policy applies to all users.
+- **Confidence:** High confidence
+- **Data sources:** microsoft.graph
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade)
+- **Technical id:** `id-number-matching`
 
 ### Alert when other powerful admin roles activate
 
@@ -863,8 +918,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Add your mailbox to DMARC reports
 
 - **Status:** Check pending
-- **In plain English:** Provide the contact in your profile to check this DMARC field.
-- **Suggested next step:** Add an internal rua/ruf contact from your assessment profile to DMARC.
+- **In plain English:** Add the contact to your configured settings so this DMARC field can be checked.
+- **Suggested next step:** Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** Not reported
 - **Limitations:** None reported
@@ -874,8 +929,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Add the federal DMARC report mailbox when required
 
 - **Status:** Check pending
-- **In plain English:** Provide the contact in your profile to check this DMARC field.
-- **Suggested next step:** When your profile sets a federal contact, include it in every DMARC rua field.
+- **In plain English:** Add the contact to your configured settings so this DMARC field can be checked.
+- **Suggested next step:** When your configured settings include a federal contact, add it to every DMARC aggregate-report (rua) field.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** Not reported
 - **Limitations:** None reported
@@ -918,7 +973,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Protect key partner domains from look-alikes
 
 - **Status:** Check pending
-- **In plain English:** List your key partner domains in the profile to check their impersonation protection.
+- **In plain English:** List your key partner domains in your configured settings to check their impersonation protection.
 - **Suggested next step:** Enable targeted domain protection for profile-listed partner domains.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** Not reported
@@ -929,24 +984,13 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Protect sensitive accounts from look-alike senders
 
 - **Status:** Check pending
-- **In plain English:** List your high-value accounts (executives, admins) in the profile to check user impersonation protection.
+- **In plain English:** List your high-value accounts (executives, admins) in your configured settings to check user impersonation protection.
 - **Suggested next step:** Enable user impersonation protection for profile-listed sensitive accounts.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** Not reported
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
 - **Technical id:** `mdo-impersonation-users-protected`
-
-### Confirm insider risk management is set up
-
-- **Status:** Check pending
-- **In plain English:** Confirm an insider risk policy is created, scoped, and analytics is enabled.
-- **Suggested next step:** Confirm an insider risk policy is created, scoped to the right users, and analytics is enabled in the Purview portal.
-- **Confidence:** Low confidence — verify in portal
-- **Data sources:** Not reported
-- **Limitations:** Manual verification required in Microsoft Purview Insider Risk Management
-- **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/insiderriskmgmt)
-- **Technical id:** `pur-insider-risk-readiness`
 
 ### Make anyone links expire within 30 days
 
@@ -973,8 +1017,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Limit guest invites to approved partner domains
 
 - **Status:** Check pending
-- **In plain English:** We cannot judge guest invite domains until your organization lists approved partner domains in the assessment profile.
-- **Suggested next step:** List approved partner domains in the assessment profile and mirror them in Entra B2B allowlists.
+- **In plain English:** We cannot judge guest invite domains until your organization lists approved partner domains in your configured settings.
+- **Suggested next step:** List approved partner domains in your configured settings and mirror them in Entra B2B allowlists.
 - **Confidence:** Low confidence — verify in portal
 - **Data sources:** microsoft.graph
 - **Limitations:** None reported
@@ -1002,17 +1046,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** Manual verification required in Microsoft Purview Communication Compliance
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/communicationcompliance)
 - **Technical id:** `pur-communication-compliance-readiness`
-
-### Confirm eDiscovery is set up
-
-- **Status:** Check pending
-- **In plain English:** Confirm eDiscovery administrators and hold workflows are configured.
-- **Suggested next step:** Confirm eDiscovery administrators are assigned and legal hold workflows are configured in the Purview portal.
-- **Confidence:** Low confidence — verify in portal
-- **Data sources:** Not reported
-- **Limitations:** Manual verification required in Microsoft Purview eDiscovery
-- **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/ediscovery)
-- **Technical id:** `pur-ediscovery-readiness`
 
 ### Device compliance rules may be missing or not assigned
 
@@ -1046,6 +1079,61 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview)
 - **Technical id:** `endpoint-security-policy-coverage`
+
+### Attack surface reduction rules may not be enforced on devices
+
+- **Status:** Looking good
+- **In plain English:** Attack surface reduction rules are configured and enforced.
+- **Suggested next step:** Confirm an ASR endpoint-security policy is assigned and that it actually carries attack surface reduction rules, then watch rule reports for hits.
+- **Confidence:** High confidence
+- **Data sources:** graph.deviceManagement
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview)
+- **Technical id:** `ep-asr-rules`
+
+### Device disks may not be encrypted
+
+- **Status:** Looking good
+- **In plain English:** A drive-encryption policy is configured and assigned.
+- **Suggested next step:** Confirm a BitLocker/disk-encryption configuration exists and is assigned to the devices that carry sensitive data.
+- **Confidence:** High confidence
+- **Data sources:** graph.deviceManagement
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/ConfigureDevicesMenu/~/deviceConfiguration)
+- **Technical id:** `ep-bitlocker-policy`
+
+### Devices may be out of compliance despite policies
+
+- **Status:** Looking good
+- **In plain English:** Devices are actually compliant, so the compliance gate is enforced.
+- **Suggested next step:** Review noncompliant or unknown devices in the compliance dashboard and remediate them, or tighten the policy so unhealthy devices are caught.
+- **Confidence:** High confidence
+- **Data sources:** graph.deviceManagement
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies)
+- **Technical id:** `ep-compliance-enforcement`
+
+### Work data on phones may be unprotected
+
+- **Status:** Looking good
+- **In plain English:** App protection policies are configured and assigned.
+- **Suggested next step:** Confirm app protection policies exist and are assigned to the intended users or groups for every mobile platform in use.
+- **Confidence:** High confidence
+- **Data sources:** graph.deviceManagement
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/AppProtectionMenu/~/overview)
+- **Technical id:** `ep-mam-app-protection`
+
+### Tamper protection may be off on some devices
+
+- **Status:** Looking good
+- **In plain English:** Defender tamper protection is configured and enforced.
+- **Suggested next step:** Assign the Defender antivirus/tamper-protection configuration and confirm sampled Windows devices report tamper protection enabled.
+- **Confidence:** High confidence
+- **Data sources:** graph.deviceManagement
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/securitysettings/endpoints/antivirus)
+- **Technical id:** `ep-tamper-protection`
 
 ### Turn on DKIM signing for every domain
 
@@ -1267,6 +1355,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antimalwarev2)
 - **Technical id:** `mdo-malware-zap`
 
+### Block automatic mail forwarding to outside addresses
+
+- **Status:** Looking good
+- **In plain English:** Automatic mail forwarding to outside addresses is blocked.
+- **Suggested next step:** Turn off automatic forwarding in the outbound spam filter policy.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
+- **Technical id:** `mdo-outbound-spam-forwarding-block`
+
 ### Turn on Safe Links and Safe Attachments for everyone
 
 - **Status:** Looking good
@@ -1310,6 +1409,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safelinksv2)
 - **Technical id:** `mdo-safe-links-block-list`
+
+### Block click-through on rewrapped links
+
+- **Status:** Looking good
+- **In plain English:** Users cannot click through to the original URL.
+- **Suggested next step:** Turn off click-through in Safe Links policies.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safelinksv2)
+- **Technical id:** `mdo-safe-links-click-through`
 
 ### Track clicks on rewritten links
 
@@ -1355,6 +1465,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
 - **Technical id:** `mdo-spam-phish-not-inbox`
 
+### Remove mail-flow rules that copy mail outside
+
+- **Status:** Looking good
+- **In plain English:** Mail-flow rules do not silently copy or redirect mail outside.
+- **Suggested next step:** Remove or rescope transport rules that redirect or blind-copy mail to external addresses.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/transportrules)
+- **Technical id:** `mdo-transport-rule-external-forward`
+
 ### Turn on unified audit logging
 
 - **Status:** Looking good
@@ -1365,6 +1486,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/auditlogsearch)
 - **Technical id:** `mdo-unified-audit-enabled`
+
+### Turn off Power BI data export
+
+- **Status:** Looking good
+- **In plain English:** Data export from Power BI is off.
+- **Suggested next step:** Disable data export in the Power BI admin portal tenant settings.
+- **Confidence:** High confidence
+- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
+- **Technical id:** `pbi-export-controls`
 
 ### Turn off Power BI publish to web
 
@@ -1388,6 +1520,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
 - **Technical id:** `pp-dlp-all-environments`
 
+### Apply DLP to every non-default environment
+
+- **Status:** Looking good
+- **In plain English:** Every non-default environment has a DLP policy.
+- **Suggested next step:** Assign a DLP policy to every non-default environment.
+- **Confidence:** High confidence
+- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
+- **Technical id:** `pp-dlp-nondefault-envs`
+
 ### Restrict environment creation to admins
 
 - **Status:** Looking good
@@ -1410,6 +1553,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
 - **Technical id:** `pp-pages-creation-admin-only`
 
+### Configure an explicit tenant isolation allowlist
+
+- **Status:** Looking good
+- **In plain English:** Cross-tenant connections are limited to an explicit allowlist.
+- **Suggested next step:** Enable tenant isolation and define its inbound and outbound allowlist.
+- **Confidence:** High confidence
+- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
+- **Technical id:** `pp-tenant-isolation-allowlist`
+
 ### Turn on Power Platform tenant isolation
 
 - **Status:** Looking good
@@ -1420,6 +1574,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
 - **Technical id:** `pp-tenant-isolation-enabled`
+
+### Require sensitivity labels on new content
+
+- **Status:** Looking good
+- **In plain English:** New content gets a default sensitivity label, and people must label before saving or sending.
+- **Suggested next step:** In your label policy, set a default label and require users to apply a label.
+- **Confidence:** High confidence
+- **Data sources:** Microsoft Purview / Security & Compliance PowerShell (powershell.bridge)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/labelpolicies)
+- **Technical id:** `pur-default-and-mandatory-labels`
 
 ### Block sharing of sensitive information with DLP
 
@@ -1453,6 +1618,28 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** Sensitive-information-type coverage (SSN/ITIN/credit card) is not enumerated; verify rule content in the Purview portal
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
 - **Technical id:** `pur-dlp-policy-present`
+
+### Protect data on endpoint devices
+
+- **Status:** Looking good
+- **In plain English:** Endpoint devices are covered by DLP.
+- **Suggested next step:** Add a DLP policy that includes the Devices workload.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
+- **Technical id:** `pur-endpoint-dlp`
+
+### Confirm insider risk management is set up
+
+- **Status:** Looking good
+- **In plain English:** Insider risk policies are live. Confirm analytics is enabled and policy scope matches your riskiest groups.
+- **Suggested next step:** Confirm an insider risk policy is created, scoped to the right users, and analytics is enabled in the Purview portal.
+- **Confidence:** High confidence
+- **Data sources:** graph.beta.security.insiderRiskManagement.policies
+- **Limitations:** Analytics state is not exposed by this API; confirm it in the portal
+- **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/insiderriskmgmt)
+- **Technical id:** `pur-insider-risk-readiness`
 
 ### Apply retention policies to email and files
 
@@ -1509,6 +1696,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
 - **Technical id:** `spo-sharing-capability-limited`
 
+### Block unmanaged devices from SharePoint and OneDrive
+
+- **Status:** Looking good
+- **In plain English:** Unmanaged devices cannot reach SharePoint or OneDrive files.
+- **Suggested next step:** Block access for unmanaged devices on the SharePoint access control page.
+- **Confidence:** High confidence
+- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
+- **Technical id:** `spo-unmanaged-device-access`
+
 ### Block anonymous users from starting meetings
 
 - **Status:** Looking good
@@ -1530,6 +1728,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
 - **Technical id:** `teams-external-access-per-domain`
+
+### Restrict who can join teams as a guest
+
+- **Status:** Looking good
+- **In plain English:** External guests cannot be added to teams.
+- **Suggested next step:** Turn off guest access in Teams, or limit guest invitations to approved domains.
+- **Confidence:** High confidence
+- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com/users/guest-settings)
+- **Technical id:** `teams-guest-access-restricted`
 
 ### Block unmanaged users from contacting you first
 
@@ -1585,6 +1794,39 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-password-lifetime`
+
+### Turn on mailbox intelligence for impersonation detection
+
+- **Status:** Looking good
+- **In plain English:** Mailbox intelligence learns your senders so look-alike impersonation is caught.
+- **Suggested next step:** Enable mailbox intelligence on every anti-phish policy.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
+- **Technical id:** `mdo-mailbox-intelligence`
+
+### Restrict quarantine release and keep mail longer
+
+- **Status:** Looking good
+- **In plain English:** Users cannot release quarantined mail without admin review.
+- **Suggested next step:** Restrict end-user quarantine permissions and increase the retention window.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/quarantinepolicies)
+- **Technical id:** `mdo-quarantine-policy`
+
+### Scan Office files from untrusted sources
+
+- **Status:** Looking good
+- **In plain English:** Office documents are scanned before users open them.
+- **Suggested next step:** Turn on Safe Documents in Microsoft 365 Defender settings.
+- **Confidence:** High confidence
+- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safeDocumentsv2)
+- **Technical id:** `mdo-safe-documents`
 
 ### Turn off external Power BI invitations
 
@@ -1684,6 +1926,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
 - **Technical id:** `pp-trial-creation-admin-only`
+
+### Confirm eDiscovery is set up
+
+- **Status:** Looking good
+- **In plain English:** eDiscovery is configured and has been exercised. Keep case access and legal-hold reviews on a regular cadence.
+- **Suggested next step:** Create a test Premium case with a legal hold, and confirm eDiscovery administrators are assigned in the Purview portal.
+- **Confidence:** High confidence
+- **Data sources:** graph.security.cases.ediscoveryCases
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/ediscovery)
+- **Technical id:** `pur-ediscovery-readiness`
 
 ### Default new links to specific people
 
@@ -1806,7 +2059,40 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security)
 - **Technical id:** `az-defender-plan-enabled`
 
-### Confirm Premium capacity governance and entitlement use
+### Apps and service accounts are not protected by risk-based sign-in rules
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
+- **Technical id:** `id-ca-workload-identity`
+
+### Confirm no app or automation account is compromised
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/IdentityProtectionMenuBlade/~/WorkloadIdentities)
+- **Technical id:** `id-identity-protection-workload`
+
+### Access to apps, groups, and Teams is not yet lifecycle-governed
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/AccessPackages)
+- **Technical id:** `id-entitlement-access-packages`
+
+### Premium capacity use and capacity admins are checked directly
 
 - **Status:** Not in your plan
 - **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.

@@ -55,7 +55,7 @@ Sentinel, and print assessment-profile requirements before any token request.
 | `--live` / `--dry-run` | dry-run | Probe a real tenant (`--live`) or print dry-run messaging only |
 | `--auth` | (live default: device) | `device` \| `client_secret` \| `azure_cli` |
 | `--profile` | `basic` | **Probe depth**, not an assessment id: `basic` (core Graph) or `full` (also MDE API + Sentinel) |
-| `--assessment-profile` | — | Assessment profile id (e.g. `identity`, `full`). Repeatable. Validated before auth |
+| `--assessment-profile` | — | Profile id (e.g. `identity`, `full`). Repeatable. Validated before auth |
 | `--tenant-id` | env `AZURE_TENANT_ID` | Directory (tenant) ID |
 | `--client-id` | env `AZURE_CLIENT_ID` | App registration client ID |
 | `--client-secret` | env `AZURE_CLIENT_SECRET` | Client secret (prefer the env var) |
@@ -95,8 +95,8 @@ is dry-run; `--live` without credentials exits with a clear error.
 | `--pack` | identity + endpoint | Packs for the top-card rollup (repeatable). Email is off by default |
 | `--allow-email-proxy` / `--no-email-proxy` | off | Opt into a labeled Secure Score proxy for the email pack |
 | `--open` / `--no-open` | off | Open the HTML report in a browser |
-| `--profile` | — | **Assessment profile id** (`core`, `identity`, `full`, …). Omit for legacy full scope |
-| `--config` | — | Organization assessment profile YAML overlay (validated before auth) |
+| `--profile` | — | **Profile id** (`core`, `identity`, `full`, …). Omit for legacy full scope |
+| `--config` | — | Organization profile YAML overlay (validated before auth) |
 | `--rules` | — | Custom rules YAML (list or `{custom_rules: [...]}`); validated before auth |
 | `--backend` | — | Preferred collection backend(s): `graph`, `arm`, `exchange_online`, `defender`, `secure_score`, `manual` (repeatable) |
 | `--report-archive` / `--no-report-archive` | off | Also write `security-license-lens-report.zip` |
@@ -119,8 +119,8 @@ Offline demo scan against curated sample data (not a real tenant). Always exits
 |--------|---------|-------------|
 | `-o` / `--output-dir` | `reports` | Directory for the demo report |
 | `--open` / `--no-open` | off | Open the HTML report in a browser |
-| `--profile` | — | Assessment profile id |
-| `--config` | — | Organization assessment profile YAML overlay |
+| `--profile` | — | Profile id |
+| `--config` | — | Organization profile YAML overlay |
 | `--rules` | — | Custom rules YAML |
 | `--backend` | — | Preferred collection backend(s) (repeatable) |
 | `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
@@ -141,8 +141,8 @@ Runs doctor preflight and confirms before scanning.
 | `--tenant-id` | env `AZURE_TENANT_ID` | Directory (tenant) ID |
 | `--client-id` | env `AZURE_CLIENT_ID` | App registration client ID |
 | `--client-secret` | env `AZURE_CLIENT_SECRET` | Optional app-only secret |
-| `--profile` | — | Assessment profile id |
-| `--config` | — | Organization assessment profile YAML overlay |
+| `--profile` | — | Profile id |
+| `--config` | — | Organization profile YAML overlay |
 | `--rules` | — | Custom rules YAML |
 | `--backend` | — | Preferred collection backend(s) (repeatable) |
 | `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
@@ -181,7 +181,7 @@ errored, otherwise `0`.
 | `CONFIG` | (required) | Path to `tenants.yaml` |
 | `-o` / `--output-dir` | `reports` | Root directory for per-tenant reports and `index.md` |
 | `--live` / `--dry-run` | dry-run | Live scans vs demo data per tenant |
-| `--profile` | — | Default assessment profile for tenants that omit `profile` |
+| `--profile` | — | Default profile for tenants that omit `profile` |
 | `--rules` | — | Default custom rules YAML for the batch |
 | `--backend` | — | Default preferred backend(s) (repeatable) |
 | `--report-archive` / `--no-report-archive` | off | Write a deterministic offline report ZIP per tenant |
@@ -216,15 +216,15 @@ Exit `0` when at least one workspace is found; `1` when none are discovered;
 
 ## Auth modes
 
-CLI `--auth` values (`AuthModeOption`):
+CLI `--auth` values:
 
-| CLI value | Internal mode | Typical use |
-|-----------|---------------|-------------|
-| `device` | `device_code` | Interactive device-code sign-in (live default when `--auth` is omitted) |
-| `client_secret` | `client_secret` | App-only client credentials (`AZURE_TENANT_ID` + `AZURE_CLIENT_ID` + `AZURE_CLIENT_SECRET`) |
-| `azure_cli` | `azure_cli` | Reuse an existing `az login` session |
+| CLI value | Typical use |
+|-----------|-------------|
+| `device` | Interactive device-code sign-in (live default when `--auth` is omitted) |
+| `client_secret` | App-only client credentials (`AZURE_TENANT_ID` + `AZURE_CLIENT_ID` + `AZURE_CLIENT_SECRET`) |
+| `azure_cli` | Reuse an existing `az login` session |
 
-Dry-run / demo paths use internal mode `dry_run` and do not call Microsoft APIs.
+Dry-run / demo paths never call Microsoft APIs.
 See [App registration](app-registration.md) for permission setup.
 
 ## Exit codes
@@ -259,10 +259,10 @@ must all be present to build the ARM id.
 
 `--profile` means different things on different commands:
 
-| Command | `--profile` means | Assessment profiles use |
+| Command | `--profile` means | Profiles use |
 |---------|-------------------|-------------------------|
 | `doctor` | Probe depth: `basic` (default) or `full` | `--assessment-profile` (repeatable) |
-| `scan`, `demo`, `quickstart`, `batch` | Assessment profile id (`core`, `identity`, `full`, …) | `--profile` |
+| `scan`, `demo`, `quickstart`, `batch` | Profile id (`core`, `identity`, `full`, …) | `--profile` |
 
 Examples:
 
@@ -270,15 +270,15 @@ Examples:
 # doctor: probe depth
 licenselens doctor --live --profile full
 
-# doctor: list requirements for assessment profiles (no token until after validation)
+# doctor: list requirements for profiles (no token until after validation)
 licenselens doctor --assessment-profile identity
 
-# scan: assessment profile id
+# scan: profile id
 licenselens scan --live --auth client_secret --profile identity -o reports
 ```
 
-Assessment profile selection on scan uses `--profile` only (the doctor-only
-assessment flag does not exist on scan).
+Profile selection on scan uses `--profile` only (the doctor-only
+`--assessment-profile` flag does not exist on scan).
 
 ## Workloads vs packs
 
@@ -302,13 +302,13 @@ workload (do not pass `email` to `--workload`). The email pack is off by default
 because MDO policy config has no Graph read API (PowerShell-only); use
 `--allow-email-proxy` only if you explicitly want a labeled Secure Score path.
 
-## Assessment profiles / `--config` / `--rules` / `--backend`
+## Profiles / `--config` / `--rules` / `--backend`
 
 On `scan`, `demo`, `quickstart`, and `batch`:
 
 | Flag | Role |
 |------|------|
-| `--profile` | Built-in assessment profile id (`core`, `identity`, `full`, `email`, `collaboration`, `endpoint`, `data-protection`, `secops`, `power-platform`, `power-bi`, `scuba`, …). Omit for legacy full scope |
+| `--profile` | Built-in profile id (`core`, `identity`, `full`, `email`, `collaboration`, `endpoint`, `data-protection`, `secops`, `power-platform`, `power-bi`, `scuba`, …). Omit for legacy full scope |
 | `--config` | Organization YAML overlay merged onto the selected profile (validated before auth) |
 | `--rules` | Custom rules YAML — a list, or `{custom_rules: [...]}` (validated before auth) |
 | `--backend` | Preferred collection backend(s), repeatable: `graph`, `arm`, `exchange_online`, `defender`, `secure_score`, `manual` |

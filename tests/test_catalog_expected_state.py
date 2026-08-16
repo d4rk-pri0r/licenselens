@@ -4,6 +4,11 @@ Every registered check must carry a non-empty, ≤160-char, sentence-case
 ``expected_state`` that is byte-distinct from its ``customer_summary`` and
 ``description``. The report-facing mapping helper must be deterministic and
 cover exactly the registered check set.
+
+K3 (maturity contract "no missing check content"): every check must also carry
+non-empty ``description``, ``remediation``, ``customer_title``, and
+``customer_summary`` copy, so a check can never ship with a silent content
+slot.
 """
 
 from __future__ import annotations
@@ -16,6 +21,20 @@ from licenselens.catalog.expected_states import expected_state_map
 from licenselens.engine.loader import load_checks
 
 MAX_EXPECTED_STATE_CHARS = 160
+REPORT_COPY_FIELDS = ("description", "remediation", "customer_title", "customer_summary")
+
+
+def test_every_registered_check_has_nonempty_report_copy():
+    """K3: description, remediation, and customer copy exist on every check."""
+    checks = load_checks()
+    assert checks, "no checks registered"
+    missing = [
+        (c.id, field)
+        for c in checks
+        for field in REPORT_COPY_FIELDS
+        if not (getattr(c, field) or "").strip()
+    ]
+    assert not missing, f"checks with empty report copy fields: {missing}"
 
 
 def test_every_registered_check_has_nonempty_expected_state():

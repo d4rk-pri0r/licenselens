@@ -45,9 +45,9 @@ defaults:
 
 tenants:
   - slug: contoso
-    tenant_id: "00000000-0000-0000-0000-000000000001"
+    tenant_id: "11111111-2222-3333-4444-555555555555"
   - slug: fabrikam
-    tenant_id: "00000000-0000-0000-0000-000000000002"
+    tenant_id: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
     workspace_resource_id: "/subscriptions/.../workspaces/..."
 ```
 
@@ -60,12 +60,12 @@ Every key `run_batch` reads:
 | `slug` | Report directory name (falls back to `tenant_id`) |
 | `tenant_id` | Entra tenant GUID |
 | `azure_tenant_id` | Alias for `tenant_id` |
-| `auth` / `auth_mode` | Aliases: `dry_run`, `device` / `device_code`, `client_secret`, `azure_cli` (hyphen/underscore variants accepted) |
+| `auth` / `auth_mode` | Values: `dry-run`, `device`, `client-secret`, `azure-cli` (underscore variants of these values are also accepted) |
 | `client_id` | App registration id (else `AZURE_CLIENT_ID`) |
 | `client_secret` | Accepted in YAML but **must not be committed**; prefer `AZURE_CLIENT_SECRET` |
 | `packs` | List or comma-separated pack ids. Default packs are **identity + endpoint** (not `starter`) |
 | `allow_email_proxy` | Opt into labeled Secure Score email path (email pack off by default) |
-| `profile` | Assessment profile id |
+| `profile` | Profile id |
 | `config` | Path to a custom profile/config YAML |
 | `rules` | Path to extra rules YAML |
 | `backend` / `backends` | Collector backends (string or list) |

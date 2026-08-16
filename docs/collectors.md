@@ -18,8 +18,8 @@ Operators pass preferred collection backends with repeatable `--backend` on
 | `secure_score` | Microsoft Secure Score (Graph) | Labeled proxy signals (for example MDI / Purview / opt-in email) |
 | `manual` | Human-provided evidence | Surfaces not readable programmatically |
 
-See [CLI reference](cli.md) for how `--backend` interacts with assessment
-profiles and `--allow-email-proxy`.
+See [CLI reference](cli.md) for how `--backend` interacts with profiles
+and `--allow-email-proxy`.
 
 ## Collector families
 

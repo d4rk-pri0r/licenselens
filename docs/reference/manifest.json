@@ -5,14 +5,15 @@
   "coverage_gap_count": 16,
   "coverage_row_count": 131,
   "coverage_source": "catalog/coverage/scuba-2026-08.yaml",
+  "excluded_item_count": 6,
   "generated": {
     "capabilities.md": "9ee1768e6994750aac59647c1960bb53217cdd62e1f81bf5dc068981d241b912",
     "checks.md": "4fdd4c794eba059bce381e90c550786d20c01836fa9551bde9174b94fbad0da6",
-    "coverage.md": "4adfb2970173da588d3334d105d36631d8551b8ebad139ccb7dc6f22f6873847",
-    "index.md": "aea8243c0385d91733d3bdf91975f783fd68cd49a2e0d0dca05f9ab8b1d83136",
+    "coverage.md": "5f2297da9bea71cd283f44fe91275af0ea38dab98c465e3fcbf9199f8e51fdce",
+    "index.md": "4f13606e74438c8ccffa71c0469c898b669f03843d8f12da0c277009ed7122ba",
     "permissions.md": "ee9f9eacb046b235075a2255872b7923da8491abdd792a21eb099fb6b150313b",
     "profiles.md": "9a095e83b755f5486a66d2b93ee76fc871e0908d9095d344c2b30bf00beaa95a",
-    "reference.json": "a6110148eeae67dce896361c0e1c3c4f4acba0053269058590d39a582602e2df"
+    "reference.json": "c15bbc6b07df36921f0550ede5ad43deddf76f53a1ff420773b60667adf8896b"
   },
   "generator": "scripts/generate_reference_docs.py",
   "package_version": "0.4.0",
@@ -22,7 +23,7 @@
   "sample_version": "0.4.0",
   "sources": {
     "catalog/capabilities.yaml": "eb555f42277313b26233b163c938449f7427a1f08d1bda102179300f94beecac",
-    "catalog/coverage/scuba-2026-08.yaml": "64e19fa5c4b23f564574cdeac92ef2a39665f31cfb5e11031bb50614dc3a9542",
+    "catalog/coverage/scuba-2026-08.yaml": "d587763fddd6f606aa2d96477a37128218147f3229150649a312893f596038e1",
     "catalog/profiles/collaboration.yaml": "a5d0b1ef3d6f665f00a488dcee1ce2760c7ac655fea4189135655f7aaec307ae",
     "catalog/profiles/core.yaml": "cd910d18ce527b787b4109d5ebe22873033fadf41036138ad0ad259b1f909308",
     "catalog/profiles/data-protection.yaml": "ae06f8ca44397740cf985da42afa111c38cf9210cdd73e70799b65ee0097e889",

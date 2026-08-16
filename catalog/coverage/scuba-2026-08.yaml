@@ -1611,3 +1611,16 @@ untracked_policies:
     policy_id: MS.TEAMS.5.3v1
     source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/teams.md#L661
     rationale: Legacy v1 superseded by mapped MS.TEAMS.5.3v2.
+excluded_scope:
+  - item: Microsoft Sentinel depth
+    reason: Azure-billed surface, not an M365 entitlement; the five existing sentinel checks are the coverage ceiling.
+  - item: Azure Defender for Cloud / CSPM expansion
+    reason: Outside M365-entitlement realization; the az-cspm-out-of-scope check flags that boundary explicitly.
+  - item: Azure resource posture (NSGs, key vaults, storage)
+    reason: Not LicenseLens's job — the product assesses M365 entitlements, not Azure infrastructure hardening.
+  - item: Entra Verified ID / decentralized identity
+    reason: Niche identity scenario, not an entitlement-realization control.
+  - item: Automatic remediation / write-back
+    reason: Read-only tool by design (docs/limitations.md); the remediation loop uses the portal deep link plus rescan.
+  - item: SaaS backend, dashboards, telemetry, database
+    reason: "Out of thesis (product brief): local, offline, self-contained tooling only."

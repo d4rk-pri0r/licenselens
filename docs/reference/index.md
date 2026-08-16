@@ -11,6 +11,7 @@ Machine-generated from the todo-5 reference model (package version **0.4.0**).
 | [Graph permissions](permissions.md) | 20 |
 | [Coverage rows](coverage.md) | 131 |
 | [Untracked baseline rows](coverage.md) | 4 |
+| [Intentionally excluded items](coverage.md) | 6 |
 | Coverage gaps (manual/unsupported/not-applicable) | 16 |
 
 ## Provenance

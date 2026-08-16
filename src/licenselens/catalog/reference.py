@@ -9,7 +9,11 @@ import yaml
 from pydantic import TypeAdapter
 
 from licenselens.auth import REQUIRED_GRAPH_APP_PERMISSIONS
-from licenselens.catalog._reference_coverage import load_coverage_rows, load_untracked_rows
+from licenselens.catalog._reference_coverage import (
+    load_coverage_rows,
+    load_excluded_items,
+    load_untracked_rows,
+)
 from licenselens.catalog._reference_models import (
     ReferenceCapability,
     ReferenceCatalogError,
@@ -52,6 +56,8 @@ def build_reference_model(paths: ReferenceModelPaths | None = None) -> Reference
         {row.policy_id for row in coverage_rows},
     )
     errors.extend(untracked_errors)
+    excluded_items, excluded_errors = load_excluded_items(source_paths.coverage_path)
+    errors.extend(excluded_errors)
     if errors:
         raise ReferenceCatalogError(tuple(sorted(errors)))
     return ReferenceModel(
@@ -83,6 +89,7 @@ def build_reference_model(paths: ReferenceModelPaths | None = None) -> Reference
         permission_modules=tuple(sorted(modules)),
         coverage_rows=tuple(sorted(coverage_rows, key=lambda row: row.policy_id)),
         untracked_coverage_rows=tuple(sorted(untracked_rows, key=lambda row: row.policy_id)),
+        excluded_items=tuple(sorted(excluded_items, key=lambda row: row.item)),
     )
 
 

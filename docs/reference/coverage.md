@@ -176,3 +176,18 @@ superseded or removed upstream, with the disposition recorded.
 | `MS.TEAMS.5.1v1` | `teams` | Legacy v1 superseded by mapped MS.TEAMS.5.1v2. | `PowerShell/ScubaGear/baselines/teams.md` |
 | `MS.TEAMS.5.2v1` | `teams` | Legacy v1 superseded by mapped MS.TEAMS.5.2v2. | `PowerShell/ScubaGear/baselines/teams.md` |
 | `MS.TEAMS.5.3v1` | `teams` | Legacy v1 superseded by mapped MS.TEAMS.5.3v2. | `PowerShell/ScubaGear/baselines/teams.md` |
+
+## Intentionally excluded
+
+The following product-scope items are deliberately out of LicenseLens's
+thesis (the maturity plan's explicit reject list). Each carries its
+reason, so nothing is missing merely because nobody remembered it.
+
+| Item | Reason |
+|------|--------|
+| Automatic remediation / write-back | Read-only tool by design (docs/limitations.md); the remediation loop uses the portal deep link plus rescan. |
+| Azure Defender for Cloud / CSPM expansion | Outside M365-entitlement realization; the az-cspm-out-of-scope check flags that boundary explicitly. |
+| Azure resource posture (NSGs, key vaults, storage) | Not LicenseLens's job — the product assesses M365 entitlements, not Azure infrastructure hardening. |
+| Entra Verified ID / decentralized identity | Niche identity scenario, not an entitlement-realization control. |
+| Microsoft Sentinel depth | Azure-billed surface, not an M365 entitlement; the five existing sentinel checks are the coverage ceiling. |
+| SaaS backend, dashboards, telemetry, database | Out of thesis (product brief): local, offline, self-contained tooling only. |

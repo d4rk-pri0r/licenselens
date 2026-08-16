@@ -59,8 +59,8 @@ tenant metadata. Treat them as **sensitive**. Do not commit live report
 artifacts to public repos or share them without the same controls you use for
 tenant configuration exports.
 
-Profile schema fields such as `redact_tenant_ids` are accepted on assessment
-profiles but are **not** applied to HTML/JSON/MD report output today. Do not
+Profile schema fields such as `redact_tenant_ids` are accepted on profiles
+but are **not** applied to HTML/JSON/MD report output today. Do not
 assume JSON is stripped of tenant identifiers.
 
 The HTML report may also embed report JSON for offline interactivity

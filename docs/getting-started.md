@@ -166,10 +166,10 @@ licenselens doctor --live --auth client_secret --profile full \
   --workspace-resource-id "/subscriptions/.../resourceGroups/.../providers/Microsoft.OperationalInsights/workspaces/..."
 ```
 
-Assessment profile ids on doctor use `--assessment-profile` (repeatable), not
+Profile ids on doctor use `--assessment-profile` (repeatable), not
 `--profile`.
 
-3. Scan (on `scan` / `demo` / `quickstart`, `--profile` is an **assessment profile id**):
+3. Scan (on `scan` / `demo` / `quickstart`, `--profile` is a **profile id**):
 
 ```bash
 licenselens scan --live --auth client_secret --profile identity -o reports

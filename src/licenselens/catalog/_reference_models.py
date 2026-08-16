@@ -91,6 +91,11 @@ class ReferenceUntrackedRow(StrictReferenceModel):
     source_path: str
 
 
+class ReferenceExcludedItem(StrictReferenceModel):
+    item: str
+    reason: str
+
+
 class ReferenceModel(StrictReferenceModel):
     capabilities: tuple[ReferenceCapability, ...]
     checks: tuple[ReferenceCheck, ...]
@@ -99,3 +104,4 @@ class ReferenceModel(StrictReferenceModel):
     permission_modules: tuple[str, ...]
     coverage_rows: tuple[ReferenceCoverageRow, ...]
     untracked_coverage_rows: tuple[ReferenceUntrackedRow, ...]
+    excluded_items: tuple[ReferenceExcludedItem, ...]

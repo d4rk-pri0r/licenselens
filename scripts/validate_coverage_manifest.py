@@ -35,6 +35,7 @@ ALLOWED_FIELDS: Final = frozenset(
     }
 )
 UNTRACKED_ALLOWED_FIELDS: Final = frozenset({"product", "policy_id", "source_url", "rationale"})
+EXCLUDED_ALLOWED_FIELDS: Final = frozenset({"item", "reason"})
 FORBIDDEN_FIELDS: Final = frozenset(
     {"name", "implementation", "resources", "recommendation", "long_rationale"}
 )
@@ -129,6 +130,7 @@ type RowValue = str | int | bool | list[str] | None
 class ValidationResult:
     policy_count: int
     untracked_count: int
+    excluded_count: int
     baseline_total: int
     product_counts: Mapping[str, int]
     sha256: str
@@ -145,16 +147,21 @@ def validate_manifest(path: Path) -> ValidationResult:
     try:
         raw = yaml.safe_load(text)
     except yaml.YAMLError as exc:
-        return ValidationResult(0, 0, 0, {}, _sha256(text), (f"malformed_yaml:{exc}",))
+        return ValidationResult(0, 0, 0, 0, {}, _sha256(text), (f"malformed_yaml:{exc}",))
     if not isinstance(raw, dict):
-        return ValidationResult(0, 0, 0, {}, _sha256(text), ("malformed_manifest:root",))
+        return ValidationResult(0, 0, 0, 0, {}, _sha256(text), ("malformed_manifest:root",))
     policies = raw.get("policies")
     if not isinstance(policies, list):
-        return ValidationResult(0, 0, 0, {}, _sha256(text), ("malformed_manifest:policies",))
+        return ValidationResult(0, 0, 0, 0, {}, _sha256(text), ("malformed_manifest:policies",))
     untracked = raw.get("untracked_policies") or []
     if not isinstance(untracked, list):
         return ValidationResult(
-            0, 0, 0, {}, _sha256(text), ("malformed_manifest:untracked_policies",)
+            0, 0, 0, 0, {}, _sha256(text), ("malformed_manifest:untracked_policies",)
+        )
+    excluded = raw.get("excluded_scope") or []
+    if not isinstance(excluded, list):
+        return ValidationResult(
+            0, 0, 0, 0, {}, _sha256(text), ("malformed_manifest:excluded_scope",)
         )
 
     seen: set[str] = set()
@@ -192,6 +199,18 @@ def validate_manifest(path: Path) -> ValidationResult:
             if product in observed:
                 observed[product].add(policy_id)
 
+    excluded_seen: set[str] = set()
+    for index, entry in enumerate(excluded):
+        if not isinstance(entry, dict):
+            errors.append(f"malformed_excluded_item:{index}")
+            continue
+        errors.extend(_validate_excluded_entry(entry, index))
+        item = entry.get("item")
+        if isinstance(item, str):
+            if item in excluded_seen:
+                errors.append(f"duplicate_excluded_item:{index}:{item}")
+            excluded_seen.add(item)
+
     for product, expected_ids in EXPECTED_POLICIES.items():
         missing = sorted(expected_ids - observed[product])
         extra = sorted(observed[product] - expected_ids)
@@ -203,11 +222,25 @@ def validate_manifest(path: Path) -> ValidationResult:
     return ValidationResult(
         len(policies),
         len(untracked),
+        len(excluded),
         baseline_total,
         dict(sorted(product_counts.items())),
         _sha256(text),
         tuple(errors),
     )
+
+
+def _validate_excluded_entry(row: dict[str, RowValue], index: int) -> list[str]:
+    errors: list[str] = []
+    extra = sorted(set(row) - EXCLUDED_ALLOWED_FIELDS)
+    errors.extend(f"excluded_unknown_field:{index}:{field}" for field in extra)
+    item = row.get("item")
+    reason = row.get("reason")
+    if not isinstance(item, str) or not item.strip():
+        errors.append(f"excluded_missing_item:{index}")
+    if not isinstance(reason, str) or not reason.strip():
+        errors.append(f"excluded_missing_reason:{index}")
+    return errors
 
 
 def _validate_untracked_row(row: dict[str, RowValue], index: int) -> list[str]:
@@ -327,6 +360,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     result = validate_manifest(path)
     print(f"policy_count={result.policy_count}")
     print(f"untracked_count={result.untracked_count}")
+    print(f"excluded_count={result.excluded_count}")
     print(f"baseline_total={result.baseline_total}")
     print(f"product_counts={result.product_counts}")
     print(f"sha256={result.sha256}")

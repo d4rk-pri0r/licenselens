@@ -18,7 +18,7 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
 - **140-check pack** — 12 checks at the 0.3.0 tag grew to 140 across identity,
   collaboration, defender, exchange, purview, endpoint, power-bi,
   power-platform, sentinel, and azure (`docs/reference/checks.md`).
-- **Assessment profiles** — 11 built-in profiles under `catalog/profiles/`
+- **Profiles** — 11 built-in profiles under `catalog/profiles/`
   plus scan `--profile` / `--config` / `--rules` / `--backend` and doctor
   `--assessment-profile`.
 - **Report archive** — `--report-archive` writes a deterministic offline ZIP
@@ -127,8 +127,8 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
 
 - `diff` rank ordering mirrors engine finding priority (gap < partial <
   skipped < error < ok < not_licensed)
-- Batch entries support `auth_mode` aliases (`device`, `client_secret`,
-  `azure_cli`, `dry_run`)
+- Batch entries support `auth_mode` aliases (`device`, `client-secret`,
+  `azure-cli`, `dry-run`; underscore variants are also accepted)
 
 ## [0.2.0] — 2026-08-05
 

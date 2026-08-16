@@ -1,6 +1,6 @@
 # Profiles and custom rules
 
-Assessment profiles are declarative YAML files that shape *what* a scan looks
+Profiles are declarative YAML files that shape *what* a scan looks
 at, *which* backends it prefers, and *what* redaction settings the schema
 accepts. They live under `catalog/profiles/` and validate against a JSON schema
 (`catalog/profiles/assessment-profile.schema.json`) before any network call.
@@ -28,14 +28,14 @@ Authoritative pack/check expansion: [Profile reference](reference/profiles.md).
 !!! warning "`--profile` means different things on `scan` vs `doctor`"
 
     On **`scan`**, **`demo`**, **`quickstart`**, and **`batch`**, `--profile`
-    is an **assessment profile id** (`core`, `identity`, `full`, …).
+    is a **profile id** (`core`, `identity`, `full`, …).
 
     On **`doctor`**, `--profile` is **probe depth** only: `basic` (default,
-    core Graph) or `full` (also MDE API + Sentinel). Assessment profiles on
+    core Graph) or `full` (also MDE API + Sentinel). Profiles on
     doctor use the separate, repeatable flag **`--assessment-profile`**.
 
 ```bash
-# Assessment profile on scan
+# Profile on scan
 licenselens scan --profile identity -o reports
 licenselens scan --live --auth client_secret --profile full -o reports
 

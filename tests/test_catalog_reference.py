@@ -46,6 +46,16 @@ def test_reference_model_includes_current_catalog_and_is_deterministic() -> None
     assert len(model.coverage_rows) + len(model.untracked_coverage_rows) == 135
     assert sum(row.product == "defender" for row in model.coverage_rows) == 19
     assert {row.product for row in model.untracked_coverage_rows} <= {"exo", "teams"}
+    assert len(model.excluded_items) == 6
+    assert {item.item for item in model.excluded_items} >= {
+        "Microsoft Sentinel depth",
+        "Azure Defender for Cloud / CSPM expansion",
+        "Azure resource posture (NSGs, key vaults, storage)",
+        "Entra Verified ID / decentralized identity",
+        "Automatic remediation / write-back",
+        "SaaS backend, dashboards, telemetry, database",
+    }
+    assert all(item.reason for item in model.excluded_items)
     assert [check.id for check in model.checks] == sorted(check.id for check in model.checks)
     assert {check.support_state for check in model.checks} <= {
         "direct",
@@ -272,6 +282,24 @@ def test_reference_model_rejects_malformed_untracked_rows(tmp_path: Path) -> Non
     assert "unresolved_untracked_path:1:purview" in exc_info.value.diagnostics
     assert "invalid_untracked_policy:1:NOT-A-POLICY-ID" in exc_info.value.diagnostics
     assert "missing_untracked_rationale:1:NOT-A-POLICY-ID" in exc_info.value.diagnostics
+
+
+def test_reference_model_rejects_malformed_excluded_items(tmp_path: Path) -> None:
+    # Given: an excluded-scope list with an unknown field and a row missing item/reason.
+    paths = _copy_reference_inputs(tmp_path)
+    data = _coverage_data(paths)
+    data["excluded_scope"] = [
+        {"item": "", "reason": "", "extra": "unknown"},
+        {"item": "Something excluded", "reason": "Because."},
+    ]
+    paths.coverage_path.write_text(yaml.safe_dump(data), encoding="utf-8")
+
+    # When / Then: excluded items are validated as typed diagnostics (K2).
+    with pytest.raises(ReferenceCatalogError) as exc_info:
+        build_reference_model(paths)
+    assert "unknown_excluded_field:0:extra" in exc_info.value.diagnostics
+    assert "missing_excluded_item:0" in exc_info.value.diagnostics
+    assert "missing_excluded_reason:0" in exc_info.value.diagnostics
 
 
 def _copy_reference_inputs(tmp_path: Path) -> ReferenceModelPaths:

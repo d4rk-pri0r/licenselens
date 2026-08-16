@@ -252,6 +252,7 @@ def _render_manifest(
         "permission_count": len(model.graph_permissions),
         "coverage_row_count": len(model.coverage_rows),
         "untracked_row_count": len(model.untracked_coverage_rows),
+        "excluded_item_count": len(model.excluded_items),
         "baseline_row_total": len(model.coverage_rows) + len(model.untracked_coverage_rows),
         "coverage_gap_count": sum(
             row.disposition.value in COVERAGE_GAP_STATES for row in model.coverage_rows
@@ -278,6 +279,7 @@ def _render_index(model: ReferenceModel) -> str:
         f"| [Graph permissions](permissions.md) | {len(model.graph_permissions)} |",
         f"| [Coverage rows](coverage.md) | {len(model.coverage_rows)} |",
         f"| [Untracked baseline rows](coverage.md) | {len(model.untracked_coverage_rows)} |",
+        f"| [Intentionally excluded items](coverage.md) | {len(model.excluded_items)} |",
         f"| Coverage gaps (manual/unsupported/not-applicable) | {gap_count} |",
         "",
         "## Provenance",
@@ -513,6 +515,20 @@ def _render_coverage(model: ReferenceModel) -> str:
                     source=_cell(row.source_path or "—"),
                 )
             )
+        lines.append("")
+    if model.excluded_items:
+        lines += [
+            "## Intentionally excluded",
+            "",
+            "The following product-scope items are deliberately out of LicenseLens's",
+            "thesis (the maturity plan's explicit reject list). Each carries its",
+            "reason, so nothing is missing merely because nobody remembered it.",
+            "",
+            "| Item | Reason |",
+            "|------|--------|",
+        ]
+        for item in model.excluded_items:
+            lines.append(f"| {_cell(item.item)} | {_cell(item.reason)} |")
         lines.append("")
     return "\n".join(lines)
 
