@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-from licenselens.errors import AuthError
+from licenselens.errors import AuthConfigError, AuthError
 
 # Default public client used only when --client-id is omitted for device code.
 # Customers should prefer their own app registration (see docs/app-registration.md).
@@ -97,7 +97,7 @@ def build_credential(
             DeviceCodeCredential,
         )
     except ImportError as exc:  # pragma: no cover
-        raise AuthError(
+        raise AuthConfigError(
             "azure-identity is required for live authentication. "
             "Install with: pip install 'licenselens'"
         ) from exc
@@ -107,7 +107,7 @@ def build_credential(
 
     if mode == AuthMode.CLIENT_SECRET:
         if not tenant_id or not client_id or not client_secret:
-            raise AuthError(
+            raise AuthConfigError(
                 "Client-secret auth requires tenant id, client id, and client secret. "
                 "Pass --tenant-id / --client-id or set AZURE_TENANT_ID, "
                 "AZURE_CLIENT_ID, and AZURE_CLIENT_SECRET."
@@ -120,7 +120,7 @@ def build_credential(
 
     if mode == AuthMode.DEVICE_CODE:
         if not tenant_id:
-            raise AuthError(
+            raise AuthConfigError(
                 "Device-code auth requires a tenant id (--tenant-id or AZURE_TENANT_ID)."
             )
         public_client = client_id or DEFAULT_PUBLIC_CLIENT_ID

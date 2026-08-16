@@ -5,6 +5,7 @@ import yaml
 from typer.testing import CliRunner
 
 from licenselens.cli import app
+from licenselens.errors import AuthError
 
 runner = CliRunner()
 
@@ -234,16 +235,93 @@ def test_demo_command_prints_html_path(tmp_path: Path):
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
 
 
-def test_quickstart_help_and_invalid_secret_rail():
+def test_resolve_quickstart_inputs_non_tty_falls_back_to_demo(monkeypatch):
+    from licenselens.cli_prompts import resolve_quickstart_inputs
+
+    monkeypatch.setattr("licenselens.cli_prompts.is_interactive", lambda: False)
+    result = resolve_quickstart_inputs(tenant_id=None, client_id=None, client_secret=None)
+    assert result.fallback_demo is True
+    assert result.tenant_id is None
+
+
+def test_resolve_quickstart_inputs_non_tty_uses_env_tenant_id(monkeypatch):
+    from licenselens.cli_prompts import resolve_quickstart_inputs
+
+    monkeypatch.setattr("licenselens.cli_prompts.is_interactive", lambda: False)
+    monkeypatch.setenv("AZURE_TENANT_ID", "env-tid")
+    result = resolve_quickstart_inputs(tenant_id=None, client_id=None, client_secret=None)
+    assert result.fallback_demo is False
+    assert result.tenant_id == "env-tid"
+
+
+def test_resolve_quickstart_inputs_interactive_prompts_tenant_id(monkeypatch):
+    from licenselens.cli_prompts import resolve_quickstart_inputs
+
+    monkeypatch.setattr("licenselens.cli_prompts.is_interactive", lambda: True)
+    prompts = iter(["tenant-guid", "app-guid"])
+    confirms = iter([False])
+    monkeypatch.setattr("typer.prompt", lambda *a, **k: next(prompts))
+    monkeypatch.setattr("typer.confirm", lambda *a, **k: next(confirms))
+
+    result = resolve_quickstart_inputs(tenant_id=None, client_id=None, client_secret=None)
+    assert result.fallback_demo is False
+    assert result.tenant_id == "tenant-guid"
+    assert result.client_id == "app-guid"
+
+
+def test_quickstart_help_and_invalid_secret_no_rail(monkeypatch):
+    monkeypatch.delenv("AZURE_TENANT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
     result = runner.invoke(app, ["quickstart", "--help"])
     assert result.exit_code == 0, result.output
     assert "read-only" in result.stdout.lower()
 
-    # Client-secret path without the other credentials -> plain-English rail.
+    # Client-secret path without the other credentials is a config error:
+    # actionable message, exit 2, and NO "Sign-in blocked?" rail.
     result = runner.invoke(app, ["quickstart", "--client-secret", "s3cret"])
     assert result.exit_code == 2
+    assert "tenant" in result.stdout.lower()
+    assert "app-only" not in result.stdout.lower()
+
+
+def test_quickstart_non_tty_no_tenant_id_falls_back_to_demo(tmp_path: Path, monkeypatch):
+    monkeypatch.delenv("AZURE_TENANT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
+    out = tmp_path / "out"
+    result = runner.invoke(app, ["quickstart", "--output-dir", str(out)])
+    assert result.exit_code == 0, result.output
+    assert "tenant" in result.stdout.lower()
+    assert "demo" in result.stdout.lower()
+    assert "app-only" not in result.stdout.lower()
+    assert (out / "security-license-lens-report.html").is_file()
+
+
+def test_quickstart_genuine_auth_failure_shows_rail(tmp_path: Path, monkeypatch):
+    monkeypatch.delenv("AZURE_TENANT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)
+    monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
+
+    def _fail_doctor(_auth):
+        raise AuthError("sign-in was blocked by a conditional-access policy")
+
+    monkeypatch.setattr("licenselens.cli.run_doctor", _fail_doctor)
+    result = runner.invoke(
+        app,
+        ["quickstart", "--tenant-id", "t-1234", "--output-dir", str(tmp_path / "out")],
+    )
+    assert result.exit_code == 2, result.output
     assert "app-only" in result.stdout.lower()
-    assert "client_secret" in result.stdout
+
+
+def test_doctor_dry_run_does_not_print_ready():
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 0, result.output
+    assert "Ready — all preflight" not in result.stdout
+    assert "dry-run" in result.stdout.lower()
+    assert "no live tenant calls" in result.stdout.lower()
+    assert "doctor --live" in result.stdout.lower()
 
 
 def test_scan_help_exposes_profile_config_rules_backend_archive():
@@ -321,6 +399,7 @@ def test_scan_invalid_profile_exits_2_before_auth(tmp_path: Path, monkeypatch):
     )
     assert result.exit_code == 2, result.output
     assert "unknown profile" in result.stdout.lower()
+    assert "identity" in result.stdout.lower()
     assert auth_calls == []
 
 
@@ -465,6 +544,9 @@ def test_doctor_probe_profile_still_basic_full_only():
     result = runner.invoke(app, ["doctor", "--profile", "deep"])
     assert result.exit_code == 2
     assert "profile" in result.stdout.lower()
+    assert "basic" in result.stdout.lower()
+    assert "full" in result.stdout.lower()
+    assert "--assessment-profile" in result.stdout.lower()
 
 
 def test_checks_lists_profile_backend_mode_state():

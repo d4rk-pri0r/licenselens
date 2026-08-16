@@ -11,6 +11,15 @@ class AuthError(LicenseLensError):
     """Authentication or credential configuration failed."""
 
 
+class AuthConfigError(AuthError):
+    """Missing/incomplete auth configuration (tenant id, client id, secret).
+
+    Distinct from a genuine sign-in failure: nothing was attempted against a
+    live service, so guidance about consent/conditional-access blocking does
+    not apply. Subclasses AuthError so existing handlers keep working.
+    """
+
+
 class GraphError(LicenseLensError):
     """Microsoft Graph request failed."""
 

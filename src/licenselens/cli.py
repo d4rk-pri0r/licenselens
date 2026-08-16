@@ -26,9 +26,9 @@ from licenselens.config_models import RedactionSettings
 from licenselens.diff_report import write_diff_report
 from licenselens.doctor import run_doctor
 from licenselens.engine.loader import load_checks
-from licenselens.engine.profiles import ResolvedProfile
+from licenselens.engine.profiles import ResolvedProfile, load_builtin_profiles
 from licenselens.engine.runner import run_scan
-from licenselens.errors import AuthError, GraphError, LicenseLensError
+from licenselens.errors import AuthConfigError, AuthError, GraphError, LicenseLensError
 from licenselens.models import CheckPack, ScanResult, Workload
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 
@@ -140,7 +140,14 @@ def _resolve_profile_or_exit(
             backends=backend,
         )
     except ScanConfigError as exc:
-        console.print(f"[red]Configuration error:[/red] {exc}")
+        message = str(exc)
+        if message.startswith("unknown profile:"):
+            available = ", ".join(str(p.id) for p in load_builtin_profiles())
+            message = (
+                f"{message} Available assessment profile ids for --profile: "
+                f"{available}. (doctor --profile is different: basic or full probe depth.)"
+            )
+        console.print(f"[red]Configuration error:[/red] {message}")
         raise typer.Exit(code=2) from exc
 
 
@@ -350,6 +357,12 @@ def doctor_cmd(
             "[red]Not ready — fix the ✗ items above, then re-run `licenselens doctor --live`.[/red]"
         )
         raise typer.Exit(code=2)
+    if report.mode == AuthMode.DRY_RUN:
+        console.print(
+            "[dim]Dry-run — no live tenant calls were made; run "
+            "`licenselens doctor --live` for a real preflight check.[/dim]"
+        )
+        raise typer.Exit(code=0)
     if not report.ok:
         console.print(
             "[yellow]Ready enough — identity scanning works. ⚠ items are optional "
@@ -529,7 +542,7 @@ def scan_cmd(
         )
     except AuthError as exc:
         console.print(f"[red]Auth configuration error:[/red] {exc}")
-        if wizard.live:
+        if wizard.live and not isinstance(exc, AuthConfigError):
             _print_device_code_rail()
         raise typer.Exit(code=2) from exc
 
@@ -608,6 +621,30 @@ def scan_cmd(
     _exit_for_scan(result.has_actionable_gaps)
 
 
+def _run_offline_demo(
+    output_dir: Path,
+    resolved_profile: ResolvedProfile | None,
+    redaction: RedactionSettings,
+    report_archive: bool,
+) -> Path:
+    """Run the offline demo scan, write artifacts, and print the summary."""
+    auth = build_auth_context(mode=AuthMode.DRY_RUN)
+    console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
+    result = run_scan(auth, dry_run=True, profile=resolved_profile)
+    html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
+        result, output_dir, report_archive=report_archive, redaction=redaction
+    )
+    _print_top_card(result)
+    console.print(f"  HTML  {html_path}")
+    if archive_path is not None:
+        console.print(f"  ZIP   {archive_path}")
+    console.print(
+        "[green]Demo complete.[/green] This is a sample report from curated demo data — "
+        "it is not a real tenant."
+    )
+    return html_path
+
+
 @app.command("demo")
 def demo_cmd(
     output_dir: Path = typer.Option(
@@ -660,19 +697,8 @@ def demo_cmd(
         profile=profile, config=config, rules=rules, backend=backend
     )
     redaction = _effective_redaction_settings(resolved_profile, redact)
-    auth = build_auth_context(mode=AuthMode.DRY_RUN)
-    console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
-    result = run_scan(auth, dry_run=True, profile=resolved_profile)
-    html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
-        result, output_dir, report_archive=report_archive, redaction=redaction
-    )
-    _print_top_card(result)
-    console.print(f"  HTML  {html_path}")
-    if archive_path is not None:
-        console.print(f"  ZIP   {archive_path}")
-    console.print(
-        "[green]Demo complete.[/green] This is a sample report from curated demo data — "
-        "it is not a real tenant."
+    html_path = _run_offline_demo(
+        output_dir, resolved_profile, redaction, report_archive=report_archive
     )
     if open_browser:
         import webbrowser
@@ -732,6 +758,8 @@ def quickstart_cmd(
     ),
 ) -> None:
     """Walk through a read-only scan against your own tenant (no code needed)."""
+    from licenselens.cli_prompts import resolve_quickstart_inputs
+
     resolved_profile = _resolve_profile_or_exit(
         profile=profile, config=config, rules=rules, backend=backend
     )
@@ -745,17 +773,34 @@ def quickstart_cmd(
             border_style=IDENTITY_ACCENT,
         )
     )
-    if client_secret:
+
+    wizard = resolve_quickstart_inputs(
+        tenant_id=tenant_id,
+        client_id=client_id,
+        client_secret=client_secret,
+    )
+    if wizard.fallback_demo:
+        console.print(
+            "[yellow]No tenant id provided, running the offline demo instead — "
+            "pass --tenant-id or AZURE_TENANT_ID for a live walkthrough.[/yellow]"
+        )
+        _run_offline_demo(output_dir, resolved_profile, redaction, report_archive=report_archive)
+        raise typer.Exit(code=0)
+
+    if wizard.client_secret:
         mode = AuthMode.CLIENT_SECRET
     else:
         mode = AuthMode.DEVICE_CODE
     try:
         auth = build_auth_context(
             mode=mode,
-            tenant_id=tenant_id,
-            client_id=client_id,
-            client_secret=client_secret,
+            tenant_id=wizard.tenant_id,
+            client_id=wizard.client_id,
+            client_secret=wizard.client_secret,
         )
+    except AuthConfigError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=2) from exc
     except AuthError as exc:
         console.print(f"[red]{exc}[/red]")
         _print_device_code_rail()

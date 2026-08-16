@@ -103,7 +103,11 @@ def run_doctor(
     try:
         profile_value = DoctorProfile(profile)
     except ValueError as exc:
-        raise ValueError(f"Unknown doctor profile: {profile!r} (expected basic or full).") from exc
+        raise ValueError(
+            f"Unknown doctor --profile: {profile!r} (expected basic or full — "
+            "the preflight probe depth). Assessment profile ids (identity, "
+            "full, …) go to --assessment-profile, not --profile."
+        ) from exc
     report = DoctorReport(mode=auth.mode, profile=profile_value)
 
     if auth.mode == AuthMode.DRY_RUN:

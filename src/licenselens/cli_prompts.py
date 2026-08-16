@@ -36,12 +36,37 @@ class ScanWizardResult:
     run_doctor: bool = False
 
 
+@dataclass
+class QuickstartWizardResult:
+    """Resolved quickstart inputs after optional interactive prompts."""
+
+    tenant_id: str | None = None
+    client_id: str | None = None
+    client_secret: str | None = None
+    fallback_demo: bool = False
+
+
 def is_interactive() -> bool:
     """True when stdin is a TTY (safe to prompt)."""
     try:
         return sys.stdin.isatty()
     except Exception:  # noqa: BLE001
         return False
+
+
+def prompt_for_tenant_id() -> str:
+    """Prompt for an Azure tenant id; exit 2 with guidance when left blank.
+
+    Shared by the scan and quickstart wizards (device-code sign-in).
+    """
+    tid = typer.prompt("Azure tenant ID (Directory ID)", default="").strip() or None
+    if not tid:
+        console.print(
+            "[red]Device-code sign-in needs a tenant ID.[/red] "
+            "Find it in Entra ID → Overview → Tenant ID."
+        )
+        raise typer.Exit(code=2)
+    return tid
 
 
 def _non_tty_live_auth_error() -> None:
@@ -191,13 +216,7 @@ def resolve_scan_inputs(
             _non_tty_live_auth_error()
     elif auth_mode == AuthMode.DEVICE_CODE:
         if interactive and not tid:
-            tid = typer.prompt("Azure tenant ID (Directory ID)", default="").strip() or None
-            if not tid:
-                console.print(
-                    "[red]Device-code sign-in needs a tenant ID.[/red] "
-                    "Find it in Entra ID → Overview → Tenant ID."
-                )
-                raise typer.Exit(code=2)
+            tid = prompt_for_tenant_id()
         if interactive and not cid:
             use_default = typer.confirm(
                 "Use the default public client for device code? "
@@ -245,3 +264,45 @@ def resolve_scan_inputs(
         workspace_resource_id=workspace,
         run_doctor=run_doc,
     )
+
+
+def resolve_quickstart_inputs(
+    *,
+    tenant_id: str | None,
+    client_id: str | None,
+    client_secret: str | None,
+) -> QuickstartWizardResult:
+    """Fill missing quickstart auth inputs, mirroring the scan wizard.
+
+    In a TTY, a missing tenant id is prompted (device-code path); an
+    explicit client secret also prompts for a missing tenant id / client id.
+    Without a TTY and without a tenant id, the result asks the caller to run
+    the offline demo instead of hard-failing a fresh install.
+    """
+    interactive = is_interactive()
+    tid = tenant_id or _env("AZURE_TENANT_ID")
+    cid = client_id or _env("AZURE_CLIENT_ID")
+    secret = client_secret or _env("AZURE_CLIENT_SECRET")
+
+    if secret:
+        if interactive:
+            if not tid:
+                tid = typer.prompt("Azure tenant ID (AZURE_TENANT_ID)").strip() or None
+            if not cid:
+                cid = typer.prompt("App (client) ID (AZURE_CLIENT_ID)").strip() or None
+        return QuickstartWizardResult(tenant_id=tid, client_id=cid, client_secret=secret)
+
+    if not tid:
+        if interactive:
+            tid = prompt_for_tenant_id()
+        else:
+            return QuickstartWizardResult(fallback_demo=True)
+    if interactive and not cid:
+        use_default = typer.confirm(
+            "Use the default public client for device code? "
+            "(OK for a quick try; prefer your own app for production)",
+            default=True,
+        )
+        if not use_default:
+            cid = typer.prompt("App (client) ID").strip() or None
+    return QuickstartWizardResult(tenant_id=tid, client_id=cid)
