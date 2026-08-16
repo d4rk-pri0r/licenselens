@@ -124,8 +124,7 @@ def evaluate_mdo_mailbox_intelligence(
             ),
             evidence=evidence_out,
             customer_summary=(
-                "Mailbox intelligence learns your senders so look-alike "
-                "impersonation is caught."
+                "Mailbox intelligence learns your senders so look-alike impersonation is caught."
             ),
             **direct_meta(),
         )
@@ -233,9 +232,7 @@ def evaluate_mdo_transport_rule_external_forward(
             limitations=["Accepted domains surface was not readable via PowerShell."],
         )
     if suspects:
-        named = "; ".join(
-            f"{name} -> {', '.join(targets)}" for name, targets in sorted(suspects)
-        )
+        named = "; ".join(f"{name} -> {', '.join(targets)}" for name, targets in sorted(suspects))
         return Evaluation(
             status=FindingStatus.GAP,
             summary=f"Transport rule(s) forward or Bcc mail to external addresses: {named}.",

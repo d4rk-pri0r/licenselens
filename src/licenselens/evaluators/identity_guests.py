@@ -197,12 +197,8 @@ def evaluate_cross_tenant_mfa_trust(
         default = _cross_default(evidence)
     partners = list(bundle.get("partners") or [])
 
-    inbound_trust = (default.get("b2bCollaborationInbound") or {}).get(
-        "trustSettings"
-    ) or {}
-    outbound_trust = (default.get("b2bCollaborationOutbound") or {}).get(
-        "trustSettings"
-    ) or {}
+    inbound_trust = (default.get("b2bCollaborationInbound") or {}).get("trustSettings") or {}
+    outbound_trust = (default.get("b2bCollaborationOutbound") or {}).get("trustSettings") or {}
     inbound_default = _mfa_trust(inbound_trust.get("inboundTrust"))
     outbound_default = _mfa_trust(outbound_trust.get("outboundTrust"))
 

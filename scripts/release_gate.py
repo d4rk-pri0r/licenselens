@@ -459,6 +459,10 @@ def check_secret_and_path_scan() -> StepResult:
 def check_source_leakage() -> StepResult:
     """Confirm wheel/sdist contain only the package and its data, nothing else."""
     start = time.monotonic()
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from licenselens.release_guard import version_from_pyproject
+
+    allowed_sdist_roots = {"licenselens", f"licenselens-{version_from_pyproject(REPO_ROOT)}"}
     problems: list[str] = []
     for wheel in sorted((REPO_ROOT / "dist").glob("*.whl")):
         with zipfile.ZipFile(wheel) as zf:
@@ -473,7 +477,7 @@ def check_source_leakage() -> StepResult:
     for sdist in sorted((REPO_ROOT / "dist").glob("*.tar.gz")):
         with tarfile.open(sdist) as tf:
             root_dirs = {m.name.split("/")[0] for m in tf.getmembers() if "/" in m.name}
-        if root_dirs - {"licenselens", "licenselens-0.3.0"}:
+        if root_dirs - allowed_sdist_roots:
             problems.append(f"unexpected_sdist_root:{sdist.name}:{sorted(root_dirs)}")
     duration_ms = int((time.monotonic() - start) * 1000)
     if problems:
@@ -523,13 +527,15 @@ def check_stray_artifacts() -> StepResult:
 def check_checksums() -> StepResult:
     """Compute SHA-256 for every dist artifact and verify a self-consistent manifest."""
     start = time.monotonic()
+    manifest_path = REPO_ROOT / "dist" / "SHA256SUMS"
     artifacts = sorted((REPO_ROOT / "dist").glob("*"))
-    artifacts = [a for a in artifacts if a.is_file()]
+    # The manifest is the record, not a hashed artifact: including it would
+    # always mismatch (its content changes the moment the manifest is written).
+    artifacts = [a for a in artifacts if a.is_file() and a.name != manifest_path.name]
     if not artifacts:
         return StepResult(
             "checksums", "Release checksums match", "fail", 0, 0, "", "no dist artifacts"
         )
-    manifest_path = REPO_ROOT / "dist" / "SHA256SUMS"
     lines = [f"{_sha256(a)}  {a.name}" for a in artifacts]
     manifest_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -680,6 +686,8 @@ def check_provenance_artifacts() -> StepResult:
             "python",
             "scripts/provenance_scan.py",
             "--artifacts",
+            "--root",
+            str(REPO_ROOT / "dist"),
             "--json",
         ],
         timeout=600,
@@ -755,10 +763,14 @@ def validate_receipts_bundle(
 def check_release_scripts() -> StepResult:
     """Exercise the three scripts/release/* gates end-to-end."""
     start = time.monotonic()
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+    from licenselens.release_guard import version_from_pyproject
+
+    version = version_from_pyproject(REPO_ROOT)
     checks: list[tuple[str, tuple[str, ...], int]] = [
         (
-            "verify_version v0.3.0",
-            ("uv", "run", "python", "scripts/release/verify_version.py", "v0.3.0"),
+            f"verify_version v{version}",
+            ("uv", "run", "python", "scripts/release/verify_version.py", f"v{version}"),
             0,
         ),
         (

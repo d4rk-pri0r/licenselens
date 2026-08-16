@@ -486,9 +486,7 @@ def test_bundle_reduced_motion_instant_resolve(page: Page, tmp_path: Path) -> No
 
 
 @pytest.mark.parametrize("renderer", ["single", "bundle"])
-def test_js_disabled_constellation_status_colors(
-    page: Page, tmp_path: Path, renderer: str
-) -> None:
+def test_js_disabled_constellation_status_colors(page: Page, tmp_path: Path, renderer: str) -> None:
     uri = _renderer_uri(renderer, tmp_path)
     context = page.context.browser.new_context(java_script_enabled=False)
     no_js = context.new_page()
@@ -506,8 +504,7 @@ def test_js_disabled_constellation_status_colors(
     chip_colors = _cdp_legend_chip_colors(no_js)
     distinct = {_rgb_tuple(color) for color in chip_colors}
     assert len(distinct) >= 2, (
-        f"{renderer}: legend chips do not carry distinct status colors without JS: "
-        f"{chip_colors}"
+        f"{renderer}: legend chips do not carry distinct status colors without JS: {chip_colors}"
     )
     context.close()
 
@@ -789,7 +786,10 @@ _SORT_EXPECTED = {
 # Keys whose sort demonstrably changes the FIRST row on this renderer. The
 # single-file title sort legitimately keeps the gap finding first (status word
 # dominates its frozen textContent comparator), so title is bundle-only here.
-_SORT_FIRST_ROW_CHANGES = {"single": ("severity", "effort"), "bundle": ("severity", "effort", "title")}
+_SORT_FIRST_ROW_CHANGES = {
+    "single": ("severity", "effort"),
+    "bundle": ("severity", "effort", "title"),
+}
 
 
 @pytest.mark.parametrize("renderer", ["single", "bundle"])
@@ -838,11 +838,9 @@ def test_findings_sort_control_reorders_deterministically(
 # emulation (content present, disclosures expanded, chart fallbacks visible,
 # no blank sections). Both renderers.
 #
-# Note: the bundle has no custom non-forced-colors :focus-visible rule, so its
-# visible focus indicator is Chromium's default ring (outline auto 1px). The
-# gate therefore requires "a visible indicator exists" (style != none,
-# width >= 1px) for the bundle and the DESIGN ring (solid >= 2px) for the
-# single-file renderer, which owns one.
+# Both renderers own the DESIGN focus ring (solid >= 2px accent outline): the
+# single-file foundation carries one and the bundle's app.css carries its own
+# copy, so the gate holds every renderer to the identical ring standard.
 # ---------------------------------------------------------------------------
 
 # Heading levels in DOM order. Levels only — wording is locked elsewhere.
@@ -1004,9 +1002,7 @@ def test_heading_hierarchy_never_skips_a_level(page: Page, tmp_path: Path, rende
 
     levels = page.evaluate(_HEADING_LEVELS_JS)
     assert levels, f"{renderer}: no headings found in the rendered report"
-    assert levels.count(1) == 1, (
-        f"{renderer}: expected exactly one h1, got {levels.count(1)}"
-    )
+    assert levels.count(1) == 1, f"{renderer}: expected exactly one h1, got {levels.count(1)}"
     assert levels[0] == 1, f"{renderer}: the document must open with the h1"
     for previous, current in zip(levels, levels[1:], strict=False):
         assert current <= previous + 1, (
@@ -1034,22 +1030,15 @@ def test_primary_controls_tab_reachable_with_focus_and_names(
         if kind is not None and kind not in seen:
             seen[kind] = stop
     missing = [kind for kind in _PRIMARY_CONTROLS if kind not in seen]
-    assert not missing, (
-        f"{renderer}: primary controls not reached via Tab navigation: {missing}"
-    )
+    assert not missing, f"{renderer}: primary controls not reached via Tab navigation: {missing}"
 
     for kind in _PRIMARY_CONTROLS:
         stop = seen[kind]
         assert stop["name"], f"{renderer}: {kind} control has no accessible name"
-        assert stop["outlineStyle"] != "none" and stop["outlineWidth"] >= 1, (
-            f"{renderer}: {kind} control shows no visible focus indicator: "
+        assert stop["outlineStyle"] == "solid" and stop["outlineWidth"] >= 2, (
+            f"{renderer}: {kind} control lost the DESIGN focus ring (solid >= 2px): "
             f"outline={stop['outlineStyle']!r} width={stop['outlineWidth']}"
         )
-        if renderer == "single":
-            assert stop["outlineStyle"] == "solid" and stop["outlineWidth"] >= 2, (
-                f"{renderer}: {kind} control lost the DESIGN focus ring (solid >= 2px): "
-                f"outline={stop['outlineStyle']!r} width={stop['outlineWidth']}"
-            )
         if kind in ("filter", "caption"):
             assert stop["pressed"] in ("true", "false"), (
                 f"{renderer}: {kind} control missing aria-pressed='true'|'false'"
@@ -1077,13 +1066,11 @@ def test_primary_controls_respond_to_keyboard_activation(
     page.locator("#finding-search").focus()
     page.keyboard.type("Conditional")
     assert visible_count() == "1", (
-        f"{renderer}: typing a search term did not narrow to 1 finding "
-        f"(got {visible_count()})"
+        f"{renderer}: typing a search term did not narrow to 1 finding (got {visible_count()})"
     )
     page.locator("#finding-search").fill("")
     assert visible_count() == "6", (
-        f"{renderer}: clearing the search did not restore all findings "
-        f"(got {visible_count()})"
+        f"{renderer}: clearing the search did not restore all findings (got {visible_count()})"
     )
 
     page.locator("#finding-sort").focus()
@@ -1102,16 +1089,14 @@ def test_primary_controls_respond_to_keyboard_activation(
         f"{renderer}: Enter did not press the status filter button"
     )
     assert visible_count() == "1", (
-        f"{renderer}: pressed status filter did not narrow to 1 finding "
-        f"(got {visible_count()})"
+        f"{renderer}: pressed status filter did not narrow to 1 finding (got {visible_count()})"
     )
     page.keyboard.press("Enter")
     assert toggle.get_attribute("aria-pressed") == "false", (
         f"{renderer}: second Enter did not unpress the status filter button"
     )
     assert visible_count() == "6", (
-        f"{renderer}: unpressed status filter did not restore all findings "
-        f"(got {visible_count()})"
+        f"{renderer}: unpressed status filter did not restore all findings (got {visible_count()})"
     )
 
     caption = page.locator(".constellation-caption").first
@@ -1190,8 +1175,7 @@ def test_print_emulation_renders_complete_expanded_artifact(
             f"{renderer}: section {section['id']!r} has no layout height in print"
         )
         assert section["text"] >= 20, (
-            f"{renderer}: section {section['id']!r} is blank in print "
-            f"({section['text']} chars)"
+            f"{renderer}: section {section['id']!r} is blank in print ({section['text']} chars)"
         )
 
     # Every finding (D articles + E/print rows) stays in the printed artifact.
@@ -1216,13 +1200,6 @@ def test_print_emulation_renders_complete_expanded_artifact(
         assert state["radialLine"] == "static", (
             f"{renderer}: radial print line is not the visible fallback"
         )
-        # The single-file print stylesheet expands every closed disclosure.
-        assert state["closedDetailsBodies"], (
-            f"{renderer}: no closed disclosures found to expand in print"
-        )
-        assert all(display == "block" for display in state["closedDetailsBodies"]), (
-            f"{renderer}: a closed disclosure's content is hidden in print"
-        )
     else:
         assert state["gaugeViz"] == "none", f"{renderer}: posture gauge svg prints"
         assert state["gaugePrint"] == "block", (
@@ -1231,6 +1208,15 @@ def test_print_emulation_renders_complete_expanded_artifact(
         assert state["printListDisplay"] == "block", (
             f"{renderer}: the dedicated print list is not displayed"
         )
+
+    # Every renderer's print stylesheet expands every closed disclosure:
+    # technical evidence is part of the printed record.
+    assert state["closedDetailsBodies"], (
+        f"{renderer}: no closed disclosures found to expand in print"
+    )
+    assert all(display == "block" for display in state["closedDetailsBodies"]), (
+        f"{renderer}: a closed disclosure's content is hidden in print"
+    )
 
     assert state["searchBox"] == "none", (
         f"{renderer}: the search control is not removed from the printed artifact"

@@ -90,7 +90,9 @@ def collect_intune_evidence_bundle(
     if getattr(client, "cloud", None) is CloudEnvironment.CHINA:
         for surface in _SURFACES:
             errors[surface] = "Intune device management is not supported in this cloud."
-        return _bundle([], [], [], None, [], [], None, [], _EMPTY_TAMPER_STATE, licensed_units, False, errors)
+        return _bundle(
+            [], [], [], None, [], [], None, [], _EMPTY_TAMPER_STATE, licensed_units, False, errors
+        )
 
     try:
         devices = client.get_list("/deviceManagement/managedDevices", max_pages=20)
@@ -134,7 +136,9 @@ def collect_intune_evidence_bundle(
         errors["compliance_state_summary"] = str(exc)
 
     try:
-        app_protections = client.get_list("/deviceAppManagement/managedAppProtections", max_pages=30)
+        app_protections = client.get_list(
+            "/deviceAppManagement/managedAppProtections", max_pages=30
+        )
     except GraphError as exc:
         app_protections = []
         errors["app_protection_policies"] = str(exc)
@@ -271,14 +275,20 @@ def _collect_asr_policies(
 
     if asr_raw:
         return (
-            [_enrich_endpoint_security_asr_policy(client, policy) for policy in asr_raw[:max_policy_detail]],
+            [
+                _enrich_endpoint_security_asr_policy(client, policy)
+                for policy in asr_raw[:max_policy_detail]
+            ],
             "",
         )
 
     asr_candidates = [policy for policy in config if _is_asr_family(policy)]
     if asr_candidates:
         return (
-            [_enrich_configuration_asr_policy(client, policy) for policy in asr_candidates[:max_policy_detail]],
+            [
+                _enrich_configuration_asr_policy(client, policy)
+                for policy in asr_candidates[:max_policy_detail]
+            ],
             "",
         )
     if asr_raw is None:
@@ -318,9 +328,7 @@ def _enrich_endpoint_security_asr_policy(
     return entry
 
 
-def _enrich_configuration_asr_policy(
-    client: GraphClient, policy: dict[str, Any]
-) -> dict[str, Any]:
+def _enrich_configuration_asr_policy(client: GraphClient, policy: dict[str, Any]) -> dict[str, Any]:
     pid = str(policy.get("id") or "")
     entry: dict[str, Any] = {
         "id": pid,
@@ -333,7 +341,9 @@ def _enrich_configuration_asr_policy(
         "rules_error": False,
     }
     if "isAssigned" not in policy and pid:
-        entry["assignments"] = _safe_list(client, f"/deviceManagement/configurationPolicies/{pid}/assignments")
+        entry["assignments"] = _safe_list(
+            client, f"/deviceManagement/configurationPolicies/{pid}/assignments"
+        )
         entry["assignments_error"] = entry["assignments"] is None
         entry["assignments"] = entry["assignments"] or []
         entry["assigned"] = bool(entry["assignments"])
@@ -386,9 +396,7 @@ def _iter_setting_children(instance: Any):
                         stack.append(child)
 
 
-def _enrich_device_configuration(
-    client: GraphClient, cfg: dict[str, Any]
-) -> dict[str, Any]:
+def _enrich_device_configuration(client: GraphClient, cfg: dict[str, Any]) -> dict[str, Any]:
     cid = str(cfg.get("id") or "")
     entry: dict[str, Any] = {
         "id": cid,
@@ -401,7 +409,9 @@ def _enrich_device_configuration(
     }
     if not cid:
         return entry
-    entry["assignments"] = _safe_list(client, f"/deviceManagement/deviceConfigurations/{cid}/assignments")
+    entry["assignments"] = _safe_list(
+        client, f"/deviceManagement/deviceConfigurations/{cid}/assignments"
+    )
     entry["assignments_error"] = entry["assignments"] is None
     entry["assignments"] = entry["assignments"] or []
     entry["assigned"] = bool(entry["assignments"])

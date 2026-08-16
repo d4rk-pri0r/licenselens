@@ -183,9 +183,7 @@ def collect_purview_insider_risk_runtime(
         )
 
 
-def _preview_client(
-    ctx: ScanCollectionContext, base_client: GraphClient
-) -> GraphClient:
+def _preview_client(ctx: ScanCollectionContext, base_client: GraphClient) -> GraphClient:
     """Build a preview-enabled Graph client (beta endpoints are otherwise blocked)."""
     return GraphClient(ctx.auth, cloud=base_client.cloud, allow_preview=True)
 
@@ -200,6 +198,4 @@ def collect_pbi_capacity_runtime(
         bundle = collect_pbi_capacity_bundle(ctx.auth)
         return ok(key, bundle, source="powerbi.admin.rest")
     except (AuthError, GraphError) as exc:
-        return graph_failure(
-            key, exc, f"Power BI admin REST could not be read: {exc}", ctx
-        )
+        return graph_failure(key, exc, f"Power BI admin REST could not be read: {exc}", ctx)

@@ -33,9 +33,7 @@ def _set_surface_prop(
     item["properties"][prop_name] = value
 
 
-def _set_surface_status(
-    evidence: dict[str, Any], adapter: str, surface: str, status: str
-) -> None:
+def _set_surface_status(evidence: dict[str, Any], adapter: str, surface: str, status: str) -> None:
     bundle = evidence["exchange_bundle"]
     bundle["adapters"][adapter]["surfaces"][surface]["status"] = status
 
@@ -142,9 +140,7 @@ def test_transport_rules_without_external_forward_are_ok() -> None:
 
 def test_transport_rule_redirect_external_is_gap() -> None:
     evidence = _demo()
-    _add_transport_rule(
-        evidence, "Silent exfil", {"RedirectMessageTo": ["attacker@evil.example"]}
-    )
+    _add_transport_rule(evidence, "Silent exfil", {"RedirectMessageTo": ["attacker@evil.example"]})
     result = evaluate_mdo_transport_rule_external_forward(
         _check("mdo-transport-rule-external-forward"), evidence
     )
@@ -164,9 +160,7 @@ def test_transport_rule_bcc_external_is_gap() -> None:
 
 def test_transport_rule_internal_redirect_is_ok() -> None:
     evidence = _demo()
-    _add_transport_rule(
-        evidence, "Internal review", {"RedirectMessageTo": ["audit@contoso.com"]}
-    )
+    _add_transport_rule(evidence, "Internal review", {"RedirectMessageTo": ["audit@contoso.com"]})
     result = evaluate_mdo_transport_rule_external_forward(
         _check("mdo-transport-rule-external-forward"), evidence
     )

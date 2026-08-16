@@ -313,8 +313,7 @@ def evaluate_pur_endpoint_dlp(
         summary="No DLP policy covers endpoint devices.",
         evidence=evidence_out,
         customer_summary=(
-            "Data moved to or from endpoint devices is not protected. "
-            "Add an endpoint DLP policy."
+            "Data moved to or from endpoint devices is not protected. Add an endpoint DLP policy."
         ),
         **direct_meta(),
     )

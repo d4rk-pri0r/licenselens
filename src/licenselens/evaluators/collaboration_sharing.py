@@ -147,10 +147,7 @@ def evaluate_spo_unmanaged_device_access(
         )
     return Evaluation(
         status=FindingStatus.GAP,
-        summary=(
-            "Unmanaged-device access is not blocked "
-            f"(policy: {policy or 'not set'})."
-        ),
+        summary=(f"Unmanaged-device access is not blocked (policy: {policy or 'not set'})."),
         evidence=evidence_out,
         customer_summary=(
             "Devices your business does not manage can still open SharePoint and "

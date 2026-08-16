@@ -80,9 +80,7 @@ def test_real_manifest_keeps_securitysuite_heading_and_excludes_rego_only_policy
     securitysuite = next(
         policy for policy in policies if policy["policy_id"] == "MS.SECURITYSUITE.7.2v1"
     )
-    orphan = next(
-        policy for policy in policies if policy["policy_id"] == "MS.SECURITYSUITE.15.2v1"
-    )
+    orphan = next(policy for policy in policies if policy["policy_id"] == "MS.SECURITYSUITE.15.2v1")
 
     # Then the heading wins over hidden-comment typos and Rego-only IDs stay excluded,
     # while the orphaned 15.2 row is disposed against the real-time scan check.

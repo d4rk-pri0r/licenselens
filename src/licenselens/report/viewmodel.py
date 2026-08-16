@@ -294,8 +294,7 @@ def build_belief_block(
             "evidence": finding.evidence,
         },
         "why_it_matters": {
-            "capability": finding.why_it_matters
-            or (matched.why_it_matters if matched else ""),
+            "capability": finding.why_it_matters or (matched.why_it_matters if matched else ""),
             "severity": finding.severity.value,
             "value_impact": finding.value_impact.value,
             "blast_radius": finding.blast_radius.value,
@@ -489,9 +488,7 @@ _METHODOLOGY_CLAUSES: Final[dict[str, str]] = {
 #: Collection statuses that mean a collector's data is incomplete (sampled,
 #: truncated, or failed) rather than fully enumerated. A collector that
 #: recorded warnings or errors is also treated as incomplete.
-_INCOMPLETE_COLLECTION_STATUSES: Final[frozenset[str]] = frozenset(
-    {"partial", "failed"}
-)
+_INCOMPLETE_COLLECTION_STATUSES: Final[frozenset[str]] = frozenset({"partial", "failed"})
 
 #: Identity label for a scan that carries no tenant display name and ran in
 #: dry-run mode (synthetic fixture data).

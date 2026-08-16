@@ -86,7 +86,6 @@ The same report is fully responsive and works offline at mobile width.
 |------|----------------|
 | [ScubaGear](https://github.com/cisagov/ScubaGear) | CISA baseline compliance |
 | [Maester](https://github.com/maester365/maester) | Continuous config tests (Pester) |
-| [Monkey365](https://github.com/silverhack/monkey365) | Broad CSPM / CIS-style assessment |
 | Microsoft Secure Score | Score + recommendations (not SKU-gated) |
 | License waste scripts | Seat assignment efficiency |
 | **Security License Lens** | **Owned SKUs → expected high-value controls → unused/default gaps** |

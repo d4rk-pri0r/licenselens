@@ -51,10 +51,7 @@ def _surface_error(evidence: dict[str, Any], surface: str, message: str = "403 F
 
 def test_demo_endpoint_depth_matrix_produces_ok() -> None:
     evidence = _demo()
-    assert (
-        evaluate_endpoint_asr_rules(_check("ep-asr-rules"), evidence).status
-        is FindingStatus.OK
-    )
+    assert evaluate_endpoint_asr_rules(_check("ep-asr-rules"), evidence).status is FindingStatus.OK
     assert (
         evaluate_endpoint_bitlocker_policy(_check("ep-bitlocker-policy"), evidence).status
         is FindingStatus.OK
@@ -289,9 +286,7 @@ def test_tamper_unknown_devices_keep_ok_with_limitation() -> None:
 def test_compliance_no_state_is_partial() -> None:
     evidence = _demo()
     _bundle(evidence)["compliance_state_summary"] = None
-    result = evaluate_endpoint_compliance_enforcement(
-        _check("ep-compliance-enforcement"), evidence
-    )
+    result = evaluate_endpoint_compliance_enforcement(_check("ep-compliance-enforcement"), evidence)
     assert result.status is FindingStatus.PARTIAL
 
 
@@ -305,9 +300,7 @@ def test_compliance_no_managed_devices_is_partial() -> None:
         "conflictDeviceCount": 0,
         "inGracePeriodCount": 0,
     }
-    result = evaluate_endpoint_compliance_enforcement(
-        _check("ep-compliance-enforcement"), evidence
-    )
+    result = evaluate_endpoint_compliance_enforcement(_check("ep-compliance-enforcement"), evidence)
     assert result.status is FindingStatus.PARTIAL
 
 
@@ -321,27 +314,21 @@ def test_compliance_all_noncompliant_is_gap() -> None:
         "conflictDeviceCount": 0,
         "inGracePeriodCount": 0,
     }
-    result = evaluate_endpoint_compliance_enforcement(
-        _check("ep-compliance-enforcement"), evidence
-    )
+    result = evaluate_endpoint_compliance_enforcement(_check("ep-compliance-enforcement"), evidence)
     assert result.status is FindingStatus.GAP
 
 
 def test_compliance_some_noncompliant_is_partial() -> None:
     evidence = _demo()
     _bundle(evidence)["compliance_state_summary"]["nonCompliantDeviceCount"] = 3
-    result = evaluate_endpoint_compliance_enforcement(
-        _check("ep-compliance-enforcement"), evidence
-    )
+    result = evaluate_endpoint_compliance_enforcement(_check("ep-compliance-enforcement"), evidence)
     assert result.status is FindingStatus.PARTIAL
 
 
 def test_compliance_surface_error_is_partial() -> None:
     evidence = _demo()
     _surface_error(evidence, "compliance_state_summary")
-    result = evaluate_endpoint_compliance_enforcement(
-        _check("ep-compliance-enforcement"), evidence
-    )
+    result = evaluate_endpoint_compliance_enforcement(_check("ep-compliance-enforcement"), evidence)
     assert result.status is FindingStatus.PARTIAL
 
 
@@ -529,7 +516,7 @@ def _seed_full_bundle(fake: FakeGraphClient) -> None:
                                         }
                                     ]
                                 },
-                            ]
+                            ],
                         }
                     }
                 ]

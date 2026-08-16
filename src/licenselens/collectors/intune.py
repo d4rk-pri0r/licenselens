@@ -71,9 +71,7 @@ def collect_intune_evidence(client: SupportsGraphReads) -> dict[str, EvidenceEnv
         "intune_device_state_summary": collect_graph_operation(
             client, "intune_device_state_summary"
         ),
-        "intune_mam_app_protections": collect_graph_operation(
-            client, "intune_mam_app_protections"
-        ),
+        "intune_mam_app_protections": collect_graph_operation(client, "intune_mam_app_protections"),
     }
 
 
@@ -116,9 +114,7 @@ DEMO_INTUNE_BUNDLE: dict[str, Any] = {
             "operatingSystem": "Windows",
         }
     ],
-    "asr_policies": [
-        {"id": "asr-1", "displayName": "Endpoint security - ASR rules"}
-    ],
+    "asr_policies": [{"id": "asr-1", "displayName": "Endpoint security - ASR rules"}],
     "compliance_state_summary": {
         "compliantDeviceCount": 90,
         "nonCompliantDeviceCount": 0,

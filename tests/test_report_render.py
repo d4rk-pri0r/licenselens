@@ -551,8 +551,7 @@ def _inline_marks_in(root: ET.Element, workload: str) -> list[ET.Element]:
         marks.extend(
             el
             for el in holder.iter()
-            if _local(el) == "svg"
-            and "workload-icon" in (el.attrib.get("class") or "").split()
+            if _local(el) == "svg" and "workload-icon" in (el.attrib.get("class") or "").split()
         )
     return list({id(mark): mark for mark in marks}.values())
 
@@ -580,9 +579,7 @@ def test_single_file_inlines_svg_only_for_svg_vendored_marks(tmp_path: Path) -> 
     assert svg_present, "fixture must exercise at least one SVG-vendored workload"
     for workload in sorted(svg_present):
         marks = _inline_marks_in(root, workload)
-        assert marks, (
-            f"SVG-vendored workload {workload!r} rendered without an inline workload-icon"
-        )
+        assert marks, f"SVG-vendored workload {workload!r} rendered without an inline workload-icon"
 
     png_present = present & PNG_ONLY_WORKLOADS
     assert png_present, "fixture must exercise at least one PNG-only workload"
@@ -656,9 +653,7 @@ def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
     assert hits, "single-file render lost every cross-filter hit button"
     for hit in hits:
         classes = set((hit.attrib.get("class") or "").split())
-        assert {"chart-hit", "dist-hit"} & classes, (
-            "hit button must carry .chart-hit or .dist-hit"
-        )
+        assert {"chart-hit", "dist-hit"} & classes, "hit button must carry .chart-hit or .dist-hit"
         assert not {"chart-bar", "dist-segment"} & classes, (
             "hit button carries a paint class (.chart-bar/.dist-segment) — "
             "the foundation would paint it opaque over the proportional bar"
@@ -670,9 +665,7 @@ def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
 
     # 2. The hit layer declares transparent paint in the inline style block.
     style_text = "\n".join(text_of(el) for el in root.iter("style"))
-    rule = re.search(
-        r"\.chart-hit,\s*\.dist-hit\s*\{(?P<body>.*?)\}", style_text, re.DOTALL
-    )
+    rule = re.search(r"\.chart-hit,\s*\.dist-hit\s*\{(?P<body>.*?)\}", style_text, re.DOTALL)
     assert rule, "inline style block lost the .chart-hit/.dist-hit rule"
     assert "background: transparent" in rule.group("body"), (
         "hit layer must declare background: transparent"
@@ -692,14 +685,10 @@ def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
         if attr is None:
             continue
         rows = [
-            el
-            for el in fig.iter("div")
-            if "chart-row" in (el.attrib.get("class") or "").split()
+            el for el in fig.iter("div") if "chart-row" in (el.attrib.get("class") or "").split()
         ]
         layers = [
-            el
-            for el in fig.iter("div")
-            if "chart-hits" in (el.attrib.get("class") or "").split()
+            el for el in fig.iter("div") if "chart-hits" in (el.attrib.get("class") or "").split()
         ]
         assert len(layers) == 1, f"{fig.attrib['id']}: expected one .chart-hits layer"
         visual_facets = [
@@ -713,9 +702,7 @@ def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
 
     # Dist bar: hit facets == visible segment status classes, in order.
     dist_figs = [
-        el
-        for el in root.iter("figure")
-        if "dist-figure" in (el.attrib.get("class") or "").split()
+        el for el in root.iter("figure") if "dist-figure" in (el.attrib.get("class") or "").split()
     ]
     assert len(dist_figs) == 1, "expected one .dist-figure"
     dist_fig = dist_figs[0]
@@ -727,9 +714,7 @@ def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
         if c.startswith("status-")
     ]
     dist_layers = [
-        el
-        for el in dist_fig.iter("div")
-        if "dist-hits" in (el.attrib.get("class") or "").split()
+        el for el in dist_fig.iter("div") if "dist-hits" in (el.attrib.get("class") or "").split()
     ]
     assert len(dist_layers) == 1, "expected one .dist-hits layer"
     dist_hits = [b.attrib["data-chart-toggle"] for b in dist_layers[0].iter("button")]
@@ -823,8 +808,7 @@ def test_constellation_cascade_instant_final_state_rule(tmp_path: Path) -> None:
     body = match.group("body")
     assert "color:" in body, "body.instant rule must declare the final node color"
     assert "var(--resolve-to" in body, (
-        "body.instant rule must resolve the status color via --resolve-to: "
-        f"{body.strip()}"
+        f"body.instant rule must resolve the status color via --resolve-to: {body.strip()}"
     )
 
 
@@ -951,9 +935,7 @@ def test_single_file_inlines_print_media_query(tmp_path: Path) -> None:
     """Brief §25: the rendered single-file report contains the literal
     ``@media print`` block (the offline print stylesheet is inlined)."""
     html = render(comprehensive_report(), tmp_path)
-    assert "@media print" in html, (
-        "single-file report lost its inline @media print block"
-    )
+    assert "@media print" in html, "single-file report lost its inline @media print block"
 
 
 def test_single_file_inlines_reduced_motion_media_query(tmp_path: Path) -> None:

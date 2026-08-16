@@ -152,9 +152,7 @@ def _review_is_privileged_scoped(definition: dict[str, Any]) -> bool:
     """Whether an access review definition plausibly targets privileged roles."""
     from licenselens.collectors import privileged_roles as priv
 
-    text = " ".join(
-        str(definition.get(k) or "") for k in ("displayName", "description")
-    ).lower()
+    text = " ".join(str(definition.get(k) or "") for k in ("displayName", "description")).lower()
     if any(keyword in text for keyword in _PRIV_SCOPE_KEYWORDS):
         return True
     for display_name in priv.ROLE_DISPLAY_NAMES.values():
@@ -308,9 +306,7 @@ def _instances_by_definition(
         definition_id = str(row.get("id") or "")
         instances = row.get("instances")
         if definition_id and isinstance(instances, list):
-            mapping[definition_id] = [
-                i for i in instances if isinstance(i, dict)
-            ]
+            mapping[definition_id] = [i for i in instances if isinstance(i, dict)]
     return mapping
 
 
@@ -352,9 +348,7 @@ def evaluate_access_reviews_scope(
         for definition_id, instances in instances_by_id.items()
     }
     scoped_with_completed_rounds = [
-        d
-        for d in privileged_recurring
-        if completed_by_id.get(str(d.get("id") or ""))
+        d for d in privileged_recurring if completed_by_id.get(str(d.get("id") or ""))
     ]
 
     evidence_out = {
@@ -427,8 +421,7 @@ def evaluate_access_reviews_scope(
         )
 
     ran_instances = any(
-        bool(instances_by_id.get(str(d.get("id") or "")))
-        for d in privileged_recurring
+        bool(instances_by_id.get(str(d.get("id") or ""))) for d in privileged_recurring
     )
     if ran_instances:
         return Evaluation(
@@ -474,9 +467,7 @@ def evaluate_entitlement_access_packages(
             evidence={"error": str(evidence["access_packages_error"])},
         )
 
-    packages = [
-        p for p in evidence.get("access_packages") or [] if isinstance(p, dict)
-    ]
+    packages = [p for p in evidence.get("access_packages") or [] if isinstance(p, dict)]
     count = len(packages)
     visible = [p for p in packages if not p.get("isHidden")]
     hidden = [p for p in packages if p.get("isHidden")]

@@ -121,9 +121,7 @@ def test_known_name_with_unknown_guid_still_unlocks_via_fallback():
 def test_guid_with_unknown_name_does_not_unlock_unrelated_capabilities():
     """A GUID unlocks exactly the capabilities that name it, nothing else."""
     caps, guid = _entra_capability()
-    skus = [
-        _sku_with_plan("CUSTOM_SKU_XYZ", "SOMETHING_ELSE_ENTIRELY", plan_id=guid)
-    ]
+    skus = [_sku_with_plan("CUSTOM_SKU_XYZ", "SOMETHING_ELSE_ENTIRELY", plan_id=guid)]
     owned = resolve_owned_capabilities(caps, skus)
     assert set(owned) == {"entra_id_p2", "conditional_access", "identity_protection"}
 
@@ -168,9 +166,7 @@ def test_guid_case_variation_still_matches():
 def test_guid_matched_summary_keeps_provenance():
     """A GUID-only match must not render an empty 'not reported' provenance."""
     caps, guid = _entra_capability()
-    skus = [
-        _sku_with_plan("CUSTOM_SKU_XYZ", "AAD_PREMIUM_P2_RENAMED", plan_id=guid)
-    ]
+    skus = [_sku_with_plan("CUSTOM_SKU_XYZ", "AAD_PREMIUM_P2_RENAMED", plan_id=guid)]
     owned = resolve_owned_capabilities(caps, skus)
     summaries = capability_summaries_for(caps, owned, skus)
     assert {summary.id for summary in summaries} == {

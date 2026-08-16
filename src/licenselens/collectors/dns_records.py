@@ -8,7 +8,7 @@ lifetime bound and per-query timeout. Dry-run evidence is a checked-in fixture.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Final, Protocol
 
 from licenselens.schema_contracts import JsonValue
@@ -214,8 +214,22 @@ def _domain_state(domain: str, resolver: TxtResolver) -> dict[str, JsonValue]:
     except DnsResolutionError as exc:
         dmarc = DmarcState(present=False)
         state["error"] = state.get("error") or exc.reason
-    state["spf"] = spf.__dict__
-    state["dmarc"] = dmarc.__dict__
+    state["spf"] = _json_state(spf)
+    state["dmarc"] = _json_state(dmarc)
+    return state
+
+
+def _json_state(record: SpfState | DmarcState) -> dict[str, JsonValue]:
+    """Serialize a DNS state dataclass to JSON-shaped evidence.
+
+    ``asdict`` works for frozen slots dataclasses (``SpfState`` has no
+    ``__dict__``) and keeps tuples as tuples; the evidence contract is
+    ``JsonValue``, so tuple fields become lists — matching the dry-run
+    ``DEMO_DNS_RECORDS`` fixture shape.
+    """
+    state: dict[str, JsonValue] = {}
+    for key, value in asdict(record).items():
+        state[key] = list(value) if isinstance(value, tuple) else value
     return state
 
 

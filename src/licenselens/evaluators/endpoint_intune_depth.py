@@ -168,8 +168,7 @@ def evaluate_endpoint_bitlocker_policy(
             summary="No BitLocker or disk-encryption device configuration is defined.",
             evidence=evidence_out,
             customer_summary=(
-                "No encryption policy is configured, so lost or stolen devices may "
-                "leak work data."
+                "No encryption policy is configured, so lost or stolen devices may leak work data."
             ),
             **direct_meta(),
         )
@@ -188,7 +187,8 @@ def evaluate_endpoint_bitlocker_policy(
             confidence=Confidence.MEDIUM,
             data_sources=["graph.deviceManagement"],
             limitations=[
-                "Encryption policy assignments were not readable; verify in the Intune admin center."
+                "Encryption policy assignments were not readable; "
+                "verify in the Intune admin center."
             ],
         )
     assigned = [c for c in configs if c.get("assigned")]
@@ -199,7 +199,8 @@ def evaluate_endpoint_bitlocker_policy(
             summary=f"{len(configs)} encryption configuration(s) defined but none are assigned.",
             evidence=evidence_out,
             customer_summary=(
-                "An encryption policy exists but is not assigned, so devices are not being encrypted."
+                "An encryption policy exists but is not assigned, "
+                "so devices are not being encrypted."
             ),
             **direct_meta(),
         )
@@ -305,9 +306,7 @@ def evaluate_endpoint_tamper_protection(
     if enabled:
         meta = direct_meta()
         if unknown:
-            meta["limitations"] = [
-                f"{unknown} sampled device(s) did not report tamper state."
-            ]
+            meta["limitations"] = [f"{unknown} sampled device(s) did not report tamper state."]
         return Evaluation(
             status=FindingStatus.OK,
             summary="Tamper protection is assigned and enabled on sampled devices.",
@@ -485,9 +484,7 @@ def evaluate_endpoint_mam_app_protection(
                 ),
                 confidence=Confidence.MEDIUM,
                 data_sources=["graph.deviceManagement"],
-                limitations=[
-                    "Assignment semantics of some app protection policies are unknown."
-                ],
+                limitations=["Assignment semantics of some app protection policies are unknown."],
             )
         return Evaluation(
             status=FindingStatus.GAP,

@@ -165,9 +165,7 @@ def evaluate_auth_authenticator_context(
     if not number_on and has_number_setting:
         return Evaluation(
             status=FindingStatus.GAP,
-            summary=(
-                "Microsoft Authenticator is enabled but number matching is disabled."
-            ),
+            summary=("Microsoft Authenticator is enabled but number matching is disabled."),
             evidence=evidence_out,
             customer_summary=(
                 "Without number matching, users can approve a sign-in without "
@@ -227,9 +225,11 @@ def evaluate_auth_number_matching(
     if not isinstance(feature, dict):
         feature = {}
     number_setting = feature.get("numberMatchingRequiredState")
-    number_state = str((number_setting or {}).get("state") or "").lower() if isinstance(
-        number_setting, dict
-    ) else ""
+    number_state = (
+        str((number_setting or {}).get("state") or "").lower()
+        if isinstance(number_setting, dict)
+        else ""
+    )
     evidence_out = {
         "authenticator_state": state,
         "number_matching_state": number_state or None,

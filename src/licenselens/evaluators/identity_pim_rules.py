@@ -231,9 +231,7 @@ def _activation_justification_ok(rules: list[dict[str, Any]]) -> bool:
             continue
         if "activation" not in str(rule.get("id") or "").lower():
             continue
-        enabled_rules = {
-            str(item).lower() for item in (rule.get("enabledRules") or [])
-        }
+        enabled_rules = {str(item).lower() for item in (rule.get("enabledRules") or [])}
         if "justification" in enabled_rules:
             return True
     return False

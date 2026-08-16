@@ -145,9 +145,7 @@ def test_demo_global_custom_compliant_matrix() -> None:
         is FindingStatus.OK
     )
     assert (
-        evaluate_spo_unmanaged_device_access(
-            _check("spo-unmanaged-device-access"), evidence
-        ).status
+        evaluate_spo_unmanaged_device_access(_check("spo-unmanaged-device-access"), evidence).status
         is FindingStatus.OK
     )
     assert (
@@ -306,9 +304,7 @@ def test_denied_surface_is_partial_not_false_gap() -> None:
 
 def test_spo_unmanaged_device_access_blocked_ok() -> None:
     evidence = _demo()
-    result = evaluate_spo_unmanaged_device_access(
-        _check("spo-unmanaged-device-access"), evidence
-    )
+    result = evaluate_spo_unmanaged_device_access(_check("spo-unmanaged-device-access"), evidence)
     assert result.status is FindingStatus.OK
     assert result.evidence["unmanaged_device_policy"] == "blockaccess"
 
@@ -316,9 +312,7 @@ def test_spo_unmanaged_device_access_blocked_ok() -> None:
 def test_spo_unmanaged_device_access_full_access_gap() -> None:
     evidence = _demo()
     _set_spo_prop(evidence, "unmanaged_device_policy", "ConditionalAccessPolicy", "AllowFullAccess")
-    result = evaluate_spo_unmanaged_device_access(
-        _check("spo-unmanaged-device-access"), evidence
-    )
+    result = evaluate_spo_unmanaged_device_access(_check("spo-unmanaged-device-access"), evidence)
     assert result.status is FindingStatus.GAP
     assert result.status is not FindingStatus.OK
 
@@ -326,9 +320,7 @@ def test_spo_unmanaged_device_access_full_access_gap() -> None:
 def test_spo_unmanaged_device_access_missing_value_partial() -> None:
     evidence = _demo()
     _set_spo_prop(evidence, "unmanaged_device_policy", "ConditionalAccessPolicy", "")
-    result = evaluate_spo_unmanaged_device_access(
-        _check("spo-unmanaged-device-access"), evidence
-    )
+    result = evaluate_spo_unmanaged_device_access(_check("spo-unmanaged-device-access"), evidence)
     assert result.status is FindingStatus.PARTIAL
     assert result.status is not FindingStatus.OK
 

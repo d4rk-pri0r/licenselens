@@ -47,6 +47,9 @@
   /* Translucent twin of --surface-3: the one authorized backdrop-filter
      surface (sticky nav, DESIGN_V2 2.3). Opaque --surface-3 is the fallback. */
   --nav-surface: rgba(51, 46, 39, 0.86);
+  /* Focus ring (DESIGN_V2 2.3): the bundle owns its copy so the ring never
+     depends on the shared foundation staying in sync. */
+  --accent-focus: #FFF6E3;
 }
 
 /* --------------------------------------------------------------------------
@@ -101,6 +104,14 @@ code { font-size: 0.8125rem; line-height: 1.5; }
 .num {
   text-align: end;
   font-variant-numeric: tabular-nums;
+}
+
+/* Focus ring (DESIGN_V2 2.3): solid 2px accent ring + 2px offset on every
+   keyboard-focused interactive element. The bundle owns this rule so the
+   report app never falls back to the browser's default 1px auto outline. */
+:focus-visible {
+  outline: 2px solid var(--accent-focus);
+  outline-offset: 2px;
 }
 
 /* --------------------------------------------------------------------------
@@ -1342,6 +1353,11 @@ main section.is-revealed {
 
   /* Capability-selection filtering must never hide findings in print. */
   .finding-wrap[hidden] { display: block !important; }
+
+  /* Closed disclosures render expanded: technical evidence is part of the
+     printed record. Owns the same contract as the single-file foundation
+     print rule (details.tech:not([open]) > :not(summary) { display: block; }). */
+  details.tech:not([open]) > :not(summary) { display: block; }
 
   .hero {
     background: var(--print-hero) !important;

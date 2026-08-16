@@ -114,8 +114,7 @@ def evaluate_break_glass_exclusion(
                 status=FindingStatus.PARTIAL,
                 summary=(
                     f"{len(justified)} declared break-glass principal(s) did not "
-                    f"match any scanned Global Administrator"
-                    + exclusion_note
+                    f"match any scanned Global Administrator" + exclusion_note
                 ),
                 evidence=evidence_out,
                 customer_summary=(

@@ -16,7 +16,4 @@ def expected_state_map() -> dict[str, str]:
     deterministic for equal catalogs.
     """
     checks = load_checks()
-    return {
-        check.id: check.expected_state
-        for check in sorted(checks, key=lambda item: item.id)
-    }
+    return {check.id: check.expected_state for check in sorted(checks, key=lambda item: item.id)}

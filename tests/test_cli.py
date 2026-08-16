@@ -447,15 +447,11 @@ def _doctor_live_graph_routes():
     from tests.fake_clients import FakeGraphClient, ok
 
     fake = FakeGraphClient()
-    fake.register_list(
-        "/organization", ok({"value": [{"id": "t1", "displayName": "Contoso"}]})
-    )
+    fake.register_list("/organization", ok({"value": [{"id": "t1", "displayName": "Contoso"}]}))
     fake.register_list("/subscribedSkus", ok({"value": []}))
     fake.register_list("/identity/conditionalAccess/policies", ok({"value": []}))
     fake.register_list("/roleManagement/directory/roleAssignments", ok({"value": []}))
-    fake.register_get(
-        "/security/secureScores", ok({"value": [{"id": "s1", "controlScores": []}]})
-    )
+    fake.register_get("/security/secureScores", ok({"value": [{"id": "s1", "controlScores": []}]}))
     return fake
 
 
@@ -513,14 +509,7 @@ def test_doctor_live_client_secret_still_reports_missing_app_permissions(monkeyp
     )
     fake.register_list(
         f"/servicePrincipals/{sp_id}/appRoleAssignments",
-        ok(
-            {
-                "value": [
-                    {"id": f"assign-{p}", "appRoleId": f"graph-role-{p}"}
-                    for p in granted
-                ]
-            }
-        ),
+        ok({"value": [{"id": f"assign-{p}", "appRoleId": f"graph-role-{p}"} for p in granted]}),
     )
 
     _patch_doctor_live_auth(monkeypatch, fake)

@@ -357,9 +357,7 @@ def test_skip_reason_falls_back_to_limitations_when_summary_empty() -> None:
     result = comprehensive_report()
     finding = next(f for f in result.findings if f.status.value == "skipped")
     bare = finding.model_copy(update={"summary": ""})
-    assert build_skip_reason(bare) == "; ".join(
-        limit.rstrip(".") for limit in finding.limitations
-    )
+    assert build_skip_reason(bare) == "; ".join(limit.rstrip(".") for limit in finding.limitations)
 
 
 def test_skip_reason_empty_for_non_skipped_findings() -> None:

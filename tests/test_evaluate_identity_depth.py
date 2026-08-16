@@ -228,9 +228,7 @@ def _auth_bundle(number_state: str | None, authenticator_state: str = "enabled")
 
 
 def test_number_matching_ok_when_enabled():
-    result = evaluate_auth_number_matching(
-        _check("id-number-matching"), _auth_bundle("enabled")
-    )
+    result = evaluate_auth_number_matching(_check("id-number-matching"), _auth_bundle("enabled"))
     assert result.status == FindingStatus.OK
 
 
@@ -240,9 +238,7 @@ def test_number_matching_ok_when_tenant_default():
 
 
 def test_number_matching_gap_when_disabled():
-    result = evaluate_auth_number_matching(
-        _check("id-number-matching"), _auth_bundle("disabled")
-    )
+    result = evaluate_auth_number_matching(_check("id-number-matching"), _auth_bundle("disabled"))
     assert result.status == FindingStatus.GAP
 
 
@@ -294,9 +290,7 @@ def test_cross_tenant_mfa_trust_ok_with_explicit_partner_trust():
     bundle["guests_bundle"]["partners"] = [
         {"tenantId": "t1", "inboundTrust": {"isMfaAccepted": True}}
     ]
-    result = evaluate_cross_tenant_mfa_trust(
-        _check("id-cross-tenant-mfa-trust"), bundle
-    )
+    result = evaluate_cross_tenant_mfa_trust(_check("id-cross-tenant-mfa-trust"), bundle)
     assert result.status == FindingStatus.OK
     assert result.evidence["partner_inbound_mfa_trust_count"] == 1
 

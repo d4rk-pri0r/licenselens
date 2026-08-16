@@ -6,7 +6,6 @@ Security License Lens answers a different question than baseline scanners, conti
 |------|----------------|
 | [ScubaGear](https://github.com/cisagov/ScubaGear) | CISA baseline compliance |
 | [Maester](https://github.com/maester365/maester) | Continuous config tests (Pester) |
-| [Monkey365](https://github.com/silverhack/monkey365) | Broad CSPM / CIS-style assessment |
 | Microsoft Secure Score | Score + recommendations (not SKU-gated) |
 | License waste scripts | Seat assignment efficiency |
 | **Security License Lens** | **Owned SKUs → expected high-value controls → unused/default gaps** |
@@ -22,12 +21,6 @@ Security License Lens answers a different question than baseline scanners, conti
 - **Optimizes for:** Continuous config tests (Pester) for M365/Entra security config
 - **LicenseLens differentiator:** SKU → capability → gap narrative for value + security posture
 - **Together?** Run side-by-side; different questions
-
-## Monkey365
-
-- **Optimizes for:** Broad CSPM / CIS-style assessment across Microsoft cloud surfaces
-- **LicenseLens differentiator:** Narrower, SKU-gated focus on high-value controls you already own
-- **Together?** Complementary breadth vs entitlement-driven prioritization
 
 ## Microsoft Secure Score
 

@@ -246,9 +246,7 @@ def evaluate_pbi_premium_capacity_governance(
                 "Review capacity admins and workspace mapping in the Power BI admin portal."
             ),
             confidence=Confidence.LOW,
-            limitations=[
-                "Power BI admin REST read unavailable — verify in the admin portal."
-            ],
+            limitations=["Power BI admin REST read unavailable — verify in the admin portal."],
         )
 
     capacity_count = int(bundle.get("capacity_count") or 0)

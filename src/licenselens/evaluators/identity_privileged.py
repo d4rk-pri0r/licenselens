@@ -30,9 +30,7 @@ def evaluate_pim_unused(
         for a in priv_asg
         if str(a.get("roleDefinitionId") or "").lower() == priv.GLOBAL_ADMIN_TEMPLATE_ID.lower()
     ]
-    standing_non_bg = [
-        a for a in priv_asg if str(a.get("principalId")) not in break_glass
-    ]
+    standing_non_bg = [a for a in priv_asg if str(a.get("principalId")) not in break_glass]
     standing_roles = {str(a.get("roleDefinitionId") or "") for a in priv_asg}
     eligible_roles = {str(s.get("roleDefinitionId") or "") for s in priv_elig}
     uncovered_standing_roles = sorted(standing_roles - eligible_roles)

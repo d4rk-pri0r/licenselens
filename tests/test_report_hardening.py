@@ -289,8 +289,7 @@ def test_constellation_cascade_instant_final_state_rule(tmp_path: Path) -> None:
     body = match.group("body")
     assert "color:" in body, "body.instant rule must declare the final node color"
     assert "var(--resolve-to" in body, (
-        "body.instant rule must resolve the status color via --resolve-to: "
-        f"{body.strip()}"
+        f"body.instant rule must resolve the status color via --resolve-to: {body.strip()}"
     )
 
 
@@ -314,9 +313,7 @@ def test_bundle_entry_inline_foundation_has_print_and_reduced_motion(tmp_path: P
     """The foundation inlined in entry.html must carry both media queries —
     the bundle's server-side baseline, independent of the hashed assets."""
     style = _inline_style_text(_entry_html(tmp_path))
-    assert "@media print" in style, (
-        "bundle entry's inlined foundation lost its @media print block"
-    )
+    assert "@media print" in style, "bundle entry's inlined foundation lost its @media print block"
     assert "prefers-reduced-motion" in style, (
         "bundle entry's inlined foundation lost its reduced-motion media query"
     )

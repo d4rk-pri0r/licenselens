@@ -8,9 +8,7 @@ from licenselens.collectors import conditional_access as ca
 from licenselens.evaluators.common import Evaluation
 from licenselens.models import CheckDefinition, FindingStatus
 
-_RISKY_SP_STATES: Final = frozenset(
-    {"atrisk", "detected", "confirmed", "confirmedcompromised"}
-)
+_RISKY_SP_STATES: Final = frozenset({"atrisk", "detected", "confirmed", "confirmedcompromised"})
 _HANDLED_SP_STATES: Final = frozenset({"dismissed", "remediated", "none"})
 _DENIED_MARKERS: Final = ("403", "denied", "authorization", "access denied")
 
@@ -144,9 +142,7 @@ def evaluate_identity_protection_workload(
             ),
         )
 
-    items = [
-        sp for sp in evidence.get("risky_service_principals") or [] if isinstance(sp, dict)
-    ]
+    items = [sp for sp in evidence.get("risky_service_principals") or [] if isinstance(sp, dict)]
     risky: list[dict[str, Any]] = []
     compromised: list[dict[str, Any]] = []
     unclassified: list[dict[str, Any]] = []
@@ -186,8 +182,7 @@ def evaluate_identity_protection_workload(
         return Evaluation(
             status=FindingStatus.GAP,
             summary=(
-                f"{len(risky)} service principal(s) are flagged as risky or "
-                f"compromised: {detail}."
+                f"{len(risky)} service principal(s) are flagged as risky or compromised: {detail}."
             ),
             evidence=evidence_out,
             customer_summary=(
@@ -214,8 +209,7 @@ def evaluate_identity_protection_workload(
     return Evaluation(
         status=FindingStatus.OK,
         summary=(
-            f"Read {len(items)} service principal(s); none are flagged as "
-            "risky or compromised."
+            f"Read {len(items)} service principal(s); none are flagged as risky or compromised."
         ),
         evidence=evidence_out,
         customer_summary=(

@@ -82,8 +82,7 @@ def test_golden_tenant_replays_live_collectors(monkeypatch: pytest.MonkeyPatch) 
     by_id = {finding.check_id: finding for finding in result.findings}
     for check_id, expected_status in GOLDEN_CHECK_STATUSES.items():
         assert by_id[check_id].status is expected_status, (
-            f"{check_id}: expected {expected_status.value}, "
-            f"got {by_id[check_id].status.value}"
+            f"{check_id}: expected {expected_status.value}, got {by_id[check_id].status.value}"
         )
 
     assert result.capability_rollup.you_own > 0

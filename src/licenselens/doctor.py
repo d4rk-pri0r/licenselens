@@ -404,9 +404,7 @@ def run_doctor(
                 "AZURE_TENANT_ID/AZURE_CLIENT_ID/AZURE_CLIENT_SECRET) and that "
                 "the app has admin consent (docs/app-registration.md)."
             )
-        report.checks.append(
-            DoctorCheck(name="graph", ok=False, detail=str(exc), fix=fix)
-        )
+        report.checks.append(DoctorCheck(name="graph", ok=False, detail=str(exc), fix=fix))
 
     # Optional Defender for Endpoint API (separate resource) — full profile only
     if (

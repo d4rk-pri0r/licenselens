@@ -404,9 +404,9 @@ def test_exec_area_renders_human_enum_copy(tmp_path: Path) -> None:
 
     # Finding meta row: evaluation + scope.
     assert "Evaluation: Read directly" in plain, "direct mode did not render its human copy"
-    assert (
-        "Evaluation: Approximated — verify in portal" in plain
-    ), "proxy mode did not render its human copy"
+    assert "Evaluation: Approximated — verify in portal" in plain, (
+        "proxy mode did not render its human copy"
+    )
     assert "Scope: Administrator scope" in plain, "admin blast radius did not render its human copy"
     assert "Scope: All users" in plain, "all_users blast radius did not render its human copy"
     assert "Evaluation: direct" not in plain, "raw direct enum leaked into the meta row"

@@ -232,8 +232,7 @@ def evaluate_pp_tenant_isolation_allowlist(
         return Evaluation(
             status=FindingStatus.GAP,
             summary=(
-                "Tenant isolation is disabled, so no allowlist restricts "
-                "cross-tenant connections."
+                "Tenant isolation is disabled, so no allowlist restricts cross-tenant connections."
             ),
             evidence=evidence_out,
             customer_summary="Enable tenant isolation and configure an explicit allowlist.",

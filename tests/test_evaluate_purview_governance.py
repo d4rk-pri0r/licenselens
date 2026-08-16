@@ -16,10 +16,6 @@ from licenselens.engine.evaluate import (
     evaluate_pur_sensitivity_labels_published,
 )
 from licenselens.engine.registry import default_registry
-from licenselens.evaluators.purview import (
-    evaluate_pur_ediscovery_readiness,
-    evaluate_pur_insider_risk_readiness,
-)
 from licenselens.evaluators.purview_manual import (
     evaluate_pur_communication_compliance_readiness,
 )

@@ -38,7 +38,9 @@ def evaluate_mdo_impersonation_users_protected(
     if not sensitive_users:
         return Evaluation(
             status=FindingStatus.SKIPPED,
-            summary="Sensitive user impersonation requires a configured list of sensitive accounts.",
+            summary=(
+                "Sensitive user impersonation requires a configured list of sensitive accounts."
+            ),
             evidence={"sensitive_users": []},
             customer_summary=(
                 "List your high-value accounts (executives, admins) in your configured "

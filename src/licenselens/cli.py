@@ -29,8 +29,8 @@ from licenselens.cli_scan_config import (
     resolve_scan_profile,
     write_report_archive,
 )
-from licenselens.collectors.contracts import EvidenceEnvelope
 from licenselens.collectors.arm import build_workspace_resource_id
+from licenselens.collectors.contracts import EvidenceEnvelope
 from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
 from licenselens.config_models import RedactionSettings
 from licenselens.diff_report import write_diff_report
@@ -232,9 +232,7 @@ def _write_scan_artifacts(
     the previous scan's files (which are the diff baseline).
     """
     existing = [
-        output_dir / name
-        for name in _REPORT_ARTIFACT_NAMES
-        if (output_dir / name).is_file()
+        output_dir / name for name in _REPORT_ARTIFACT_NAMES if (output_dir / name).is_file()
     ]
     if existing:
         prior_dir = output_dir
@@ -356,9 +354,7 @@ def setup_cmd() -> None:
         "pre-consented on that app, so only --tenant-id is needed for a quick "
         "try. Register your own app for production assessments."
     )
-    lines.append(
-        "Full walkthrough (including MDE/Sentinel options): docs/app-registration.md"
-    )
+    lines.append("Full walkthrough (including MDE/Sentinel options): docs/app-registration.md")
 
     console.print(
         Panel(
@@ -619,9 +615,7 @@ def _print_collection_summary(result: ScanResult) -> None:
     flagged = [summary for summary in summaries if summary.status is not CollectionStatus.SUCCESS]
     if flagged:
         details = ", ".join(
-            f"{status}={count}"
-            for status, count in sorted(counts.items())
-            if status != "success"
+            f"{status}={count}" for status, count in sorted(counts.items()) if status != "success"
         )
         console.print(
             f"[dim]Collection summary: {len(summaries)} data sources — {ok} ok; {details}[/dim]"
@@ -800,9 +794,7 @@ def scan_cmd(
             "[bold yellow]No terminal and no auth mode specified — running the "
             "offline demo (dry-run).[/bold yellow]"
         )
-        console.print(
-            "[bold yellow]Pass --live --tenant-id … for a real scan.[/bold yellow]"
-        )
+        console.print("[bold yellow]Pass --live --tenant-id … for a real scan.[/bold yellow]")
 
     try:
         auth_ctx = build_auth_context(
@@ -888,8 +880,7 @@ def scan_cmd(
     if archive_path is not None:
         console.print(f"  ZIP   {archive_path}")
     console.print(
-        "[dim]To compare against a prior assessment: "
-        "`licenselens diff <old.json> <new.json>`[/dim]"
+        "[dim]To compare against a prior assessment: `licenselens diff <old.json> <new.json>`[/dim]"
     )
 
     if wizard.open_browser:

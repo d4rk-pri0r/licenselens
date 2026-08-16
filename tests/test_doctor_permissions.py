@@ -125,9 +125,7 @@ def test_device_code_mode_reports_delegated_note_without_app_role_probe(
 
     cred = MagicMock()
     cred.get_token.return_value = _FakeToken()
-    ctx = AuthContext(
-        mode=AuthMode.DEVICE_CODE, tenant_id="t1", client_id=None, credential=cred
-    )
+    ctx = AuthContext(mode=AuthMode.DEVICE_CODE, tenant_id="t1", client_id=None, credential=cred)
     report = run_doctor(ctx)
     row = _check(report, "graphPermissions")
     assert row.ok is True

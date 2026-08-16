@@ -209,7 +209,6 @@ def test_insider_risk_collector_reads_policies():
 
 
 def test_pbi_admin_rest_403_raises_actionable_error(monkeypatch: pytest.MonkeyPatch):
-    import httpx
 
     from licenselens import collectors
 
