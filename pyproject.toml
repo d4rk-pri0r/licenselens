@@ -85,7 +85,11 @@ packages = ["src/licenselens"]
 [tool.hatch.build.targets.wheel.force-include]
 "catalog" = "licenselens/data/catalog"
 "checks" = "licenselens/data/checks"
-"templates" = "licenselens/data/templates"
+# Enumerate the live template tree only — the superseded v1 report partials
+# (templates/report/_*.j2) were removed and must not ship in the wheel.
+"templates/report.html.j2" = "licenselens/data/templates/report.html.j2"
+"templates/report/v2" = "licenselens/data/templates/report/v2"
+"templates/report_app" = "licenselens/data/templates/report_app"
 "assets/vendor/microsoft-cloud" = "licenselens/data/vendor/microsoft-cloud"
 
 [tool.pytest.ini_options]

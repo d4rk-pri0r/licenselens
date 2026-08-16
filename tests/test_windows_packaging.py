@@ -75,6 +75,17 @@ def test_data_collection_is_intact_and_maps_to_frozen_layout() -> None:
     assert "licenselens/data/powershell/LicenseLens.Collectors" in dests
 
 
+def test_templates_tree_ships_only_v2_report_partials() -> None:
+    # Dead v1 report partials (report/_*.j2) were deleted; a future re-creation
+    # would be shipped whole by collect_data_files, so fail loudly if one returns.
+    templates = REPO_ROOT / "templates"
+    stale_v1 = sorted((templates / "report").glob("_*.j2"))
+    assert stale_v1 == []
+    assert (templates / "report.html.j2").is_file()
+    assert (templates / "report" / "v2").is_dir()
+    assert (templates / "report_app").is_dir()
+
+
 def test_missing_data_directory_is_flagged(tmp_path: Path) -> None:
     (tmp_path / "checks").mkdir()
     (tmp_path / "templates").mkdir()
