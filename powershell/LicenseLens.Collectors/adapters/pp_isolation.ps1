@@ -55,14 +55,27 @@ function Invoke-LicenseLensAdapter {
         if ($null -ne $isDisabled) {
             $isolationEnabled = -not $isDisabled
         }
+        $allowedTenants = @()
+        foreach ($propName in @('allowedTenants', 'AllowedTenants')) {
+            if ($null -ne $policy -and $policy.PSObject.Properties.Name -contains $propName) {
+                $rawAllow = $policy.$propName
+                if ($null -ne $rawAllow) {
+                    foreach ($entry in @($rawAllow)) {
+                        if ($null -ne $entry) { $allowedTenants += [string] $entry }
+                    }
+                }
+                break
+            }
+        }
         $items += [ordered]@{
             name        = 'TenantIsolation'
             identity    = 'tenant'
             kind        = 'effective'
             enabled     = $isolationEnabled
             properties  = [pscustomobject]@{
-                isDisabled        = $isDisabled
-                isolationEnabled  = $isolationEnabled
+                isDisabled       = $isDisabled
+                isolationEnabled = $isolationEnabled
+                allowedTenants   = @($allowedTenants | Select-Object -Unique)
             }
             assignments = @()
         }

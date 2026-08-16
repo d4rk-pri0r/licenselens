@@ -1,0 +1,29 @@
+id: pbi-export-controls
+title: Power BI data export is enabled
+customer_title: Turn off Power BI data export
+customer_summary: >
+  Users can export report data to Excel or other files, bypassing row-level
+  security and data governance.
+expected_state: Power BI data export is turned off for the organization.
+customer_next_step: >
+  Disable data export in the Power BI admin portal tenant settings.
+description: >
+  Power BI tenant settings allow users to export report data.
+workload: power_bi
+required_capabilities:
+  - power_bi_pro
+severity: high
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: data
+pack: power-bi
+exposure_class: none
+deep_link: https://app.powerbi.com/admin-portal/tenantSettings
+collector: power_data_collector
+remediation: >
+  In the Power BI admin portal, open Tenant settings > Export and sharing
+  settings and turn off the Export to Excel and Export to .csv options.
+references:
+  - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
+enabled: true

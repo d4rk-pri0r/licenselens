@@ -35,6 +35,7 @@ function Invoke-LicenseLensAdapter {
             resource_key_auth           = (New-LicenseLensSurfaceResult -Surface 'resource_key_auth' -Status 'unsupported' -Reason $reason)
             python_r_visuals            = (New-LicenseLensSurfaceResult -Surface 'python_r_visuals' -Status 'unsupported' -Reason $reason)
             sensitivity_labels          = (New-LicenseLensSurfaceResult -Surface 'sensitivity_labels' -Status 'unsupported' -Reason $reason)
+            export_data                 = (New-LicenseLensSurfaceResult -Surface 'export_data' -Status 'unsupported' -Reason $reason)
         }
         return [pscustomobject][ordered]@{
             adapter      = 'pbi_tenant'
@@ -149,6 +150,10 @@ function Invoke-LicenseLensAdapter {
             'InformationProtectionSensitivityLabel',
             'allowUsersToApplySensitivityLabelsForContent',
             'CreateAndUseSensitivityLabels'
+        )
+        export_data = Surface-FromSetting -Surface 'export_data' -Aliases @(
+            'ExportData', 'exportData', 'AllowUsersToExportData',
+            'ExportToExcel', 'exportToExcel'
         )
     }
 

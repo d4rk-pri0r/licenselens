@@ -133,6 +133,18 @@ def _seed_happy_graph(fake: FakeGraphClient) -> None:
         ok({"value": [{"id": "d1", "complianceState": "compliant"}]}),
     )
     fake.register_list(
+        "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies",
+        ok({"value": [{"id": "asr1", "displayName": "ASR rules"}]}),
+    )
+    fake.register_get(
+        "/deviceManagement/deviceCompliancePolicyDeviceStateSummary",
+        ok({"compliantDeviceCount": 5, "nonCompliantDeviceCount": 0}),
+    )
+    fake.register_list(
+        "/deviceAppManagement/managedAppProtections",
+        ok({"value": [{"id": "mam1", "displayName": "iOS app protection"}]}),
+    )
+    fake.register_list(
         "/security/incidents",
         ok({"value": [{"id": "i1", "status": "active"}]}),
     )
@@ -222,6 +234,9 @@ def test_happy_path_collectors_and_evidence_envelopes() -> None:
         **collect_security_alerts_evidence(fake),
     }
     assert all(env.health is EvidenceHealth.OK for env in envelopes.values())
+    assert intune["asr_policies"][0]["id"] == "asr1"
+    assert intune["compliance_state_summary"]["compliantDeviceCount"] == 5
+    assert intune["mam_app_protections"][0]["id"] == "mam1"
 
 
 def test_endpoint_permission_matrix_keys() -> None:
@@ -237,6 +252,9 @@ def test_endpoint_permission_matrix_keys() -> None:
         "guest_users",
         "intune_compliance_policies",
         "intune_configuration_policies",
+        "intune_asr_policies",
+        "intune_device_state_summary",
+        "intune_mam_app_protections",
         "security_incidents",
         "security_alerts_v2",
         "mde_machine_health",

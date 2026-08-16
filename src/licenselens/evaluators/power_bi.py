@@ -211,36 +211,90 @@ def evaluate_pbi_sensitivity_labels_enabled(
     )
 
 
+def evaluate_pbi_export_controls(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check
+    return pbi_bool_result(
+        bundle=power_bundle(evidence),
+        surface_name="export_data",
+        expect=False,
+        ok_summary="Power BI data export is disabled.",
+        gap_summary="Power BI data export is enabled for the organization.",
+        customer_ok="Data export from Power BI is off.",
+        customer_gap="Turn off Power BI data export.",
+    )
+
+
 def evaluate_pbi_premium_capacity_governance(
     check: CheckDefinition,
     evidence: dict[str, Any],
 ) -> Evaluation:
-    del check, evidence
+    del check
+    bundle = evidence.get("pbi_capacity_bundle")
+    if not isinstance(bundle, dict):
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Power BI Premium capacity evidence was not collected; governance "
+                "could not be verified automatically."
+            ),
+            evidence={"pbi_capacity_bundle": None},
+            customer_summary=(
+                "We could not confirm Premium capacity governance automatically. "
+                "Review capacity admins and workspace mapping in the Power BI admin portal."
+            ),
+            confidence=Confidence.LOW,
+            limitations=[
+                "Power BI admin REST read unavailable — verify in the admin portal."
+            ],
+        )
+
+    capacity_count = int(bundle.get("capacity_count") or 0)
+    admin_count = int(bundle.get("total_admin_count") or 0)
+    if capacity_count == 0:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "No Premium/Fabric capacities were returned. The tenant may rely on "
+                "Premium-per-user licensing instead; entitlement use is unconfirmed."
+            ),
+            evidence=dict(bundle, direct=True),
+            customer_summary=(
+                "No Premium capacities are in use (or the API could not see them). "
+                "Confirm whether Premium-per-user seats are assigned intentionally."
+            ),
+            confidence=Confidence.MEDIUM,
+            data_sources=["powerbi.admin.rest.capacities"],
+            limitations=[
+                "Premium-per-user (PPU) seat assignment is not readable via the "
+                "capacities API; confirm in the admin portal.",
+            ],
+        )
+
     return Evaluation(
-        status=FindingStatus.SKIPPED,
+        status=FindingStatus.OK,
         summary=(
-            "Power BI Premium capacity admins, workspace placement, and entitlement "
-            "provenance are portal-configured and not automatically readable here."
+            f"{capacity_count} Premium/Fabric capacit(y/ies) in use with "
+            f"{admin_count} capacity admin assignment(s)."
         ),
-        evidence={
-            "manual": True,
-            "evaluation_mode": "manual",
-            "auto_pass": False,
-            "required_surface_incomplete": True,
-        },
+        evidence=dict(bundle, direct=True),
         customer_summary=(
-            "Confirm Premium capacity governance: limited capacity admins, intentional "
-            "seat assignment, and workspace-to-capacity mapping."
+            "Premium capacity governance is active. Keep the capacity-admin list "
+            "small and workspace-to-capacity mapping documented."
         ),
-        confidence=Confidence.LOW,
+        confidence=Confidence.HIGH,
+        data_sources=["powerbi.admin.rest.capacities", "powerbi.admin.rest.tenantsettings"],
         limitations=[
-            "Manual verification required in the Power BI admin portal; "
-            "this check never auto-passes."
+            "Workspace-to-capacity mapping and per-user entitlement provenance "
+            "still require a portal review.",
         ],
     )
 
 
 __all__ = [
+    "evaluate_pbi_export_controls",
     "evaluate_pbi_external_invite_disabled",
     "evaluate_pbi_guest_access_disabled",
     "evaluate_pbi_premium_capacity_governance",

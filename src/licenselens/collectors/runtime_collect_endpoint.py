@@ -10,7 +10,15 @@ from licenselens.collectors.intune_policy import (
 )
 from licenselens.collectors.mde import DEMO_MDE_SUMMARY, mde_licensed_units
 from licenselens.collectors.mde_health import DEMO_MDE_HEALTH, collect_mde_health_summary
-from licenselens.collectors.purview import DEMO_DLP_BUNDLE, collect_purview_dlp_bundle
+from licenselens.collectors.pbi_admin import DEMO_PBI_CAPACITY_BUNDLE, collect_pbi_capacity_bundle
+from licenselens.collectors.purview import (
+    DEMO_DLP_BUNDLE,
+    DEMO_EDISCOVERY_BUNDLE,
+    DEMO_INSIDER_RISK_BUNDLE,
+    collect_purview_dlp_bundle,
+    collect_purview_ediscovery_bundle,
+    collect_purview_insider_risk_bundle,
+)
 from licenselens.collectors.runtime_envelopes import (
     envelope_value,
     error,
@@ -29,6 +37,7 @@ from licenselens.collectors.security_alerts import (
 from licenselens.engine.collection_context import ScanCollectionContext
 from licenselens.engine.planner import CollectionContext
 from licenselens.errors import AuthError, GraphError
+from licenselens.graph import GraphClient
 
 
 def collect_secure_score_controls_runtime(
@@ -128,10 +137,69 @@ def collect_purview_dlp_runtime(
     controls = list(envelope_value(pc, "secure_score_controls") or [])
     score_env = pc.envelopes.get(EvidenceKey("secure_score_controls"))
     if score_env is not None and not score_env.is_usable and not controls:
-        return error(key, score_env.reason or "secure score controls unavailable")
+        ctx.warn("Secure Score controls unavailable; direct Graph DLP read will be attempted.")
     assert ctx.client is not None
     try:
         bundle = collect_purview_dlp_bundle(ctx.client, controls)
-        return ok(key, bundle, source="graph.security.secureScores")
+        if bundle.get("proxy"):
+            return ok(key, bundle, source="secureScore.controlScores (proxy)")
+        return ok(key, bundle, source="graph.security.dataLossPreventionPolicies")
     except GraphError as exc:
-        return graph_failure(key, exc, f"Purview DLP proxy could not be read: {exc}", ctx)
+        return graph_failure(key, exc, f"Purview DLP evidence could not be read: {exc}", ctx)
+
+
+def collect_purview_ediscovery_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "purview_ediscovery"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_EDISCOVERY_BUNDLE), source="demo")
+    assert ctx.client is not None
+    try:
+        bundle = collect_purview_ediscovery_bundle(ctx.client)
+        return ok(key, bundle, source="graph.security.cases.ediscoveryCases")
+    except GraphError as exc:
+        return graph_failure(key, exc, f"Purview eDiscovery cases could not be read: {exc}", ctx)
+
+
+def collect_purview_insider_risk_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "purview_insider_risk"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_INSIDER_RISK_BUNDLE), source="demo")
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        preview = _preview_client(ctx, ctx.client)
+        bundle = collect_purview_insider_risk_bundle(preview)
+        return ok(key, bundle, source="graph.beta.security.insiderRiskManagement.policies")
+    except GraphError as exc:
+        return graph_failure(
+            key,
+            exc,
+            f"Purview Insider Risk Management policies could not be read: {exc}",
+            ctx,
+        )
+
+
+def _preview_client(
+    ctx: ScanCollectionContext, base_client: GraphClient
+) -> GraphClient:
+    """Build a preview-enabled Graph client (beta endpoints are otherwise blocked)."""
+    return GraphClient(ctx.auth, cloud=base_client.cloud, allow_preview=True)
+
+
+def collect_pbi_capacity_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "pbi_capacity_bundle"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_PBI_CAPACITY_BUNDLE), source="demo")
+    try:
+        bundle = collect_pbi_capacity_bundle(ctx.auth)
+        return ok(key, bundle, source="powerbi.admin.rest")
+    except (AuthError, GraphError) as exc:
+        return graph_failure(
+            key, exc, f"Power BI admin REST could not be read: {exc}", ctx
+        )

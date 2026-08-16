@@ -158,6 +158,172 @@ def _notification_rules(rules: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [r for r in rules if "notification" in _rule_type(r)]
 
 
+def _parse_iso8601_duration_hours(value: Any) -> float | None:
+    """Parse an ISO-8601 duration like PT8H / PT30M / PT0S into hours (None if unparsable)."""
+    text = str(value or "").strip().upper()
+    if not text.startswith("PT"):
+        return None
+    text = text[2:]
+    total: float = 0.0
+    number = ""
+    for char in text:
+        if char.isdigit() or char == ".":
+            number += char
+            continue
+        if not number:
+            return None
+        if char == "H":
+            total += float(number) * 60.0
+        elif char == "M":
+            total += float(number)
+        elif char == "S":
+            total += float(number) / 60.0
+        else:
+            return None
+        number = ""
+    if number:
+        return None
+    return total / 60.0
+
+
+def _activation_expiration_rules(rules: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        r
+        for r in rules
+        if "expiration" in _rule_type(r) and "activation" in str(r.get("id") or "").lower()
+    ]
+
+
+def _activation_expiration_ok(rules: list[dict[str, Any]]) -> tuple[bool, list[str]]:
+    durations: list[str] = []
+    if not rules:
+        return False, durations
+    required_found = False
+    all_capped = True
+    for rule in rules:
+        durations.append(str(rule.get("maximumDuration") or ""))
+        if not bool(rule.get("isExpirationRequired")):
+            continue
+        required_found = True
+        hours = _parse_iso8601_duration_hours(rule.get("maximumDuration"))
+        if hours is None or hours <= 0 or hours > 8:
+            all_capped = False
+    return required_found and all_capped, durations
+
+
+def _activation_auth_context_ok(rules: list[dict[str, Any]]) -> tuple[bool, str | None]:
+    claim: str | None = None
+    ok = False
+    for rule in rules:
+        if "authenticationcontext" not in _rule_type(rule):
+            continue
+        if "activation" not in str(rule.get("id") or "").lower():
+            continue
+        claim = str(rule.get("claimValue") or "") or None
+        if bool(rule.get("isEnabled")) and claim:
+            ok = True
+    return ok, claim
+
+
+def _activation_justification_ok(rules: list[dict[str, Any]]) -> bool:
+    for rule in rules:
+        if "enablement" not in _rule_type(rule):
+            continue
+        if "activation" not in str(rule.get("id") or "").lower():
+            continue
+        enabled_rules = {
+            str(item).lower() for item in (rule.get("enabledRules") or [])
+        }
+        if "justification" in enabled_rules:
+            return True
+    return False
+
+
+def evaluate_pim_activation_controls(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """PIM activation guardrails: short duration, authentication context, justification."""
+    del check
+
+    if evidence.get("pim_policies_bundle_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="PIM role management policies could not be read: "
+            + str(evidence["pim_policies_bundle_error"]),
+            evidence={"error": str(evidence["pim_policies_bundle_error"])},
+        )
+
+    bundle = _pim_bundle(evidence)
+    policies = list(bundle.get("policies") or [])
+    all_rules: list[dict[str, Any]] = []
+    for policy in policies:
+        all_rules.extend(list(policy.get("rules") or []))
+
+    expiration_rules = _activation_expiration_rules(all_rules)
+    expiration_ok, durations = _activation_expiration_ok(expiration_rules)
+    auth_context_ok, claim_value = _activation_auth_context_ok(all_rules)
+    justification_ok = _activation_justification_ok(all_rules)
+
+    evidence_out = {
+        "policy_count": len(policies),
+        "activation_rule_count": len(all_rules),
+        "activation_maximum_durations": durations,
+        "activation_duration_capped": expiration_ok,
+        "auth_context_required": auth_context_ok,
+        "auth_context_claim_value": claim_value,
+        "justification_required": justification_ok,
+    }
+
+    if not all_rules:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "PIM role management policy rules were not available, so "
+                "activation guardrails could not be verified."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "We could not read your privileged-role activation settings, "
+                "so please confirm the activation window, justification, and "
+                "authentication-context requirements in the Entra portal."
+            ),
+        )
+
+    missing: list[str] = []
+    if not expiration_ok:
+        missing.append("activation duration is not capped at 8 hours or less")
+    if not auth_context_ok:
+        missing.append("activation does not require an authentication context")
+    if not justification_ok:
+        missing.append("activation does not require justification")
+
+    if not missing:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                "Privileged-role activation requires justification and an "
+                "authentication context, and is capped to a short window."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Turning on a powerful admin role requires a written reason, "
+                "the approved sign-in context, and expires quickly."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary="PIM activation guardrails are incomplete: " + "; ".join(missing) + ".",
+        evidence=evidence_out,
+        customer_summary=(
+            "Some activation guardrails are missing, so an attacker with a "
+            "stolen admin account can hold powerful access longer and with "
+            "less traceability."
+        ),
+    )
+
+
 def evaluate_pim_privileged_assignment_alert(
     check: CheckDefinition,
     evidence: dict[str, Any],

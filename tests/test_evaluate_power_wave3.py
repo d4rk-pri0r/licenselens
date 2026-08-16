@@ -40,7 +40,9 @@ _POWER_CHECKS = (
     "pp-env-creation-admin-only",
     "pp-trial-creation-admin-only",
     "pp-dlp-all-environments",
+    "pp-dlp-nondefault-envs",
     "pp-tenant-isolation-enabled",
+    "pp-tenant-isolation-allowlist",
     "pp-pages-creation-admin-only",
     "pp-share-with-everyone-disabled",
     "pbi-publish-to-web-disabled",
@@ -51,6 +53,7 @@ _POWER_CHECKS = (
     "pbi-resource-key-auth-blocked",
     "pbi-python-r-visuals-disabled",
     "pbi-sensitivity-labels-enabled",
+    "pbi-export-controls",
 )
 
 
@@ -237,7 +240,7 @@ def test_pbi_module_drift_is_partial_not_false_gap() -> None:
 
 
 def test_manual_and_portal_only_rows_are_not_false_gaps() -> None:
-    # Coverage manifest dispositions stay manual for connectors/allowlist/CSP rows.
+    # Coverage manifest dispositions stay manual for the CSP (4.1) row.
     from licenselens.catalog._reference_coverage import load_coverage_rows
 
     rows, errors = load_coverage_rows(
@@ -248,9 +251,10 @@ def test_manual_and_portal_only_rows_are_not_false_gaps() -> None:
     )
     assert not errors
     by_id = {row.policy_id: row for row in rows}
-    for policy_id in ("MS.POWERPLATFORM.2.2v1", "MS.POWERPLATFORM.3.2v1", "MS.POWERPLATFORM.4.1v1"):
-        assert by_id[policy_id].disposition.value == "manual"
-        assert by_id[policy_id].local_check_ids == ()
+    assert by_id["MS.POWERPLATFORM.4.1v1"].disposition.value == "manual"
+    assert by_id["MS.POWERPLATFORM.4.1v1"].local_check_ids == ()
+    assert by_id["MS.POWERPLATFORM.2.2v1"].disposition.value == "implemented_direct"
+    assert by_id["MS.POWERPLATFORM.3.2v1"].disposition.value == "implemented_direct"
 
     # Collector evidence marks the portal-only rows unsupported, never a fabricated pass.
     adapters = {

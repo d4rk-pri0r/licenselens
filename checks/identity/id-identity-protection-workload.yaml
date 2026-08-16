@@ -1,0 +1,41 @@
+id: id-identity-protection-workload
+title: Risky or compromised service principals were detected
+customer_title: Confirm no app or automation account is compromised
+customer_summary: >
+  Your plan can watch the non-human accounts that run your apps and flag
+  them when they look compromised. The check ran and found service
+  principals flagged as risky, which means an attacker may be using stolen
+  app credentials right now.
+expected_state: No service principals are currently flagged as risky or compromised.
+customer_next_step: >
+  Investigate each risky service principal in Entra ID Protection, reset or
+  rotate its credentials, and dismiss the risk only after confirming the
+  account is clean.
+description: >
+  Entra Workload ID Premium continuously evaluates service principals for
+  risk (e.g., leaked or misused credentials, suspicious sign-ins) and exposes
+  them via the riskyServicePrincipals API. A compromised service principal
+  can access business data directly without any human in the loop. This
+  check reads that signal and flags risky or confirmed-compromised workload
+  identities.
+workload: identity
+required_capabilities:
+  - workload_identities_premium
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: identity
+exposure_class: elevated
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/IdentityProtectionMenuBlade/~/WorkloadIdentities
+collector: graph_identity_protection_workload
+remediation: >
+  In Entra admin center > Protection > Identity Protection > Risky
+  workload identities, review each flagged service principal. Rotate or
+  remove its credentials, confirm the activity was legitimate or block it,
+  then confirm the risk as dismissed so future risk is visible again.
+references:
+  - https://learn.microsoft.com/entra/id-protection/concept-workload-identity-risk
+  - https://learn.microsoft.com/graph/api/identityprotectionroot-list-riskyserviceprincipals
+enabled: true

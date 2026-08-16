@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from licenselens.collectors.access_reviews import (
+    DEMO_ACCESS_REVIEW_INSTANCES,
     DEMO_ACCESS_REVIEWS,
     collect_access_review_definitions,
+    collect_access_review_instances,
 )
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
 from licenselens.collectors.contracts import EvidenceEnvelope
@@ -20,6 +22,10 @@ from licenselens.collectors.privileged_roles import (
     collect_role_assignments,
     collect_role_eligibility_schedules,
     privileged_principal_ids,
+)
+from licenselens.collectors.risky_service_principals import (
+    DEMO_RISKY_SERVICE_PRINCIPALS,
+    collect_risky_service_principals,
 )
 from licenselens.collectors.runtime_envelopes import envelope_value, graph_failure, ok
 from licenselens.collectors.security_defaults import (
@@ -195,3 +201,46 @@ def collect_access_packages_runtime(
         )
     except GraphError as exc:
         return graph_failure(key, exc, f"Entitlement access packages could not be read: {exc}", ctx)
+
+
+def collect_access_review_instances_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "access_review_instances"
+    if ctx.is_dry_run:
+        return ok(
+            key,
+            list(DEMO_ACCESS_REVIEW_INSTANCES),
+            source="demo",
+            items=len(DEMO_ACCESS_REVIEW_INSTANCES),
+        )
+    assert ctx.client is not None
+    try:
+        rows = collect_access_review_instances(ctx.client)
+        return ok(key, rows, source="graph.identityGovernance.accessReviews", items=len(rows))
+    except GraphError as exc:
+        return graph_failure(key, exc, f"Access review instances could not be read: {exc}", ctx)
+
+
+def collect_risky_service_principals_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "risky_service_principals"
+    if ctx.is_dry_run:
+        return ok(
+            key,
+            list(DEMO_RISKY_SERVICE_PRINCIPALS),
+            source="demo",
+            items=len(DEMO_RISKY_SERVICE_PRINCIPALS),
+        )
+    assert ctx.client is not None
+    try:
+        items = collect_risky_service_principals(ctx.client)
+        return ok(
+            key,
+            items,
+            source="graph.identityProtection.riskyServicePrincipals",
+            items=len(items),
+        )
+    except GraphError as exc:
+        return graph_failure(key, exc, f"Risky service principals could not be read: {exc}", ctx)

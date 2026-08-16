@@ -1,0 +1,40 @@
+id: id-cross-tenant-mfa-trust
+title: Cross-tenant MFA trust is accepted by default
+customer_title: Do not take other tenants' word for multi-factor auth
+customer_summary: >
+  By default, your tenant can accept another tenant's claim that a guest
+  already did multi-factor authentication - without checking how strong it
+  was. That lets a weakly protected partner account into your environment on
+  their word alone.
+expected_state: Multi-factor authentication claims from external tenants are not trusted by default.
+customer_next_step: >
+  In Entra external collaboration cross-tenant access default settings,
+  disable 'Trust multi-factor authentication from Microsoft Entra tenants'
+  for inbound access, and re-enable it only for specific trusted partners.
+description: >
+  Cross-tenant access settings control what you believe about external
+  tenants. The Microsoft default trusts multi-factor authentication claims
+  from other tenants for inbound B2B collaboration, so a guest whose home
+  tenant enforces weak MFA bypasses your own MFA requirements. Disabling the
+  default and trusting only explicitly allowlisted partners keeps your
+  sign-in rules meaningful for guests.
+workload: identity
+required_capabilities:
+  - conditional_access
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade
+collector: graph_guests
+remediation: >
+  In Entra admin center > External Identities > Cross-tenant access
+  settings > Default settings, open Inbound access > Trust settings and
+  uncheck 'Trust multi-factor authentication from Microsoft Entra tenants'.
+  Add partner-specific trust only for vetted organizations.
+references:
+  - https://learn.microsoft.com/entra/external-id/cross-tenant-access-settings-b2b-collaboration
+enabled: true

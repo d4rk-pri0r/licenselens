@@ -34,7 +34,9 @@ ERROR_ALIASES: dict[str, str] = {
     "ca_policies": "ca_policies_error",
     "security_defaults_policy": "security_defaults_policy_error",
     "access_review_definitions": "access_review_definitions_error",
+    "access_review_instances": "access_review_instances_error",
     "access_packages": "access_packages_error",
+    "risky_service_principals": "risky_service_principals_error",
     "role_assignments": "role_assignments_error",
     "recent_signin_user_ids": "recent_signin_error",
     "principal_directory": "principal_directory_error",
@@ -171,9 +173,11 @@ def envelopes_to_evidence(
         if name in {
             "role_assignments",
             "access_review_definitions",
+            "access_review_instances",
+            "risky_service_principals",
             "domains",
         }:
-            evidence.setdefault(name, [] if name != "role_assignments" else [])
+            evidence.setdefault(name, [])
         if name in {
             "security_defaults_policy",
             "auth_methods_bundle",

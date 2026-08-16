@@ -186,3 +186,130 @@ def evaluate_auth_authenticator_context(
             "which makes push phishing harder to spot."
         ),
     )
+
+
+def evaluate_auth_number_matching(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Microsoft Authenticator number matching is required for push approvals."""
+    del check
+
+    if evidence.get("auth_methods_bundle_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Authentication methods policy could not be read: "
+            + str(evidence["auth_methods_bundle_error"]),
+            evidence={"error": str(evidence["auth_methods_bundle_error"])},
+        )
+
+    configs = _configurations(evidence)
+    authenticator = next(
+        (c for c in configs if str(c.get("id") or "").lower() == "microsoftauthenticator"),
+        None,
+    )
+    if authenticator is None:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Microsoft Authenticator configuration was not found, so the "
+                "number-matching requirement could not be verified."
+            ),
+            evidence={"authenticator_present": False},
+            customer_summary=(
+                "We could not confirm whether sign-in approvals require typing "
+                "the on-screen number."
+            ),
+        )
+
+    state = str(authenticator.get("state") or "").lower()
+    feature = authenticator.get("featureSettings") or {}
+    if not isinstance(feature, dict):
+        feature = {}
+    number_setting = feature.get("numberMatchingRequiredState")
+    number_state = str((number_setting or {}).get("state") or "").lower() if isinstance(
+        number_setting, dict
+    ) else ""
+    evidence_out = {
+        "authenticator_state": state,
+        "number_matching_state": number_state or None,
+        "number_matching_explicit": number_state in {"enabled", "disabled"},
+    }
+
+    if not number_setting:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Microsoft Authenticator number matching setting was not "
+                "available, so enforcement could not be verified."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "We could not read the number-matching requirement, so please "
+                "confirm it in the Entra authentication methods settings."
+            ),
+        )
+
+    if state != "enabled":
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Microsoft Authenticator is not enabled tenant-wide, so the "
+                "number-matching requirement does not currently apply."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "The number-matching setting exists, but Authenticator itself "
+                "is not active for users, so the protection is not in effect."
+            ),
+        )
+
+    if number_state == "enabled":
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary="Microsoft Authenticator number matching is enabled.",
+            evidence=evidence_out,
+            customer_summary=(
+                "People must type the number shown on screen to approve a "
+                "sign-in, which stops most push-phishing attacks."
+            ),
+        )
+
+    if number_state == "default":
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                "Microsoft Authenticator number matching follows the tenant "
+                "default, which Microsoft enforces for Authenticator MFA."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "The number-matching requirement follows the Microsoft default, "
+                "which is enforced tenant-wide for Authenticator multi-factor "
+                "approvals."
+            ),
+        )
+
+    if number_state == "disabled":
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary="Microsoft Authenticator number matching is explicitly disabled.",
+            evidence=evidence_out,
+            customer_summary=(
+                "Sign-in approvals can be accepted without typing the on-screen "
+                "number, which leaves users open to MFA-fatigue attacks."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.PARTIAL,
+        summary=(
+            f"Microsoft Authenticator number matching state is uncommon "
+            f"({number_state or 'unknown'})."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "The number-matching setting has an unexpected value — verify it "
+            "in the Entra authentication methods settings."
+        ),
+    )

@@ -187,12 +187,9 @@ def test_portal_only_and_manual_rows_explicit() -> None:
         adapter=PP_TENANT_ADAPTER,
     )
     csp = payload.surfaces["content_security_policy"]
-    allow = payload.surfaces["isolation_allowlist"]
     assert csp.status is SurfaceStatus.UNSUPPORTED
     assert csp.portal_only is True
     assert "portal-only" in csp.reason.lower() or "dataverse" in csp.reason.lower()
-    assert allow.status is SurfaceStatus.UNSUPPORTED
-    assert allow.portal_only is True
 
 
 def test_absent_configuration_distinct_from_unreadable() -> None:

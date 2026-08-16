@@ -10,6 +10,7 @@ from licenselens.evaluators.security_suite_spam import (
     evaluate_mdo_connection_filter_no_ip_allow,
     evaluate_mdo_connection_filter_no_safe_list,
     evaluate_mdo_safe_attachments_spo_teams,
+    evaluate_mdo_safe_documents,
     evaluate_mdo_spam_phish_not_inbox,
 )
 from licenselens.schema_contracts import EvaluationMode
@@ -56,6 +57,13 @@ def register_security_suite_spam(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="mdo-safe-attachments-spo-teams",
             evaluate=evaluate_mdo_safe_attachments_spo_teams,
+            input_models=("exchange_bundle",),
+            collector_id="exchange_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="mdo-safe-documents",
+            evaluate=evaluate_mdo_safe_documents,
             input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,

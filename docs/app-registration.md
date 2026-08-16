@@ -69,18 +69,22 @@ the LicenseLens command line when the CLI session already has access.
 See the full matrix (including MDE, Sentinel RBAC, and PowerShell roles) in
 [permissions.md](permissions.md).
 
-**Microsoft Graph (application)** — the 16 permissions LicenseLens expects
+**Microsoft Graph (application)** — the 20 permissions LicenseLens expects
 (`REQUIRED_GRAPH_APP_PERMISSIONS`):
 
 - `AccessReview.Read.All`
 - `Application.Read.All`
 - `AuditLog.Read.All`
 - `DelegatedPermissionGrant.Read.All`
+- `DeviceManagementApps.Read.All`
 - `DeviceManagementConfiguration.Read.All`
 - `DeviceManagementManagedDevices.Read.All`
 - `Directory.Read.All`
+- `DlpPolicy.Read.All`
 - `Domain.Read.All`
+- `eDiscovery.Read.All`
 - `EntitlementManagement.Read.All`
+- `IdentityRiskyServicePrincipal.Read.All`
 - `Organization.Read.All`
 - `Policy.Read.All`
 - `RoleManagement.Read.Directory`
@@ -88,6 +92,25 @@ See the full matrix (including MDE, Sentinel RBAC, and PowerShell roles) in
 - `SecurityEvents.Read.All`
 - `SecurityIncident.Read.All`
 - `User.Read.All`
+
+**Microsoft Purview role-group assignments** (for `pur-ediscovery-readiness`):
+
+- eDiscovery (Premium) case listing requires the app’s service principal in the
+  **eDiscovery Administrator** role group (`Add-eDiscoveryCaseAdmin -User <SP-object-id>`
+  in Exchange Online PowerShell) — otherwise the case list can be empty even
+  when cases exist.
+
+**Insider Risk Management (delegated scope, not pre-verified):**
+
+- `InsiderRiskPolicy.Read.All` (delegated) for `pur-insider-risk-readiness` —
+  the signed-in user must belong to an Insider Risk Management role group.
+
+**Power BI / Fabric admin REST** (separate resource, for
+`pbi-premium-capacity-governance`):
+
+- API: Power BI service (`https://analysis.windows.net/powerbi/api/.default`)
+- Application permission: `Tenant.Read.All`
+- Admin endpoints require app-only auth or a signed-in Fabric administrator.
 
 **Microsoft Defender for Endpoint** (optional, for `mde-onboard-gap` and related
 endpoint probes):

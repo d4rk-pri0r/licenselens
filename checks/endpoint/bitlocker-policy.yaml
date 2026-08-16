@@ -1,0 +1,31 @@
+id: ep-bitlocker-policy
+title: BitLocker drive encryption policy applied
+customer_title: Device disks may not be encrypted
+customer_summary: >
+  Drive encryption stops a lost or stolen laptop from becoming a data breach.
+  An encryption policy that exists but is never assigned does nothing.
+expected_state: A BitLocker or disk-encryption policy is configured and assigned to managed Windows devices.
+customer_next_step: >
+  Confirm a BitLocker/disk-encryption configuration exists and is assigned to
+  the devices that carry sensitive data.
+description: >
+  Depth check: encryption coverage requires both a BitLocker/disk-encryption
+  device configuration and a real assignment to devices, not just presence.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/ConfigureDevicesMenu/~/deviceConfiguration
+collector: intune_collector
+remediation: >
+  Create and assign a BitLocker device configuration (or endpoint-security
+  disk-encryption profile) for Windows devices and escrow recovery keys.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/encrypt-devices
+enabled: true

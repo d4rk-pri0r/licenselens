@@ -21,6 +21,7 @@ from licenselens.evaluators.bindings.defender import register_defender
 from licenselens.evaluators.bindings.defender_endpoint import register_defender_endpoint
 from licenselens.evaluators.bindings.defender_mdo import register_defender_mdo
 from licenselens.evaluators.bindings.endpoint_intune import register_endpoint_intune
+from licenselens.evaluators.bindings.endpoint_intune_depth import register_endpoint_intune_depth
 from licenselens.evaluators.bindings.endpoint_intune_policy import register_endpoint_intune_policy
 from licenselens.evaluators.bindings.endpoint_mde_xdr import register_endpoint_mde_xdr
 from licenselens.evaluators.bindings.exchange_email_auth import register_exchange_email_auth
@@ -67,6 +68,7 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_defender_endpoint(catalog)
     register_defender_mdo(catalog)
     register_endpoint_intune(catalog)
+    register_endpoint_intune_depth(catalog)
     register_endpoint_intune_policy(catalog)
     register_endpoint_mde_xdr(catalog)
     register_exchange_email_auth(catalog)

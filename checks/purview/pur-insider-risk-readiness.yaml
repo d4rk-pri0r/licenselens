@@ -1,16 +1,18 @@
 id: pur-insider-risk-readiness
-title: Insider risk management needs manual confirmation
+title: Insider risk management readiness
 customer_title: Confirm insider risk management is set up
 customer_summary: >
   Insider risk policies spot risky activity by people who already have access.
-  They are portal-configured and need a specialist to confirm they are live.
-expected_state: An insider risk policy is live with analytics enabled.
+  Policy existence is read directly from Microsoft Graph (beta), so it is
+  checked automatically.
+expected_state: At least one insider risk policy is live; analytics is enabled.
 customer_next_step: >
   Confirm an insider risk policy is created, scoped to the right users, and
   analytics is enabled in the Purview portal.
 description: >
-  Insider risk policies and analytics are portal-configured and not fully
-  readable automatically; readiness requires manual verification.
+  Insider risk policy existence is read directly from Microsoft Graph beta
+  (security/insiderRiskManagement/policies). Analytics state is not exposed by
+  the API and still requires a portal check.
 workload: purview
 required_capabilities:
   - purview_insider_risk
@@ -22,7 +24,7 @@ blast_radius: all_users
 pack: starter
 exposure_class: none
 deep_link: https://purview.microsoft.com/insiderriskmgmt
-collector: noop
+collector: graph_purview_insider_risk
 remediation: >
   Verify an insider risk policy exists, is scoped appropriately, and that
   analytics is enabled in Microsoft Purview Insider Risk Management.

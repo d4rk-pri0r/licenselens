@@ -5,6 +5,8 @@ from __future__ import annotations
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.power_platform_env import (
     evaluate_pp_dlp_all_environments,
+    evaluate_pp_dlp_nondefault_environments,
+    evaluate_pp_tenant_isolation_allowlist,
     evaluate_pp_tenant_isolation_enabled,
 )
 from licenselens.schema_contracts import EvaluationMode
@@ -23,6 +25,20 @@ def register_power_platform_env(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="pp-tenant-isolation-enabled",
             evaluate=evaluate_pp_tenant_isolation_enabled,
+            input_models=("power_data_bundle",),
+            collector_id="power_data_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="pp-tenant-isolation-allowlist",
+            evaluate=evaluate_pp_tenant_isolation_allowlist,
+            input_models=("power_data_bundle",),
+            collector_id="power_data_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="pp-dlp-nondefault-envs",
+            evaluate=evaluate_pp_dlp_nondefault_environments,
             input_models=("power_data_bundle",),
             collector_id="power_data_collector",
             evaluation_mode=EvaluationMode.DIRECT,

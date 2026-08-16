@@ -11,6 +11,7 @@ _CG = (CloudEnvironment.PUBLIC, CloudEnvironment.US_GOV)
 def endpoint_operations() -> tuple[GraphOperation, ...]:
     dmg_cfg = ("DeviceManagementConfiguration.Read.All",)
     dmg_dev = ("DeviceManagementManagedDevices.Read.All",)
+    dmg_apps = ("DeviceManagementApps.Read.All",)
     machine = ("Machine.Read.All",)
 
     def op(
@@ -81,6 +82,31 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             dmg_cfg,
             is_collection=False,
             description="Intune-MDE connector onboarding summary",
+        ),
+        op(
+            "intune_asr_policies",
+            "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies",
+            "graph.intune_asr_policies",
+            dmg_cfg,
+            dmg_cfg,
+            description="Intune attack surface reduction policies",
+        ),
+        op(
+            "intune_device_state_summary",
+            "/deviceManagement/deviceCompliancePolicyDeviceStateSummary",
+            "graph.intune_device_state_summary",
+            dmg_cfg,
+            dmg_cfg,
+            is_collection=False,
+            description="Intune device compliance state summary",
+        ),
+        op(
+            "intune_mam_app_protections",
+            "/deviceAppManagement/managedAppProtections",
+            "graph.intune_mam_app_protections",
+            dmg_apps,
+            dmg_apps,
+            description="Intune MAM app protection policies",
         ),
         op(
             "security_incidents",

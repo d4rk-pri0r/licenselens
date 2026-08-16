@@ -1,0 +1,29 @@
+id: pp-tenant-isolation-allowlist
+title: Tenant isolation has no cross-tenant allowlist
+customer_title: Configure an explicit tenant isolation allowlist
+customer_summary: >
+  Without an allowlist, tenant isolation either blocks all cross-tenant
+  connections or is left off entirely.
+expected_state: Tenant isolation uses an explicit cross-tenant allowlist.
+customer_next_step: >
+  Enable tenant isolation and define its inbound and outbound allowlist.
+description: >
+  Power Platform tenant isolation lacks an explicit cross-tenant allowlist.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  In the Power Platform admin center, open Policies > Tenant isolation, enable
+  isolation, and add the specific tenants to the inbound and outbound allowlist.
+references:
+  - https://learn.microsoft.com/power-platform/admin/cross-tenant-restrictions
+enabled: true

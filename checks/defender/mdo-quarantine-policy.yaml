@@ -1,0 +1,30 @@
+id: mdo-quarantine-policy
+title: End users can release quarantined mail themselves
+customer_title: Restrict quarantine release and keep mail longer
+customer_summary: >
+  Full end-user quarantine access lets users release phishing, and short
+  retention makes investigation harder.
+expected_state: End users have limited quarantine access and mail is kept long enough.
+customer_next_step: >
+  Restrict end-user quarantine permissions and increase the retention window.
+description: >
+  Quarantine policies grant end users too much access or too short a retention.
+workload: defender
+required_capabilities:
+  - exchange_online_protection
+severity: medium
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/quarantinepolicies
+collector: exchange_collector
+remediation: >
+  In the Microsoft Defender portal, open Email & collaboration > Policies & rules >
+  Threat policies > Quarantine policies, set end-user permissions to limited or
+  no access, and raise retention to at least 30 days.
+references:
+  - https://learn.microsoft.com/defender-office-365/quarantine-policies
+enabled: true

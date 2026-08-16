@@ -20,8 +20,12 @@ Security License Lens is designed for **read-only** access.
 | `SecurityAlert.Read.All` | Defender XDR alerts_v2 (capability operation signal) |
 | `AccessReview.Read.All` | Access review definitions |
 | `EntitlementManagement.Read.All` | Entitlement Management access packages |
+| `IdentityRiskyServicePrincipal.Read.All` | Risky workload-identity (service principal) detection |
+| `DeviceManagementApps.Read.All` | Intune MAM app-protection policies |
 | `DeviceManagementConfiguration.Read.All` | Intune compliance/configuration/endpoint-security policies |
 | `DeviceManagementManagedDevices.Read.All` | Intune managed device inventory (bounded) |
+| `DlpPolicy.Read.All` | Purview DLP policies + apps (direct, `/security/dataLossPreventionPolicies`) |
+| `eDiscovery.Read.All` | Premium eDiscovery cases (direct, `/security/cases/ediscoveryCases`) |
 
 Grant **application** permissions and **admin consent**.
 
@@ -74,12 +78,40 @@ US Government: `https://management.usgovcloudapi.net`.
 LicenseLens does **not** enumerate VMs, storage, SQL, or network resources for
 benchmark-style CSPM.
 
-## Purview DLP
+## Purview DLP, eDiscovery, and Insider Risk Management
 
-Purview DLP uses **Secure Score** DLP/information-protection controls as a proxy
-(`SecurityEvents.Read.All`). Direct Purview policy APIs are attempted best-effort
-and may not be available to app-only auth. PowerShell bridge adapters also collect
-readable Purview surfaces when modules are present.
+Purview DLP reads **direct Graph policy evidence** first
+(`/security/dataLossPreventionPolicies` + `/security/dataLossPreventionApps`,
+`DlpPolicy.Read.All`) and falls back to **Secure Score** DLP/information-protection
+controls (`SecurityEvents.Read.All`) when the direct read is unavailable.
+
+Premium eDiscovery cases are read directly from Graph v1.0
+(`/security/cases/ediscoveryCases`, `eDiscovery.Read.All`). App-only access must
+additionally be added to the eDiscovery Administrator role group via
+`Add-eDiscoveryCaseAdmin` (see docs/app-registration.md); otherwise the case
+list can come back empty even when cases exist.
+
+Insider Risk Management policies are read from the Graph **beta** endpoint
+(`/security/insiderRiskManagement/policies`). This API uses the delegated scope
+`InsiderRiskPolicy.Read.All` and requires the signed-in user to hold an Insider
+Risk Management role group membership; it is not part of the pre-verified
+application permission list above.
+
+PowerShell bridge adapters also collect readable Purview surfaces when modules
+are present.
+
+## Power BI / Fabric admin REST (separate resource)
+
+Premium capacity governance reads the Power BI admin REST API
+(`admin/capacities` + `admin/tenantsettings`).
+
+| Permission | Purpose |
+|------------|---------|
+| `Tenant.Read.All` | Premium/Fabric capacity + admin list and tenant settings |
+
+Token audience: `https://analysis.windows.net/powerbi/api/.default` (a separate
+resource from Microsoft Graph). Admin endpoints require **app-only** auth or a
+signed-in **Fabric administrator**.
 
 ## Exchange Online / Security & Compliance (PowerShell bridge)
 

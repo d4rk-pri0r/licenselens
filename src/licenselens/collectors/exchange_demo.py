@@ -31,6 +31,7 @@ DEMO_THREAT_PAYLOAD: Final[dict[str, JsonValue]] = {
                         "ScanUrls": True,
                         "DeliverMessageAfterScan": True,
                         "TrackClicks": True,
+                        "AllowClickThrough": False,
                     },
                     "assignments": ["All"],
                 },
@@ -39,7 +40,10 @@ DEMO_THREAT_PAYLOAD: Final[dict[str, JsonValue]] = {
                     "identity": "Custom Safe Links",
                     "kind": "custom",
                     "enabled": True,
-                    "properties": {"EnableSafeLinksForEmail": True},
+                    "properties": {
+                        "EnableSafeLinksForEmail": True,
+                        "AllowClickThrough": False,
+                    },
                     "assignments": ["finance@contoso.com"],
                 },
             ],
@@ -210,6 +214,7 @@ DEMO_THREAT_PAYLOAD: Final[dict[str, JsonValue]] = {
                     "properties": {
                         "EnableATPForSPOTeamsODB": True,
                         "EnableSafeDocs": True,
+                        "AllowSafeDocsOpen": True,
                     },
                     "assignments": [],
                 }
@@ -222,11 +227,16 @@ DEMO_THREAT_PAYLOAD: Final[dict[str, JsonValue]] = {
             "raw_count": 1,
             "items": [
                 {
-                    "name": "DefaultFullAccessPolicy",
-                    "identity": "DefaultFullAccessPolicy",
+                    "name": "Default Quarantine Policy",
+                    "identity": "Default Quarantine Policy",
                     "kind": "default",
                     "enabled": True,
-                    "properties": {"EsnEnabled": True},
+                    "properties": {
+                        "EsnEnabled": True,
+                        "QuarantinePolicyType": "QuarantinePolicyDefault",
+                        "EndUserQuarantinePermissionsValue": "LimitedAccess",
+                        "RetentionDurationInDays": 30,
+                    },
                     "assignments": [],
                 }
             ],
@@ -451,7 +461,7 @@ DEMO_COMPLIANCE_PAYLOAD: Final[dict[str, JsonValue]] = {
             "surface": "dlp_policies",
             "status": "ok",
             "reason": "",
-            "raw_count": 1,
+            "raw_count": 2,
             "items": [
                 {
                     "name": "Protect PII",
@@ -463,7 +473,15 @@ DEMO_COMPLIANCE_PAYLOAD: Final[dict[str, JsonValue]] = {
                         "Workload": "Exchange,SharePoint,OneDrive",
                     },
                     "assignments": [],
-                }
+                },
+                {
+                    "name": "Protect endpoints",
+                    "identity": "Protect endpoints",
+                    "kind": "custom",
+                    "enabled": True,
+                    "properties": {"Mode": "Enable", "Workload": "Devices"},
+                    "assignments": [],
+                },
             ],
         },
         "dlp_rules": {

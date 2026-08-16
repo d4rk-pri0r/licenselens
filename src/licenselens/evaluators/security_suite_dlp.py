@@ -30,6 +30,15 @@ def _enabled_dlp_policies(bundle: Any) -> list[PolicyItem]:
     ]
 
 
+def _covers_endpoint_devices(item: PolicyItem) -> bool:
+    value = prop(item, "Workload")
+    if isinstance(value, str):
+        return "devices" in value.strip().lower()
+    if isinstance(value, list):
+        return any("devices" in str(v).strip().lower() for v in value)
+    return False
+
+
 def _dlp_unavailable(*, summary: str, customer: str) -> Evaluation:
     return Evaluation(
         status=FindingStatus.PARTIAL,
@@ -271,3 +280,41 @@ def _audit_ingestion_flag(bundle: Any, adapter: str, name: str) -> bool | None:
     if not rows:
         return None
     return prop_bool(rows[0], "UnifiedAuditLogIngestionEnabled")
+
+
+def evaluate_pur_endpoint_dlp(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check
+    bundle = exchange_bundle(evidence)
+    if not usable(bundle, _SCC, "dlp_policies"):
+        return _dlp_unavailable(
+            summary="Endpoint DLP policy state could not be read; treated as unresolved.",
+            customer="We could not confirm whether endpoint devices are covered by DLP.",
+        )
+    endpoint_policies = [
+        item for item in _enabled_dlp_policies(bundle) if _covers_endpoint_devices(item)
+    ]
+    evidence_out = {
+        "dlp_policy_count": len(items(bundle, _SCC, "dlp_policies")),
+        "endpoint_dlp_policies": [item.name for item in endpoint_policies],
+    }
+    if endpoint_policies:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=f"{len(endpoint_policies)} DLP policy(ies) cover endpoint devices.",
+            evidence=evidence_out,
+            customer_summary="Endpoint devices are covered by DLP.",
+            **direct_meta(),
+        )
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary="No DLP policy covers endpoint devices.",
+        evidence=evidence_out,
+        customer_summary=(
+            "Data moved to or from endpoint devices is not protected. "
+            "Add an endpoint DLP policy."
+        ),
+        **direct_meta(),
+    )

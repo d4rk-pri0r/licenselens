@@ -77,6 +77,11 @@ DEMO_PBI_TENANT_PAYLOAD: Final[dict[str, JsonValue]] = {
             "allowUsersToApplySensitivityLabelsForContent",
             enabled=True,
         ),
+        "export_data": _setting(
+            "export_data",
+            "ExportToExcel",
+            enabled=False,
+        ),
     },
 }
 
@@ -105,6 +110,7 @@ DEMO_PBI_MODULE_DRIFT_PAYLOAD: Final[dict[str, JsonValue]] = {
             "resource_key_auth",
             "python_r_visuals",
             "sensitivity_labels",
+            "export_data",
         )
     },
 }

@@ -239,6 +239,42 @@ def evaluate_mdo_safe_attachments_spo_teams(
     )
 
 
+def evaluate_mdo_safe_documents(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    del check
+    bundle = exchange_bundle(evidence)
+    if not usable(bundle, _THREAT, "atp_global"):
+        return _unread(
+            "atp_global",
+            "Safe Documents state could not be read.",
+            "We could not confirm whether Safe Documents scanning is enabled.",
+        )
+    selected = enabled_items(bundle, _THREAT, "atp_global")
+    enabled = any(prop_bool(item, "EnableSafeDocs") for item in selected)
+    allow_open = any(prop_bool(item, "AllowSafeDocsOpen") for item in selected)
+    evidence_out = {"enable_safe_docs": enabled, "allow_safe_docs_open": allow_open}
+    if enabled:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary="Safe Documents scans Office files opened from untrusted sources.",
+            evidence=evidence_out,
+            customer_summary="Office documents are scanned before users open them.",
+            **direct_meta(),
+        )
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary="Safe Documents is not enabled for the organization.",
+        evidence=evidence_out,
+        customer_summary=(
+            "Office files from untrusted sources are not scanned in Protected View. "
+            "Enable Safe Documents."
+        ),
+        **direct_meta(),
+    )
+
+
 def _manual(summary: str, customer: str, limitation: str) -> Evaluation:
     return Evaluation(
         status=FindingStatus.SKIPPED,

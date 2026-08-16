@@ -83,7 +83,7 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
             collector_id="graph_access_reviews",
             backend=Backend.GRAPH,
             permissions=("AccessReview.Read.All",),
-            dependencies=("access_review_definitions",),
+            dependencies=("access_review_definitions", "access_review_instances"),
             timeout_seconds=30,
         )
         _register_one(
@@ -152,6 +152,14 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="graph_identity_protection_workload",
+            backend=Backend.GRAPH,
+            permissions=("IdentityRiskyServicePrincipal.Read.All",),
+            dependencies=("risky_service_principals",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
             collector_id="graph_mdo",
             backend=Backend.NOOP,
             permissions=(),
@@ -199,6 +207,7 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
             collector_id="intune_collector",
             backend=Backend.GRAPH,
             permissions=(
+                "DeviceManagementApps.Read.All",
                 "DeviceManagementConfiguration.Read.All",
                 "DeviceManagementManagedDevices.Read.All",
             ),
@@ -247,10 +256,34 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="pbi_capacity_collector",
+            backend=Backend.GRAPH,
+            permissions=("Tenant.Read.All",),
+            dependencies=("pbi_capacity_bundle",),
+            timeout_seconds=45,
+        )
+        _register_one(
+            catalog,
             collector_id="purview_dlp_collector",
-            backend=Backend.PROXY,
-            permissions=("SecurityEvents.Read.All",),
+            backend=Backend.GRAPH,
+            permissions=("DlpPolicy.Read.All", "SecurityEvents.Read.All"),
             dependencies=("purview_dlp",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
+            collector_id="graph_purview_ediscovery",
+            backend=Backend.GRAPH,
+            permissions=("eDiscovery.Read.All",),
+            dependencies=("purview_ediscovery",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
+            collector_id="graph_purview_insider_risk",
+            backend=Backend.GRAPH,
+            permissions=("InsiderRiskPolicy.Read.All",),
+            dependencies=("purview_insider_risk",),
             timeout_seconds=30,
         )
         _register_one(

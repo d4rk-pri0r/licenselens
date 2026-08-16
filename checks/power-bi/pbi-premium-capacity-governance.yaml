@@ -1,18 +1,18 @@
 id: pbi-premium-capacity-governance
-title: Power BI Premium capacity governance needs manual confirmation
-customer_title: Confirm Premium capacity governance and entitlement use
+title: Power BI Premium capacity governance
+customer_title: Premium capacity use and capacity admins are checked directly
 customer_summary: >
-  Power BI Premium seats and capacity change how widely reports scale.
-  Entitlement assignment, capacity admins, and workspace governance are not
-  fully readable here and need a specialist review.
-expected_state: Premium capacity admins are limited and workspace mapping is documented.
+  Premium capacity existence, admin assignments, and tenant settings are read
+  directly from the Power BI / Fabric admin REST API, so capacity governance is
+  checked automatically.
+expected_state: Premium capacities are in use and capacity admins stay limited.
 customer_next_step: >
   Confirm Premium per-user or capacity entitlements are assigned intentionally,
   capacity admins are limited, and workspace provenance matches your policy.
 description: >
-  Power BI Premium capacity and per-user governance (entitlement provenance,
-  capacity admin scope, and workspace placement) require manual verification.
-  This check never auto-passes.
+  Premium/Fabric capacities and tenant settings are read directly from the
+  Power BI admin REST API (admin/capacities + admin/tenantsettings). Workspace
+  mapping and per-user seat provenance still require a portal review.
 workload: power_bi
 required_capabilities:
   - power_bi_premium
@@ -24,7 +24,7 @@ blast_radius: data
 pack: power-bi
 exposure_class: none
 deep_link: https://app.powerbi.com/admin-portal/capacities
-collector: noop
+collector: pbi_capacity_collector
 remediation: >
   Review Premium capacity settings and per-user assignments in the Power BI
   admin portal. Limit capacity admins, confirm workspace-to-capacity mapping,
@@ -32,4 +32,5 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-premium-what-is
   - https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq
+  - https://learn.microsoft.com/rest/api/power-bi/admin
 enabled: true

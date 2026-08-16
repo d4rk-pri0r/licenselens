@@ -16,10 +16,12 @@ from licenselens.engine.evaluate import (
     evaluate_pur_sensitivity_labels_published,
 )
 from licenselens.engine.registry import default_registry
-from licenselens.evaluators.purview_manual import (
-    evaluate_pur_communication_compliance_readiness,
+from licenselens.evaluators.purview import (
     evaluate_pur_ediscovery_readiness,
     evaluate_pur_insider_risk_readiness,
+)
+from licenselens.evaluators.purview_manual import (
+    evaluate_pur_communication_compliance_readiness,
 )
 from licenselens.models import CheckDefinition, FindingStatus, Workload
 from licenselens.schema_contracts import JsonValue
@@ -351,16 +353,11 @@ def test_retention_absent_gap() -> None:
 
 
 def test_manual_checks_emit_skipped_with_guidance() -> None:
-    for evaluator in (
-        evaluate_pur_insider_risk_readiness,
-        evaluate_pur_communication_compliance_readiness,
-        evaluate_pur_ediscovery_readiness,
-    ):
-        result = evaluator(_check("pur-manual"), {})
-        assert result.status is FindingStatus.SKIPPED
-        assert result.evidence.get("manual") is True
-        assert result.evidence.get("evaluation_mode") == "manual"
-        assert result.limitations
+    result = evaluate_pur_communication_compliance_readiness(_check("pur-manual"), {})
+    assert result.status is FindingStatus.SKIPPED
+    assert result.evidence.get("manual") is True
+    assert result.evidence.get("evaluation_mode") == "manual"
+    assert result.limitations
 
 
 def test_new_checks_registered_in_evaluators_and_registry() -> None:

@@ -224,10 +224,10 @@ def pbi_bool_result(
             customer_summary=customer_ok,
             **direct_meta(),
         )
-        return Evaluation(
-            status=FindingStatus.GAP,
-            summary=gap_summary,
-            evidence=evidence,
-            customer_summary=customer_gap,
-            **direct_meta(),
-        )
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary=gap_summary,
+        evidence=evidence,
+        customer_summary=customer_gap,
+        **direct_meta(),
+    )

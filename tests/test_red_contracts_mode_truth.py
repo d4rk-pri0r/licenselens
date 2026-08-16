@@ -14,8 +14,10 @@ from licenselens.catalog.reference import build_reference_model
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS_MD = ROOT / "docs" / "reference" / "checks.md"
 
-# Nine manual checks locked by the audit (AF-B). Listed explicitly so this
-# contract does not depend on the forbidden legacy map module.
+# Seven manual checks locked by the audit (AF-B). Listed explicitly so this
+# contract does not depend on the forbidden legacy map module. (Originally nine;
+# pur-insider-risk-readiness and pur-ediscovery-readiness converted to direct
+# Graph evidence by the proxy/manual→direct conversion.)
 MANUAL_CHECK_IDS: frozenset[str] = frozenset(
     {
         "id-idprotect-notify-high-risk",
@@ -23,19 +25,17 @@ MANUAL_CHECK_IDS: frozenset[str] = frozenset(
         "id-guest-invite-domains",
         "mdo-alert-policies-enabled",
         "mdo-audit-retention",
-        "pur-insider-risk-readiness",
         "pur-communication-compliance-readiness",
-        "pur-ediscovery-readiness",
         "az-cspm-out-of-scope",
     }
 )
-assert len(MANUAL_CHECK_IDS) == 9
+assert len(MANUAL_CHECK_IDS) == 7
 
 DYNAMIC_EMAIL_CHECK_ID = "mdo-p2-policies-default"
 
 
-def test_nine_manual_checks_render_manual_in_reference_model() -> None:
-    """Reference model must label all nine manual checks as ``manual``, not ``direct``."""
+def test_seven_manual_checks_render_manual_in_reference_model() -> None:
+    """Reference model must label all seven manual checks as ``manual``, not ``direct``."""
     model = build_reference_model()
     by_id = {check.id: check for check in model.checks}
 
@@ -53,7 +53,7 @@ def test_nine_manual_checks_render_manual_in_reference_model() -> None:
     )
 
 
-def test_nine_manual_checks_render_manual_in_checks_markdown() -> None:
+def test_seven_manual_checks_render_manual_in_checks_markdown() -> None:
     """Generated ``docs/reference/checks.md`` must show ``| manual |`` for each manual check."""
     text = CHECKS_MD.read_text(encoding="utf-8")
     failures: list[str] = []

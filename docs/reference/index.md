@@ -5,13 +5,13 @@ Machine-generated from the todo-5 reference model (package version **0.4.0**).
 
 | Artifact | Count |
 |----------|------:|
-| [Checks](checks.md) | 140 |
-| [Capabilities](capabilities.md) | 29 |
+| [Checks](checks.md) | 166 |
+| [Capabilities](capabilities.md) | 31 |
 | [Profiles](profiles.md) | 11 |
-| [Graph permissions](permissions.md) | 15 |
-| [Coverage rows](coverage.md) | 129 |
+| [Graph permissions](permissions.md) | 20 |
+| [Coverage rows](coverage.md) | 131 |
 | [Untracked baseline rows](coverage.md) | 4 |
-| Coverage gaps (manual/unsupported/not-applicable) | 18 |
+| Coverage gaps (manual/unsupported/not-applicable) | 16 |
 
 ## Provenance
 

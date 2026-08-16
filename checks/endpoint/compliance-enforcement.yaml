@@ -1,0 +1,31 @@
+id: ep-compliance-enforcement
+title: Device compliance is enforced in practice
+customer_title: Devices may be out of compliance despite policies
+customer_summary: >
+  Compliance policies only matter if devices actually report compliant.
+  This check reads the real device state, not just whether a policy exists.
+expected_state: Managed devices are actually compliant, with zero noncompliant devices reported.
+customer_next_step: >
+  Review noncompliant or unknown devices in the compliance dashboard and
+  remediate them, or tighten the policy so unhealthy devices are caught.
+description: >
+  Depth check: evaluates the deviceCompliancePolicyDeviceStateSummary so a
+  tenant with policies but noncompliant devices is still flagged.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: high
+value_impact: high
+impact: high
+effort: days
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies
+collector: intune_collector
+remediation: >
+  Remediate noncompliant, unknown, or conflicting devices in Intune and
+  confirm conditional access gates block unhealthy devices until they comply.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/compliance-policy-monitor
+enabled: true

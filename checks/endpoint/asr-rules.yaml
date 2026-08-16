@@ -1,0 +1,33 @@
+id: ep-asr-rules
+title: Attack surface reduction rules configured and enforced
+customer_title: Attack surface reduction rules may not be enforced on devices
+customer_summary: >
+  Attack surface reduction rules block the behaviors ransomware and fileless
+  malware rely on. A policy that exists but is unassigned, or assigned with no
+  rules, protects nobody.
+expected_state: Attack surface reduction rules are configured and assigned to managed Windows devices.
+customer_next_step: >
+  Confirm an ASR endpoint-security policy is assigned and that it actually
+  carries attack surface reduction rules, then watch rule reports for hits.
+description: >
+  Depth check: an ASR policy is only valuable when it is assigned and carries
+  real rules. Empty shells and unassigned profiles are treated as gaps.
+workload: endpoint
+required_capabilities:
+  - defender_endpoint_p2
+  - defender_endpoint_p1
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview
+collector: intune_collector
+remediation: >
+  Create an attack-surface-reduction endpoint-security profile, configure
+  rules (block mode where safe), and assign it to all Windows device groups.
+references:
+  - https://learn.microsoft.com/defender-endpoint/attack-surface-reduction-rules-reference
+enabled: true

@@ -1,16 +1,17 @@
 id: pur-ediscovery-readiness
-title: eDiscovery needs manual confirmation
+title: eDiscovery readiness
 customer_title: Confirm eDiscovery is set up
 customer_summary: >
-  eDiscovery cases and legal holds preserve evidence when it matters. They are
-  portal-configured and need a specialist to confirm the workflow is ready.
-expected_state: Case and hold workflows are tested and eDiscovery roles are assigned.
+  eDiscovery cases and legal holds preserve evidence when it matters. Premium
+  eDiscovery cases are read directly, so their existence is checked automatically.
+expected_state: Premium eDiscovery cases exist and legal hold workflows are in use.
 customer_next_step: >
-  Confirm eDiscovery administrators are assigned and legal hold workflows are
-  configured in the Purview portal.
+  Create a test Premium case with a legal hold, and confirm eDiscovery
+  administrators are assigned in the Purview portal.
 description: >
-  eDiscovery cases and holds are portal-configured and not fully readable
-  automatically; readiness requires manual verification.
+  Premium eDiscovery cases are read directly from Microsoft Graph
+  (security/cases/ediscoveryCases). An empty case list is reported honestly as
+  unverified (no cases, or the scanning identity lacks case visibility).
 workload: purview
 required_capabilities:
   - purview_ediscovery
@@ -22,10 +23,11 @@ blast_radius: all_users
 pack: starter
 exposure_class: none
 deep_link: https://purview.microsoft.com/ediscovery
-collector: noop
+collector: graph_purview_ediscovery
 remediation: >
   Verify eDiscovery administrator roles are assigned and that case and legal
   hold workflows are configured and tested.
 references:
   - https://learn.microsoft.com/purview/ediscovery
+  - https://learn.microsoft.com/graph/api/security-casesroot-list-ediscoverycases
 enabled: true

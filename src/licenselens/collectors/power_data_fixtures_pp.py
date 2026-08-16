@@ -73,16 +73,6 @@ DEMO_PP_TENANT_PAYLOAD: Final[dict[str, JsonValue]] = {
             "items": [],
             "portal_only": True,
         },
-        "isolation_allowlist": {
-            "surface": "isolation_allowlist",
-            "status": "unsupported",
-            "reason": (
-                "manual/portal-only: inbound-outbound allowlist exceptions (MS.POWERPLATFORM.3.2v1)"
-            ),
-            "raw_count": 0,
-            "items": [],
-            "portal_only": True,
-        },
     },
 }
 
@@ -200,6 +190,7 @@ DEMO_PP_ISOLATION_PAYLOAD: Final[dict[str, JsonValue]] = {
                     "properties": {
                         "isDisabled": False,
                         "isolationEnabled": True,
+                        "allowedTenants": ["11111111-1111-1111-1111-111111111111"],
                     },
                     "assignments": [],
                 }

@@ -133,6 +133,15 @@ def identity_operations() -> tuple[GraphOperation, ...]:
             description="Entitlement Management access packages",
         ),
         op(
+            "risky_service_principals",
+            "/identityProtection/riskyServicePrincipals",
+            "graph.risky_service_principals",
+            ("IdentityRiskyServicePrincipal.Read.All",),
+            ("IdentityRiskyServicePrincipal.Read.All",),
+            max_pages=10,
+            description="Risky service principals (workload identity protection)",
+        ),
+        op(
             "applications",
             "/applications",
             "graph.applications",

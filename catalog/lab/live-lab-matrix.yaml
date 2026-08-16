@@ -252,7 +252,7 @@ families:
   - id: endpoint
     todo: 22
     workload: endpoint
-    check_prefixes: ["endpoint-", "mde-", "mdi-", "xdr-"]
+    check_prefixes: ["endpoint-", "mde-", "mdi-", "xdr-", "ep-"]
     backend: graph_mde
     auth_modes: [app_only, delegated]
     state: direct
@@ -307,14 +307,15 @@ families:
     state: direct
     graph_permissions:
       - SecurityEvents.Read.All
+      - DlpPolicy.Read.All
+      - eDiscovery.Read.All
     bridge_roles:
       - Purview Administrator
       - Global Reader
     downgraded_manual:
       - pur-communication-compliance-readiness
-      - pur-ediscovery-readiness
-      - pur-insider-risk-readiness
-    proxy:
+    proxy: []
+    direct_with_proxy_fallback:
       - pur-dlp-not-enforced
     proof: tests/test_evaluate_purview_governance.py
     pass_case:

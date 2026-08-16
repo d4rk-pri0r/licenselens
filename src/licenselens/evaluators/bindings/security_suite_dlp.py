@@ -9,6 +9,7 @@ from licenselens.evaluators.security_suite_dlp import (
     evaluate_pur_dlp_locations_complete,
     evaluate_pur_dlp_notifications,
     evaluate_pur_dlp_policy_present,
+    evaluate_pur_endpoint_dlp,
 )
 from licenselens.schema_contracts import EvaluationMode
 
@@ -47,6 +48,13 @@ def register_security_suite_dlp(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="pur-dlp-policy-present",
             evaluate=evaluate_pur_dlp_policy_present,
+            input_models=("exchange_bundle",),
+            collector_id="exchange_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="pur-endpoint-dlp",
+            evaluate=evaluate_pur_endpoint_dlp,
             input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,

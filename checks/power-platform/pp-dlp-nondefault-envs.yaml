@@ -1,0 +1,30 @@
+id: pp-dlp-nondefault-envs
+title: Non-default Power Platform environments have no DLP policy
+customer_title: Apply DLP to every non-default environment
+customer_summary: >
+  Maker and production environments outside the default can connect business
+  data to unmanaged connectors when DLP is missing.
+expected_state: A DLP policy protects each non-default Power Platform environment.
+customer_next_step: >
+  Assign a DLP policy to every non-default environment.
+description: >
+  One or more non-default Power Platform environments are not covered by a data
+  loss prevention policy.
+workload: power_platform
+required_capabilities:
+  - power_platform
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: power-platform
+exposure_class: none
+deep_link: https://admin.powerplatform.microsoft.com
+collector: power_data_collector
+remediation: >
+  In the Power Platform admin center, open Policies > Data policies and create or
+  update DLP policies so every non-default environment is covered.
+references:
+  - https://learn.microsoft.com/power-platform/admin/wp-data-loss-prevention
+enabled: true

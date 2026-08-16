@@ -33,7 +33,7 @@ COVERAGE_SURFACE_MAP: Final[dict[str, tuple[str, str]]] = {
     "MS.POWERPLATFORM.2.1v1": (PP_DLP_ADAPTER, "dlp_policies"),
     "MS.POWERPLATFORM.2.2v1": (PP_DLP_ADAPTER, "dlp_policies"),
     "MS.POWERPLATFORM.3.1v1": (PP_ISOLATION_ADAPTER, "tenant_isolation"),
-    "MS.POWERPLATFORM.3.2v1": (PP_TENANT_ADAPTER, "isolation_allowlist"),
+    "MS.POWERPLATFORM.3.2v1": (PP_ISOLATION_ADAPTER, "tenant_isolation"),
     "MS.POWERPLATFORM.4.1v1": (PP_TENANT_ADAPTER, "content_security_policy"),
     "MS.POWERPLATFORM.5.1v1": (PP_TENANT_ADAPTER, "power_pages"),
     "MS.POWERPLATFORM.6.1v1": (PP_TENANT_ADAPTER, "share_with_everyone"),
@@ -60,7 +60,6 @@ PURVIEW_SURFACES: Final[tuple[str, ...]] = (
 
 MANUAL_PORTAL_POLICY_IDS: Final[frozenset[str]] = frozenset(
     {
-        "MS.POWERPLATFORM.3.2v1",
         "MS.POWERPLATFORM.4.1v1",
     }
 )

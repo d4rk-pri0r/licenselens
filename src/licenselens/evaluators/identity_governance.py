@@ -288,6 +288,177 @@ def evaluate_access_reviews_unused(
     )
 
 
+_COMPLETED_INSTANCE_STATUSES: frozenset[str] = frozenset({"completed", "applied"})
+
+
+def _instances_by_definition(
+    evidence: dict[str, Any],
+) -> dict[str, list[dict[str, Any]]]:
+    rows = evidence.get("access_review_instances")
+    if not isinstance(rows, list):
+        rows = [
+            d
+            for d in evidence.get("access_review_definitions") or []
+            if isinstance(d, dict) and d.get("instances") is not None
+        ]
+    mapping: dict[str, list[dict[str, Any]]] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        definition_id = str(row.get("id") or "")
+        instances = row.get("instances")
+        if definition_id and isinstance(instances, list):
+            mapping[definition_id] = [
+                i for i in instances if isinstance(i, dict)
+            ]
+    return mapping
+
+
+def evaluate_access_reviews_scope(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Access reviews cover privileged roles, recur, and have completed a round."""
+    del check
+
+    if evidence.get("access_review_definitions_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Access review definitions could not be read: "
+            + str(evidence["access_review_definitions_error"]),
+            evidence={"error": str(evidence["access_review_definitions_error"])},
+        )
+    if evidence.get("access_review_instances_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Access review instances could not be read: "
+            + str(evidence["access_review_instances_error"]),
+            evidence={"error": str(evidence["access_review_instances_error"])},
+        )
+
+    definitions = [
+        d for d in evidence.get("access_review_definitions") or [] if isinstance(d, dict)
+    ]
+    instances_by_id = _instances_by_definition(evidence)
+
+    privileged = [d for d in definitions if _review_is_privileged_scoped(d)]
+    privileged_recurring = [d for d in privileged if _review_is_recurring(d)]
+    completed_by_id = {
+        definition_id: [
+            i
+            for i in instances
+            if str(i.get("status") or "").lower() in _COMPLETED_INSTANCE_STATUSES
+        ]
+        for definition_id, instances in instances_by_id.items()
+    }
+    scoped_with_completed_rounds = [
+        d
+        for d in privileged_recurring
+        if completed_by_id.get(str(d.get("id") or ""))
+    ]
+
+    evidence_out = {
+        "definition_count": len(definitions),
+        "privileged_scoped_count": len(privileged),
+        "privileged_recurring_count": len(privileged_recurring),
+        "definitions_with_completed_rounds": [
+            str(d.get("id")) for d in scoped_with_completed_rounds
+        ],
+        "instance_count_by_definition": {
+            str(definition_id): len(instances)
+            for definition_id, instances in instances_by_id.items()
+        },
+    }
+
+    if not definitions:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                "No access review definitions were found, so privileged roles "
+                "are not covered by recurring, executed reviews."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Periodic confirmation of powerful admin access does not look "
+                "set up at all, so privilege can accumulate without review."
+            ),
+        )
+
+    if not privileged:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                f"{len(definitions)} access review definition(s) exist, but "
+                "none could be confirmed to cover privileged directory roles."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Your access reviews do not appear to include the powerful "
+                "admin roles where stale access hurts most."
+            ),
+        )
+
+    if not privileged_recurring:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"{len(privileged)} privileged-scoped review definition(s) "
+                "exist, but none is configured to recur — reviews run once."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Powerful admin roles are reviewed, but only as one-off "
+                "exercises, so new privilege can still pile up between rounds."
+            ),
+        )
+
+    if scoped_with_completed_rounds:
+        return Evaluation(
+            status=FindingStatus.OK,
+            summary=(
+                f"{len(scoped_with_completed_rounds)} recurring privileged-role "
+                "access review definition(s) have completed at least one round."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Your recurring privileged-role reviews have actually run to "
+                "completion, so stale admin access is being caught."
+            ),
+        )
+
+    ran_instances = any(
+        bool(instances_by_id.get(str(d.get("id") or "")))
+        for d in privileged_recurring
+    )
+    if ran_instances:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"{len(privileged_recurring)} recurring privileged-role review "
+                "definition(s) exist with instances, but no completed round "
+                "was found."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Privileged-role reviews are scheduled, but no round has "
+                "finished yet — complete one so decisions are actually applied."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.GAP,
+        summary=(
+            f"{len(privileged_recurring)} recurring privileged-role review "
+            "definition(s) exist, but no review instance has ever run."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "Privileged-role reviews are configured on paper but have never "
+            "executed, so nobody has actually re-confirmed admin access."
+        ),
+    )
+
+
 def evaluate_entitlement_access_packages(
     check: CheckDefinition,
     evidence: dict[str, Any],

@@ -1,0 +1,30 @@
+id: mdo-safe-links-click-through
+title: Safe Links lets users click through to the original URL
+customer_title: Block click-through on rewrapped links
+customer_summary: >
+  Allowing click-through lets users reach the original link, undoing Safe Links
+  protection.
+expected_state: Safe Links keeps users from clicking through to the original URL.
+customer_next_step: >
+  Turn off click-through in Safe Links policies.
+description: >
+  Safe Links is configured to allow click-through to the original URL.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: high
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safelinksv2
+collector: exchange_collector
+remediation: >
+  In the Microsoft Defender portal, open Email & collaboration > Policies & rules >
+  Threat policies > Safe Links and clear the "Do not let users click through"
+  override so click-through to the original URL is blocked.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-links-policies-configure
+enabled: true

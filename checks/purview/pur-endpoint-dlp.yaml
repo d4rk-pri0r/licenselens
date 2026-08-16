@@ -1,0 +1,30 @@
+id: pur-endpoint-dlp
+title: No DLP policy covers endpoint devices
+customer_title: Protect data on endpoint devices
+customer_summary: >
+  Files copied to or from laptops and desktops can leak sensitive data when
+  endpoint DLP is missing.
+expected_state: An enforced DLP policy covers endpoint devices.
+customer_next_step: >
+  Add a DLP policy that includes the Devices workload.
+description: >
+  Endpoint DLP is not enforced for endpoint devices.
+workload: purview
+required_capabilities:
+  - purview_dlp
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: email
+exposure_class: none
+deep_link: https://compliance.microsoft.com/datalossprevention
+collector: exchange_collector
+remediation: >
+  In the Microsoft Purview compliance portal, create a DLP policy and include
+  the Devices location, then onboard devices to Microsoft Defender for Endpoint
+  so endpoint DLP is enforced.
+references:
+  - https://learn.microsoft.com/purview/endpoint-dlp-learn-about
+enabled: true

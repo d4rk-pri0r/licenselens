@@ -99,6 +99,7 @@ from licenselens.evaluators.identity_apps_credentials import (
 from licenselens.evaluators.identity_auth_methods import (
     evaluate_auth_authenticator_context,
     evaluate_auth_methods_migration,
+    evaluate_auth_number_matching,
     evaluate_auth_weak_methods_disabled,
 )
 from licenselens.evaluators.identity_break_glass import evaluate_break_glass_exclusion
@@ -116,12 +117,14 @@ from licenselens.evaluators.identity_ca_risk import (
     evaluate_ca_high_risk_users,
 )
 from licenselens.evaluators.identity_governance import (
+    evaluate_access_reviews_scope,
     evaluate_access_reviews_unused,
     evaluate_entitlement_access_packages,
     evaluate_security_defaults_on,
 )
 from licenselens.evaluators.identity_guests import (
     evaluate_cross_tenant_defaults,
+    evaluate_cross_tenant_mfa_trust,
     evaluate_guest_directory_access_limited,
     evaluate_guest_invite_domains,
     evaluate_guest_inviter_restricted,
@@ -132,6 +135,7 @@ from licenselens.evaluators.identity_manual import (
     evaluate_logs_to_soc,
 )
 from licenselens.evaluators.identity_pim_rules import (
+    evaluate_pim_activation_controls,
     evaluate_pim_ga_activation_alert,
     evaluate_pim_ga_activation_approval,
     evaluate_pim_no_outside_pam,
@@ -149,8 +153,12 @@ from licenselens.evaluators.identity_privileged_extra import (
     evaluate_password_never_expire,
     evaluate_priv_cloud_only,
 )
-from licenselens.evaluators.identity_risk import evaluate_idprotect_off
+from licenselens.evaluators.identity_risk import (
+    evaluate_identity_protection_workload,
+    evaluate_idprotect_off,
+)
 from licenselens.evaluators.power_bi import (
+    evaluate_pbi_export_controls,
     evaluate_pbi_external_invite_disabled,
     evaluate_pbi_guest_access_disabled,
     evaluate_pbi_publish_to_web_disabled,
@@ -162,6 +170,8 @@ from licenselens.evaluators.power_bi import (
 )
 from licenselens.evaluators.power_platform_env import (
     evaluate_pp_dlp_all_environments,
+    evaluate_pp_dlp_nondefault_environments,
+    evaluate_pp_tenant_isolation_allowlist,
     evaluate_pp_tenant_isolation_enabled,
 )
 from licenselens.evaluators.power_platform_tenant import (
@@ -170,7 +180,11 @@ from licenselens.evaluators.power_platform_tenant import (
     evaluate_pp_share_with_everyone_disabled,
     evaluate_pp_trial_creation_admin_only,
 )
-from licenselens.evaluators.purview import evaluate_purview_dlp
+from licenselens.evaluators.purview import (
+    evaluate_pur_ediscovery_readiness,
+    evaluate_pur_insider_risk_readiness,
+    evaluate_purview_dlp,
+)
 from licenselens.evaluators.purview_governance import (
     evaluate_pur_default_and_mandatory_labels,
     evaluate_pur_retention_policy_coverage,
@@ -179,8 +193,6 @@ from licenselens.evaluators.purview_governance import (
 )
 from licenselens.evaluators.purview_manual import (
     evaluate_pur_communication_compliance_readiness,
-    evaluate_pur_ediscovery_readiness,
-    evaluate_pur_insider_risk_readiness,
 )
 from licenselens.evaluators.security_suite_dlp import (
     evaluate_mdo_unified_audit_enabled,
@@ -188,6 +200,7 @@ from licenselens.evaluators.security_suite_dlp import (
     evaluate_pur_dlp_locations_complete,
     evaluate_pur_dlp_notifications,
     evaluate_pur_dlp_policy_present,
+    evaluate_pur_endpoint_dlp,
 )
 from licenselens.evaluators.security_suite_spam import (
     evaluate_mdo_alert_policies_manual,
@@ -196,6 +209,7 @@ from licenselens.evaluators.security_suite_spam import (
     evaluate_mdo_connection_filter_no_ip_allow,
     evaluate_mdo_connection_filter_no_safe_list,
     evaluate_mdo_safe_attachments_spo_teams,
+    evaluate_mdo_safe_documents,
     evaluate_mdo_spam_phish_not_inbox,
 )
 from licenselens.evaluators.security_suite_threat import (
@@ -204,8 +218,10 @@ from licenselens.evaluators.security_suite_threat import (
     evaluate_mdo_impersonation_users_protected,
     evaluate_mdo_malware_file_filter,
     evaluate_mdo_malware_zap,
+    evaluate_mdo_quarantine_policy,
     evaluate_mdo_safe_attachments_block,
     evaluate_mdo_safe_links_block_list,
+    evaluate_mdo_safe_links_click_through,
     evaluate_mdo_safe_links_click_tracking,
     evaluate_mdo_safe_links_real_time_scan,
     evaluate_mdo_safety_tips_enabled,
@@ -288,6 +304,7 @@ __all__ = [
     "evaluate_app_password_lifetime",
     "evaluate_auth_authenticator_context",
     "evaluate_auth_methods_migration",
+    "evaluate_auth_number_matching",
     "evaluate_auth_weak_methods_disabled",
     "evaluate_break_glass_exclusion",
     "evaluate_ca_device_code_block",
@@ -300,9 +317,11 @@ __all__ = [
     "evaluate_ca_high_risk_signins",
     "evaluate_ca_high_risk_users",
     "evaluate_access_reviews_unused",
+    "evaluate_access_reviews_scope",
     "evaluate_entitlement_access_packages",
     "evaluate_security_defaults_on",
     "evaluate_cross_tenant_defaults",
+    "evaluate_cross_tenant_mfa_trust",
     "evaluate_guest_directory_access_limited",
     "evaluate_guest_invite_domains",
     "evaluate_guest_inviter_restricted",
@@ -311,6 +330,7 @@ __all__ = [
     "evaluate_logs_to_soc",
     "evaluate_pim_ga_activation_alert",
     "evaluate_pim_ga_activation_approval",
+    "evaluate_pim_activation_controls",
     "evaluate_pim_no_outside_pam",
     "evaluate_pim_no_permanent_privileged",
     "evaluate_pim_other_activation_alert",
@@ -322,6 +342,7 @@ __all__ = [
     "evaluate_password_never_expire",
     "evaluate_priv_cloud_only",
     "evaluate_idprotect_off",
+    "evaluate_identity_protection_workload",
     "evaluate_pbi_external_invite_disabled",
     "evaluate_pbi_guest_access_disabled",
     "evaluate_pbi_publish_to_web_disabled",
@@ -330,7 +351,10 @@ __all__ = [
     "evaluate_pbi_sensitivity_labels_enabled",
     "evaluate_pbi_sp_api_restricted",
     "evaluate_pbi_sp_profiles_disabled",
+    "evaluate_pbi_export_controls",
     "evaluate_pp_dlp_all_environments",
+    "evaluate_pp_dlp_nondefault_environments",
+    "evaluate_pp_tenant_isolation_allowlist",
     "evaluate_pp_tenant_isolation_enabled",
     "evaluate_pp_env_creation_admin_only",
     "evaluate_pp_pages_creation_admin_only",
@@ -349,20 +373,24 @@ __all__ = [
     "evaluate_pur_dlp_locations_complete",
     "evaluate_pur_dlp_notifications",
     "evaluate_pur_dlp_policy_present",
+    "evaluate_pur_endpoint_dlp",
     "evaluate_mdo_alert_policies_manual",
     "evaluate_mdo_anti_spam_no_allowed_domains",
     "evaluate_mdo_audit_retention_manual",
     "evaluate_mdo_connection_filter_no_ip_allow",
     "evaluate_mdo_connection_filter_no_safe_list",
     "evaluate_mdo_safe_attachments_spo_teams",
+    "evaluate_mdo_safe_documents",
     "evaluate_mdo_spam_phish_not_inbox",
     "evaluate_mdo_impersonation_domains_owned",
     "evaluate_mdo_impersonation_partner_domains",
     "evaluate_mdo_impersonation_users_protected",
     "evaluate_mdo_malware_file_filter",
     "evaluate_mdo_malware_zap",
+    "evaluate_mdo_quarantine_policy",
     "evaluate_mdo_safe_attachments_block",
     "evaluate_mdo_safe_links_block_list",
+    "evaluate_mdo_safe_links_click_through",
     "evaluate_mdo_safe_links_click_tracking",
     "evaluate_mdo_safe_links_real_time_scan",
     "evaluate_mdo_safety_tips_enabled",

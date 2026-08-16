@@ -1,0 +1,40 @@
+id: id-access-reviews-scope
+title: Access reviews do not cover privileged roles on a recurring, executed schedule
+customer_title: Prove your admin-role reviews actually run and repeat
+customer_summary: >
+  Your plan can periodically re-confirm who still needs powerful admin roles.
+  We found review definitions, but we could not confirm that they cover the
+  privileged roles and that a review round has actually completed — so
+  privilege can still accumulate without anyone looking.
+expected_state: Access reviews for privileged roles recur on a schedule and have completed at least one round.
+customer_next_step: >
+  Create or correct an access review that targets privileged directory roles,
+  set a recurring cadence (monthly or quarterly), and complete the first
+  review round with decisions applied.
+description: >
+  Access reviews only reduce privilege creep when they target the roles that
+  matter and actually run to completion. A review that exists but never
+  completes a round, or that ignores privileged directory roles, provides
+  paperwork without protection. This check complements id-access-reviews-unused
+  by verifying scope and execution, not just configuration.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: medium
+value_impact: medium
+impact: medium
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade
+collector: graph_access_reviews
+remediation: >
+  In Entra admin center > Identity governance > Access reviews, create a
+  review for privileged directory roles (or correct an existing one) with a
+  recurring schedule and a defined reviewer. Run the first review to
+  completion so at least one round is on record.
+references:
+  - https://learn.microsoft.com/entra/id-governance/access-reviews-overview
+  - https://learn.microsoft.com/graph/api/accessreviewset-list-definitions
+enabled: true

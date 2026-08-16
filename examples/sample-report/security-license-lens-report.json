@@ -664,6 +664,55 @@
       "accepted_risks": []
     },
     {
+      "check_id": "id-break-glass-exclusion",
+      "title": "Break-glass account missing or exclusions not justified",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "admin",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers",
+      "summary": "No break-glass account was identified among the Global Administrators; no principal is declared as break-glass in the assessment profile.",
+      "evidence": {
+        "global_admin_principal_count": 2,
+        "declared_break_glass_principal_count": 0,
+        "identified_break_glass_accounts": [],
+        "enabled_ca_policy_count": 3,
+        "report_only_ca_policy_count": 0,
+        "unjustified_exclusion_issues": [],
+        "unjustified_exclusion_count": 0,
+        "global_admin_exclusion_issues": []
+      },
+      "entitlements_used": [
+        "entra_id_p2",
+        "conditional_access"
+      ],
+      "remediation": "Create break-glass Global Administrator accounts following Microsoft's emergency-access guidance, exclude only those principals from Conditional Access policies, and record them as break_glass exclusions with owner and reason in the assessment profile.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access",
+        "https://learn.microsoft.com/entra/identity/conditional-access/concept-conditional-access-policies"
+      ],
+      "customer_title": "No documented emergency admin account, or exclusions without a reason",
+      "customer_summary": "We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.",
+      "customer_next_step": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in the assessment profile, and remove any other unexplained exclusions.",
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": [
+        "The break-glass account could not be confidently identified from the scanned Global Administrator assignments and eligibilities \u2014 verify the emergency access account in the Entra portal before relying on this check."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "id-ca-device-code-block",
       "title": "Device code authentication flow not blocked",
       "workload": "identity",
@@ -862,6 +911,51 @@
       "customer_title": "Require strong phishing-resistant sign-in for everyone",
       "customer_summary": "Users can still sign in with weaker multi-factor methods that phishing can defeat.",
       "customer_next_step": "Enforce phishing-resistant authentication strength for all users where feasible.",
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "id-pim-activation-controls",
+      "title": "PIM activation guardrails are not fully configured",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "admin",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/roleSettings",
+      "summary": "PIM activation guardrails are incomplete: activation duration is not capped at 8 hours or less; activation does not require an authentication context; activation does not require justification.",
+      "evidence": {
+        "policy_count": 1,
+        "activation_rule_count": 1,
+        "activation_maximum_durations": [],
+        "activation_duration_capped": false,
+        "auth_context_required": false,
+        "auth_context_claim_value": null,
+        "justification_required": false
+      },
+      "entitlements_used": [
+        "entra_id_p2"
+      ],
+      "remediation": "In Entra admin center > Identity governance > Privileged Identity Management > Azure AD roles > Roles, open role settings for each privileged role: on Activation, require justification, require an authentication context, and set the maximum activation duration to a short window (for example 1-4 hours for Global Administrator).",
+      "references": [
+        "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings",
+        "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-require-mfa"
+      ],
+      "customer_title": "Keep privileged-role activation short, explained, and context-bound",
+      "customer_summary": "Some activation guardrails are missing, so an attacker with a stolen admin account can hold powerful access longer and with less traceability.",
+      "customer_next_step": "In PIM role settings for each privileged role, require justification on activation, attach an authentication context, and set the maximum activation duration to a short window (8 hours or less).",
       "status_label": "Needs attention",
       "confidence": "high",
       "confidence_label": "High confidence",
@@ -1169,49 +1263,6 @@
       "accepted_risks": []
     },
     {
-      "check_id": "pur-dlp-locations-complete",
-      "title": "DLP does not cover key locations",
-      "workload": "purview",
-      "status": "gap",
-      "severity": "high",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "hours",
-      "blast_radius": "all_users",
-      "pack": "email",
-      "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/datalossprevention",
-      "summary": "No DLP policy workload locations could be determined.",
-      "evidence": {
-        "workloads": [
-          "exchange,sharepoint,onedrive"
-        ],
-        "covered_workloads": []
-      },
-      "entitlements_used": [
-        "purview_dlp"
-      ],
-      "remediation": "Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.",
-      "references": [
-        "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
-      ],
-      "customer_title": "Apply DLP across Exchange SharePoint OneDrive Teams",
-      "customer_summary": "We could not find DLP policies covering your data locations.",
-      "customer_next_step": "Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.",
-      "status_label": "Needs attention",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "scc_compliance"
-      ],
-      "limitations": [
-        "Per-location coverage is derived from policy workload flags, not a full location enumeration."
-      ],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": []
-    },
-    {
       "check_id": "pur-sensitivity-auto-labeling",
       "title": "Sensitivity labels are not auto-applied",
       "workload": "purview",
@@ -1246,6 +1297,49 @@
       "confidence_label": "High confidence",
       "data_sources": [
         "Microsoft Purview / Security & Compliance PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "id-access-reviews-scope",
+      "title": "Access reviews do not cover privileged roles on a recurring, executed schedule",
+      "workload": "identity",
+      "status": "gap",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "admin",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade",
+      "summary": "No access review definitions were found, so privileged roles are not covered by recurring, executed reviews.",
+      "evidence": {
+        "definition_count": 0,
+        "privileged_scoped_count": 0,
+        "privileged_recurring_count": 0,
+        "definitions_with_completed_rounds": [],
+        "instance_count_by_definition": {}
+      },
+      "entitlements_used": [
+        "entra_id_p2"
+      ],
+      "remediation": "In Entra admin center > Identity governance > Access reviews, create a review for privileged directory roles (or correct an existing one) with a recurring schedule and a defined reviewer. Run the first review to completion so at least one round is on record.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-governance/access-reviews-overview",
+        "https://learn.microsoft.com/graph/api/accessreviewset-list-definitions"
+      ],
+      "customer_title": "Prove your admin-role reviews actually run and repeat",
+      "customer_summary": "Periodic confirmation of powerful admin access does not look set up at all, so privilege can accumulate without review.",
+      "customer_next_step": "Create or correct an access review that targets privileged directory roles, set a recurring cadence (monthly or quarterly), and complete the first review round with decisions applied.",
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
       ],
       "limitations": [],
       "evaluation_mode": "direct",
@@ -1833,9 +1927,10 @@
             }
           ]
         },
-        "dlp_graph_policies": null,
-        "dlp_graph_error": null,
+        "dlp_graph": null,
+        "dlp_graph_error": "demo: direct Graph DLP read unavailable",
         "proxy": true,
+        "source": "secureScore.controlScores (proxy)",
         "note": "Uses Microsoft Secure Score DLP/information-protection controls as a proxy when direct Purview policy APIs are unavailable to the app."
       },
       "entitlements_used": [
@@ -2290,6 +2385,48 @@
       "accepted_risks": []
     },
     {
+      "check_id": "pur-dlp-locations-complete",
+      "title": "DLP does not cover key locations",
+      "workload": "purview",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "summary": "DLP policies cover only 1 workload location(s).",
+      "evidence": {
+        "workloads": [
+          "devices",
+          "exchange,sharepoint,onedrive"
+        ],
+        "covered_workloads": [
+          "devices"
+        ]
+      },
+      "entitlements_used": [
+        "purview_dlp"
+      ],
+      "remediation": "Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.",
+      "references": [
+        "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
+      ],
+      "customer_title": "Apply DLP across Exchange SharePoint OneDrive Teams",
+      "customer_summary": "DLP is not applied across Exchange, OneDrive, SharePoint, and Teams. Broaden policy locations.",
+      "customer_next_step": "Enable DLP for Exchange, OneDrive, SharePoint, Teams, and devices where licensed.",
+      "status_label": "Partly set up",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
+      "data_sources": [],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "sen-analytics-rule-coverage",
       "title": "Sentinel workspace with thin analytics rule coverage",
       "workload": "sentinel",
@@ -2504,6 +2641,48 @@
       "accepted_risks": []
     },
     {
+      "check_id": "id-cross-tenant-mfa-trust",
+      "title": "Cross-tenant MFA trust is accepted by default",
+      "workload": "identity",
+      "status": "partial",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade",
+      "summary": "Cross-tenant inbound MFA trust setting was not conclusive; verify it in Entra External Identities.",
+      "evidence": {
+        "inbound_mfa_trust_default": null,
+        "outbound_mfa_trust_default": null,
+        "partner_count": 0,
+        "partner_inbound_mfa_trust_count": 0,
+        "partner_outbound_mfa_trust_count": 0
+      },
+      "entitlements_used": [
+        "conditional_access"
+      ],
+      "remediation": "In Entra admin center > External Identities > Cross-tenant access settings > Default settings, open Inbound access > Trust settings and uncheck 'Trust multi-factor authentication from Microsoft Entra tenants'. Add partner-specific trust only for vetted organizations.",
+      "references": [
+        "https://learn.microsoft.com/entra/external-id/cross-tenant-access-settings-b2b-collaboration"
+      ],
+      "customer_title": "Do not take other tenants' word for multi-factor auth",
+      "customer_summary": "We could not confirm whether your tenant accepts other tenants' multi-factor authentication claims by default.",
+      "customer_next_step": "In Entra external collaboration cross-tenant access default settings, disable 'Trust multi-factor authentication from Microsoft Entra tenants' for inbound access, and re-enable it only for specific trusted partners.",
+      "status_label": "Partly set up",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "id-ga-finer-roles",
       "title": "Privileged work over-concentrated in Global Administrator",
       "workload": "identity",
@@ -2531,6 +2710,46 @@
       "customer_title": "Use narrower admin roles instead of Global Admin",
       "customer_summary": "Some finer-grained admin roles exist, but Global Admin may still be overused.",
       "customer_next_step": "Move routine admin duties to finer-grained directory roles and keep Global Admin rare.",
+      "status_label": "Partly set up",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "id-number-matching",
+      "title": "Authenticator number matching is not enforced",
+      "workload": "identity",
+      "status": "partial",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "minutes",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade",
+      "summary": "Microsoft Authenticator number matching setting was not available, so enforcement could not be verified.",
+      "evidence": {
+        "authenticator_state": "enabled",
+        "number_matching_state": null,
+        "number_matching_explicit": false
+      },
+      "entitlements_used": [
+        "conditional_access"
+      ],
+      "remediation": "In Entra admin center > Protection > Authentication methods > Microsoft Authenticator, set 'Require number matching' to Enabled. The setting applies tenant-wide to all Authenticator MFA approvals.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/authentication/how-to-mfa-number-match"
+      ],
+      "customer_title": "Make approvals require typing the on-screen number",
+      "customer_summary": "We could not read the number-matching requirement, so please confirm it in the Entra authentication methods settings.",
+      "customer_next_step": "In Authentication methods settings, set Microsoft Authenticator number matching to Enabled and confirm the policy applies to all users.",
       "status_label": "Partly set up",
       "confidence": "high",
       "confidence_label": "High confidence",
@@ -2984,45 +3203,6 @@
       "accepted_risks": []
     },
     {
-      "check_id": "pur-insider-risk-readiness",
-      "title": "Insider risk management needs manual confirmation",
-      "workload": "purview",
-      "status": "skipped",
-      "severity": "high",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "days",
-      "blast_radius": "all_users",
-      "pack": "starter",
-      "exposure_class": "none",
-      "deep_link": "https://purview.microsoft.com/insiderriskmgmt",
-      "summary": "Insider risk policies and analytics are portal-configured and not automatically readable here.",
-      "evidence": {
-        "manual": true,
-        "evaluation_mode": "manual"
-      },
-      "entitlements_used": [
-        "purview_insider_risk"
-      ],
-      "remediation": "Verify an insider risk policy exists, is scoped appropriately, and that analytics is enabled in Microsoft Purview Insider Risk Management.",
-      "references": [
-        "https://learn.microsoft.com/purview/insider-risk-management"
-      ],
-      "customer_title": "Confirm insider risk management is set up",
-      "customer_summary": "Confirm an insider risk policy is created, scoped, and analytics is enabled.",
-      "customer_next_step": "Confirm an insider risk policy is created, scoped to the right users, and analytics is enabled in the Purview portal.",
-      "status_label": "Check pending",
-      "confidence": "low",
-      "confidence_label": "Low confidence \u2014 verify in portal",
-      "data_sources": [],
-      "limitations": [
-        "Manual verification required in Microsoft Purview Insider Risk Management."
-      ],
-      "evaluation_mode": "manual",
-      "source_references": [],
-      "accepted_risks": []
-    },
-    {
       "check_id": "spo-anyone-link-expiration",
       "title": "Anyone links do not expire within the recommended window",
       "workload": "collaboration",
@@ -3219,45 +3399,6 @@
       "accepted_risks": []
     },
     {
-      "check_id": "pur-ediscovery-readiness",
-      "title": "eDiscovery needs manual confirmation",
-      "workload": "purview",
-      "status": "skipped",
-      "severity": "medium",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "days",
-      "blast_radius": "all_users",
-      "pack": "starter",
-      "exposure_class": "none",
-      "deep_link": "https://purview.microsoft.com/ediscovery",
-      "summary": "eDiscovery cases and holds are portal-configured and not automatically readable here.",
-      "evidence": {
-        "manual": true,
-        "evaluation_mode": "manual"
-      },
-      "entitlements_used": [
-        "purview_ediscovery"
-      ],
-      "remediation": "Verify eDiscovery administrator roles are assigned and that case and legal hold workflows are configured and tested.",
-      "references": [
-        "https://learn.microsoft.com/purview/ediscovery"
-      ],
-      "customer_title": "Confirm eDiscovery is set up",
-      "customer_summary": "Confirm eDiscovery administrators and hold workflows are configured.",
-      "customer_next_step": "Confirm eDiscovery administrators are assigned and legal hold workflows are configured in the Purview portal.",
-      "status_label": "Check pending",
-      "confidence": "low",
-      "confidence_label": "Low confidence \u2014 verify in portal",
-      "data_sources": [],
-      "limitations": [
-        "Manual verification required in Microsoft Purview eDiscovery."
-      ],
-      "evaluation_mode": "manual",
-      "source_references": [],
-      "accepted_risks": []
-    },
-    {
       "check_id": "endpoint-compliance-policy-assigned",
       "title": "Intune compliance policies defined and assigned",
       "workload": "endpoint",
@@ -3376,6 +3517,213 @@
       "customer_title": "Core endpoint protections may be partially configured",
       "customer_summary": "Core endpoint protections are configured for managed devices.",
       "customer_next_step": "Confirm endpoint-security policies exist for antivirus, firewall, disk encryption, and attack surface reduction, and that they are assigned.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.deviceManagement"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "ep-asr-rules",
+      "title": "Attack surface reduction rules configured and enforced",
+      "workload": "endpoint",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview",
+      "summary": "1 ASR policy(ies) assigned with 3 rule(s) configured.",
+      "evidence": {
+        "asr_policy_count": 1,
+        "assigned_count": 1,
+        "rules_total": 3
+      },
+      "entitlements_used": [
+        "defender_endpoint_p2"
+      ],
+      "remediation": "Create an attack-surface-reduction endpoint-security profile, configure rules (block mode where safe), and assign it to all Windows device groups.",
+      "references": [
+        "https://learn.microsoft.com/defender-endpoint/attack-surface-reduction-rules-reference"
+      ],
+      "customer_title": "Attack surface reduction rules may not be enforced on devices",
+      "customer_summary": "Attack surface reduction rules are configured and enforced.",
+      "customer_next_step": "Confirm an ASR endpoint-security policy is assigned and that it actually carries attack surface reduction rules, then watch rule reports for hits.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.deviceManagement"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "ep-bitlocker-policy",
+      "title": "BitLocker drive encryption policy applied",
+      "workload": "endpoint",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/ConfigureDevicesMenu/~/deviceConfiguration",
+      "summary": "1 encryption configuration(s) assigned to devices.",
+      "evidence": {
+        "bitlocker_config_count": 1,
+        "assigned_count": 1
+      },
+      "entitlements_used": [
+        "intune"
+      ],
+      "remediation": "Create and assign a BitLocker device configuration (or endpoint-security disk-encryption profile) for Windows devices and escrow recovery keys.",
+      "references": [
+        "https://learn.microsoft.com/mem/intune/protect/encrypt-devices"
+      ],
+      "customer_title": "Device disks may not be encrypted",
+      "customer_summary": "A drive-encryption policy is configured and assigned.",
+      "customer_next_step": "Confirm a BitLocker/disk-encryption configuration exists and is assigned to the devices that carry sensitive data.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.deviceManagement"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "ep-compliance-enforcement",
+      "title": "Device compliance is enforced in practice",
+      "workload": "endpoint",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies",
+      "summary": "90 device(s) are compliant with zero noncompliant devices.",
+      "evidence": {
+        "compliance_policy_count": 2,
+        "managed_devices_total": 90,
+        "compliant_devices": 90,
+        "noncompliant_devices": 0,
+        "unknown_devices": 0,
+        "error_devices": 0,
+        "conflict_devices": 0,
+        "in_grace_period_devices": 0
+      },
+      "entitlements_used": [
+        "intune"
+      ],
+      "remediation": "Remediate noncompliant, unknown, or conflicting devices in Intune and confirm conditional access gates block unhealthy devices until they comply.",
+      "references": [
+        "https://learn.microsoft.com/mem/intune/protect/compliance-policy-monitor"
+      ],
+      "customer_title": "Devices may be out of compliance despite policies",
+      "customer_summary": "Devices are actually compliant, so the compliance gate is enforced.",
+      "customer_next_step": "Review noncompliant or unknown devices in the compliance dashboard and remediate them, or tighten the policy so unhealthy devices are caught.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.deviceManagement"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "ep-mam-app-protection",
+      "title": "App protection policies configured and assigned",
+      "workload": "endpoint",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/AppProtectionMenu/~/overview",
+      "summary": "2 app-protection policy(ies) assigned or org-wide.",
+      "evidence": {
+        "app_protection_policy_count": 2,
+        "assigned_count": 2,
+        "org_wide_count": 0
+      },
+      "entitlements_used": [
+        "intune"
+      ],
+      "remediation": "Create and assign app protection policies for each managed mobile platform, or confirm default policies cover all unprotected devices.",
+      "references": [
+        "https://learn.microsoft.com/mem/intune/apps/app-protection-policy"
+      ],
+      "customer_title": "Work data on phones may be unprotected",
+      "customer_summary": "App protection policies are configured and assigned.",
+      "customer_next_step": "Confirm app protection policies exist and are assigned to the intended users or groups for every mobile platform in use.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.deviceManagement"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "ep-tamper-protection",
+      "title": "Defender for Endpoint tamper protection enforced",
+      "workload": "endpoint",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "half_day",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/securitysettings/endpoints/antivirus",
+      "summary": "Tamper protection is assigned and enabled on sampled devices.",
+      "evidence": {
+        "defender_atp_config_count": 1,
+        "assigned_count": 1,
+        "sampled_devices": 2,
+        "tamper_enabled_devices": 2,
+        "tamper_disabled_devices": 0,
+        "tamper_unknown_devices": 0
+      },
+      "entitlements_used": [
+        "defender_endpoint_p2"
+      ],
+      "remediation": "Assign a Defender for Endpoint configuration with tamper protection on and remediate any Windows device that reports it disabled.",
+      "references": [
+        "https://learn.microsoft.com/defender-endpoint/prevent-changes-to-security-settings-with-tamper-protection"
+      ],
+      "customer_title": "Tamper protection may be off on some devices",
+      "customer_summary": "Defender tamper protection is configured and enforced.",
+      "customer_next_step": "Assign the Defender antivirus/tamper-protection configuration and confirm sampled Windows devices report tamper protection enabled.",
       "status_label": "Looking good",
       "confidence": "high",
       "confidence_label": "High confidence",
@@ -4206,6 +4554,47 @@
       "accepted_risks": []
     },
     {
+      "check_id": "mdo-outbound-spam-forwarding-block",
+      "title": "Outbound automatic forwarding is not blocked tenant-wide",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/antispam",
+      "summary": "Outbound automatic forwarding is blocked tenant-wide.",
+      "evidence": {
+        "surface": "outbound_spam",
+        "policies": 1,
+        "forwarding_enabled": []
+      },
+      "entitlements_used": [
+        "exchange_online_protection"
+      ],
+      "remediation": "In the Microsoft Defender portal, open Email & collaboration > Policies & rules > Threat policies > Anti-spam > Outbound spam filter policy and clear \"Enable automatic forwarding\" so forwarded mail stays inside your organization.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/outbound-spam-policies-configure"
+      ],
+      "customer_title": "Block automatic mail forwarding to outside addresses",
+      "customer_summary": "Automatic mail forwarding to outside addresses is blocked.",
+      "customer_next_step": "Turn off automatic forwarding in the outbound spam filter policy.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "mdo-p2-policies-default",
       "title": "Defender for Office 365 P2 policies not broadly enforced",
       "workload": "defender",
@@ -4243,7 +4632,8 @@
                 "EnableSafeLinksForOffice": true,
                 "ScanUrls": true,
                 "DeliverMessageAfterScan": true,
-                "TrackClicks": true
+                "TrackClicks": true,
+                "AllowClickThrough": false
               },
               "assignments": [
                 "All"
@@ -4255,7 +4645,8 @@
               "kind": "custom",
               "enabled": true,
               "properties": {
-                "EnableSafeLinksForEmail": true
+                "EnableSafeLinksForEmail": true,
+                "AllowClickThrough": false
               },
               "assignments": [
                 "finance@contoso.com"
@@ -4437,6 +4828,47 @@
       "accepted_risks": []
     },
     {
+      "check_id": "mdo-safe-links-click-through",
+      "title": "Safe Links lets users click through to the original URL",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "minutes",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/safelinksv2",
+      "summary": "Safe Links blocks click-through to the original URL.",
+      "evidence": {
+        "surface": "safe_links",
+        "policies": 2,
+        "allow_click_through": []
+      },
+      "entitlements_used": [
+        "defender_office_p2"
+      ],
+      "remediation": "In the Microsoft Defender portal, open Email & collaboration > Policies & rules > Threat policies > Safe Links and clear the \"Do not let users click through\" override so click-through to the original URL is blocked.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/safe-links-policies-configure"
+      ],
+      "customer_title": "Block click-through on rewrapped links",
+      "customer_summary": "Users cannot click through to the original URL.",
+      "customer_next_step": "Turn off click-through in Safe Links policies.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "mdo-safe-links-click-tracking",
       "title": "Safe Links click tracking is off",
       "workload": "defender",
@@ -4604,6 +5036,51 @@
       "accepted_risks": []
     },
     {
+      "check_id": "mdo-transport-rule-external-forward",
+      "title": "A mail-flow rule forwards mail to external addresses",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://admin.exchange.microsoft.com/#/transportrules",
+      "summary": "No transport rule forwards or Bcc's mail to external domains.",
+      "evidence": {
+        "surface": "transport_rules",
+        "rules": 1,
+        "accepted_domains": [
+          "contoso.com"
+        ],
+        "external_forward_rules": [],
+        "unresolved_rules": []
+      },
+      "entitlements_used": [
+        "exchange_online_protection"
+      ],
+      "remediation": "In the Exchange admin center, open Mail flow > Rules and remove every enabled rule whose action is \"Redirect the message to\" or \"Blind carbon copy (Bcc) the message to\" with a recipient outside your accepted domains, or change the recipient to an internal address.",
+      "references": [
+        "https://learn.microsoft.com/exchange/security-and-compliance/mail-flow-rules/manage-mail-flow-rules"
+      ],
+      "customer_title": "Remove mail-flow rules that copy mail outside",
+      "customer_summary": "Mail-flow rules do not silently copy or redirect mail outside.",
+      "customer_next_step": "Remove or rescope transport rules that redirect or blind-copy mail to external addresses.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "mdo-unified-audit-enabled",
       "title": "Unified audit logging is not enabled",
       "workload": "defender",
@@ -4637,6 +5114,45 @@
       "data_sources": [
         "Exchange Online PowerShell (powershell.bridge)",
         "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pbi-export-controls",
+      "title": "Power BI data export is enabled",
+      "workload": "power_bi",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "minutes",
+      "blast_radius": "data",
+      "pack": "power-bi",
+      "exposure_class": "none",
+      "deep_link": "https://app.powerbi.com/admin-portal/tenantSettings",
+      "summary": "Power BI data export is disabled.",
+      "evidence": {
+        "surface": "export_data",
+        "enabled": false
+      },
+      "entitlements_used": [
+        "power_bi_pro"
+      ],
+      "remediation": "In the Power BI admin portal, open Tenant settings > Export and sharing settings and turn off the Export to Excel and Export to .csv options.",
+      "references": [
+        "https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing"
+      ],
+      "customer_title": "Turn off Power BI data export",
+      "customer_summary": "Data export from Power BI is off.",
+      "customer_next_step": "Disable data export in the Power BI admin portal tenant settings.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Power Platform / Power BI PowerShell (powershell.bridge)"
       ],
       "limitations": [],
       "evaluation_mode": "direct",
@@ -4716,6 +5232,46 @@
       "customer_title": "Apply a DLP policy to every environment",
       "customer_summary": "Every environment has a DLP policy.",
       "customer_next_step": "Assign a DLP policy that covers every environment, including the default environment.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Power Platform / Power BI PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pp-dlp-nondefault-envs",
+      "title": "Non-default Power Platform environments have no DLP policy",
+      "workload": "power_platform",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "power-platform",
+      "exposure_class": "none",
+      "deep_link": "https://admin.powerplatform.microsoft.com",
+      "summary": "Every non-default environment is covered by a DLP policy.",
+      "evidence": {
+        "non_default_environment_count": 2,
+        "dlp_policy_count": 2,
+        "uncovered_nondefault_environments": []
+      },
+      "entitlements_used": [
+        "power_platform"
+      ],
+      "remediation": "In the Power Platform admin center, open Policies > Data policies and create or update DLP policies so every non-default environment is covered.",
+      "references": [
+        "https://learn.microsoft.com/power-platform/admin/wp-data-loss-prevention"
+      ],
+      "customer_title": "Apply DLP to every non-default environment",
+      "customer_summary": "Every non-default environment has a DLP policy.",
+      "customer_next_step": "Assign a DLP policy to every non-default environment.",
       "status_label": "Looking good",
       "confidence": "high",
       "confidence_label": "High confidence",
@@ -4808,6 +5364,48 @@
       "accepted_risks": []
     },
     {
+      "check_id": "pp-tenant-isolation-allowlist",
+      "title": "Tenant isolation has no cross-tenant allowlist",
+      "workload": "power_platform",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "power-platform",
+      "exposure_class": "none",
+      "deep_link": "https://admin.powerplatform.microsoft.com",
+      "summary": "Tenant isolation allowlist contains 1 tenant(s).",
+      "evidence": {
+        "surface": "tenant_isolation",
+        "isolation_enabled": true,
+        "allowed_tenants": [
+          "11111111-1111-1111-1111-111111111111"
+        ]
+      },
+      "entitlements_used": [
+        "power_platform"
+      ],
+      "remediation": "In the Power Platform admin center, open Policies > Tenant isolation, enable isolation, and add the specific tenants to the inbound and outbound allowlist.",
+      "references": [
+        "https://learn.microsoft.com/power-platform/admin/cross-tenant-restrictions"
+      ],
+      "customer_title": "Configure an explicit tenant isolation allowlist",
+      "customer_summary": "Cross-tenant connections are limited to an explicit allowlist.",
+      "customer_next_step": "Enable tenant isolation and define its inbound and outbound allowlist.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Power Platform / Power BI PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "pp-tenant-isolation-enabled",
       "title": "Power Platform tenant isolation is not enforced",
       "workload": "power_platform",
@@ -4840,6 +5438,48 @@
       "confidence_label": "High confidence",
       "data_sources": [
         "Power Platform / Power BI PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pur-default-and-mandatory-labels",
+      "title": "No default or mandatory sensitivity labels",
+      "workload": "purview",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://purview.microsoft.com/informationprotection/labelpolicies",
+      "summary": "A published label policy sets a default sensitivity label and requires users to apply a label.",
+      "evidence": {
+        "adapter": "purview_governance",
+        "label_policies": 1,
+        "default_label": true,
+        "mandatory_labeling": true,
+        "absent": false
+      },
+      "entitlements_used": [
+        "purview_sensitivity_labels"
+      ],
+      "remediation": "Open the label policy in Purview, select a default label for documents and email, and enable \"Require users to apply a label\" in the policy settings.",
+      "references": [
+        "https://learn.microsoft.com/purview/sensitivity-labels-office-apps"
+      ],
+      "customer_title": "Require sensitivity labels on new content",
+      "customer_summary": "New content gets a default sensitivity label, and people must label before saving or sending.",
+      "customer_next_step": "In your label policy, set a default label and require users to apply a label.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Microsoft Purview / Security & Compliance PowerShell (powershell.bridge)"
       ],
       "limitations": [],
       "evaluation_mode": "direct",
@@ -4939,10 +5579,10 @@
       "pack": "email",
       "exposure_class": "none",
       "deep_link": "https://compliance.microsoft.com/datalossprevention",
-      "summary": "1 DLP polic(y/ies) are enforced.",
+      "summary": "2 DLP polic(y/ies) are enforced.",
       "evidence": {
-        "dlp_policy_count": 1,
-        "enforced_dlp_policies": 1
+        "dlp_policy_count": 2,
+        "enforced_dlp_policies": 2
       },
       "entitlements_used": [
         "purview_dlp"
@@ -4962,6 +5602,94 @@
       ],
       "limitations": [
         "Sensitive-information-type coverage (SSN/ITIN/credit card) is not enumerated; verify rule content in the Purview portal."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pur-endpoint-dlp",
+      "title": "No DLP policy covers endpoint devices",
+      "workload": "purview",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "devices",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "summary": "1 DLP policy(ies) cover endpoint devices.",
+      "evidence": {
+        "dlp_policy_count": 2,
+        "endpoint_dlp_policies": [
+          "Protect endpoints"
+        ]
+      },
+      "entitlements_used": [
+        "purview_dlp"
+      ],
+      "remediation": "In the Microsoft Purview compliance portal, create a DLP policy and include the Devices location, then onboard devices to Microsoft Defender for Endpoint so endpoint DLP is enforced.",
+      "references": [
+        "https://learn.microsoft.com/purview/endpoint-dlp-learn-about"
+      ],
+      "customer_title": "Protect data on endpoint devices",
+      "customer_summary": "Endpoint devices are covered by DLP.",
+      "customer_next_step": "Add a DLP policy that includes the Devices workload.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pur-insider-risk-readiness",
+      "title": "Insider risk management readiness",
+      "workload": "purview",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://purview.microsoft.com/insiderriskmgmt",
+      "summary": "1 Insider Risk Management policy(ies) found.",
+      "evidence": {
+        "policy_count": 1,
+        "policy_names": [
+          "Contoso data leak by departing users"
+        ],
+        "source": "graph.beta.security.insiderRiskManagement.policies",
+        "direct": true,
+        "proxy": false
+      },
+      "entitlements_used": [
+        "purview_insider_risk"
+      ],
+      "remediation": "Verify an insider risk policy exists, is scoped appropriately, and that analytics is enabled in Microsoft Purview Insider Risk Management.",
+      "references": [
+        "https://learn.microsoft.com/purview/insider-risk-management"
+      ],
+      "customer_title": "Confirm insider risk management is set up",
+      "customer_summary": "Insider risk policies are live. Confirm analytics is enabled and policy scope matches your riskiest groups.",
+      "customer_next_step": "Confirm an insider risk policy is created, scoped to the right users, and analytics is enabled in the Purview portal.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.beta.security.insiderRiskManagement.policies"
+      ],
+      "limitations": [
+        "Analytics state is not exposed by this API; confirm it in the portal."
       ],
       "evaluation_mode": "direct",
       "source_references": [],
@@ -5171,6 +5899,44 @@
       "accepted_risks": []
     },
     {
+      "check_id": "spo-unmanaged-device-access",
+      "title": "SharePoint and OneDrive allow unmanaged devices",
+      "workload": "collaboration",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "collaboration",
+      "exposure_class": "none",
+      "deep_link": "https://admin.microsoft.com/sharepoint",
+      "summary": "Unmanaged devices are blocked from SharePoint and OneDrive content.",
+      "evidence": {
+        "unmanaged_device_policy": "blockaccess"
+      },
+      "entitlements_used": [
+        "sharepoint_online"
+      ],
+      "remediation": "In the SharePoint admin center, open Policies > Access control, select Unmanaged devices, and choose Block access (or Allow limited, web-only access).",
+      "references": [
+        "https://learn.microsoft.com/sharepoint/control-access-from-unmanaged-devices"
+      ],
+      "customer_title": "Block unmanaged devices from SharePoint and OneDrive",
+      "customer_summary": "Unmanaged devices cannot reach SharePoint or OneDrive files.",
+      "customer_next_step": "Block access for unmanaged devices on the SharePoint access control page.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "teams-anonymous-start-disabled",
       "title": "Anonymous users can start meetings",
       "workload": "collaboration",
@@ -5253,6 +6019,46 @@
       "customer_title": "Allow external access only for specific domains",
       "customer_summary": "External access is limited to specific partner domains.",
       "customer_next_step": "Allow only specific external domains, not all.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "teams-guest-access-restricted",
+      "title": "Teams guest access is wide open",
+      "workload": "collaboration",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "collaboration",
+      "exposure_class": "none",
+      "deep_link": "https://admin.teams.microsoft.com/users/guest-settings",
+      "summary": "Teams guest access is disabled tenant-wide.",
+      "evidence": {
+        "allow_guest_user": false,
+        "allow_guest_calling": false,
+        "allow_guest_chat": false
+      },
+      "entitlements_used": [
+        "teams"
+      ],
+      "remediation": "In the Teams admin center, under Users > Guest access, turn off guest access, and use Microsoft Entra settings to allow guest invitations only from approved partner domains.",
+      "references": [
+        "https://learn.microsoft.com/microsoftteams/guest-access"
+      ],
+      "customer_title": "Restrict who can join teams as a guest",
+      "customer_summary": "External guests cannot be added to teams.",
+      "customer_next_step": "Turn off guest access in Teams, or limit guest invitations to approved domains.",
       "status_label": "Looking good",
       "confidence": "high",
       "confidence_label": "High confidence",
@@ -5452,6 +6258,130 @@
       "confidence_label": "High confidence",
       "data_sources": [
         "microsoft.graph"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "mdo-mailbox-intelligence",
+      "title": "Mailbox intelligence is not enabled on anti-phish policies",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/antiphishing",
+      "summary": "Mailbox intelligence is enabled across all 1 anti-phish policy(ies).",
+      "evidence": {
+        "surface": "anti_phish",
+        "policies": 1,
+        "mailbox_intelligence_enabled": 1,
+        "mailbox_intelligence_missing": []
+      },
+      "entitlements_used": [
+        "defender_office_p2"
+      ],
+      "remediation": "In the Microsoft Defender portal, open Email & collaboration > Policies & rules > Threat policies > Anti-phishing and enable \"Mailbox intelligence\" on every anti-phishing policy so Microsoft learns your senders and flags look-alike mail.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/anti-phishing-policies-configure"
+      ],
+      "customer_title": "Turn on mailbox intelligence for impersonation detection",
+      "customer_summary": "Mailbox intelligence learns your senders so look-alike impersonation is caught.",
+      "customer_next_step": "Enable mailbox intelligence on every anti-phish policy.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "mdo-quarantine-policy",
+      "title": "End users can release quarantined mail themselves",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "medium",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "minutes",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/quarantinepolicies",
+      "summary": "End-user quarantine permissions are limited and retention is adequate.",
+      "evidence": {
+        "surface": "quarantine",
+        "policies": 1,
+        "full_access_policies": [],
+        "retention_days": 30
+      },
+      "entitlements_used": [
+        "exchange_online_protection"
+      ],
+      "remediation": "In the Microsoft Defender portal, open Email & collaboration > Policies & rules > Threat policies > Quarantine policies, set end-user permissions to limited or no access, and raise retention to at least 30 days.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/quarantine-policies"
+      ],
+      "customer_title": "Restrict quarantine release and keep mail longer",
+      "customer_summary": "Users cannot release quarantined mail without admin review.",
+      "customer_next_step": "Restrict end-user quarantine permissions and increase the retention window.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "mdo-safe-documents",
+      "title": "Safe Documents is off for untrusted Office files",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "medium",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "minutes",
+      "blast_radius": "all_users",
+      "pack": "email",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/safeDocumentsv2",
+      "summary": "Safe Documents scans Office files opened from untrusted sources.",
+      "evidence": {
+        "enable_safe_docs": true,
+        "allow_safe_docs_open": true
+      },
+      "entitlements_used": [
+        "defender_office_p2"
+      ],
+      "remediation": "In the Microsoft Defender portal, open Settings > Email & collaboration > Microsoft Defender for Office 365 and turn on Safe Documents. Microsoft is retiring this feature, so also keep Safe Attachments for SharePoint, OneDrive, and Teams enabled as the replacement protection.",
+      "references": [
+        "https://learn.microsoft.com/defender-office-365/safe-documents"
+      ],
+      "customer_title": "Scan Office files from untrusted sources",
+      "customer_summary": "Office documents are scanned before users open them.",
+      "customer_next_step": "Turn on Safe Documents in Microsoft 365 Defender settings.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "Exchange Online PowerShell (powershell.bridge)",
+        "Security & Compliance PowerShell (scc_compliance)"
       ],
       "limitations": [],
       "evaluation_mode": "direct",
@@ -5808,6 +6738,51 @@
       "confidence_label": "High confidence",
       "data_sources": [
         "Power Platform / Power BI PowerShell (powershell.bridge)"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "pur-ediscovery-readiness",
+      "title": "eDiscovery readiness",
+      "workload": "purview",
+      "status": "ok",
+      "severity": "medium",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://purview.microsoft.com/ediscovery",
+      "summary": "1 Premium eDiscovery case(s) found \u2014 case and hold workflows are in use.",
+      "evidence": {
+        "case_count": 1,
+        "case_names": [
+          "Contoso investigation 2026-Q1"
+        ],
+        "source": "graph.security.cases.ediscoveryCases",
+        "direct": true,
+        "proxy": false
+      },
+      "entitlements_used": [
+        "purview_ediscovery"
+      ],
+      "remediation": "Verify eDiscovery administrator roles are assigned and that case and legal hold workflows are configured and tested.",
+      "references": [
+        "https://learn.microsoft.com/purview/ediscovery",
+        "https://learn.microsoft.com/graph/api/security-casesroot-list-ediscoverycases"
+      ],
+      "customer_title": "Confirm eDiscovery is set up",
+      "customer_summary": "eDiscovery is configured and has been exercised. Keep case access and legal-hold reviews on a regular cadence.",
+      "customer_next_step": "Create a test Premium case with a legal hold, and confirm eDiscovery administrators are assigned in the Purview portal.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.security.cases.ediscoveryCases"
       ],
       "limitations": [],
       "evaluation_mode": "direct",
@@ -6293,8 +7268,113 @@
       "accepted_risks": []
     },
     {
+      "check_id": "id-ca-workload-identity",
+      "title": "No Conditional Access policy covers service-principal risk",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "In Entra admin center > Protection > Conditional Access, create a policy targeting service principals (all or selected) with service principal risk levels set to medium and high, and a grant of block or require MFA. Start in report-only mode to observe, then enforce.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/conditional-access/workload-identity",
+        "https://learn.microsoft.com/entra/workload-id/workload-identities-overview"
+      ],
+      "customer_title": "Apps and service accounts are not protected by risk-based sign-in rules",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "id-identity-protection-workload",
+      "title": "Risky or compromised service principals were detected",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "identity",
+      "exposure_class": "elevated",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/IdentityProtectionMenuBlade/~/WorkloadIdentities",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "In Entra admin center > Protection > Identity Protection > Risky workload identities, review each flagged service principal. Rotate or remove its credentials, confirm the activity was legitimate or block it, then confirm the risk as dismissed so future risk is visible again.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-protection/concept-workload-identity-risk",
+        "https://learn.microsoft.com/graph/api/identityprotectionroot-list-riskyserviceprincipals"
+      ],
+      "customer_title": "Confirm no app or automation account is compromised",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
+      "check_id": "id-entitlement-access-packages",
+      "title": "Entitlement Management access packages not configured",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "half_day",
+      "blast_radius": "data",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/AccessPackages",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "Create an Entitlement Management catalog, add groups/applications/Teams as resources, and publish an access package with an approval stage and an access review so assignments are requested, approved, and expired.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-governance/entitlement-management-overview",
+        "https://learn.microsoft.com/entra/id-governance/entitlement-management-access-package-create"
+      ],
+      "customer_title": "Access to apps, groups, and Teams is not yet lifecycle-governed",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": []
+    },
+    {
       "check_id": "pbi-premium-capacity-governance",
-      "title": "Power BI Premium capacity governance needs manual confirmation",
+      "title": "Power BI Premium capacity governance",
       "workload": "power_bi",
       "status": "not_licensed",
       "severity": "medium",
@@ -6311,9 +7391,10 @@
       "remediation": "Review Premium capacity settings and per-user assignments in the Power BI admin portal. Limit capacity admins, confirm workspace-to-capacity mapping, and document entitlement provenance for licensed seats.",
       "references": [
         "https://learn.microsoft.com/power-bi/enterprise/service-premium-what-is",
-        "https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq"
+        "https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq",
+        "https://learn.microsoft.com/rest/api/power-bi/admin"
       ],
-      "customer_title": "Confirm Premium capacity governance and entitlement use",
+      "customer_title": "Premium capacity use and capacity admins are checked directly",
       "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
       "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
       "status_label": "Not in your plan",
@@ -6323,7 +7404,7 @@
         "graph.subscribedSkus"
       ],
       "limitations": [],
-      "evaluation_mode": "manual",
+      "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": []
     },
@@ -6365,7 +7446,23 @@
   "profile_ids": [],
   "collection_summaries": [
     {
+      "collector": "access_packages",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 1,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "access_review_definitions",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "access_review_instances",
       "status": "success",
       "source": "demo",
       "items_collected": 0,
@@ -6501,6 +7598,14 @@
       "errors": []
     },
     {
+      "collector": "pbi_capacity_bundle",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "pim_policies_bundle",
       "status": "success",
       "source": "demo",
@@ -6533,10 +7638,34 @@
       "errors": []
     },
     {
+      "collector": "purview_ediscovery",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "purview_insider_risk",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "recent_signin_user_ids",
       "status": "success",
       "source": "demo",
       "items_collected": 2,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "risky_service_principals",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
       "warnings": [],
       "errors": []
     },
@@ -6626,7 +7755,7 @@
   "recommended_next_steps": [
     "Restrict user consent so only admins approve non-trivial permissions.",
     "Disable SMS, Voice, and Email OTP authentication methods.",
-    "Enforce a Conditional Access policy that blocks device code flow."
+    "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in the assessment profile, and remove any other unexplained exclusions."
   ],
   "warnings": [],
   "limitations": [
@@ -6642,7 +7771,9 @@
     "Power Platform / Power BI PowerShell (powershell.bridge)",
     "Security & Compliance PowerShell (scc_compliance)",
     "azure.arm.securityInsights",
+    "graph.beta.security.insiderRiskManagement.policies",
     "graph.deviceManagement",
+    "graph.security.cases.ediscoveryCases",
     "graph.security.incidents",
     "graph.subscribedSkus",
     "mde.api.machines",
@@ -6679,14 +7810,14 @@
       "customer_next_step": "Disable SMS, Voice, and Email OTP authentication methods."
     },
     {
-      "title": "Enforce a Conditional Access policy that blocks device code flow",
-      "why": "Device-code phishing can still complete a successful sign-in.",
+      "title": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in\u2026",
+      "why": "We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.",
       "effort": "hours",
       "check_ids": [
-        "id-ca-device-code-block"
+        "id-break-glass-exclusion"
       ],
-      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
-      "customer_next_step": "Enforce a Conditional Access policy that blocks device code flow."
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers",
+      "customer_next_step": "Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in the assessment profile, and remove any other unexplained exclusions."
     }
   ],
   "capability_rollup": {
@@ -6694,7 +7825,7 @@
     "fully_working": 1,
     "needs_attention": 5,
     "partly_set_up": 0,
-    "not_licensed": 1,
+    "not_licensed": 3,
     "realized_percent": 17
   },
   "capability_outcomes": [
@@ -6741,6 +7872,7 @@
         "teams-email-integration-disabled",
         "teams-external-access-per-domain",
         "teams-external-control-disabled",
+        "teams-guest-access-restricted",
         "teams-internal-auto-admit",
         "teams-microsoft-apps-governed",
         "teams-recording-disabled",
@@ -6757,7 +7889,9 @@
       "status_label": "Needs attention",
       "related_check_ids": [
         "mde-onboard-gap",
-        "mde-sensor-health"
+        "ep-asr-rules",
+        "mde-sensor-health",
+        "ep-tamper-protection"
       ]
     },
     {
@@ -6771,7 +7905,8 @@
         "pur-dlp-locations-complete",
         "pur-dlp-not-enforced",
         "pur-dlp-notifications",
-        "pur-dlp-policy-present"
+        "pur-dlp-policy-present",
+        "pur-endpoint-dlp"
       ]
     },
     {
@@ -6781,6 +7916,7 @@
       "status": "needs_attention",
       "status_label": "Needs attention",
       "related_check_ids": [
+        "pur-default-and-mandatory-labels",
         "pur-sensitivity-auto-labeling",
         "pur-sensitivity-labels-published"
       ]
@@ -6792,12 +7928,15 @@
       "status": "needs_attention",
       "status_label": "Needs attention",
       "related_check_ids": [
+        "ep-bitlocker-policy",
+        "ep-compliance-enforcement",
         "endpoint-compliance-noncompliance-action",
         "endpoint-compliance-policy-assigned",
         "endpoint-enrollment-coverage",
         "endpoint-mde-connector",
         "endpoint-security-baseline",
         "endpoint-security-policy-coverage",
+        "ep-mam-app-protection",
         "id-ca-managed-devices",
         "id-ca-mfa-registration-managed"
       ]
@@ -6821,6 +7960,7 @@
         "id-auth-authenticator-context",
         "id-auth-methods-migration",
         "id-auth-weak-methods-disabled",
+        "id-break-glass-exclusion",
         "id-ca-device-code-block",
         "id-ca-legacy-auth-block",
         "id-ca-managed-devices",
@@ -6830,10 +7970,12 @@
         "id-ca-phishing-resistant-privileged",
         "id-ca-priv-gaps",
         "id-cross-tenant-defaults",
+        "id-cross-tenant-mfa-trust",
         "id-guest-directory-access-limited",
         "id-guest-invite-domains",
         "id-guest-inviter-restricted",
         "id-logs-to-soc",
+        "id-number-matching",
         "id-password-never-expire",
         "id-security-defaults-on"
       ]
@@ -6845,10 +7987,13 @@
       "status": "needs_attention",
       "status_label": "Needs attention",
       "related_check_ids": [
+        "id-access-reviews-scope",
         "id-access-reviews-unused",
+        "id-break-glass-exclusion",
         "id-dormant-privileged",
         "id-ga-count-bounds",
         "id-ga-finer-roles",
+        "id-pim-activation-controls",
         "id-pim-ga-activation-alert",
         "id-pim-ga-activation-approval",
         "id-pim-no-outside-pam",
@@ -6902,26 +8047,6 @@
       ]
     },
     {
-      "id": "purview_insider_risk",
-      "name": "Microsoft Purview Insider Risk Management",
-      "plain_name": "Early warning for risky insider activity",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
-      "related_check_ids": [
-        "pur-insider-risk-readiness"
-      ]
-    },
-    {
-      "id": "purview_ediscovery",
-      "name": "Microsoft Purview eDiscovery",
-      "plain_name": "Legal hold and investigation search",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
-      "related_check_ids": [
-        "pur-ediscovery-readiness"
-      ]
-    },
-    {
       "id": "purview_communication_compliance",
       "name": "Microsoft Purview Communication Compliance",
       "plain_name": "Oversight for risky business communications",
@@ -6953,10 +8078,13 @@
         "mdo-impersonation-domains-owned",
         "mdo-impersonation-partner-domains",
         "mdo-impersonation-users-protected",
+        "mdo-mailbox-intelligence",
         "mdo-p2-policies-default",
         "mdo-safe-attachments-block",
         "mdo-safe-attachments-spo-teams",
+        "mdo-safe-documents",
         "mdo-safe-links-block-list",
+        "mdo-safe-links-click-through",
         "mdo-safe-links-click-tracking",
         "mdo-safe-links-real-time-scan",
         "mdo-safety-tips-enabled"
@@ -6975,6 +8103,7 @@
         "spo-default-link-view",
         "spo-domain-restrictions",
         "spo-sharing-capability-limited",
+        "spo-unmanaged-device-access",
         "spo-verification-reauth"
       ]
     },
@@ -6998,7 +8127,10 @@
         "mdo-anti-spam-no-allowed-domains",
         "mdo-connection-filter-no-ip-allow",
         "mdo-connection-filter-no-safe-list",
-        "mdo-spam-phish-not-inbox"
+        "mdo-outbound-spam-forwarding-block",
+        "mdo-quarantine-policy",
+        "mdo-spam-phish-not-inbox",
+        "mdo-transport-rule-external-forward"
       ]
     },
     {
@@ -7012,6 +8144,26 @@
       ]
     },
     {
+      "id": "purview_insider_risk",
+      "name": "Microsoft Purview Insider Risk Management",
+      "plain_name": "Early warning for risky insider activity",
+      "status": "fully_working",
+      "status_label": "Fully working",
+      "related_check_ids": [
+        "pur-insider-risk-readiness"
+      ]
+    },
+    {
+      "id": "purview_ediscovery",
+      "name": "Microsoft Purview eDiscovery",
+      "plain_name": "Legal hold and investigation search",
+      "status": "fully_working",
+      "status_label": "Fully working",
+      "related_check_ids": [
+        "pur-ediscovery-readiness"
+      ]
+    },
+    {
       "id": "power_platform",
       "name": "Microsoft Power Platform",
       "plain_name": "Low-code apps, flows, and environments",
@@ -7019,9 +8171,11 @@
       "status_label": "Fully working",
       "related_check_ids": [
         "pp-dlp-all-environments",
+        "pp-dlp-nondefault-envs",
         "pp-env-creation-admin-only",
         "pp-pages-creation-admin-only",
         "pp-share-with-everyone-disabled",
+        "pp-tenant-isolation-allowlist",
         "pp-tenant-isolation-enabled",
         "pp-trial-creation-admin-only"
       ]
@@ -7053,6 +8207,7 @@
       "status": "fully_working",
       "status_label": "Fully working",
       "related_check_ids": [
+        "pbi-export-controls",
         "pbi-external-invite-disabled",
         "pbi-guest-access-disabled",
         "pbi-publish-to-web-disabled",

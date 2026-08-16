@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.identity_pim_rules import (
+    evaluate_pim_activation_controls,
     evaluate_pim_ga_activation_alert,
     evaluate_pim_ga_activation_approval,
     evaluate_pim_no_outside_pam,
@@ -17,6 +18,13 @@ from licenselens.schema_contracts import EvaluationMode
 def register_identity_pim_rules(catalog: RegistrationCatalog) -> None:
     catalog.enter_module("licenselens.evaluators.bindings.identity_pim_rules")
     try:
+        catalog.add_evaluator(
+            check_id="id-pim-activation-controls",
+            evaluate=evaluate_pim_activation_controls,
+            input_models=("pim_policies_bundle",),
+            collector_id="graph_pim_policies",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
         catalog.add_evaluator(
             check_id="id-pim-ga-activation-alert",
             evaluate=evaluate_pim_ga_activation_alert,

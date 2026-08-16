@@ -60,13 +60,13 @@ ZERO_TENANT_ID: Final = "00000000-0000-0000-0000-000000000000"
 ZERO_RESOURCE_ID: Final = "/subscriptions/00000000-0000-0000-0000-000000000000"
 
 # Family -> check-id prefixes (mutually exclusive, collectively exhaustive over
-# the 139 shipped checks).
+# the 144 shipped checks).
 FAMILY_PREFIXES: Final[Mapping[str, tuple[str, ...]]] = {
     "identity": ("id-",),
     "email": ("exo-", "mdo-"),
     "collaboration": ("spo-", "teams-"),
     "power": ("pp-", "pbi-"),
-    "endpoint": ("endpoint-", "mde-", "mdi-", "xdr-"),
+    "endpoint": ("endpoint-", "mde-", "mdi-", "xdr-", "ep-"),
     "purview": ("pur-",),
     "sentinel": ("sen-", "az-"),
 }
@@ -282,7 +282,7 @@ def _workload_for(check_id: str) -> Workload:
         return Workload.PURVIEW
     if check_id.startswith(("sen-", "az-")):
         return Workload.SENTINEL
-    if check_id.startswith(("endpoint-", "mde-", "mdi-", "xdr-")):
+    if check_id.startswith(("endpoint-", "mde-", "mdi-", "xdr-", "ep-")):
         return Workload.ENDPOINT
     return Workload.IDENTITY
 

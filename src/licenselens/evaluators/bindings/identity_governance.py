@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.identity_governance import (
+    evaluate_access_reviews_scope,
     evaluate_access_reviews_unused,
     evaluate_entitlement_access_packages,
     evaluate_security_defaults_on,
@@ -18,6 +19,13 @@ def register_identity_governance(catalog: RegistrationCatalog) -> None:
             check_id="id-access-reviews-unused",
             evaluate=evaluate_access_reviews_unused,
             input_models=("access_review_definitions",),
+            collector_id="graph_access_reviews",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="id-access-reviews-scope",
+            evaluate=evaluate_access_reviews_scope,
+            input_models=("access_review_definitions", "access_review_instances"),
             collector_id="graph_access_reviews",
             evaluation_mode=EvaluationMode.DIRECT,
         )

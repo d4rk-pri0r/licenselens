@@ -1,12 +1,18 @@
-"""Identity Protection evaluator."""
+"""Identity Protection evaluators."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Final
 
 from licenselens.collectors import conditional_access as ca
 from licenselens.evaluators.common import Evaluation
 from licenselens.models import CheckDefinition, FindingStatus
+
+_RISKY_SP_STATES: Final = frozenset(
+    {"atrisk", "detected", "confirmed", "confirmedcompromised"}
+)
+_HANDLED_SP_STATES: Final = frozenset({"dismissed", "remediated", "none"})
+_DENIED_MARKERS: Final = ("403", "denied", "authorization", "access denied")
 
 
 def evaluate_idprotect_off(
@@ -105,5 +111,115 @@ def evaluate_idprotect_off(
         customer_summary=(
             "We did not find automatic responses when Microsoft marks a sign-in "
             "or account as risky. That protection may still be turned off."
+        ),
+    )
+
+
+def evaluate_identity_protection_workload(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Workload Identity Protection: no service principals are risky/compromised."""
+    del check
+
+    error = evidence.get("risky_service_principals_error")
+    if error:
+        reason = str(error)
+        if any(marker in reason.lower() for marker in _DENIED_MARKERS):
+            return Evaluation(
+                status=FindingStatus.ERROR,
+                summary="Risky service principals could not be read: " + reason,
+                evidence={"error": reason},
+            )
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Risky service principals could not be read, so workload "
+                "identity risk could not be verified: " + reason
+            ),
+            evidence={"error": reason},
+            customer_summary=(
+                "We could not check the risk state of your app and automation "
+                "accounts, so please confirm them in Entra ID Protection."
+            ),
+        )
+
+    items = [
+        sp for sp in evidence.get("risky_service_principals") or [] if isinstance(sp, dict)
+    ]
+    risky: list[dict[str, Any]] = []
+    compromised: list[dict[str, Any]] = []
+    unclassified: list[dict[str, Any]] = []
+    for sp in items:
+        state = str(sp.get("riskState") or "").lower()
+        if state in _RISKY_SP_STATES:
+            risky.append(sp)
+            if state == "confirmedcompromised":
+                compromised.append(sp)
+        elif state in _HANDLED_SP_STATES:
+            continue
+        else:
+            unclassified.append(sp)
+
+    evidence_out = {
+        "service_principal_count": len(items),
+        "risky_service_principal_count": len(risky),
+        "compromised_service_principal_count": len(compromised),
+        "unclassified_service_principal_count": len(unclassified),
+        "risky_service_principals": [
+            {
+                "displayName": sp.get("displayName"),
+                "appId": sp.get("appId"),
+                "riskLevel": sp.get("riskLevel"),
+                "riskState": sp.get("riskState"),
+            }
+            for sp in risky[:10]
+        ],
+    }
+
+    if risky:
+        detail = ", ".join(
+            f"{sp.get('displayName') or sp.get('appId') or 'unnamed'} "
+            f"({(sp.get('riskState') or 'risky').lower()})"
+            for sp in risky[:5]
+        )
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                f"{len(risky)} service principal(s) are flagged as risky or "
+                f"compromised: {detail}."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Some app or automation accounts look compromised or risky "
+                "right now — an attacker may be using stolen app credentials."
+            ),
+        )
+
+    if unclassified:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"{len(items)} service principal(s) were read, but "
+                f"{len(unclassified)} have an unknown risk state — the tenant "
+                "could not be confirmed clean."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "We could read the workload identity list, but some risk "
+                "states were unclear, so please spot-check them in the portal."
+            ),
+        )
+
+    return Evaluation(
+        status=FindingStatus.OK,
+        summary=(
+            f"Read {len(items)} service principal(s); none are flagged as "
+            "risky or compromised."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "No app or automation account is currently flagged as risky or "
+            "compromised by workload identity protection."
         ),
     )

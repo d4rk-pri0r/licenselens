@@ -5,6 +5,7 @@ from __future__ import annotations
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.identity_guests import (
     evaluate_cross_tenant_defaults,
+    evaluate_cross_tenant_mfa_trust,
     evaluate_guest_directory_access_limited,
     evaluate_guest_invite_domains,
     evaluate_guest_inviter_restricted,
@@ -15,6 +16,13 @@ from licenselens.schema_contracts import EvaluationMode
 def register_identity_guests(catalog: RegistrationCatalog) -> None:
     catalog.enter_module("licenselens.evaluators.bindings.identity_guests")
     try:
+        catalog.add_evaluator(
+            check_id="id-cross-tenant-mfa-trust",
+            evaluate=evaluate_cross_tenant_mfa_trust,
+            input_models=("guests_bundle",),
+            collector_id="graph_guests",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
         catalog.add_evaluator(
             check_id="id-cross-tenant-defaults",
             evaluate=evaluate_cross_tenant_defaults,

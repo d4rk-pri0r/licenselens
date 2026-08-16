@@ -1,0 +1,33 @@
+id: ep-tamper-protection
+title: Defender for Endpoint tamper protection enforced
+customer_title: Tamper protection may be off on some devices
+customer_summary: >
+  Tamper protection stops malware and local admins from silently disabling
+  Defender. It must be configured, assigned, and actually enabled on devices.
+expected_state: Tamper protection is configured, assigned, and enabled on managed Windows devices.
+customer_next_step: >
+  Assign the Defender antivirus/tamper-protection configuration and confirm
+  sampled Windows devices report tamper protection enabled.
+description: >
+  Depth check: presence of a Defender ATP configuration is not enough; the
+  check also samples device protection state so tamper protection must be
+  proven enabled, not merely configured.
+workload: endpoint
+required_capabilities:
+  - defender_endpoint_p2
+  - defender_endpoint_p1
+severity: high
+value_impact: high
+impact: high
+effort: half_day
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://security.microsoft.com/securitysettings/endpoints/antivirus
+collector: intune_collector
+remediation: >
+  Assign a Defender for Endpoint configuration with tamper protection on and
+  remediate any Windows device that reports it disabled.
+references:
+  - https://learn.microsoft.com/defender-endpoint/prevent-changes-to-security-settings-with-tamper-protection
+enabled: true

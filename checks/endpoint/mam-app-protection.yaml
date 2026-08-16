@@ -1,0 +1,31 @@
+id: ep-mam-app-protection
+title: App protection policies configured and assigned
+customer_title: Work data on phones may be unprotected
+customer_summary: >
+  App protection policies keep work data safe on personal and company phones.
+  Policies that exist but are never assigned protect no app data.
+expected_state: App protection policies exist and are assigned to protect managed app data.
+customer_next_step: >
+  Confirm app protection policies exist and are assigned to the intended
+  users or groups for every mobile platform in use.
+description: >
+  Depth check: MAM app protection requires both configured policies and real
+  assignments (or org-wide default policies), not just policy presence.
+workload: endpoint
+required_capabilities:
+  - intune
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/AppProtectionMenu/~/overview
+collector: intune_collector
+remediation: >
+  Create and assign app protection policies for each managed mobile
+  platform, or confirm default policies cover all unprotected devices.
+references:
+  - https://learn.microsoft.com/mem/intune/apps/app-protection-policy
+enabled: true

@@ -17,6 +17,12 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             "graph:accessReviews",
             30,
         ),
+        "access_review_instances": (
+            Backend.GRAPH,
+            ("AccessReview.Read.All",),
+            "graph:accessReviews.instances",
+            30,
+        ),
         "access_packages": (
             Backend.GRAPH,
             ("EntitlementManagement.Read.All",),
@@ -104,16 +110,40 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             30,
         ),
         "purview_dlp": (
-            Backend.PROXY,
-            ("SecurityEvents.Read.All",),
-            "proxy:purviewDlp",
+            Backend.GRAPH,
+            ("DlpPolicy.Read.All", "SecurityEvents.Read.All"),
+            "graph:security.dataLossPreventionPolicies",
             30,
+        ),
+        "purview_ediscovery": (
+            Backend.GRAPH,
+            ("eDiscovery.Read.All",),
+            "graph:security.cases.ediscoveryCases",
+            30,
+        ),
+        "purview_insider_risk": (
+            Backend.GRAPH,
+            ("InsiderRiskPolicy.Read.All",),
+            "graph:security.insiderRiskManagement.policies",
+            30,
+        ),
+        "pbi_capacity_bundle": (
+            Backend.GRAPH,
+            ("Tenant.Read.All",),
+            "rest:powerbi.admin.capacities",
+            45,
         ),
         "recent_signin_user_ids": (
             Backend.GRAPH,
             ("AuditLog.Read.All",),
             "graph:signIns.success",
             45,
+        ),
+        "risky_service_principals": (
+            Backend.GRAPH,
+            ("IdentityRiskyServicePrincipal.Read.All",),
+            "graph:identityProtection.riskyServicePrincipals",
+            30,
         ),
         "role_assignments": (
             Backend.GRAPH,
@@ -182,7 +212,7 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
         "graph_access_reviews": (
             Backend.GRAPH,
             ("AccessReview.Read.All",),
-            ("access_review_definitions",),
+            ("access_review_definitions", "access_review_instances"),
         ),
         "graph_entitlement_management": (
             Backend.GRAPH,
@@ -223,6 +253,11 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             Backend.GRAPH,
             ("Policy.Read.All",),
             ("ca_policies", "break_glass_principal_ids"),
+        ),
+        "graph_identity_protection_workload": (
+            Backend.GRAPH,
+            ("IdentityRiskyServicePrincipal.Read.All",),
+            ("risky_service_principals",),
         ),
         "graph_mdo": (Backend.NOOP, (), ("secure_score_controls",)),
         "graph_pim": (
@@ -268,9 +303,24 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             ("secure_score_controls",),
         ),
         "purview_dlp_collector": (
-            Backend.PROXY,
-            ("SecurityEvents.Read.All",),
+            Backend.GRAPH,
+            ("DlpPolicy.Read.All", "SecurityEvents.Read.All"),
             ("purview_dlp",),
+        ),
+        "graph_purview_ediscovery": (
+            Backend.GRAPH,
+            ("eDiscovery.Read.All",),
+            ("purview_ediscovery",),
+        ),
+        "graph_purview_insider_risk": (
+            Backend.GRAPH,
+            ("InsiderRiskPolicy.Read.All",),
+            ("purview_insider_risk",),
+        ),
+        "pbi_capacity_collector": (
+            Backend.GRAPH,
+            ("Tenant.Read.All",),
+            ("pbi_capacity_bundle",),
         ),
         "sentinel_analytics": (Backend.ARM, (), ("sentinel_rules",)),
         "sentinel_ueba_collector": (Backend.ARM, (), ("sentinel_ueba",)),

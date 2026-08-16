@@ -1,0 +1,31 @@
+id: mdo-safe-documents
+title: Safe Documents is off for untrusted Office files
+customer_title: Scan Office files from untrusted sources
+customer_summary: >
+  Word, Excel, and PowerPoint files from the internet can hide malware in macros
+  and links.
+expected_state: Safe Documents protects users who open Office files from the internet.
+customer_next_step: >
+  Turn on Safe Documents in Microsoft 365 Defender settings.
+description: >
+  Safe Documents is not enabled to scan Office files in Protected View.
+workload: defender
+required_capabilities:
+  - defender_office_p2
+severity: medium
+value_impact: high
+impact: high
+effort: minutes
+blast_radius: all_users
+pack: email
+exposure_class: none
+deep_link: https://security.microsoft.com/safeDocumentsv2
+collector: exchange_collector
+remediation: >
+  In the Microsoft Defender portal, open Settings > Email & collaboration >
+  Microsoft Defender for Office 365 and turn on Safe Documents. Microsoft is
+  retiring this feature, so also keep Safe Attachments for SharePoint, OneDrive,
+  and Teams enabled as the replacement protection.
+references:
+  - https://learn.microsoft.com/defender-office-365/safe-documents
+enabled: true

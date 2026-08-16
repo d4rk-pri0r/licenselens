@@ -9,8 +9,10 @@ from licenselens.evaluators.security_suite_threat import (
     evaluate_mdo_impersonation_users_protected,
     evaluate_mdo_malware_file_filter,
     evaluate_mdo_malware_zap,
+    evaluate_mdo_quarantine_policy,
     evaluate_mdo_safe_attachments_block,
     evaluate_mdo_safe_links_block_list,
+    evaluate_mdo_safe_links_click_through,
     evaluate_mdo_safe_links_click_tracking,
     evaluate_mdo_safe_links_real_time_scan,
     evaluate_mdo_safety_tips_enabled,
@@ -73,6 +75,20 @@ def register_security_suite_threat(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="mdo-safe-links-click-tracking",
             evaluate=evaluate_mdo_safe_links_click_tracking,
+            input_models=("exchange_bundle",),
+            collector_id="exchange_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="mdo-safe-links-click-through",
+            evaluate=evaluate_mdo_safe_links_click_through,
+            input_models=("exchange_bundle",),
+            collector_id="exchange_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="mdo-quarantine-policy",
+            evaluate=evaluate_mdo_quarantine_policy,
             input_models=("exchange_bundle",),
             collector_id="exchange_collector",
             evaluation_mode=EvaluationMode.DIRECT,

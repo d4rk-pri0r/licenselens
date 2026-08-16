@@ -163,3 +163,121 @@ def evaluate_cross_tenant_defaults(
         evidence=evidence_out,
         customer_summary="Review cross-tenant access defaults in Entra External Identities.",
     )
+
+
+def _mfa_trust(value: Any) -> bool | None:
+    if not isinstance(value, dict):
+        return None
+    accepted = value.get("isMfaAccepted")
+    if accepted is None:
+        return None
+    return bool(accepted)
+
+
+def evaluate_cross_tenant_mfa_trust(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """Cross-tenant inbound MFA claims are not trusted by default."""
+    del check
+
+    if evidence.get("guests_bundle_error"):
+        return Evaluation(
+            status=FindingStatus.ERROR,
+            summary="Cross-tenant access settings could not be read: "
+            + str(evidence["guests_bundle_error"]),
+            evidence={"error": str(evidence["guests_bundle_error"])},
+        )
+
+    bundle = evidence.get("guests_bundle") or {}
+    if not isinstance(bundle, dict):
+        bundle = {}
+    default = bundle.get("default")
+    if not isinstance(default, dict):
+        default = _cross_default(evidence)
+    partners = list(bundle.get("partners") or [])
+
+    inbound_trust = (default.get("b2bCollaborationInbound") or {}).get(
+        "trustSettings"
+    ) or {}
+    outbound_trust = (default.get("b2bCollaborationOutbound") or {}).get(
+        "trustSettings"
+    ) or {}
+    inbound_default = _mfa_trust(inbound_trust.get("inboundTrust"))
+    outbound_default = _mfa_trust(outbound_trust.get("outboundTrust"))
+
+    partner_inbound_trust = 0
+    partner_outbound_trust = 0
+    for partner in partners:
+        if not isinstance(partner, dict):
+            continue
+        pinbound = _mfa_trust(partner.get("inboundTrust")) or _mfa_trust(
+            ((partner.get("b2bCollaborationInbound") or {}).get("trustSettings") or {}).get(
+                "inboundTrust"
+            )
+        )
+        poutbound = _mfa_trust(partner.get("outboundTrust")) or _mfa_trust(
+            ((partner.get("b2bCollaborationOutbound") or {}).get("trustSettings") or {}).get(
+                "outboundTrust"
+            )
+        )
+        if pinbound is True:
+            partner_inbound_trust += 1
+        if poutbound is True:
+            partner_outbound_trust += 1
+
+    evidence_out = {
+        "inbound_mfa_trust_default": inbound_default,
+        "outbound_mfa_trust_default": outbound_default,
+        "partner_count": len(partners),
+        "partner_inbound_mfa_trust_count": partner_inbound_trust,
+        "partner_outbound_mfa_trust_count": partner_outbound_trust,
+    }
+
+    if inbound_default is None:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Cross-tenant inbound MFA trust setting was not conclusive; "
+                "verify it in Entra External Identities."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "We could not confirm whether your tenant accepts other "
+                "tenants' multi-factor authentication claims by default."
+            ),
+        )
+
+    if inbound_default is True:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                "Cross-tenant inbound settings accept multi-factor "
+                "authentication claims from external tenants by default."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Guests from other tenants can satisfy your multi-factor "
+                "requirements with their home tenant's MFA — which you cannot "
+                "verify — instead of completing your own."
+            ),
+        )
+
+    partner_suffix = (
+        f"; {partner_inbound_trust} partner(s) are explicitly trusted."
+        if partner_inbound_trust
+        else "."
+    )
+    return Evaluation(
+        status=FindingStatus.OK,
+        summary=(
+            "Cross-tenant inbound settings do not accept external MFA claims "
+            "by default" + partner_suffix
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "External tenants' multi-factor authentication claims are not "
+            "trusted by default, so guests must meet your own sign-in "
+            "requirements unless a specific partner is explicitly trusted."
+        ),
+    )

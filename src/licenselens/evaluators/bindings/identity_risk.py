@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from licenselens.engine.registration import RegistrationCatalog
 from licenselens.evaluators.identity_risk import (
+    evaluate_identity_protection_workload,
     evaluate_idprotect_off,
 )
 from licenselens.schema_contracts import EvaluationMode
@@ -17,6 +18,13 @@ def register_identity_risk(catalog: RegistrationCatalog) -> None:
             evaluate=evaluate_idprotect_off,
             input_models=("ca_policies",),
             collector_id="graph_identity_protection",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="id-identity-protection-workload",
+            evaluate=evaluate_identity_protection_workload,
+            input_models=("risky_service_principals",),
+            collector_id="graph_identity_protection_workload",
             evaluation_mode=EvaluationMode.DIRECT,
         )
     finally:

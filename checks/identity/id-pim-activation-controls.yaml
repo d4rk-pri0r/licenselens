@@ -1,0 +1,42 @@
+id: id-pim-activation-controls
+title: PIM activation guardrails are not fully configured
+customer_title: Keep privileged-role activation short, explained, and context-bound
+customer_summary: >
+  When someone turns on a powerful admin role, it should stay active for only
+  a short window, require a written reason, and be tied to the approved
+  sign-in context. We did not find all of these guardrails on your activation
+  settings, so a quiet account takeover could hold admin rights longer than
+  anyone notices.
+expected_state: Privileged-role activation requires justification, an authentication context, and a short time limit.
+customer_next_step: >
+  In PIM role settings for each privileged role, require justification on
+  activation, attach an authentication context, and set the maximum
+  activation duration to a short window (8 hours or less).
+description: >
+  Privileged Identity Management controls how long an activated privileged
+  role stays live and what must happen before activation. Entra ID P2 tenants
+  often leave the defaults: no justification, no authentication-context
+  requirement, and activation windows that stay open too long. Tightening
+  these settings shrinks the blast radius of a stolen admin account.
+workload: identity
+required_capabilities:
+  - entra_id_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: admin
+pack: identity
+exposure_class: none
+deep_link: https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/roleSettings
+collector: graph_pim_policies
+remediation: >
+  In Entra admin center > Identity governance > Privileged Identity
+  Management > Azure AD roles > Roles, open role settings for each
+  privileged role: on Activation, require justification, require an
+  authentication context, and set the maximum activation duration to a
+  short window (for example 1-4 hours for Global Administrator).
+references:
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+  - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-require-mfa
+enabled: true

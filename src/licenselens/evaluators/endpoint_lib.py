@@ -53,6 +53,38 @@ def atp_state(bundle: dict[str, Any] | None) -> dict[str, Any] | None:
     return raw if isinstance(raw, dict) else None
 
 
+def device_configurations(bundle: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if bundle is None:
+        return []
+    return [c for c in bundle.get("device_configurations") or [] if isinstance(c, dict)]
+
+
+def asr_policies(bundle: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if bundle is None:
+        return []
+    return [p for p in bundle.get("asr_policies") or [] if isinstance(p, dict)]
+
+
+def compliance_state_summary(bundle: dict[str, Any] | None) -> dict[str, Any] | None:
+    if bundle is None:
+        return None
+    raw = bundle.get("compliance_state_summary")
+    return raw if isinstance(raw, dict) else None
+
+
+def app_protection_policies(bundle: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if bundle is None:
+        return []
+    return [p for p in bundle.get("app_protection_policies") or [] if isinstance(p, dict)]
+
+
+def tamper_device_state(bundle: dict[str, Any] | None) -> dict[str, Any]:
+    if bundle is None:
+        return {}
+    raw = bundle.get("tamper_device_state")
+    return raw if isinstance(raw, dict) else {}
+
+
 def direct_meta() -> dict[str, Any]:
     return dict(_DIRECT_META)
 

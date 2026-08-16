@@ -1435,9 +1435,10 @@ policies:
     check_type: automated
     source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L195
     pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
-    local_check_ids: []
-    disposition: manual
-    rationale: Connector classification is portal-only; no read-only connector cmdlet in the pinned adapter.
+    local_check_ids:
+      - pp-dlp-nondefault-envs
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform DLP evaluation.
   - product: powerplatform
     product_name: Microsoft Power Platform
     policy_id: MS.POWERPLATFORM.3.1v1
@@ -1455,12 +1456,13 @@ policies:
     policy_id: MS.POWERPLATFORM.3.2v1
     policy_version: v1
     criticality: SHOULD
-    check_type: manual
+    check_type: automated
     source_url: https://github.com/cisagov/ScubaGear/blob/1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e/PowerShell/ScubaGear/baselines/powerplatform.md#L305
     pinned_commit: 1bc029182f9a11c420d0ea2bb3c7b12d2e687f5e
-    local_check_ids: []
-    disposition: manual
-    rationale: Manual review tracked; no automated LicenseLens claim.
+    local_check_ids:
+      - pp-tenant-isolation-allowlist
+    disposition: implemented_direct
+    rationale: Mapped to LicenseLens direct Power Platform isolation evaluation.
   - product: powerplatform
     product_name: Microsoft Power Platform
     policy_id: MS.POWERPLATFORM.4.1v1

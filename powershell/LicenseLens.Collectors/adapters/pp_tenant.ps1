@@ -83,11 +83,6 @@ function Invoke-LicenseLensAdapter {
                 -Surface 'content_security_policy' `
                 -Status 'unsupported' `
                 -Reason 'portal-only: CSP is per-environment Privacy+Security (Dataverse); no tenant Get-* cmdlet')
-        # Tenant isolation allowlist exceptions are manual in SCuBA (3.2).
-        isolation_allowlist = (New-LicenseLensSurfaceResult `
-                -Surface 'isolation_allowlist' `
-                -Status 'unsupported' `
-                -Reason 'manual/portal-only: inbound-outbound allowlist exceptions (MS.POWERPLATFORM.3.2v1)')
     }
 
     return [pscustomobject][ordered]@{

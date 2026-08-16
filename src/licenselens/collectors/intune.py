@@ -10,11 +10,14 @@ from licenselens.graph import GraphClient
 
 __all__ = [
     "DEMO_INTUNE_BUNDLE",
+    "collect_intune_asr_policies",
     "collect_intune_bundle",
     "collect_intune_compliance_policies",
+    "collect_intune_compliance_state_summary",
     "collect_intune_configuration_policies",
     "collect_intune_configuration_profiles",
     "collect_intune_evidence",
+    "collect_intune_mam_app_protections",
     "collect_intune_managed_devices",
 ]
 
@@ -40,6 +43,20 @@ def collect_intune_managed_devices(client: GraphClient) -> list[dict[str, Any]]:
     )
 
 
+def collect_intune_asr_policies(client: GraphClient) -> list[dict[str, Any]]:
+    return client.get_list(
+        "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies", max_pages=30
+    )
+
+
+def collect_intune_compliance_state_summary(client: GraphClient) -> dict[str, Any]:
+    return client.get("/deviceManagement/deviceCompliancePolicyDeviceStateSummary")
+
+
+def collect_intune_mam_app_protections(client: GraphClient) -> list[dict[str, Any]]:
+    return client.get_list("/deviceAppManagement/managedAppProtections", max_pages=30)
+
+
 def collect_intune_evidence(client: SupportsGraphReads) -> dict[str, EvidenceEnvelope]:
     return {
         "intune_compliance_policies": collect_graph_operation(client, "intune_compliance_policies"),
@@ -50,6 +67,13 @@ def collect_intune_evidence(client: SupportsGraphReads) -> dict[str, EvidenceEnv
             client, "intune_configuration_policies"
         ),
         "intune_managed_devices": collect_graph_operation(client, "intune_managed_devices"),
+        "intune_asr_policies": collect_graph_operation(client, "intune_asr_policies"),
+        "intune_device_state_summary": collect_graph_operation(
+            client, "intune_device_state_summary"
+        ),
+        "intune_mam_app_protections": collect_graph_operation(
+            client, "intune_mam_app_protections"
+        ),
     }
 
 
@@ -59,6 +83,9 @@ def collect_intune_bundle(client: GraphClient) -> dict[str, Any]:
         "configuration_profiles": collect_intune_configuration_profiles(client),
         "configuration_policies": collect_intune_configuration_policies(client),
         "managed_devices": collect_intune_managed_devices(client),
+        "asr_policies": collect_intune_asr_policies(client),
+        "compliance_state_summary": collect_intune_compliance_state_summary(client),
+        "mam_app_protections": collect_intune_mam_app_protections(client),
     }
 
 
@@ -87,6 +114,21 @@ DEMO_INTUNE_BUNDLE: dict[str, Any] = {
             "deviceName": "LAPTOP-1",
             "complianceState": "compliant",
             "operatingSystem": "Windows",
+        }
+    ],
+    "asr_policies": [
+        {"id": "asr-1", "displayName": "Endpoint security - ASR rules"}
+    ],
+    "compliance_state_summary": {
+        "compliantDeviceCount": 90,
+        "nonCompliantDeviceCount": 0,
+        "unknownDeviceCount": 0,
+    },
+    "mam_app_protections": [
+        {
+            "id": "mam-1",
+            "displayName": "iOS app protection",
+            "@odata.type": "#microsoft.graph.iosManagedAppProtection",
         }
     ],
 }

@@ -23,16 +23,23 @@ class AuthMode(StrEnum):
 
 GRAPH_SCOPE = "https://graph.microsoft.com/.default"
 
+# Power BI / Fabric admin REST is a separate resource from Microsoft Graph.
+POWERBI_ADMIN_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
+
 REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
     "AccessReview.Read.All",
     "Application.Read.All",
     "AuditLog.Read.All",
     "DelegatedPermissionGrant.Read.All",
+    "DeviceManagementApps.Read.All",
     "DeviceManagementConfiguration.Read.All",
     "DeviceManagementManagedDevices.Read.All",
     "Directory.Read.All",
+    "DlpPolicy.Read.All",
     "Domain.Read.All",
+    "eDiscovery.Read.All",
     "EntitlementManagement.Read.All",
+    "IdentityRiskyServicePrincipal.Read.All",
     "Organization.Read.All",
     "Policy.Read.All",
     "RoleManagement.Read.Directory",
@@ -41,6 +48,9 @@ REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
     "SecurityIncident.Read.All",
     "User.Read.All",
 )
+
+# Power BI admin REST application permissions (separate API resource).
+REQUIRED_POWERBI_APP_PERMISSIONS: tuple[str, ...] = ("Tenant.Read.All",)
 
 
 @dataclass
