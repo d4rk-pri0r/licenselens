@@ -46,14 +46,11 @@ licenselens batch tenants.yaml -o reports
 
 ## What it looks like
 
-The report is a single, self-contained HTML file with a dark "Warm Charcoal"
-theme, read top to bottom: posture, entitlements, ranked gaps with evidence,
+The report is a single, self-contained HTML file that includes posture, entitlements, ranked gaps with evidence,
 and an explore view of every assessed control.
 
-The opening section shows the tenant identity, the percentage of licensed
-capability actually enforced, and the top recommended actions. Each capability
-is labeled with its Microsoft workload icon, the capability field cross-filters
-the page, and details expand in place with native disclosure. The report renders
+The opening section displays the tenant identity, the percentage of licensed
+capability actually enforced, and the top recommended actions. The report renders
 with JavaScript disabled, makes no network requests, and honors
 `prefers-reduced-motion`.
 
