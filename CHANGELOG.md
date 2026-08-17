@@ -50,23 +50,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   (`docs/reference/coverage.md`).
 - **Report redesign (v2, "Warm Charcoal")** — the HTML report is rebuilt as a
   dark, offline-first dashboard on a warm charcoal canvas with a champagne-ivory
-  identity accent and a semantic-only red/amber/green status ramp: a signature
-  opening sequence (org identity → posture count-up → radial gauge →
-  distribution → implication → top actions, 500–1000ms total, then calm), a
-  hierarchy-first "Where you stand" led by one dominant posture figure bound to
+  identity accent and a semantic-only red/amber/green status ramp: an opening
+  animation (org identity → posture count-up → radial gauge → distribution →
+  implication → top actions, 500–1000ms total), a hierarchy-first "Where you
+  stand" led by one dominant posture figure bound to
   `capability_rollup.realized_percent` (never hardcoded) instead of a grid of
   equal metric cards, the interactive capability constellation (nodes resolve
-  from neutral; workload group captions cross-filter), the **restored branded
-  Microsoft workload icons** (inline SVG in the single-file report, hashed
-  `<img>` assets in the bundle, always paired with a visible text label), a
-  five-section narrative (Where you stand → What you're paying for → What
-  matters most → Why LicenseLens believes this → Explore everything), a six-slot
-  per-finding "belief block" (Expected / Observed / Why it matters / Recommended
-  action / Evidence / Admin destination), and native `<details>` progressive
-  disclosure (summary → explanation → evidence). Motion is information design:
-  one animated opening, then calm; the report renders fully server-side and is
-  readable with JavaScript disabled; `prefers-reduced-motion` renders the
-  instant final state with zero information loss.
+  from neutral; workload group captions cross-filter), branded Microsoft
+  workload icons (inline SVG in the single-file report, hashed `<img>` assets
+  in the bundle, always paired with a visible text label), five sections (Where
+  you stand → What you're paying for → What matters most → Why LicenseLens
+  believes this → Explore everything), a six-slot per-finding "belief block"
+  (Expected / Observed / Why it matters / Recommended action / Evidence /
+  Admin destination), and native `<details>` progressive disclosure (summary →
+  explanation → evidence); fully readable with JavaScript disabled and
+  `prefers-reduced-motion` is honored.
 - **Report redaction** — the profile `redaction` settings (schema default
   `enabled: true`) now actually apply: the tenant id, user-principal-name-like
   strings, and the tenant's own domains are replaced with the configured

@@ -55,13 +55,17 @@ expected controls, and reports gaps as *you pay for X → expected Y → observe
 
 ## What it looks like
 
-The report is a dark, offline-first dashboard — "Warm Charcoal" — that opens
-with a signature animated sequence: your org identity, a count-up posture
-figure, a radial gauge, and the top actions, all landing in under a second.
-Then the calm, five-section read begins: where you stand, what you're paying
-for, what matters most, and why LicenseLens believes each finding. Branded
-Microsoft workload icons sit beside every capability and chart label, and the
-whole report renders with JavaScript disabled and no network at all.
+The report is a single, self-contained HTML file with a dark "Warm Charcoal"
+theme, organized into five sections: where you stand, what you're paying for,
+what matters most, why LicenseLens believes each finding, and explore
+everything.
+
+The opening section shows the tenant identity, the percentage of licensed
+capability that is actually enforced, and the top recommended actions.
+Branded Microsoft workload icons label every capability and chart, the
+capability constellation cross-filters the page, and details expand in place
+with native disclosure. The report renders with JavaScript disabled, makes no
+network requests, and honors `prefers-reduced-motion`.
 
 ![The dashboard: what you own, what's working, and what to fix first.](images/report-hero.png)
 
