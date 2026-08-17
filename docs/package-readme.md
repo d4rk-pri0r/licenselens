@@ -2,15 +2,18 @@
 
 **The security you already own (and ignore).**
 
-LicenseLens turns your Microsoft 365 entitlements into a plain-English, prioritized fix list: it checks whether the controls you already pay for are actually on, and shows you what to fix first.
+LicenseLens finds **Microsoft security configuration debt** — high-value
+controls in E5, Entra ID P2, Defender, and related SKUs that you already pay
+for but leave at default or unused. It maps owned entitlements to the controls
+you should have on, and reports gaps as *you pay for X → expected Y → observed
+Z*.
 
 CLI: `licenselens` · Requires Python 3.12+
 
 > Documentation: [d4rk-pri0r.github.io/licenselens](https://d4rk-pri0r.github.io/licenselens/)
 
-Security License Lens finds **Microsoft security configuration debt**: high-value capabilities in E5, Entra ID P2, Defender, and related SKUs that stay at default or unused. It starts from **owned entitlements**, maps them to expected controls, and reports gaps as *you pay for X → expected Y → observed Z*.
-
-> Sample report (dry-run): [examples/sample-report/](https://github.com/d4rk-pri0r/licenselens/tree/main/examples/sample-report)
+> Sample report (dry-run): [examples/sample-report/](https://github.com/d4rk-pri0r/licenselens/tree/main/examples/sample-report) — a
+> scrubbed dry-run tenant rendered in the current v2 "Warm Charcoal" design.
 
 ## Quick start
 
@@ -44,16 +47,15 @@ licenselens batch tenants.yaml -o reports
 ## What it looks like
 
 The report is a single, self-contained HTML file with a dark "Warm Charcoal"
-theme, organized into five sections: where you stand, what you're paying for,
-what matters most, why LicenseLens believes each finding, and explore
-everything.
+theme, read top to bottom: posture, entitlements, ranked gaps with evidence,
+and an explore view of every assessed control.
 
 The opening section shows the tenant identity, the percentage of licensed
-capability that is actually enforced, and the top recommended actions.
-Branded Microsoft workload icons label every capability and chart, the
-capability constellation cross-filters the page, and details expand in place
-with native disclosure. The report renders with JavaScript disabled, makes no
-network requests, and honors `prefers-reduced-motion`.
+capability actually enforced, and the top recommended actions. Each capability
+is labeled with its Microsoft workload icon, the capability field cross-filters
+the page, and details expand in place with native disclosure. The report renders
+with JavaScript disabled, makes no network requests, and honors
+`prefers-reduced-motion`.
 
 ![report hero](images/report-hero.png)
 

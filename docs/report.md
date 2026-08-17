@@ -75,7 +75,7 @@ reserved for status alone. The only chromatic color in the UI is semantic; blue
 in the page comes from the branded Microsoft workload marks only. It reads top
 to bottom in five sections:
 
-- **Where you stand** — the signature opening sequence: org / tenant identity,
+- **Where you stand** — the opening sequence: org / tenant identity,
   assessment meta, a count-up posture figure (`<percent>% realized`, bound to
   `capability_rollup.realized_percent` — never hardcoded), a radial realization
   gauge with an operational-distribution bar, the most important implication
@@ -96,9 +96,9 @@ to bottom in five sections:
   data-visualization figures, and CSV/JSON export over every assessed control
   (interactive view).
 
-- **Motion is information design** — one signature opening sequence (500–1000ms
-  total: identity fade-in, count-up, gauge draw, staggered reveals), then calm:
-  one-shot section reveals, constellation nodes resolving from neutral to their
+- **Motion** — one opening animation (500–1000ms total: identity fade-in,
+  count-up, gauge draw, staggered reveals); after it settles: one-shot section
+  reveals, constellation nodes resolving from neutral to their
   status color, and ≤150ms interactive feedback. Nothing loops; nothing is
   ambient; `prefers-reduced-motion` renders the instant final state with zero
   information loss.

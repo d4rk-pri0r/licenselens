@@ -1,6 +1,6 @@
 # Comparison with related tools
 
-Security License Lens answers a different question than baseline scanners, continuous config tests, CSPM suites, Secure Score, or seat-waste scripts. It starts from **owned SKUs**, maps them to expected high-value controls, and reports unused or default gaps.
+Security License Lens answers a different question than baseline scanners, continuous config tests, CSPM suites, Secure Score, or seat-waste scripts. It starts from owned SKUs, maps them to expected high-value controls, and reports unused or default gaps.
 
 | Tool | Optimizes for |
 |------|----------------|
@@ -10,30 +10,4 @@ Security License Lens answers a different question than baseline scanners, conti
 | License waste scripts | Seat assignment efficiency |
 | **Security License Lens** | **Owned SKUs → expected high-value controls → unused/default gaps** |
 
-## ScubaGear (CISA)
-
-- **Optimizes for:** CISA baseline compliance (tenant settings vs SCuBA baselines)
-- **LicenseLens differentiator:** Entitlement-gated “paid but unused” gaps, not a full baseline audit
-- **Together?** Optional side-by-side; Scuba JSON import is not core
-
-## Maester
-
-- **Optimizes for:** Continuous config tests (Pester) for M365/Entra security config
-- **LicenseLens differentiator:** SKU → capability → gap narrative for value + security posture
-- **Together?** Run side-by-side; different questions
-
-## Microsoft Secure Score
-
-- **Optimizes for:** Score + recommendations (not SKU-gated)
-- **LicenseLens differentiator:** Explicit mapping from **owned SKUs** to expected controls; portable offline HTML/JSON/Markdown
-- **Note:** LicenseLens may use Secure Score as a labeled proxy path for some checks when direct evidence is unavailable
-
-## License waste scripts
-
-- **Optimizes for:** Seat assignment efficiency (who has which seats)
-- **LicenseLens differentiator:** Whether **features those seats unlock** are configured and enforced
-
-## Security License Lens
-
-- **Optimizes for:** Owned SKUs → expected high-value controls → unused/default gaps
-- Findings are **advisory**. LicenseLens is **not** a compliance certification.
+ScubaGear checks tenant settings against CISA SCuBA baselines. Maester runs continuous Pester-based config tests across M365 and Entra. Microsoft Secure Score shows a numeric score plus improvement recommendations without regard to which SKUs you own. License-waste scripts report seat assignment efficiency, not whether the features those seats unlock are actually configured. LicenseLens takes the opposite path: it starts from SKUs you own, maps them to expected high-value controls, and flags the ones that stay unused or on default. When direct evidence isn't available for a check, LicenseLens may use Secure Score as a labeled proxy path. Findings are advisory, not a compliance certification.

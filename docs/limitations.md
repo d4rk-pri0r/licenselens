@@ -1,4 +1,4 @@
-# Known limitations (proud honesty)
+# Known limitations
 
 Security License Lens is **advisory**. Confirm every finding in the Microsoft admin portals before you change production. It does **not** certify compliance.
 
