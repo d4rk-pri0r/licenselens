@@ -1221,3 +1221,98 @@ def test_print_emulation_renders_complete_expanded_artifact(
     assert state["searchBox"] == "none", (
         f"{renderer}: the search control is not removed from the printed artifact"
     )
+
+
+# ---------------------------------------------------------------------------
+# GROUP H — below-fold section reveal lock (threshold-0.12 regression). The
+# sections B–E are revealed by a one-shot IntersectionObserver. With the old
+# ``threshold: 0.12``, a section taller than ~8.3× the viewport can never
+# intersect 12% of its own area, so the observer never fires and the section
+# stays at opacity 0 — a long blank stretch. The fix observes ``threshold: 0``
+# so ANY visible pixel reveals the section, regardless of its height. This test
+# runs with real motion (no reduced-motion emulation, which would bypass the
+# observer entirely) and scrolls incrementally — a single ``scrollTo(bottom)``
+# jump would skip the middle sections and mask the bug.
+# ---------------------------------------------------------------------------
+
+# Reveal targets per renderer: the single-file template marks sections B/D/E
+# with ``.reveal-target``; the bundle marks B/C/D/E with ``[data-reveal]``.
+# Both add ``.is-revealed`` when the observer fires.
+_REVEAL_SELECTORS = {
+    "single": "main > section.reveal-target",
+    "bundle": "[data-reveal]",
+}
+
+# Per-reveal-target geometry: content height relative to the viewport height.
+_REVEAL_HEIGHTS_JS = """selector => Array.from(document.querySelectorAll(selector))
+    .map((el) => ({ id: el.id || "", ratio: el.scrollHeight / window.innerHeight }))"""
+
+# Post-scroll reveal state: class marker and computed opacity per target.
+_REVEAL_STATE_JS = """selector => Array.from(document.querySelectorAll(selector))
+    .map((el) => ({
+        id: el.id || "",
+        revealed: el.classList.contains('is-revealed'),
+        opacity: getComputedStyle(el).opacity,
+    }))"""
+
+# Incremental scroll: step through the document so every below-fold section's
+# leading edge actually crosses the viewport (a single bottom jump never lets
+# the observer see the middle sections), then hold at the bottom long enough
+# for the 250ms reveal transition + its per-section stagger (≤160ms) to finish
+# so computed opacity is stable at 1.
+_SCROLL_INCREMENTALLY_JS = """() => (async () => {
+    const step = Math.floor(window.innerHeight * 0.8);
+    const total = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    for (let y = 0; y < total; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 40));
+    }
+    window.scrollTo(0, total);
+    await new Promise((r) => setTimeout(r, 700));
+})()"""
+
+
+def _tall_report() -> ScanResult:
+    """Browser-safe fixture with ~100 cloned gap findings so the evidence
+    (section D) and explore (section E) sections dwarf any viewport — tall
+    enough that 12% of the section could never fit on screen at once."""
+    result = browser_safe_report()
+    base = next(finding for finding in result.findings if finding.check_id == "id-ca-priv-gaps")
+    clones = [
+        base.model_copy(update={"check_id": f"{base.check_id}-dup-{index}"}) for index in range(100)
+    ]
+    return result.model_copy(update={"findings": [*result.findings, *clones]})
+
+
+@pytest.mark.parametrize("renderer", ["single", "bundle"])
+def test_below_fold_sections_reveal_on_scroll(page: Page, tmp_path: Path, renderer: str) -> None:
+    """Every below-fold section reveals after an incremental scroll, however tall.
+
+    Guards the ``threshold: 0.12`` reveal bug: with a 12% visibility threshold,
+    a section taller than ~8.3× the viewport never intersects enough of itself
+    to trigger the one-shot IntersectionObserver, so it remains at opacity 0
+    and renders as a long blank area. The observer must fire on any visible
+    pixel (``threshold: 0``) so arbitrarily tall sections reveal as soon as
+    their leading edge is scrolled into view.
+    """
+    page.set_viewport_size({"width": 800, "height": 700})
+    page.goto(_renderer_uri(renderer, tmp_path, result=_tall_report()))
+    page.wait_for_load_state("load")
+
+    selector = _REVEAL_SELECTORS[renderer]
+    heights = page.evaluate(_REVEAL_HEIGHTS_JS, selector)
+    assert len(heights) >= 3, f"{renderer}: expected B/D/E (or more) reveal targets"
+    max_ratio = max(entry["ratio"] for entry in heights)
+    assert max_ratio > 9.0, (
+        f"{renderer}: tallest reveal target is only {max_ratio:.1f}x the viewport; "
+        "the tall fixture must exceed the ~8.3x threshold-0.12 danger zone or the "
+        "test no longer exercises the bug"
+    )
+
+    page.evaluate(_SCROLL_INCREMENTALLY_JS)
+
+    state = page.evaluate(_REVEAL_STATE_JS, selector)
+    unrevealed = [entry for entry in state if not entry["revealed"] or entry["opacity"] != "1"]
+    assert not unrevealed, (
+        f"{renderer}: sections left unrevealed after incremental scroll: {unrevealed}"
+    )

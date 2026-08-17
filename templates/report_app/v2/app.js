@@ -1351,7 +1351,7 @@
         section.classList.add("is-revealed");
         obs.unobserve(section);
       });
-    }, { threshold: 0.12 });
+    }, { threshold: 0 });
     Array.prototype.forEach.call(sections, function (section) { observer.observe(section); });
   }
 

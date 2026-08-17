@@ -1167,7 +1167,7 @@ body.revealed .reveal-target.is-revealed {
               io.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.12 });
+        }, { threshold: 0 });
         document.querySelectorAll('main > section.reveal-target').forEach(function (section) {
           io.observe(section);
         });

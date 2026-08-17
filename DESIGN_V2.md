@@ -515,7 +515,7 @@ instant (below).
 | --- | --- | --- |
 | Constellation resolve | Nodes start `--state-neutral`, resolve to status color column by column in deterministic order | `450ms ease-out`, `50ms` per column |
 | Chart construction | Bars `scaleX(0→1)`; rows staggered | `500ms ease-out` (cubic-bezier(0.22, 1, 0.36, 1)), `40ms` per row |
-| Below-fold section reveal | Sections B–E on first entry: fade + 6px rise, one-shot IntersectionObserver (threshold 0.12, observe once, unobserve after) | `250ms ease-out`, `40ms` stagger |
+| Below-fold section reveal | Sections B–E on first entry: fade + 6px rise, one-shot IntersectionObserver (threshold 0, observe once, unobserve after) | `250ms ease-out`, `40ms` stagger |
 | Priority actions entry | C-section items | `300ms`, `80ms` stagger, restrained |
 | Evidence expansion | Disclosure content fade; caret rotate 90° | `≤150ms` |
 | Workload reconfiguration | Constellation groups reorder via FLIP (rAF measure → transform → settle) | `300ms ease-out` |
