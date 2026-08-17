@@ -12,8 +12,6 @@ CLI: `licenselens` · Requires Python 3.12+
 
 > Documentation: [d4rk-pri0r.github.io/licenselens](https://d4rk-pri0r.github.io/licenselens/)
 
-> Sample report (dry-run): [examples/sample-report/](examples/sample-report/) — a
-> scrubbed dry-run tenant rendered in the current v2 "Warm Charcoal" design.
 
 ## Quick start
 
