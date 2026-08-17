@@ -23,8 +23,11 @@
     capability_cards(capabilities, constellation)
       capabilities := viewmodel.build_sections(result)["B"]
       One entry per capability summary with keys: `id`, `name`, `plain_name`,
-      `matched_skus`, `matched_service_plans`, `outcome`, `why_it_matters`,
-      `if_unused`, `docs_url`, `status` (str | None), `status_label`.
+      `matched_skus`, `matched_service_plans`, `friendly_skus`,
+      `friendly_plans`, `outcome`, `why_it_matters`, `if_unused`, `docs_url`,
+      `status` (str | None), `status_label`. The raw `matched_*` lists stay
+      available for tooltips/technical areas; the friendly lists are the
+      primary rendered text.
 
   DESIGN_V2.md section 7 binding behavior:
     - Group captions are BUTTONS (brand icon + visible text label): activating
@@ -169,8 +172,8 @@
         {%- endif -%}
         <div class="card-provenance">
           <div><span class="label">Microsoft control</span> <span class="mono">{{ card.name }}</span></div>
-          <div><span class="label">License</span> <span class="mono">{{ card.matched_skus | join(', ') or 'Not reported' }}</span></div>
-          <div><span class="label">Service plan</span> <span class="mono">{{ card.matched_service_plans | join(', ') or 'No matching service plan reported' }}</span></div>
+          <div><span class="label">License</span> <span title="{{ card.matched_skus | join(', ') }}">{{ card.friendly_skus | join(', ') or 'Not reported' }}</span></div>
+          <div><span class="label">Service plan</span> <span title="{{ card.matched_service_plans | join(', ') }}">{{ card.friendly_plans | join(', ') or 'No matching service plan reported' }}</span></div>
         </div>
       </div>
     </details>

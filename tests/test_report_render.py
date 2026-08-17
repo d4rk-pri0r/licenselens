@@ -4,8 +4,8 @@ Two groups, deliberately partitioned:
 
 * **ESTABLISHED INVARIANTS — must PASS today**: offline/autoescape/DOM/filter/
   JSON/heading contracts that must remain green across visual redesigns.
-* **WARM-CHARCOAL (v2) DESIGN-SIGNATURE CONTRACTS**: warm charcoal canvas
-  (#191714), champagne-ivory accent tokens, no violet/brass/navy signatures,
+* **SOC-DARK (v2) DESIGN-SIGNATURE CONTRACTS**: cool blue-grey canvas
+  (#0B0E14), cyan accent tokens, no violet/brass/navy signatures,
   every declared surface token consumed by a selector, and the §4 radius
   stops (0/2/6/10/16/999px — 999px pill authorized ONLY for proportion-based
   fills and constellation node circles).
@@ -249,7 +249,7 @@ SECTION_HEADINGS = [
     "Where you stand",
     "What you're paying for",
     "What matters most",
-    "Why LicenseLens believes this",
+    "Findings",
 ]
 
 TAGLINE = "Entitlements, controls, and configuration gaps."
@@ -264,6 +264,9 @@ LEGACY_HEADINGS = [
     "What you already pay for",
     "Top things to do first",
     "Where you may not be getting the full benefit",
+    # The two findings sections were merged into one "Findings" section.
+    "Why LicenseLens believes this",
+    "Explore everything",
 ]
 LEGACY_TAGLINE = "The security you already own (and ignore)"
 
@@ -281,19 +284,30 @@ RETIRED_INK_VERDIGRIS_TOKENS = (
     "--accent: #8ad3b8",
 )
 
-# Warm Charcoal tokens (DESIGN_V2.md §2.1): the binding v2 palette. The exact
+# SOC Dark tokens (DESIGN_V2.md §2.1): the binding v2 palette. The exact
 # declaration strings mirror the `:root` block in
 # templates/report/v2/_v2_styles.css.j2.
-WARM_CHARCOAL_TOKENS = (
-    "--canvas: #191714",
-    "--surface-1: #211E1A",
-    "--surface-2: #2A2621",
-    "--surface-3: #332E27",
-    "--surface-4: #3D3730",
-    "--accent: #E8DFC8",
-    "--accent-hover: #F5EFDD",
-    "--accent-focus: #FFF6E3",
-    "--accent-print: #57482E",
+SOC_DARK_TOKENS = (
+    "--canvas: #0B0E14",
+    "--surface-1: #131720",
+    "--surface-2: #1A2029",
+    "--surface-3: #212A35",
+    "--surface-4: #2A3542",
+    "--border: #232D38",
+    "--border-strong: #33404E",
+    "--text-1: #EDF2F7",
+    "--text-2: #B6C2CF",
+    "--text-3: #7D8FA3",
+    "--accent: #22D3EE",
+    "--accent-hover: #67E8F9",
+    "--accent-focus: #A5F3FC",
+    "--accent-print: #155E75",
+    "--state-action: #F87171",
+    "--state-incomplete: #F59E0B",
+    "--state-ok: #22C55E",
+    "--state-neutral: #94A3B8",
+    "--grad-hero: linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%)",
+    "--grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%)",
 )
 
 SURFACE_TOKENS = (
@@ -339,9 +353,9 @@ def test_radii_use_only_declared_stops(tmp_path: Path) -> None:
     assert "border-radius: 999px" in html, "pill radius (999px) must authorize proportion fills"
 
 
-def test_warm_charcoal_tokens_present(tmp_path: Path) -> None:
+def test_soc_dark_tokens_present(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
-    for token in WARM_CHARCOAL_TOKENS:
+    for token in SOC_DARK_TOKENS:
         assert token in html, f"v2 token {token!r} missing from the report CSS"
 
 
@@ -408,6 +422,122 @@ def test_technical_details_is_summary_not_heading(tmp_path: Path) -> None:
     h2_texts = [text_of(h).strip() for h in _all(root, "h2")]
     assert not any("Technical details" in h for h in h2_texts), (
         "technical details must be a <summary>, not an h2"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Merged Findings section structure (the former D + E sections): one section,
+# collapsed details rows carrying the belief blocks, severity-first default.
+# ---------------------------------------------------------------------------
+
+
+def test_findings_are_one_collapsed_details_row_per_finding(tmp_path: Path) -> None:
+    """Every finding renders as exactly one collapsed <details class="explore-row">
+    row carrying the belief-block article inside; none is open by default."""
+    result = comprehensive_report()
+    html = render(result, tmp_path)
+    root = parse_html(html)
+
+    rows = [
+        el
+        for el in root.iter("details")
+        if "explore-row" in (el.attrib.get("class") or "").split()
+    ]
+    assert len(rows) == len(result.findings), (
+        f"expected one collapsed row per finding, got {len(rows)} rows for "
+        f"{len(result.findings)} findings"
+    )
+    for row in rows:
+        assert "open" not in row.attrib, "finding row must be collapsed by default"
+        articles = [
+            el for el in row.iter("article")
+            if "finding" in (el.attrib.get("class") or "").split()
+        ]
+        assert len(articles) == 1, "each row must contain exactly one belief-block article"
+        assert row.attrib.get("data-check-id"), "finding row missing data-check-id"
+
+
+def test_findings_default_to_severity_order(tmp_path: Path) -> None:
+    """Rows render in severity (criticality) order by default and the sort
+    control preselects Severity; the engine-order attribute is preserved per
+    row for the Impact sort."""
+    result = comprehensive_report()
+    html = render(result, tmp_path)
+    root = parse_html(html)
+
+    rows = [
+        el
+        for el in root.iter("details")
+        if "explore-row" in (el.attrib.get("class") or "").split()
+    ]
+    severity_rank = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
+    ranks = [severity_rank.get(row.attrib.get("data-severity"), 99) for row in rows]
+    assert ranks == sorted(ranks), f"finding rows not severity-ordered: {ranks}"
+    assert all("data-engine-idx" in row.attrib for row in rows), (
+        "finding row missing the engine-order index"
+    )
+    engine_indices = [row.attrib["data-engine-idx"] for row in rows]
+    assert engine_indices == sorted(engine_indices, key=int), (
+        "severity ties must keep engine order"
+    )
+
+    assert '<option value="severity" selected>Severity (default)</option>' in html, (
+        "sort control does not default to Severity"
+    )
+    assert '<option value="impact" selected' not in html, (
+        "Impact must no longer be the preselected sort"
+    )
+
+
+def test_findings_section_header_controls_and_charts(tmp_path: Path) -> None:
+    """The merged section owns the search box, sort control, filter chips,
+    result counts, and the charts — the charts inside a collapsed
+    "Findings at a glance" disclosure, the counts in a live region."""
+    root = parse_html(render(comprehensive_report(), tmp_path))
+    section = next(el for el in root.iter("section") if el.attrib.get("id") == "section-findings")
+    assert section is not None, "merged Findings section missing"
+    assert _by_attr(section, "data-search-input"), "search box missing from the Findings section"
+    assert _by_attr(section, "data-sort-select"), "sort control missing from the Findings section"
+    assert _by_attr(section, "data-filter-bar"), "filter bar missing from the Findings section"
+    assert _by_attr(section, "data-visible-count"), "count region missing from the Findings section"
+
+    charts_details = [
+        el
+        for el in section.iter("details")
+        if "findings-charts" in (el.attrib.get("class") or "").split()
+    ]
+    assert len(charts_details) == 1, "expected one collapsed charts disclosure"
+    assert "open" not in charts_details[0].attrib, "charts disclosure must be collapsed"
+    assert "Findings at a glance" in text_of(charts_details[0]), (
+        "charts disclosure missing its summary label"
+    )
+    figures = list(charts_details[0].iter("figure"))
+    assert len(figures) == 3, f"expected the three chart figures, got {len(figures)}"
+
+
+def test_b_section_owned_skus_collapsed_and_capabilities_headed(tmp_path: Path) -> None:
+    """Section B splits "what you own" (the Owned SKUs table, collapsed by
+    default with a count) from the colored capability part, which carries its
+    own friendly heading."""
+    result = comprehensive_report()
+    root = parse_html(render(result, tmp_path))
+    section = next(el for el in root.iter("section") if el.attrib.get("id") == "section-b")
+
+    sku_details = [
+        el
+        for el in section.iter("details")
+        if "sku-details" in (el.attrib.get("class") or "").split()
+    ]
+    assert sku_details, "Owned SKUs table must be wrapped in a details disclosure"
+    assert "open" not in sku_details[0].attrib, "Owned SKUs disclosure must be collapsed"
+    sku_count = len(result.subscribed_skus)
+    assert f"Owned SKUs ({sku_count})" in text_of(sku_details[0]), (
+        "Owned SKUs summary missing its count"
+    )
+
+    h3_texts = [text_of(h).strip() for h in section.iter("h3")]
+    assert "Your security capabilities" in h3_texts, (
+        "capability constellation + cards missing their friendly heading"
     )
 
 
@@ -639,7 +769,7 @@ def test_single_file_chart_hits_never_paint(tmp_path: Path) -> None:
     stay the sole painted surface, so bar length ∝ count (the previous
     build let the buttons inherit the paint classes and rendered opaque
     full-track bars over the partial bars — Chromium measured visual bar
-    166px vs hit 331px, both painted ``rgb(158,152,140)``).
+    166px vs hit 331px, both painted ``rgb(148,163,184)``).
 
     Also locks facet parity: each hit's ``data-chart-toggle`` mirrors its
     figure's visual rows/segments one-for-one and in order, so

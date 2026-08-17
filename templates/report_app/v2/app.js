@@ -1,4 +1,4 @@
-/* Versioned offline report application (report app v2, DESIGN_V2 "Warm Charcoal").
+/* Versioned offline report application (report app v2, DESIGN_V2 "SOC Dark").
  *
  * Everything is rendered client-side from the escaped data assets
  * ``window.LICENSELENS_REPORT_JSON``, ``window.LICENSELENS_VIEWMODEL`` and
@@ -20,11 +20,13 @@
  *   - the interactive capability constellation: nodes resolve from neutral
  *     column by column, group captions cross-filter by workload, workload
  *     selection reconfigures group order via FLIP;
- *   - capability selection filters section D by related check ids;
+ *   - capability selection filters the Findings list by related check ids;
+ *   - the Findings list: one collapsed <details> row per finding (severity
+ *     order by default); expanding a row reveals the full belief block;
  *   - finding focus elevates the selected finding and highlights its related
  *     node and chart bars; chart bars are cross-filter buttons;
- *   - deep links (#finding-<id>, #section-a..e), filter state synced to the
- *     URL hash, sticky-nav scrollspy with ``aria-current``.
+ *   - deep links (#finding-<id>, #section-a..c, #section-findings), filter
+ *     state synced to the URL hash, sticky-nav scrollspy with ``aria-current``.
  */
 (function () {
   "use strict";
@@ -54,6 +56,7 @@
     unsupported: "Unsupported"
   };
   var EFFORT_LABEL = { minutes: "~minutes", hours: "~a few hours", half_day: "~half a day", days: "~days" };
+  var IMPACT_LABEL = { high: "High", medium: "Medium", low: "Low" };
   var WORKLOAD_LABEL = {
     identity: "Identity", endpoint: "Endpoint", defender: "Defender", sentinel: "Sentinel",
     purview: "Purview", exchange: "Exchange", collaboration: "Collaboration", teams: "Teams",
@@ -183,6 +186,15 @@
     });
   }
 
+  // The D-section belief blocks pair with the E-section findings by index
+  // (both lists preserve the engine order), so each client-rendered row can
+  // expand to the full Expected/Observed/Why-it-matters block.
+  var vmBlocks = (vm.sections && vm.sections.D && Array.isArray(vm.sections.D)) ? vm.sections.D : [];
+  var blockByCheckId = {};
+  findings.forEach(function (f, index) {
+    blockByCheckId[f.check_id] = vmBlocks[index] || null;
+  });
+
   function findingById(checkId) {
     for (var i = 0; i < findings.length; i++) {
       if (findings[i].check_id === checkId) return findings[i];
@@ -191,10 +203,15 @@
   }
 
   function searchableText(f) {
+    var block = blockByCheckId[f.check_id] || null;
+    var expected = block ? block.expected : "";
+    var skipReason = block ? block.skip_reason : "";
+    var whyItMatters = block && block.why_it_matters ? block.why_it_matters.capability : "";
     var parts = [
       f.check_id, f.title, f.customer_title, f.customer_summary, f.customer_next_step,
       f.summary, f.status, f.severity, f.confidence, f.workload, f.evaluation_mode,
-      f.pack, f.status_label, f.confidence_label, f.deep_link, f.remediation
+      f.pack, f.status_label, f.confidence_label, f.deep_link, f.remediation,
+      expected, skipReason, whyItMatters
     ].concat(f.data_sources || [], f.limitations || [], f.entitlements_used || []);
     return parts.filter(Boolean).join(" ").toLowerCase();
   }
@@ -221,8 +238,7 @@
     filters: { status: {}, severity: {}, confidence: {}, mode: {}, pack: {}, workload: {} },
     page: 1,
     pageSize: 25,
-    sort: "impact",
-    sortEngaged: false,
+    sort: "severity",
     selectedFinding: null,
     selectedCapability: null
   };
@@ -403,7 +419,6 @@
     if (sortEl) {
       sortEl.addEventListener("change", function () {
         state.sort = sortEl.value;
-        state.sortEngaged = true;
         state.page = 1;
         refresh();
       });
@@ -433,18 +448,25 @@
 
   function filteredFindings() {
     var out = [];
+    var capFilter = state.selectedCapability ? capabilityCheckIds(state.selectedCapability) : null;
+    var capSet = null;
+    if (capFilter) {
+      capSet = {};
+      capFilter.forEach(function (id) { capSet[id] = true; });
+    }
     for (var i = 0; i < findings.length; i++) {
+      if (capSet && !capSet[findings[i].check_id]) continue;
       if (matches(facets[i])) out.push(findings[i]);
     }
     return out;
   }
 
-  // Sort control. The engine's findings order (status priority, then severity,
-  // then check_id) is the canonical "Impact (default)" presentation: the
-  // default state renders the view-model order byte-for-byte. The comparators
-  // below only apply once the user engages the control; all are deterministic
-  // and locale-insensitive. Array.prototype.sort is stable in modern engines,
-  // so ties keep the engine order.
+  // Sort control. "Severity" is the default: the findings list opens in
+  // criticality order (most critical first). The engine's findings order
+  // (view-model order) is the canonical "Impact" presentation — "impact"
+  // renders the view-model order byte-for-byte. The comparators are all
+  // deterministic and locale-insensitive. Array.prototype.sort is stable in
+  // modern engines, so ties keep the engine order.
   function rankOf(order, value) {
     var idx = order.indexOf(value);
     return idx === -1 ? order.length : idx;
@@ -456,16 +478,6 @@
     if (ca < cb) return -1;
     if (ca > cb) return 1;
     return 0;
-  }
-
-  function compareImpact(a, b) {
-    var diff = rankOf(SEVERITY_ORDER, String(a.severity || "")) -
-      rankOf(SEVERITY_ORDER, String(b.severity || ""));
-    if (diff !== 0) return diff;
-    diff = rankOf(STATUS_ORDER, String(a.status || "")) -
-      rankOf(STATUS_ORDER, String(b.status || ""));
-    if (diff !== 0) return diff;
-    return compareByCheckId(a, b);
   }
 
   function compareSeverity(a, b) {
@@ -497,13 +509,10 @@
   }
 
   function sortedFindings(list) {
-    if (!state.sortEngaged) return list;
     var out = list.slice();
-    var comparator = compareImpact;
-    if (state.sort === "severity") comparator = compareSeverity;
-    else if (state.sort === "effort") comparator = compareEffort;
-    else if (state.sort === "title") comparator = compareTitle;
-    out.sort(comparator);
+    if (state.sort === "severity") out.sort(compareSeverity);
+    else if (state.sort === "effort") out.sort(compareEffort);
+    else if (state.sort === "title") out.sort(compareTitle);
     return out;
   }
 
@@ -529,35 +538,20 @@
     return values && values.length ? values.join("; ") : "";
   }
 
-  function renderFinding(f, isPrint) {
-    var status = f.status || "error";
-    var title = firstStr(f.title, f.customer_title, f.check_id);
-    var article = el("article", (isPrint ? "print-finding " : "finding-row ") + status);
-    article.setAttribute("data-status", status);
-    article.setAttribute("data-workload", f.workload || "general");
-    if (f.check_id && !isPrint) {
-      // The D-section article owns the canonical id="finding-<check_id>"
-      // (shared partial); the E row keeps only the selection hook.
-      article.setAttribute("data-finding", f.check_id);
-    }
+  var CARET_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
 
-    var head = el("div", "finding-head");
-    head.appendChild(statusMarker(status, PRESENTATION[status] || status));
-    var h3 = el("h3");
-    if (isPrint) {
-      h3.appendChild(text(title));
-    } else {
-      // The finding title is a real button: keyboard-selectable, focusable,
-      // keeps heading semantics (button inside h3).
-      var titleBtn = el("button", "finding-row__title");
-      titleBtn.type = "button";
-      titleBtn.appendChild(text(title));
-      titleBtn.addEventListener("click", function () { selectFinding(f.check_id); });
-      h3.appendChild(titleBtn);
-    }
-    head.appendChild(h3);
-    article.appendChild(head);
+  function beliefSlot(label, prose) {
+    var slot = el("div", "belief-slot");
+    var labelSpan = el("span", "belief-label");
+    labelSpan.appendChild(text(label));
+    slot.appendChild(labelSpan);
+    var p = el("p");
+    p.appendChild(text(prose || "Not reported"));
+    slot.appendChild(p);
+    return slot;
+  }
 
+  function findingMeta(f) {
     var meta = el("div", "finding-meta");
     if (f.severity) meta.appendChild(metaItem("Severity", SEVERITY_LABEL[f.severity] || cap(f.severity)));
     if (f.confidence) meta.appendChild(metaItem("Confidence", CONFIDENCE_LABEL[f.confidence] || cap(f.confidence)));
@@ -565,6 +559,21 @@
     if (f.effort) meta.appendChild(metaItem("Effort", EFFORT_LABEL[f.effort] || f.effort));
     if (f.blast_radius) meta.appendChild(metaItem("Scope", SCOPE_LABEL[f.blast_radius] || String(f.blast_radius).replace(/_/g, " ")));
     if (f.workload) meta.appendChild(metaItem("Workload", WORKLOAD_LABEL[f.workload] || cap(f.workload)));
+    return meta;
+  }
+
+  function printFinding(f) {
+    var status = f.status || "error";
+    var title = firstStr(f.title, f.customer_title, f.check_id);
+    var article = el("article", "print-finding " + status);
+    var head = el("div", "finding-head");
+    head.appendChild(statusMarker(status, PRESENTATION[status] || status));
+    var h3 = el("h3");
+    h3.appendChild(text(title));
+    head.appendChild(h3);
+    article.appendChild(head);
+
+    var meta = findingMeta(f);
     if (meta.childNodes.length) article.appendChild(meta);
 
     var summary = firstStr(f.customer_summary, f.summary);
@@ -601,6 +610,109 @@
     article.appendChild(details);
 
     return article;
+  }
+
+  function renderFinding(f, isPrint) {
+    if (isPrint) return printFinding(f);
+
+    var status = f.status || "error";
+    var title = firstStr(f.title, f.customer_title, f.check_id);
+    var block = blockByCheckId[f.check_id] || null;
+
+    var row = el("details", "finding-row " + status);
+    row.setAttribute("data-status", status);
+    row.setAttribute("data-workload", f.workload || "general");
+    if (f.check_id) {
+      row.setAttribute("data-finding", f.check_id);
+      row.setAttribute("id", "finding-" + f.check_id);
+    }
+
+    var summaryEl = el("summary");
+    var caret = el("span", "caret");
+    caret.setAttribute("aria-hidden", "true");
+    caret.innerHTML = CARET_SVG;
+    summaryEl.appendChild(caret);
+    summaryEl.appendChild(statusMarker(status, PRESENTATION[status] || status));
+    var h3 = el("h3");
+    var titleBtn = el("button", "finding-row__title");
+    titleBtn.type = "button";
+    titleBtn.appendChild(text(title));
+    titleBtn.addEventListener("click", function () {
+      selectFinding(f.check_id);
+      row.open = true;
+      row.scrollIntoView({ block: "nearest" });
+    });
+    h3.appendChild(titleBtn);
+    summaryEl.appendChild(h3);
+    var signal = firstStr(f.customer_summary, f.summary);
+    if (signal) {
+      var signalEl = el("span", "finding-row__signal");
+      signalEl.appendChild(text(signal));
+      summaryEl.appendChild(signalEl);
+    }
+    row.appendChild(summaryEl);
+
+    var body = el("div", "tech-body");
+
+    var meta = findingMeta(f);
+    if (meta.childNodes.length) body.appendChild(meta);
+
+    if (f.customer_summary) {
+      var summaryP = el("p", "finding-summary");
+      summaryP.appendChild(text(f.customer_summary));
+      body.appendChild(summaryP);
+    }
+
+    body.appendChild(beliefSlot("Expected", block && block.expected));
+    if (status === "skipped") {
+      body.appendChild(beliefSlot("Why this was skipped", block && block.skip_reason));
+    } else {
+      body.appendChild(beliefSlot("Observed", f.summary));
+    }
+
+    var wim = beliefSlot(
+      "Why it matters",
+      block && block.why_it_matters ? block.why_it_matters.capability : null
+    );
+    var wimMeta = el("div", "belief-meta");
+    var valueImpact = block && block.why_it_matters ? block.why_it_matters.value_impact : null;
+    wimMeta.appendChild(metaItem("Value impact", IMPACT_LABEL[valueImpact] || cap(valueImpact || "")));
+    wim.appendChild(wimMeta);
+    body.appendChild(wim);
+
+    body.appendChild(beliefSlot("Recommended action", firstStr(f.customer_next_step, f.remediation)));
+
+    var evidence = el("div", "belief-slot");
+    var evidenceLabel = el("span", "belief-label");
+    evidenceLabel.appendChild(text("Evidence"));
+    evidence.appendChild(evidenceLabel);
+    var details = el("details", "tech");
+    var techSummary = el("summary");
+    techSummary.appendChild(text("Technical evidence"));
+    details.appendChild(techSummary);
+    details.appendChild(kv("Confidence", f.confidence_label || "Not reported"));
+    details.appendChild(kv("Data sources", joined(f.data_sources) || "Not reported"));
+    details.appendChild(kv("Limitations", joined(f.limitations) || "None reported"));
+    details.appendChild(kv("Technical ID", f.check_id));
+    evidence.appendChild(details);
+    body.appendChild(evidence);
+
+    if (f.deep_link) {
+      var adminSlot = el("div", "belief-slot");
+      var adminLabel = el("span", "belief-label");
+      adminLabel.appendChild(text("Admin destination"));
+      adminSlot.appendChild(adminLabel);
+      var adminP = el("p");
+      var adminLink = el("a");
+      adminLink.setAttribute("href", f.deep_link);
+      adminLink.appendChild(text("Open the admin page"));
+      adminP.appendChild(adminLink);
+      adminSlot.appendChild(adminP);
+      body.appendChild(adminSlot);
+    }
+
+    row.appendChild(body);
+    return row;
   }
 
   function renderList(slice) {
@@ -971,10 +1083,6 @@
     Array.prototype.forEach.call(rows, function (row) {
       row.classList.toggle("is-selected", row.getAttribute("data-finding") === id);
     });
-    var wraps = document.querySelectorAll("[data-finding-wrap]");
-    Array.prototype.forEach.call(wraps, function (wrap) {
-      wrap.classList.toggle("is-selected", wrap.getAttribute("data-finding") === id);
-    });
     if (constellationEl) {
       var points = constellationEl.querySelectorAll(".constellation-point");
       Array.prototype.forEach.call(points, function (point) {
@@ -1015,8 +1123,8 @@
     state.selectedCapability = next;
     updateCapabilitySelection();
     if (next) {
-      var sectionD = document.getElementById("section-d");
-      if (sectionD) sectionD.scrollIntoView();
+      var section = document.getElementById("section-findings");
+      if (section) section.scrollIntoView({ block: "start" });
     }
   }
 
@@ -1039,34 +1147,17 @@
         point.classList.toggle("is-selected", active);
       });
     }
-    applyCapabilityFilter();
+    state.page = 1;
+    refresh();
   }
 
-  function applyCapabilityFilter() {
-    var wraps = document.querySelectorAll("[data-finding-wrap]");
-    if (!wraps.length) return;
-    var capId = state.selectedCapability;
-    if (!capId) {
-      Array.prototype.forEach.call(wraps, function (w) { w.hidden = false; });
-      renderDFilterStatus();
-      return;
-    }
-    var ids = capabilityCheckIds(capId);
-    var idSet = {};
-    ids.forEach(function (id) { idSet[id] = true; });
-    var shown = 0;
-    Array.prototype.forEach.call(wraps, function (w) {
-      var show = !!idSet[w.getAttribute("data-finding")];
-      w.hidden = !show;
-      if (show) shown++;
-    });
-    renderDFilterStatus(shown, ids.length, capId);
-  }
-
-  function renderDFilterStatus(shown, related, capId) {
+  function renderDFilterStatus() {
     if (!dFilterStatusEl) return;
     dFilterStatusEl.textContent = "";
+    var capId = state.selectedCapability;
     if (!capId) return;
+    var related = capabilityCheckIds(capId).length;
+    var shown = filteredFindings().length;
     var span = el("span");
     span.appendChild(text("Showing " + shown + " of " + related + " findings related to " + capabilityPlainName(capId) + "."));
     dFilterStatusEl.appendChild(span);
@@ -1244,6 +1335,7 @@
     updateNav();
     reorderConstellation(true);
     updateFindingSelection();
+    renderDFilterStatus();
     syncHash();
   }
 
@@ -1428,6 +1520,18 @@
   renderCharts();
   wireConstellation();
 
+  // The charts live inside the collapsed "Findings at a glance" disclosure;
+  // re-render them when it opens so the overlay cross-filter buttons are
+  // positioned against real layout geometry (offsets are meaningless while
+  // the disclosure is closed). The boot render keeps the a11y equivalents
+  // (role=img descriptions and sr-only data tables) in the DOM.
+  var chartsDetailsEl = document.querySelector("details.findings-charts");
+  if (chartsDetailsEl) {
+    chartsDetailsEl.addEventListener("toggle", function () {
+      if (chartsDetailsEl.open) renderCharts();
+    });
+  }
+
   if (searchEl) searchEl.addEventListener("input", onSearch);
 
   var initialHash = window.location.hash || "";
@@ -1438,9 +1542,10 @@
     GROUPS.forEach(function (g) { state.filters[g.key] = {}; });
     if (searchEl) searchEl.value = "";
     selectFinding(checkId);
+    var sorted = sortedFindings(filteredFindings());
     var index = -1;
-    for (var i = 0; i < findings.length; i++) {
-      if (findings[i].check_id === checkId) { index = i; break; }
+    for (var i = 0; i < sorted.length; i++) {
+      if (sorted[i].check_id === checkId) { index = i; break; }
     }
     if (index !== -1) state.page = Math.floor(index / state.pageSize) + 1;
   }
@@ -1448,10 +1553,11 @@
   refresh();
 
   if (initialHash.indexOf("#finding-") === 0) {
-    var target = document.getElementById(initialHash.slice(1));
-    if (target) {
-      revealSectionOf(target);
-      target.scrollIntoView();
+    var row = listEl ? listEl.querySelector('[data-finding="' + checkId + '"]') : null;
+    if (row) {
+      row.open = true;
+      revealSectionOf(row);
+      row.scrollIntoView();
     }
   }
 

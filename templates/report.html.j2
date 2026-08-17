@@ -6,12 +6,26 @@
 {%- set _moves = moves -%}
 {%- set _findings = findings -%}
 {%- set _filters = _sections["E"]["filters"] -%}
+{#- Findings section pairs: one (finding, belief block) tuple per finding,
+    pre-ordered by severity rank (most critical first) then engine index, so
+    the server-rendered collapsed rows already default to criticality order
+    (the JS-disabled path). The engine index is kept on each row
+    (data-engine-idx) so the "Impact" sort can restore the true engine order. #}
+{%- set _severity_rank_map = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3, 'info': 4} -%}
+{%- set _finding_pairs = [] -%}
+{%- for _blk in blocks -%}
+  {%- set _pf = _findings[loop.index0] -%}
+  {%- set _rank = _severity_rank_map.get(_pf.severity, 99) -%}
+  {%- set _ = _finding_pairs.append((_rank, loop.index0, _pf, _blk)) -%}
+{%- endfor -%}
+{%- set _finding_pairs = _finding_pairs | sort -%}
 {%- set mode_str = exec_copy["scan_mode"].get(result.scan_mode, result.scan_mode) -%}
 {%- if result.auth_mode and result.auth_mode != result.scan_mode -%}
 {%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}
 {%- endif -%}
 {#- Capability id -> related check ids, embedded once in the inline script so
-    capability selection can filter section D without touching the view model. #}
+    capability selection can filter the Findings list without touching the
+    view model. #}
 {%- set _related_map = {} -%}
 {%- for _outcome in result.capability_outcomes -%}
   {%- set _ = _related_map.update({_outcome.id: _outcome.related_check_ids}) -%}
@@ -114,7 +128,8 @@
 .opening-meta code { color: var(--text-1); }
 .opening-tenant-id { color: var(--text-2); }
 
-/* Below-fold reveals: B–E fade + 6px rise on first entry, one-shot
+/* Below-fold reveals: B, C, and Findings fade + 6px rise on first entry,
+   one-shot
    IntersectionObserver (single-file only; the bundle app drives its own). */
 body.revealed .reveal-target {
   opacity: 0;
@@ -127,8 +142,14 @@ body.revealed .reveal-target.is-revealed {
   transform: none;
 }
 
-/* Owned-SKU strip (section B) — a compact table, not cards. */
+/* Owned-SKU strip (section B) — a compact table, not cards, collapsed by
+   default so "what you own" stays one glanceable line. */
 .sku-strip { margin-block-end: 24px; }
+.sku-details summary .tech-title { margin: 0; display: inline; }
+
+/* Findings section: the charts disclosure and the collapsed finding rows. */
+.findings-charts { margin-block: 0 16px; }
+.findings-charts .charts { margin-block-start: 12px; }
 
 /* §9 a11y sibling-overlay chart hits: the role="img" visual layers hold
    only non-interactive spans, and the cross-filter buttons are SIBLINGS
@@ -202,8 +223,7 @@ body.revealed .reveal-target.is-revealed {
       <a href="#section-a">Where you stand</a>
       <a href="#section-b">What you're paying for</a>
       <a href="#section-c">What matters most</a>
-      <a href="#section-d">Why LicenseLens believes this</a>
-      <a href="#section-e">Explore everything</a>
+      <a href="#section-findings">Findings</a>
     </nav>
   </header>
 
@@ -373,31 +393,41 @@ body.revealed .reveal-target.is-revealed {
       <p class="section-help">
         Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
       </p>
-      {%- if result.subscribed_skus -%}
-      <div class="sku-strip">
-        <h3 class="tech-title">Owned SKUs</h3>
-        <div class="table-scroll" data-table-scroll>
-          <table>
-            <thead>
-              <tr>
-                <th>SKU</th>
-                <th>Service plans</th>
-                <th class="num">Licenses</th>
-              </tr>
-            </thead>
-            <tbody>
-              {%- for sku in result.subscribed_skus -%}
-              <tr>
-                <td><code>{{ sku.sku_part_number }}</code></td>
-                <td>{{ sku.service_plans | map(attribute='service_plan_name') | join(', ') or "—" }}</td>
-                <td class="num">{{ sku.consumed_units or 0 }} of {{ sku.prepaid_units or "—" }}</td>
-              </tr>
-              {%- endfor -%}
-            </tbody>
-          </table>
+      {%- if sku_strip -%}
+      <details class="tech sku-details sku-strip">
+        <summary>
+          <span class="caret" aria-hidden="true">▸</span>
+          <h3 class="tech-title sku-title">Owned SKUs ({{ sku_strip | length }})</h3>
+        </summary>
+        <div class="tech-body">
+          <div class="table-scroll" data-table-scroll>
+            <table>
+              <thead>
+                <tr>
+                  <th>SKU</th>
+                  <th>Service plans</th>
+                  <th class="num">Licenses</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for sku in sku_strip -%}
+                <tr>
+                  <td title="{{ sku.part_number }}"><span class="sku-name">{{ sku.friendly_name }}</span></td>
+                  <td>
+                    {%- for plan in sku.service_plans -%}
+                    {%- if not loop.first %}, {% endif -%}<span title="{{ plan.name }}">{{ plan.friendly_name }}</span>
+                    {%- else -%}—{%- endfor -%}
+                  </td>
+                  <td class="num">{{ sku.consumed_units or 0 }} of {{ sku.prepaid_units or "—" }}</td>
+                </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      </details>
       {%- endif -%}
+      <h3 class="tech-title">Your security capabilities</h3>
       {{ capability_constellation(_constellation_ctx, workload_svg_map=_svg_map) }}
       {{ capability_cards(capabilities, _constellation_ctx) }}
     </section>
@@ -408,35 +438,24 @@ body.revealed .reveal-target.is-revealed {
     {% include "report/v2/_v2_moves.html.j2" %}
 
     {# ======================================================================
-       D - Why LicenseLens believes this: the per-finding belief blocks.
+       Findings — the merged D+E section: charts at a glance (collapsed),
+       the explorer header (search, sort, filters, counts), and one
+       collapsed <details> row per finding. Expanding a row reveals the
+       full belief block (the former section D content).
        ====================================================================== #}
-    <section id="section-d" class="reveal-target" style="--reveal-delay: 80ms">
-      <p class="micro-label section-kicker">Evidence</p>
-      <h2>Why LicenseLens believes this</h2>
+    <section id="section-findings" class="reveal-target" style="--reveal-delay: 80ms">
+      <p class="micro-label section-kicker">Findings</p>
+      <h2>Findings</h2>
       <p class="section-help">
-        Every finding with what we expected, what we observed, and what to do next.
-      </p>
-      <div data-findings-wrap>
-        {% for block in blocks %}
-        {% set f = _findings[loop.index0] %}
-        {% include "report/v2/_v2_finding_card.html.j2" %}
-        {% endfor %}
-      </div>
-    </section>
-
-    {# ======================================================================
-       E - Explore everything: the three data figures, search, filters,
-       sort, counts, pagination, and the explorable findings list.
-       ====================================================================== #}
-    <section id="section-e" class="reveal-target" style="--reveal-delay: 120ms">
-      <p class="micro-label section-kicker">Explorer</p>
-      <h2>Explore everything</h2>
-      <p class="section-help">
-        Search, filter, sort, and page through every assessed control. Select several
-        values in a group to match any of them; different groups combine.
+        Every assessed control, most critical first. Expand a row for what we
+        expected, what we observed, and what to do next. Select several values in
+        a group to match any of them; different groups combine.
       </p>
 
-      <div class="charts">
+      <details class="tech findings-charts">
+        <summary><span class="caret" aria-hidden="true">▸</span> Findings at a glance</summary>
+        <div class="tech-body">
+          <div class="charts">
         {# Findings by status #}
         <figure class="chart" id="chart-status">
           <figcaption id="chart-status-caption">Findings by status</figcaption>
@@ -550,7 +569,9 @@ body.revealed .reveal-target.is-revealed {
             </tbody>
           </table>
         </figure>
-      </div>
+          </div>
+        </div>
+      </details>
 
       <div class="search-box">
         <label class="search-box__label" for="finding-search">Search findings</label>
@@ -560,8 +581,8 @@ body.revealed .reveal-target.is-revealed {
       <div class="sort-box">
         <label class="sort-box__label" for="finding-sort">Sort findings</label>
         <select id="finding-sort" class="sort-box__select" data-sort-select>
-          <option value="impact" selected>Impact (default)</option>
-          <option value="severity">Severity</option>
+          <option value="severity" selected>Severity (default)</option>
+          <option value="impact">Impact</option>
           <option value="effort">Effort</option>
           <option value="title">Title A&ndash;Z</option>
         </select>
@@ -605,17 +626,23 @@ body.revealed .reveal-target.is-revealed {
       </div>
 
       <div class="explore-list" data-findings-list>
-        {%- for f in _findings -%}
-        <article class="explore-row" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}">
-          {{ prim.status_marker(f.status) }}
-          <h3 class="explore-row__title"><a href="#finding-{{ f.check_id }}">{{ f.title }}</a></h3>
-          <div class="explore-row__meta">
-            {% if f.severity %}<span>Severity: {{ f.severity | capitalize }}</span>{% endif %}
-            {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
-            <code>{{ f.check_id }}</code>
+        {%- for _rank, _eidx, f, block in _finding_pairs -%}
+        <details class="explore-row tech" data-engine-idx="{{ _eidx }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}">
+          <summary>
+            <span class="caret" aria-hidden="true">▸</span>
+            {{ prim.status_marker(f.status) }}
+            <h3 class="explore-row__title"><a href="#finding-{{ f.check_id }}">{{ f.title }}</a></h3>
+            <div class="explore-row__meta">
+              {% if f.severity %}<span class="meta-severity">Severity: {{ f.severity | capitalize }}</span>{% endif %}
+              {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
+              <code>{{ f.check_id }}</code>
+            </div>
+            {% if f.customer_summary or f.summary %}<span class="explore-row__signal">{{ f.customer_summary or f.summary }}</span>{% endif %}
+          </summary>
+          <div class="tech-body">
+            {% include "report/v2/_v2_finding_card.html.j2" %}
           </div>
-          {% if f.summary %}<p class="explore-row__summary">{{ f.summary }}</p>{% endif %}
-        </article>
+        </details>
         {%- endfor -%}
       </div>
 
@@ -680,14 +707,13 @@ body.revealed .reveal-target.is-revealed {
         pack: {},
         related: null, // { capId, ids } | null
         search: '',
-        sort: 'impact',
+        sort: 'severity', // criticality-first by default (see §5E)
         page: 1,
         pageSize: 25
       };
 
       var list = document.querySelector('[data-findings-list]');
       var rows = list ? Array.prototype.slice.call(list.querySelectorAll('.explore-row')) : [];
-      var dArticles = Array.prototype.slice.call(document.querySelectorAll('.finding'));
       var emptyState = document.querySelector('[data-empty-state]');
       var pager = document.querySelector('[data-pagination]');
       var pagerStatus = document.querySelector('[data-pager-status]');
@@ -699,7 +725,12 @@ body.revealed .reveal-target.is-revealed {
       var field = document.querySelector('[data-constellation]');
 
       var searchText = rows.map(function (row) { return row.textContent.toLowerCase(); });
-      rows.forEach(function (row, i) { row._idx = i; });
+
+      function engineIdx(row) {
+        var raw = row.getAttribute('data-engine-idx');
+        var n = parseInt(raw, 10);
+        return isNaN(n) ? 0 : n;
+      }
 
       var initialGroupOrder = [];
       var groupsByWorkload = {};
@@ -783,6 +814,7 @@ body.revealed .reveal-target.is-revealed {
         var conf = row.getAttribute('data-confidence');
         var mode = row.getAttribute('data-mode');
         var pack = row.getAttribute('data-pack');
+        if (state.related !== null && state.related.ids.indexOf(row.getAttribute('data-check-id')) === -1) return false;
         if (hasActive(state.status) && !state.status[s]) return false;
         if (state.workload !== 'all' && w !== state.workload) return false;
         if (hasActive(state.severity) && !state.severity[sev]) return false;
@@ -793,20 +825,11 @@ body.revealed .reveal-target.is-revealed {
         return true;
       }
 
-      function applyDArticles() {
-        dArticles.forEach(function (article) {
-          var w = article.getAttribute('data-workload');
-          var id = article.getAttribute('data-check-id');
-          var hidden = (state.workload !== 'all' && w !== state.workload) ||
-            (state.related !== null && state.related.ids.indexOf(id) === -1);
-          article.hidden = hidden;
-        });
-      }
-
       function sortRows(allRows) {
         var arr = allRows.slice();
         if (state.sort === 'impact') {
-          arr.sort(function (a, b) { return a._idx - b._idx; });
+          // Engine order: the server-rendered data-engine-idx sequence.
+          arr.sort(function (a, b) { return engineIdx(a) - engineIdx(b); });
           return arr;
         }
         if (state.sort === 'title') {
@@ -824,7 +847,7 @@ body.revealed .reveal-target.is-revealed {
           if (ra < 0) ra = rank.length;
           if (rb < 0) rb = rank.length;
           if (ra !== rb) return ra - rb;
-          return a._idx - b._idx;
+          return engineIdx(a) - engineIdx(b);
         });
         return arr;
       }
@@ -837,8 +860,6 @@ body.revealed .reveal-target.is-revealed {
         });
         var ordered = sortRows(rows);
         ordered.forEach(function (row) { list.appendChild(row); });
-
-        applyDArticles();
 
         var pageSize = state.pageSize;
         var totalPages = Math.max(1, Math.ceil(visible.length / pageSize));
@@ -902,7 +923,8 @@ body.revealed .reveal-target.is-revealed {
       }
 
       // ------------------------------------------------------------------
-      // Capability selection: filters section D to related check ids.
+      // Capability selection: filters the Findings list to the capability's
+      // related check ids.
       // ------------------------------------------------------------------
       function selectCapability(capId) {
         var ids = CAP_RELATED[capId];
@@ -921,9 +943,10 @@ body.revealed .reveal-target.is-revealed {
         document.querySelectorAll('.card[data-capability-id]').forEach(function (card) {
           card.classList.toggle('is-related', state.related !== null && card.getAttribute('data-capability-id') === capId);
         });
+        state.page = 1;
         apply();
         if (state.related !== null) {
-          var d = document.getElementById('section-d');
+          var d = document.getElementById('section-findings');
           if (d) d.scrollIntoView({ block: 'start' });
         }
       }
@@ -953,8 +976,9 @@ body.revealed .reveal-target.is-revealed {
       }
 
       // ------------------------------------------------------------------
-      // Deep links: #finding-<check_id> selects, reveals, scrolls;
-      // #section-a..e anchor the sections.
+      // Deep links: #finding-<check_id> opens the collapsed row, selects,
+      // reveals, and scrolls; #section-a..c/#section-findings anchor the
+      // sections.
       // ------------------------------------------------------------------
       function handleHash() {
         var hash = window.location.hash;
@@ -967,7 +991,12 @@ body.revealed .reveal-target.is-revealed {
         if (hash.indexOf('#finding-') === 0) {
           var article = document.getElementById(hash.slice(1));
           if (!article) return;
+          var row = article.closest('details.explore-row');
+          if (row) row.open = true;
           resetState();
+          var ordered = sortRows(rows);
+          var targetIdx = ordered.indexOf(row);
+          if (targetIdx !== -1) state.page = Math.floor(targetIdx / state.pageSize) + 1;
           syncControls();
           reorderConstellation();
           apply();
@@ -1113,6 +1142,16 @@ body.revealed .reveal-target.is-revealed {
 
       window.addEventListener('hashchange', handleHash);
       window.addEventListener('resize', alignChartHits);
+
+      // Chart overlay hits live inside the collapsed "Findings at a glance"
+      // disclosure; re-align them whenever it opens (a closed disclosure has
+      // no layout box, so offsets are meaningless until it is visible).
+      var chartsDetails = document.querySelector('.findings-charts');
+      if (chartsDetails) {
+        chartsDetails.addEventListener('toggle', function () {
+          if (chartsDetails.open) alignChartHits();
+        });
+      }
 
       // ------------------------------------------------------------------
       // Opening sequence: opt-in motion (body.revealed) + count-up.

@@ -1,6 +1,6 @@
 /* ==========================================================================
    Security License Lens — v2 report foundation stylesheet
-   Design identity: "Warm Charcoal" (DESIGN_V2.md, the binding v2 contract).
+   Design identity: "SOC Dark" (DESIGN_V2.md, the binding v2 contract).
 
    This file is a Jinja2 partial: it is included inside an existing
    <style> block by both the single-file and bundle renderers, so it must
@@ -31,26 +31,26 @@
    §2. Token palette — declared once, referenced by name everywhere else.
    -------------------------------------------------------------------------- */
 :root {
-  /* §2.1 Screen tokens (dark-first, warm) */
-  --canvas: #191714;
-  --surface-1: #211E1A;
-  --surface-2: #2A2621;
-  --surface-3: #332E27;
-  --surface-4: #3D3730;
-  --border: #37322B;
-  --border-strong: #4A443B;
-  --text-1: #F2EFE9;
-  --text-2: #B8B2A7;
-  --text-3: #8A847A;
-  --accent: #E8DFC8;
-  --accent-hover: #F5EFDD;
-  --accent-focus: #FFF6E3;
-  --accent-print: #57482E;
-  --state-action: #E5695F;
-  --state-incomplete: #D9A03F;
-  --state-ok: #55AE84;
-  --state-neutral: #9E988C;
-  --grad-hero: linear-gradient(165deg, var(--surface-2) 0%, var(--surface-1) 55%, var(--canvas) 100%);
+  /* §2.1 Screen tokens (dark-first, cool) */
+  --canvas: #0B0E14;
+  --surface-1: #131720;
+  --surface-2: #1A2029;
+  --surface-3: #212A35;
+  --surface-4: #2A3542;
+  --border: #232D38;
+  --border-strong: #33404E;
+  --text-1: #EDF2F7;
+  --text-2: #B6C2CF;
+  --text-3: #7D8FA3;
+  --accent: #22D3EE;
+  --accent-hover: #67E8F9;
+  --accent-focus: #A5F3FC;
+  --accent-print: #155E75;
+  --state-action: #F87171;
+  --state-incomplete: #F59E0B;
+  --state-ok: #22C55E;
+  --state-neutral: #94A3B8;
+  --grad-hero: linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%);
   --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
   --shadow-1: 0 1px 2px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.25);
   --shadow-2: 0 2px 6px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
@@ -58,15 +58,15 @@
   --blur-nav: blur(8px);
 
   /* §2.2 Print tokens (light inversion) */
-  --print-ink: #23201B;
+  --print-ink: #1A2230;
   --print-paper: #FFFFFF;
-  --print-hero: #F6F3EC;
-  --print-border: #D8D2C7;
-  --print-border-strong: #A79F90;
-  --print-action: #B03A26;
-  --print-incomplete: #7A5200;
-  --print-ok: #20603C;
-  --print-neutral: #5A625C;
+  --print-hero: #EEF2F6;
+  --print-border: #C6D0DA;
+  --print-border-strong: #7E8B99;
+  --print-action: #B02A37;
+  --print-incomplete: #7A5000;
+  --print-ok: #1B6B3F;
+  --print-neutral: #4A5661;
 
   /* §3. Typography — system-only, offline-safe stacks (locked values). */
   --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -888,37 +888,84 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   font-variant-numeric: tabular-nums;
 }
 
-/* The explorable findings list (rows link to D articles). */
+/* The findings list: one collapsed <details> row per finding, rendered in
+   severity order (server-side; the JS re-sorts via data-engine-idx/rank).
+   The closed summary carries the status marker, title, severity/workload
+   meta, and a one-line signal; opening the row (details.tech disclosure
+   pattern, §8) reveals the full belief block with the caret rotate +
+   tech-body fade. */
 .explore-list { display: flex; flex-direction: column; }
-.explore-row {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 4px 16px;
-  align-items: start;
-  padding-block: 12px;
+details.explore-row {
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-inline-start-width: 3px;
+  border-radius: 0;
 }
-.explore-row + .explore-row { border-block-start: 1px solid var(--border); }
-.explore-row > .status-marker { grid-column: 1; grid-row: 1; }
-.explore-row__title { grid-column: 2; grid-row: 1; margin: 0; }
-.explore-row__title a { text-decoration: none; }
-.explore-row__title a:hover { text-decoration: underline; }
-.explore-row__meta {
-  grid-column: 2;
-  grid-row: 2;
+details.explore-row + details.explore-row { border-block-start: 1px solid var(--border); }
+/* Status rail on the collapsed row (the rail color is a secondary cue —
+   the always-visible status-marker word carries status, never color-only). */
+details.explore-row[data-status="gap"],
+details.explore-row[data-status="error"] { border-inline-start-color: var(--state-action); }
+details.explore-row[data-status="partial"] { border-inline-start-color: var(--state-incomplete); }
+details.explore-row[data-status="ok"] { border-inline-start-color: var(--state-ok); }
+details.explore-row[data-status="not_licensed"],
+details.explore-row[data-status="skipped"] { border-inline-start-color: var(--state-neutral); }
+
+details.explore-row summary {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  cursor: pointer;
+  color: var(--text-1);
+  font-weight: 400;
+  min-width: 0;
+}
+details.explore-row summary .caret { flex: none; color: var(--text-3); }
+details.explore-row summary .status-marker { flex: none; }
+.explore-row__title {
+  display: inline;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.explore-row__title a { text-decoration: none; color: var(--text-1); }
+.explore-row__title a:hover { text-decoration: underline; }
+.explore-row__meta {
+  display: inline-flex;
+  flex-wrap: wrap;
   gap: 4px 16px;
+  margin-inline-start: auto;
   font-size: 0.8125rem;
   color: var(--text-2);
 }
+.explore-row__meta .meta-severity { font-weight: 600; color: var(--text-1); }
 .explore-row__meta code { color: var(--text-1); }
-.explore-row__summary {
-  grid-column: 2;
-  grid-row: 3;
+.explore-row__signal {
+  flex-basis: 100%;
+  min-width: 0;
   margin: 0;
   color: var(--text-2);
   font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+/* Expanded row: the tech disclosure's open pane; the inner belief card
+   drops its own rail (the row already carries the status rail) and hugs
+   the disclosure padding. */
+details.explore-row[open] > .tech-body {
+  margin-block-start: 12px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--border);
+}
+details.explore-row .finding {
+  border-inline-start-width: 0;
+  padding-inline: 0;
+}
+details.explore-row .finding-head h3 { font-size: 1.06rem; }
 
 .empty-state { color: var(--text-2); }
 
@@ -1158,7 +1205,17 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .status-not_licensed,
   .status-skipped { color: CanvasText; }
 
-  .status-marker,
+  /* Two-class selectors so the system ink beats the screen `.status-marker.gap`
+     rules (same specificity, later source). Chromium's forced-colors palette
+     adjustment remaps the author state colors differently per parent (the
+     disclosure summary maps to a link-ish palette entry), so the marker must
+     resolve to the system color directly — never through an author color. */
+  .status-marker.gap,
+  .status-marker.error,
+  .status-marker.partial,
+  .status-marker.ok,
+  .status-marker.not_licensed,
+  .status-marker.skipped,
   .status-marker svg {
     color: CanvasText;
     background: transparent;
@@ -1172,6 +1229,9 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .finding.ok,
   .finding.not_licensed,
   .finding.skipped { border-inline-start-color: CanvasText; }
+
+  /* The collapsed finding-row rail collapses to system ink too. */
+  details.explore-row[data-status] { border-inline-start-color: CanvasText; }
 
   .constellation-core { border-color: CanvasText; }
   .constellation-core::before { background: CanvasText; }
@@ -1389,8 +1449,7 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
     grid-auto-columns: minmax(180px, 72vw);
     scrollbar-width: thin;
   }
-  .explore-row__meta { grid-column: 1 / -1; }
-  .explore-row__summary { grid-column: 1 / -1; }
+  .explore-row__meta { margin-inline-start: 0; flex-basis: 100%; }
 
   /* Tables grow to their content width and scroll inside the wrapper
      instead of squeezing (§4); mono tokens (part numbers, check IDs)

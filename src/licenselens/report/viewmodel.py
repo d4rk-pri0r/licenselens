@@ -15,6 +15,7 @@ from collections.abc import Iterable
 from typing import Final
 
 from licenselens.catalog.expected_states import expected_state_map
+from licenselens.friendly_names import friendly_plan_name, friendly_sku_name
 from licenselens.models import (
     CapabilityOutcome,
     CapabilitySummary,
@@ -345,6 +346,8 @@ def _capability_entry(
         "plain_name": summary.plain_name,
         "matched_skus": summary.matched_skus,
         "matched_service_plans": summary.matched_service_plans,
+        "friendly_skus": [friendly_sku_name(name) for name in summary.matched_skus],
+        "friendly_plans": [friendly_plan_name(name) for name in summary.matched_service_plans],
         "outcome": summary.outcome,
         "why_it_matters": summary.why_it_matters,
         "if_unused": summary.if_unused,
@@ -451,6 +454,34 @@ def build_sections(
             },
         },
     }
+
+
+def build_sku_strip(result: ScanResult) -> list[dict[str, object]]:
+    """Build the B-section owned-SKU strip payload with friendly display names.
+
+    One entry per subscribed SKU. Each entry keeps the raw ``part_number``
+    (tooltip/technical surfaces) alongside its ``friendly_name``, the license
+    counts, and one ``{"name", "friendly_name"}`` dict per service plan. The
+    raw names stay available for technical drill-downs; the primary rendered
+    text must be the friendly name.
+    """
+    return [
+        {
+            "part_number": sku.sku_part_number,
+            "friendly_name": friendly_sku_name(sku.sku_part_number),
+            "capability_status": sku.capability_status,
+            "consumed_units": sku.consumed_units,
+            "prepaid_units": sku.prepaid_units,
+            "service_plans": [
+                {
+                    "name": plan.service_plan_name,
+                    "friendly_name": friendly_plan_name(plan.service_plan_name),
+                }
+                for plan in sku.service_plans
+            ],
+        }
+        for sku in result.subscribed_skus
+    ]
 
 
 #: Canonical display order for the footer evidence-mode legend. The legend is

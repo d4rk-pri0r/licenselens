@@ -197,7 +197,7 @@ def _total_count(page: Page) -> str:
 def test_initial_render_and_navigation(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
     page.wait_for_load_state("load")
-    assert page.locator(".finding").count() == 12
+    assert page.locator(".finding-row").count() == 12
     assert _visible_count(page) == "12"
     assert _total_count(page) == "12"
     assert page.locator("[data-workload-nav] [data-nav]").count() == 6
@@ -287,7 +287,7 @@ def test_empty_result_state_is_clear(app_uri: str, page: Page) -> None:
 
 def test_empty_report_state(app_uri: str, page: Page) -> None:
     page.goto(app_uri(empty_report()))
-    assert page.locator(".finding").count() == 0
+    assert page.locator(".finding-row").count() == 0
     assert page.locator("[data-empty-state]").is_visible() is True
     assert "No findings were produced" in page.locator("[data-empty-state]").inner_text()
     assert _visible_count(page) == "0"
@@ -391,15 +391,18 @@ def test_reduced_motion_no_transitions(app_uri: str, page: Page) -> None:
 def test_hash_deep_link_scrolls_to_finding(app_uri: str, page: Page) -> None:
     page.goto(app_uri(thousand_findings_report()) + "#finding-bulk-0100")
     page.wait_for_load_state("load")
-    in_view = page.evaluate(
+    state = page.evaluate(
         "() => { const el = document.getElementById('finding-bulk-0100');"
-        " if (!el) return false;"
+        " if (!el) return { found: false };"
         " const main = document.querySelector('main.app-main');"
         " const r = el.getBoundingClientRect();"
         " const m = main.getBoundingClientRect();"
-        " return r.top >= m.top - 1 && r.bottom <= m.bottom + 1; }"
+        " return { found: true, open: el.open,"
+        "   inView: r.top >= m.top - 1 && r.bottom <= m.bottom + 1 }; }"
     )
-    assert in_view is True
+    assert state["found"] is True, "deep-linked finding row was not rendered"
+    assert state["open"] is True, "deep-linked finding row did not expand"
+    assert state["inView"] is True, "deep-linked finding row is not scrolled into view"
 
 
 def test_no_persisted_tenant_data(app_uri: str, page: Page) -> None:

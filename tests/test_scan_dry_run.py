@@ -2,6 +2,7 @@ from pathlib import Path
 
 from licenselens.auth import AuthMode, build_auth_context
 from licenselens.engine.runner import run_scan
+from licenselens.friendly_names import friendly_plan_name, friendly_sku_name
 from licenselens.models import FindingStatus
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 
@@ -178,9 +179,12 @@ def test_reports_distinguish_detected_from_prioritized_capabilities(tmp_path: Pa
         assert "identity" in report
         assert "endpoint" in report
         for cap in result.capability_summaries:
-            assert ", ".join(cap.matched_skus) in report
+            assert ", ".join(friendly_sku_name(name) for name in cap.matched_skus) in report
             if cap.matched_service_plans:
-                assert ", ".join(cap.matched_service_plans) in report
+                friendly = ", ".join(
+                    friendly_plan_name(name) for name in cap.matched_service_plans
+                )
+                assert friendly in report
     assert "licensed capabilities detected" in html
     assert "prioritized capabilities" in html
     assert f"of {prioritized} prioritized" in html

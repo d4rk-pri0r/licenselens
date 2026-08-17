@@ -12,12 +12,12 @@ network access.
 
 Run:  uv run python scripts/regenerate_report_assets.py
 
-Exits non-zero if the generated HTML fails the v2 "Warm Charcoal" design
+Exits non-zero if the generated HTML fails the v2 "SOC Dark" design
 gate (DESIGN_V2.md): missing v2 tokens or v2 signature copy, any withdrawn
-Ink-and-Verdigris token, any legacy AI-dashboard signature (violet/navy/brass
-accents, v1 cool-blue tokens, radial-gradient, color-mix(), non-stop radii,
-old headings/tagline), a dropped emoji, or if the browser issues an http(s)
-request.
+Ink-and-Verdigris or retired "Warm Charcoal" token, any legacy AI-dashboard
+signature (violet/navy/brass accents, v1 cool-blue tokens, radial-gradient,
+color-mix(), non-stop radii, old headings/tagline), a dropped emoji, or if the
+browser issues an http(s) request.
 """
 
 from __future__ import annotations
@@ -50,10 +50,45 @@ SCREENSHOTS: tuple[tuple[str, int, int, str], ...] = (
     ("report-mobile.png", 375, 1280, "mobile"),
 )
 
-# v2 tokens the report must carry (from DESIGN_V2.md, section 2 — "Warm
-# Charcoal"). The exact declaration strings mirror the `:root` block in
+# v2 tokens the report must carry (from DESIGN_V2.md, section 2.1 — "SOC
+# Dark"). The exact declaration strings mirror the `:root` block in
 # templates/report/v2/_v2_styles.css.j2.
 NEW_DESIGN_TOKENS: tuple[str, ...] = (
+    "--canvas: #0B0E14",
+    "--surface-1: #131720",
+    "--surface-2: #1A2029",
+    "--surface-3: #212A35",
+    "--surface-4: #2A3542",
+    "--border: #232D38",
+    "--border-strong: #33404E",
+    "--text-1: #EDF2F7",
+    "--text-2: #B6C2CF",
+    "--text-3: #7D8FA3",
+    "--accent: #22D3EE",
+    "--accent-hover: #67E8F9",
+    "--accent-focus: #A5F3FC",
+    "--accent-print: #155E75",
+    "--state-action: #F87171",
+    "--state-incomplete: #F59E0B",
+    "--state-ok: #22C55E",
+    "--state-neutral: #94A3B8",
+)
+
+# v2 signature copy the report must carry (DESIGN_V2.md, section 5A opening
+# identity line "{tenant} — Security License Lens assessment", plus the
+# merged-Findings structure: the collapsed Owned-SKUs disclosure, the
+# capability heading, and the charts-at-a-glance disclosure).
+NEW_DESIGN_COPY: tuple[str, ...] = (
+    "Security License Lens assessment",
+    "Owned SKUs (",
+    "Your security capabilities",
+    "Findings at a glance",
+)
+
+# Retired "Warm Charcoal" tokens (the earlier v2 palette, superseded by SOC
+# Dark). Any of these declarations in the generated HTML means the retired
+# palette leaked through.
+RETIRED_WARM_CHARCOAL_TOKENS: tuple[str, ...] = (
     "--canvas: #191714",
     "--surface-1: #211E1A",
     "--surface-2: #2A2621",
@@ -72,11 +107,33 @@ NEW_DESIGN_TOKENS: tuple[str, ...] = (
     "--state-incomplete: #D9A03F",
     "--state-ok: #55AE84",
     "--state-neutral: #9E988C",
+    "#191714",
+    "#211E1A",
+    "#2A2621",
+    "#332E27",
+    "#3D3730",
+    "#37322B",
+    "#4A443B",
+    "#F2EFE9",
+    "#B8B2A7",
+    "#8A847A",
+    "#E8DFC8",
+    "#F5EFDD",
+    "#FFF6E3",
+    "#57482E",
+    "#23201B",
+    "#F6F3EC",
+    "#D8D2C7",
+    "#A79F90",
+    "#B03A26",
+    "#7A5200",
+    "#20603C",
+    "#5A625C",
+    "#E5695F",
+    "#D9A03F",
+    "#55AE84",
+    "#9E988C",
 )
-
-# v2 signature copy the report must carry (DESIGN_V2.md, section 5A opening
-# identity line: "{tenant} — Security License Lens assessment").
-NEW_DESIGN_COPY: tuple[str, ...] = ("Security License Lens assessment",)
 
 # Retired v1 tokens (DESIGN_V2.md, section 1 "Retired v1 values"): cool-blue
 # canvas/accent/surface ramp, plus the borders, text ramp, and print pair the
@@ -161,6 +218,8 @@ LEGACY_SIGNATURES: tuple[str, ...] = (
     "border-radius: 12px",
     "border-radius: 4px",
     "border-radius: 50%",
+    "Why LicenseLens believes this",
+    "Explore everything",
     "Your security at a glance",
     "How to read this report",
     "What you already pay for",
@@ -221,6 +280,9 @@ def check_html(html: str) -> list[str]:
     for token in RETIRED_INK_VERDIGRIS_TOKENS:
         if token in html:
             problems.append(f"withdrawn Ink-and-Verdigris token still present: {token!r}")
+    for token in RETIRED_WARM_CHARCOAL_TOKENS:
+        if token in html:
+            problems.append(f"retired Warm-Charcoal token still present: {token!r}")
     for signature in LEGACY_SIGNATURES:
         if signature in html:
             problems.append(f"legacy AI-dashboard signature still present: {signature!r}")
@@ -254,9 +316,13 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                 page.goto(uri, wait_until="load")
                 page.wait_for_timeout(SETTLE_MS)
                 if kind == "findings":
-                    heading = page.locator("h2", has_text="Why LicenseLens believes this").first
+                    # Merged Findings section: land on the section heading,
+                    # then expand the first (most critical) collapsed row so
+                    # the frame shows the collapsed-row list AND one open
+                    # belief block.
+                    heading = page.locator("h2", has_text="Findings").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
-                    page.locator("article.finding").first.locator("details.tech > summary").click()
+                    page.locator("details.explore-row").first.locator("> summary").click()
                     page.wait_for_timeout(SETTLE_MS)
                 elif kind == "hero":
                     # Land on the constellation region: "What you're paying
@@ -320,7 +386,7 @@ def main() -> int:
     else:
         print(
             "\nHTML design gate: OK"
-            " (v2 tokens + copy present, no retired v1 or withdrawn"
+            " (v2 tokens + copy present, no retired v1, Warm-Charcoal, or withdrawn"
             " Ink-and-Verdigris tokens, no legacy AI-dashboard signatures, no emoji)"
         )
 

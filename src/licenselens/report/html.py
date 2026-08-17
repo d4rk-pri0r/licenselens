@@ -22,6 +22,7 @@ from licenselens.report.viewmodel import (
     build_opening,
     build_provenance,
     build_sections,
+    build_sku_strip,
 )
 
 
@@ -50,6 +51,7 @@ def build_report_context(
         "result": result,
         "tagline": TAGLINE,
         "sections": sections,
+        "sku_strip": build_sku_strip(result),
         "opening": build_opening(result),
         "constellation": build_constellation(result),
         "moves": sections["C"],

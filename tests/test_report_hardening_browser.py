@@ -160,7 +160,7 @@ def test_csp_allows_local_assets_and_app_boots(app_uri: str, page: Page) -> None
     uri, _ = app_uri(hardening_report())
     page.goto(uri)
     page.wait_for_load_state("load")
-    assert page.locator(".finding").count() == 6
+    assert page.locator(".finding-row").count() == 6
     assert page.evaluate("() => document.styleSheets.length") >= 1
     assert page.evaluate("() => Array.isArray(window.LICENSELENS_REPORT_JSON.findings)")
 
@@ -192,7 +192,7 @@ def test_forced_colors_keep_text_high_contrast(app_uri: str, page: Page) -> None
     )
 
     marker = page.evaluate(
-        "() => getComputedStyle(document.querySelector('.finding.gap .status-marker')).color"
+        "() => getComputedStyle(document.querySelector('.finding-row.gap .status-marker')).color"
     )
     body_color = page.evaluate("() => getComputedStyle(document.body).color")
     # Under forced colors the gap marker must adopt CanvasText (same ink as the
@@ -221,7 +221,7 @@ def test_rtl_logical_layout_mirrors_without_overflow(app_uri: str, page: Page) -
     assert metrics["sw"] <= metrics["cw"], f"RTL horizontal overflow: {metrics}"
 
     border = page.evaluate(
-        """() => { const el = document.querySelector('.finding.gap');
+        """() => { const el = document.querySelector('.finding-row.gap');
             const s = getComputedStyle(el);
             return {
                 inlineStart: s.borderInlineStartWidth,
@@ -230,7 +230,9 @@ def test_rtl_logical_layout_mirrors_without_overflow(app_uri: str, page: Page) -
             }; }"""
     )
     assert border["inlineStart"] == "3px"
-    assert border["right"] == "3px" and border["left"] == "0px", f"accent not mirrored: {border}"
+    # The 3px accent rail mirrors to the inline-start edge (right in RTL); the
+    # opposite edge keeps only the row's neutral 1px border, never the rail.
+    assert border["right"] == "3px" and border["left"] == "1px", f"accent not mirrored: {border}"
 
 
 # ---------------------------------------------------------------------------
@@ -244,7 +246,7 @@ def test_screen_body_and_status_contrast_meet_wcag_aa(app_uri: str, page: Page) 
     body_fg, body_bg = _effective_fg_bg(page, "body")
     assert contrast_ratio(body_fg, body_bg) >= 4.5, f"body contrast {body_fg}/{body_bg}"
 
-    marker_fg, marker_bg = _effective_fg_bg(page, ".finding.gap .status-marker")
+    marker_fg, marker_bg = _effective_fg_bg(page, ".finding-row.gap .status-marker")
     assert contrast_ratio(marker_fg, marker_bg) >= 4.5, (
         f"gap status marker contrast {marker_fg}/{marker_bg}"
     )
@@ -292,7 +294,12 @@ def test_workload_icons_decorative_with_visible_text_labels(app_uri: str, page: 
 def test_evidence_drawer_keyboard_operable(app_uri: str, page: Page) -> None:
     uri, _ = app_uri(hardening_report())
     page.goto(uri)
-    details = page.locator(".finding").first.locator("details.tech")
+    # The finding row itself is a disclosure; open it so the nested evidence
+    # drawer's summary is laid out and focusable (the natural two-level flow:
+    # Enter on the row, Tab to the evidence summary).
+    row = page.locator(".finding-row").first
+    row.evaluate("el => el.open = true")
+    details = row.locator("details.tech")
     summary = details.locator("summary")
     summary.focus()
     assert summary.evaluate("el => el.matches(':focus')")

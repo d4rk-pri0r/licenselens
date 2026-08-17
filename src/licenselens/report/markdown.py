@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from licenselens.config_models import RedactionSettings
+from licenselens.friendly_names import friendly_plan_name, friendly_sku_name
 from licenselens.models import STATUS_PLAIN_LABELS, ScanResult
 from licenselens.report.redaction import derive_redaction_targets, redact_text
 from licenselens.report.viewmodel import human_copy
@@ -100,13 +101,17 @@ def write_markdown_report(
                 lines.append(f"- **Why it matters:** {cap.why_it_matters}")
             if cap.if_unused:
                 lines.append(f"- **If unused:** {cap.if_unused}")
+            sku_text = ", ".join(friendly_sku_name(name) for name in cap.matched_skus)
             lines.append(
                 "- **Included through license SKU(s):** "
-                f"{', '.join(cap.matched_skus) or 'Not reported'}"
+                f"{sku_text or 'Not reported'}"
+            )
+            plan_text = ", ".join(
+                friendly_plan_name(name) for name in cap.matched_service_plans
             )
             lines.append(
                 "- **Matching service plan(s):** "
-                f"{', '.join(cap.matched_service_plans) or 'No matching service plan reported'}"
+                f"{plan_text or 'No matching service plan reported'}"
             )
             lines.append("")
     else:
@@ -141,9 +146,9 @@ def write_markdown_report(
         ]
     )
     for sku in result.subscribed_skus:
-        plans = ", ".join(p.service_plan_name for p in sku.service_plans)
+        plans = ", ".join(friendly_plan_name(p.service_plan_name) for p in sku.service_plans)
         lines.append(
-            f"- SKU `{sku.sku_part_number}` "
+            f"- SKU {friendly_sku_name(sku.sku_part_number)} (`{sku.sku_part_number}`) "
             f"({sku.consumed_units or 0}/{sku.prepaid_units or '—'}): {plans}"
         )
 

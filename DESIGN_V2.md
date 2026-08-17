@@ -34,11 +34,14 @@
 
 ## 1. Identity and guardrails
 
-**Identity: "Warm Charcoal".** A warm charcoal canvas with muted, warm-neutral surfaces and
-a restrained champagne-ivory identity accent. Premium, calm, instrument-like. The only
-chromatic color in the UI is **semantic** (red / amber / green). The identity accent is a
-warm *neutral* and therefore can never be confused with a status. Blue as a UI-wide accent
-is retired; the blue in the page comes from branded Microsoft workload marks only.
+**Identity: "SOC Dark".** A cool, near-black blue-grey canvas with a stepped cool
+blue-grey surface ladder and a single cyan/azure identity accent. Premium, calm,
+instrument-like — the palette of a modern security operations tool. The only chromatic
+colors in the UI are the **cyan identity accent** and the **semantic** status ramp
+(red / amber / green). The accent hue is reserved for identity and interaction and is
+never used for status; the status hues are never used for identity. Blue-violet UI chrome
+is retired; the blue in the page comes from the cyan accent and from branded Microsoft
+workload marks only.
 
 **Architecture guardrails (non-negotiable, unchanged from v1):**
 
@@ -71,7 +74,8 @@ is retired; the blue in the page comes from branded Microsoft workload marks onl
 **Still forbidden (unchanged, plus what the owner's brief adds):**
 
 - No pure black `#000000` canvas or surface fill.
-- No saturated navy `#5b9dff`-style product accent, no neon, no violet/purple UI chrome.
+- No saturated navy `#5b9dff`-style blue product accent, no violet/purple UI chrome, no
+  neon-spectrum accents; the single authorized accent hue is the pinned cyan of section 2.1.
 - No glassmorphism: no translucent surfaces, no `backdrop-filter` except the single pinned
   nav blur in section 10.
 - No arbitrary or hue-shifting gradients; only the two pinned tonal gradients in section 3.
@@ -87,30 +91,30 @@ Declared once in `:root`, referenced by name everywhere else. Never re-declared.
 literal hex values in any shipped CSS live inside the `:root` block; every other selector
 references tokens.
 
-### 2.1 Screen tokens (dark-first, warm)
+### 2.1 Screen tokens (dark-first, cool)
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--canvas` | `#191714` | Warm charcoal page stock |
-| `--surface-1` | `#211E1A` | Primary surface (sections, findings, table bodies) |
-| `--surface-2` | `#2A2621` | Secondary surface (capability rows, move items, filter bars) |
-| `--surface-3` | `#332E27` | Raised surface (open disclosures, selected panes, sticky nav) |
-| `--surface-4` | `#3D3730` | Highest surface (focused panes, masthead chrome) |
-| `--border` | `#37322B` | Default 1px rule |
-| `--border-strong` | `#4A443B` | Strong / emphasis 1px rule |
-| `--text-1` | `#F2EFE9` | Primary ink (warm near-white) |
-| `--text-2` | `#B8B2A7` | Secondary ink (labels, meta, section help) |
-| `--text-3` | `#8A847A` | Tertiary ink (captions, placeholders, faint counts) |
-| `--accent` | `#E8DFC8` | Champagne-ivory identity + interaction (links, focus, selection, posture figure, logo mark) |
-| `--accent-hover` | `#F5EFDD` | Accent hover |
-| `--accent-focus` | `#FFF6E3` | Focus ring |
-| `--accent-print` | `#57482E` | Warm umber print ink for links and identity figures |
-| `--state-action` | `#E5695F` | Action-required (gap) and error (≥ 5:1 on `--canvas`) |
-| `--state-incomplete` | `#D9A03F` | Incomplete (partial) (≥ 7:1 on `--canvas`) |
-| `--state-ok` | `#55AE84` | Operational (ok) (≥ 6:1 on `--canvas`) |
-| `--state-neutral` | `#9E988C` | Neutral (not-licensed / skipped) (≥ 5:1 on `--canvas`) |
-| `--grad-hero` | `linear-gradient(165deg, var(--surface-2) 0%, var(--surface-1) 55%, var(--canvas) 100%)` | Pinned tonal wash, hero only |
-| `--grad-raised` | `linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%)` | Pinned tonal wash, elevated panes (selected finding, open side panel) |
+| `--canvas` | `#0B0E14` | Cool blue-grey page stock |
+| `--surface-1` | `#131720` | Primary surface (sections, findings, table bodies) |
+| `--surface-2` | `#1A2029` | Secondary surface (capability rows, move items, filter bars) |
+| `--surface-3` | `#212A35` | Raised surface (open disclosures, selected panes, sticky nav) |
+| `--surface-4` | `#2A3542` | Highest surface (focused panes, masthead chrome) |
+| `--border` | `#232D38` | Default 1px rule |
+| `--border-strong` | `#33404E` | Strong / emphasis 1px rule |
+| `--text-1` | `#EDF2F7` | Primary ink (cool near-white) |
+| `--text-2` | `#B6C2CF` | Secondary ink (labels, meta, section help) — 10.7:1 on `--canvas` |
+| `--text-3` | `#7D8FA3` | Tertiary ink (captions, placeholders, faint counts) — 5.8:1 on `--canvas` |
+| `--accent` | `#22D3EE` | Cyan identity + interaction (links, focus, selection, posture figure, logo mark) |
+| `--accent-hover` | `#67E8F9` | Accent hover |
+| `--accent-focus` | `#A5F3FC` | Focus ring |
+| `--accent-print` | `#155E75` | Deep cyan print ink for links and identity figures |
+| `--state-action` | `#F87171` | Action-required (gap) and error (≥ 5:1 on `--canvas`; measured 7.0:1) |
+| `--state-incomplete` | `#F59E0B` | Incomplete (partial) (≥ 7:1 on `--canvas`; measured 9.0:1) |
+| `--state-ok` | `#22C55E` | Operational (ok) (≥ 6:1 on `--canvas`; measured 8.5:1) |
+| `--state-neutral` | `#94A3B8` | Neutral (not-licensed / skipped) (≥ 5:1 on `--canvas`; measured 7.5:1) |
+| `--grad-hero` | `linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%)` | Pinned cool tonal wash (cool blue-grey tint), hero only |
+| `--grad-raised` | `linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%)` | Pinned cool tonal wash, elevated panes (selected finding, open side panel) |
 | `--shadow-1` | `0 1px 2px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.25)` | Raised controls, open disclosures |
 | `--shadow-2` | `0 2px 6px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35)` | Elevated panes: selected finding, side panel, floating sticky nav |
 | `--shadow-3` | `0 4px 12px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.4)` | Hero only |
@@ -122,15 +126,15 @@ Screen is always dark; `@media print` inverts to light ink by swapping to these 
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--print-ink` | `#23201B` | Warm near-black body text (never `#000000`) |
+| `--print-ink` | `#1A2230` | Cool near-black body text (never `#000000`) |
 | `--print-paper` | `#FFFFFF` | Paper |
-| `--print-hero` | `#F6F3EC` | Warm paper hero wash |
-| `--print-border` | `#D8D2C7` | Default print rule |
-| `--print-border-strong` | `#A79F90` | Strong print rule |
-| `--print-action` | `#B03A26` | Print gap/error (≥ 6:1 on white) |
-| `--print-incomplete` | `#7A5200` | Print partial (≥ 6.8:1 on white) |
-| `--print-ok` | `#20603C` | Print ok (≥ 6.2:1 on white) |
-| `--print-neutral` | `#5A625C` | Print neutral (≥ 6.5:1 on white) |
+| `--print-hero` | `#EEF2F6` | Cool paper hero wash |
+| `--print-border` | `#C6D0DA` | Default print rule |
+| `--print-border-strong` | `#7E8B99` | Strong print rule |
+| `--print-action` | `#B02A37` | Print gap/error (6.5:1 on white) |
+| `--print-incomplete` | `#7A5000` | Print partial (7.1:1 on white) |
+| `--print-ok` | `#1B6B3F` | Print ok (6.5:1 on white) |
+| `--print-neutral` | `#4A5661` | Print neutral (7.5:1 on white) |
 
 ### 2.3 Usage rules and contrast floors
 
@@ -144,16 +148,17 @@ Screen is always dark; `@media print` inverts to light ink by swapping to these 
   `needs_attention` → `gap`, `partly_set_up` → `partial`, `fully_working` → `ok`,
   `not_licensed` → `not_licensed`.
 - **Contrast floors (WCAG 2.2 AA), pre-measured:** body text ≥ 4.5:1; large text and
-  non-text status indicators ≥ 3:1; `--text-3` ≥ 4:1 on `--surface-1` and must never carry
-  essential information alone; focus ring ≥ 3:1 against any adjacent surface; print accent
-  ≥ 7:1. The measured ratios are part of the contract — a palette edit requires
-  re-measurement.
+  non-text status indicators ≥ 3:1; `--text-2` ≥ 7:1 on `--canvas`; `--text-3` ≥ 4.5:1 on
+  `--canvas` and ≥ 4:1 on `--surface-1`, and must never carry essential information alone;
+  focus ring ≥ 3:1 against any adjacent surface; print accent ≥ 7:1. The measured ratios
+  are part of the contract — a palette edit requires re-measurement.
 - **Surface ladder:** `--canvas` → `--surface-1` → `--surface-2` → `--surface-3` →
   `--surface-4`. Every declared token must be consumed by at least one selector; dead
   tokens are a violation.
 - **Gradient policy:** `--grad-hero` and `--grad-raised` are the only gradients in the
-  system. Both are single-hue warm tonal lifts (surface-to-surface); no hue shifts, no
-  `color-mix()`, no gradient on text, no gradient on interactive controls.
+  system. Both are single-hue cool tonal lifts (surface-to-surface); the hero opens on a
+  pinned cool-blue tint (`#1A2330`) that settles into the surface ladder. No other hue
+  shifts, no `color-mix()`, no gradient on text, no gradient on interactive controls.
 - **Blur policy:** `--blur-nav` is the only blur. It applies to the sticky contextual nav
   only, behind a `@supports (backdrop-filter: blur(1px))` guard with an opaque
   `--surface-3` fallback; disabled in print and forced-colors.
@@ -175,7 +180,7 @@ System-only, offline-safe stacks (locked values).
 | Hero figure (dominant metric) | `3.5rem / 650 / 1.05` | The one dominant metric; `tabular-nums` |
 | Metric figure (secondary) | `1.75rem / 600 / 1.15` | Supporting stats; `tabular-nums` |
 | h1 (masthead) | `1.5rem / 650 / 1.25` | Exactly one per page |
-| Section heading (h2) | `1.25rem / 600 / 1.3` | Sections A–E |
+| Section heading (h2) | `1.25rem / 600 / 1.3` | Sections A–C + Findings |
 | Card / finding title (h3) | `1.06rem / 600 / 1.35` | Finding titles, capability names |
 | Body | `1rem / 400 / 1.6` | Prose (up from v1's 0.95rem) |
 | Body-strong | `1rem / 600 / 1.6` | Lead-ins, belief-slot values |
@@ -184,7 +189,8 @@ System-only, offline-safe stacks (locked values).
 | Tech meta (mono) | `0.8125rem / 400 / 1.5` | Config values, IDs, evidence |
 
 **Heading hierarchy (locked):** exactly one `<h1>` ("Security License Lens" in the
-masthead); one `<h2>` per section A–E; `<h3>` for finding titles and capability names. No
+masthead); one `<h2>` per section A–C + Findings; `<h3>` for finding titles, capability
+names, and the B-section "Your security capabilities" / "Owned SKUs (N)" sub-heads. No
 skipped levels. The signature opening line is display text in a `<p>`, **not** a heading,
 so the tree stays `h1 → h2 → h3`.
 
@@ -236,16 +242,16 @@ so the tree stays `h1 → h2 → h3`.
   - *cards* only where a bounded unit earns it (capability row, move item, chart frame);
   - *elevated surfaces* only for the currently selected/focused element.
 
-## 5. Information architecture (A–E, in this order)
+## 5. Information architecture (A–C + Findings, in this order)
 
-The report is a single bounded `<main>` containing five sections, exactly in order A, B, C,
-D, E. Section labels:
+The report is a single bounded `<main>` containing four sections, exactly in order A, B, C,
+Findings. Section labels:
 
 - **A — "Where you stand"** (signature opening; hierarchy-first)
 - **B — "What you're paying for"** (entitlements → capabilities; signature constellation)
 - **C — "What matters most"** (prioritized recommendations)
-- **D — "Why LicenseLens believes this"** (per-finding belief blocks)
-- **E — "Explore everything"** (search, filters, charts, findings, deep links)
+- **Findings — the merged findings surface** (charts at a glance, search, filters, sort,
+  one collapsed row per finding; expanding a row reveals the full belief block)
 
 ### A. "Where you stand" — the signature opening sequence
 
@@ -291,9 +297,13 @@ resolved against findings), capped at three with "and N more" trailing text.
 **Purpose.** Show the entitlements the tenant already pays for and what each maps to.
 
 - **Owned SKUs strip:** one row per `subscribed_skus` entry — SKU name and part number in
-  mono, license count right-aligned `tabular-nums`. A compact table, not cards.
+  mono, license count right-aligned `tabular-nums`. A compact table, not cards. Collapsed
+  by default inside a native `<details class="tech">` disclosure whose summary reads
+  "Owned SKUs (N)" — "what you own" stays one glanceable line.
 - **Capability field (signature visualization):** the capability constellation, section 7.
-  It is the section's centerpiece.
+  It is the section's centerpiece. The capability part carries its own friendly heading,
+  "Your security capabilities" (`<h3>`), so "what you own" and "the colored
+  recommendations" read as two clearly separate things.
 - **Capability detail list:** summary rows first, context on demand (section 8). Each row
   shows the workload brand icon (section 12), `plain_name`, status marker, and the first
   sentence of "What it does". The expansion reveals "Why it matters" (`why_it_matters`),
@@ -312,18 +322,37 @@ resolved against findings), capped at three with "and N more" trailing text.
   *numbered sequence*, not equal cards: the first item is visually dominant (larger title,
   `--shadow-1`).
 
-### D. "Why LicenseLens believes this"
+### Findings — the merged findings section
 
-Per-finding belief block. Every finding renders as a full-width `article` with a 3px left
-status rail and a header (status marker + title + meta row: severity, effort, scope,
-workload, confidence, evaluation mode). The header meta row is the **single source** for
-Severity, Scope, and Confidence: each appears exactly once per finding article, in the
-header only. "Why it matters" carries only the Value impact label, and the evidence
-disclosure never repeats Confidence. The body is the **six-slot belief block**, always in
-this order, each slot with a visible bold label prefix. A summary line
-(`finding.customer_summary`) renders above the slots as `<p class="finding-summary">` and
-is **omitted entirely** when empty; it never binds `finding.summary` (the Observed slot
-does).
+The former D ("Why LicenseLens believes this") and E ("Explore everything") sections are
+one section. The header carries the explorer controls; the body is one collapsed
+`<details class="explore-row tech">` row per finding, most critical first.
+
+- **Header:** the search box, sort control, filter chips, and the result counts
+  (`role="status"` `aria-live="polite"`, right-aligned, `tabular-nums`).
+- **Charts at a glance:** the data-visualization figures from section 9 live in a
+  collapsed `<details class="tech findings-charts">` disclosure ("Findings at a glance")
+  above the controls. The renderers re-align/re-render the cross-filter overlay buttons
+  when the disclosure opens (a closed disclosure has no layout box, so offsets are
+  meaningless until it is visible).
+- **Collapsed row summary:** caret (▸, rotates 90° on open), status marker (glyph + word),
+  the finding title, severity + workload meta, and a one-line signal
+  (`customer_summary`, then `summary`), truncated with an ellipsis. Status is carried by
+  the marker word and the row's 3px left rail — never color-only.
+- **Expanded row body:** the full six-slot belief block (the former section D article),
+  animated with the same disclosure pattern as section 8 (caret rotate + tech-body fade).
+  The `id="finding-<check_id>"` anchor lives on the belief article.
+
+Per-finding belief block (unchanged from the former D contract). Every finding renders as
+a full-width `article` with a 3px left status rail and a header (status marker + title +
+meta row: severity, effort, scope, workload, confidence, evaluation mode). The header
+meta row is the **single source** for Severity, Scope, and Confidence: each appears
+exactly once per finding article, in the header only. "Why it matters" carries only the
+Value impact label, and the evidence disclosure never repeats Confidence. The body is the
+**six-slot belief block**, always in this order, each slot with a visible bold label
+prefix. A summary line (`finding.customer_summary`) renders above the slots as
+`<p class="finding-summary">` and is **omitted entirely** when empty; it never binds
+`finding.summary` (the Observed slot does).
 
 | Slot | Label | Binding (in fallback order) |
 | --- | --- | --- |
@@ -337,11 +366,8 @@ does).
 Slot 5's detail lives in a native `<details class="tech">` disclosure holding the evidence
 table and `source_references`. Empty optional fields render "Not reported" — never crash.
 
-Findings are open typographic articles separated by rules, not stacked cards. The
-**selected / focused finding** becomes an elevated surface (`--surface-3`, `--grad-raised`,
-`--shadow-2`, 10px radius) — one at a time, never all.
-
-### E. "Explore everything"
+The **selected / focused finding** becomes an elevated surface (`--surface-3`,
+`--grad-raised`, `--shadow-2`, 10px radius) — one at a time, never all.
 
 - **Search:** `<input type="search">`, visible label "Search findings", `autocomplete="off"`
   `spellcheck="false"`. Case-insensitive substring match over finding text only. Never
@@ -350,26 +376,30 @@ Findings are open typographic articles separated by rules, not stacked cards. Th
   confidence, evaluation mode, pack, workload. Within a group selection is OR
   (multi-toggle); across groups facets compose with AND. Every button exposes
   `aria-pressed`. A "Clear all" control resets all groups and the search box.
-- **Sort:** a native `<select>` with a visible label. Options (fixed): "Impact (default)",
-  "Severity", "Effort", "Title A–Z". Default is model rank order; only "Title A–Z" is a
-  locale-insensitive byte sort — all others are deterministic and documented here.
+- **Sort:** a native `<select>` with a visible label. Options (fixed): "Severity
+  (default)", "Impact", "Effort", "Title A–Z". **The default is severity order** — most
+  critical first (critical → high → medium → low → info, ties keep the engine order),
+  applied server-side in the single-file markup (`data-engine-idx` preserves the engine
+  order for the Impact option) and client-side at boot in the bundle. "Impact" restores
+  the engine (model rank) order byte-for-byte. "Title A–Z" is a locale-insensitive byte
+  sort — all sorts are deterministic and documented here.
 - **Counts:** result count is `role="status"` `aria-live="polite"`, right-aligned,
   `tabular-nums`.
 - **Pagination:** prev/next buttons, "Page N of M", page-size select 25/50/100; hidden when
   zero results. Page changes preserve focus on the pager.
-- **Charts:** the four data-visualization figures from section 9 live at the top of E.
-- **Deep linking:** `#finding-<check_id>` selects, reveals, and scrolls to a finding
-  (paging to its page in the bundle app); `#section-a` … `#section-e` anchor the sections.
+- **Deep linking:** `#finding-<check_id>` opens the collapsed row, selects, reveals, and
+  scrolls to a finding (paging to its page in the bundle app); `#section-a` …
+  `#section-c`, `#section-findings` anchor the sections.
 
 ## 6. Sticky contextual navigation and section-aware state
 
-- **Bundle app only:** a sticky nav (`position: sticky; top: 0`) listing A–E with the
-  workload nav, rendered on `--surface-3` with the `--blur-nav` backdrop blur (section 2.3
-  guards). Links carry `aria-current="true"` for the section currently in view, updated by
-  an IntersectionObserver scrollspy (no scroll listeners). Keyboard focus into any nav item
-  is visible per section 13.
+- **Bundle app only:** a sticky nav (`position: sticky; top: 0`) listing A–C + Findings
+  with the workload nav, rendered on `--surface-3` with the `--blur-nav` backdrop blur
+  (section 2.3 guards). Links carry `aria-current="true"` for the section currently in
+  view, updated by an IntersectionObserver scrollspy (no scroll listeners). Keyboard
+  focus into any nav item is visible per section 13.
 - **Single-file renderer:** a compact table-of-contents list under the masthead linking to
-  the five sections (same anchors, same labels) — no sticky behavior required, no
+  the four sections (same anchors, same labels) — no sticky behavior required, no
   scrollspy.
 - Workload nav state and section state are the same mechanism: `aria-current` on exactly
   one nav target; `is-active` class is never the only indicator.
@@ -469,18 +499,18 @@ no doughnut libraries, no stacked card walls, no decorative grids.
   All three stay in sync (single source of truth in JS state; `aria-pressed` /
   `aria-current` everywhere).
 - **Status filtering** via filter chips; each chip shows the status glyph + word.
-- **Capability selection:** activating a node or capability row filters section D's
-  findings to the capability's `related_check_ids` and scrolls to section D. The node
-  becomes the selected node (ring thickens to 3px `--accent` — but status color remains on
-  the ring's inner edge so status is never lost).
-- **Finding focus:** clicking (or deep-linking to) a finding elevates it (section 5 D) and
-  highlights its related capability node and matching chart bars (`is-related` class:
-  `--accent` outline). Exactly one finding is selected at a time; `aria-expanded` state
-  lives on the finding's disclosure only.
+- **Capability selection:** activating a node or capability row filters the Findings
+  list to the capability's `related_check_ids` and scrolls to the Findings section. The
+  node becomes the selected node (ring thickens to 3px `--accent` — but status color
+  remains on the ring's inner edge so status is never lost).
+- **Finding focus:** clicking (or deep-linking to) a finding elevates it (Findings
+  section) and highlights its related capability node and matching chart bars
+  (`is-related` class: `--accent` outline). Exactly one finding is selected at a time;
+  `aria-expanded` state lives on the finding's disclosure only.
 - **Smooth evidence expansion:** native `<details>`; content fade ≤150ms; no scroll jump.
 - **Chart-to-finding cross-filtering:** section 9.
-- **Deep linking:** `#finding-<check_id>`, `#section-a…e`; the bundle app syncs filters to
-  the URL hash on change and restores them on load.
+- **Deep linking:** `#finding-<check_id>`, `#section-a…c` + `#section-findings`; the
+  bundle app syncs filters to the URL hash on change and restores them on load.
 - **Sticky contextual navigation and section-aware nav state:** section 6.
 - **Keyboard-accessible, nothing hover-only.** Every interactive surface is a real
   control (button / link / details) reachable and operable by keyboard; hover is a
@@ -661,8 +691,8 @@ Light inversion via section 2.2 tokens, with these behaviors:
 - Charts render once; filter changes update values in place (no re-layout animation).
 - One-shot IntersectionObservers are unobserved after firing.
 - Optional progressive enhancement: `content-visibility: auto` with
-  `contain-intrinsic-size` on finding articles in section E only — never combined with
-  `scrollIntoView`-dependent deep links without first removing it from the target.
+  `contain-intrinsic-size` on finding rows in the Findings section only — never combined
+  with `scrollIntoView`-dependent deep links without first removing it from the target.
 - All animations GPU-composited (`transform`/`opacity`/`stroke-dashoffset` only).
 
 ## 17. Anti-patterns (prohibited, complete list)
@@ -694,9 +724,9 @@ status conveyed by color alone.
   blur is only `--blur-nav` behind its `@supports` guard.
 - Opening sequence runs once, 500–1000ms total, data-driven at every stage; reduced-motion
   renders the instant final state with zero information loss.
-- One `<h1>`, one `<h2>` per section A–E, no skipped levels; all charts carry role/label/
-  description + sr-only data tables; print expands disclosures and shows textual chart
-  fallbacks.
+- One `<h1>`, one `<h2>` per section A–C + Findings, no skipped levels; all charts carry
+  role/label/description + sr-only data tables; print expands disclosures and shows
+  textual chart fallbacks.
 - Screen is dark, print is light; both pass the section 2.3 contrast floors; status is
   never color-only.
 - The templates contain no external URL except the Microsoft admin deep links, no emoji,

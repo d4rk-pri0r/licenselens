@@ -42,8 +42,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Decide who can sign in, from where, on which devices, and whether they must prove it is really them (for example with multi-factor authentication).
 - **Why it matters:** Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.
 - **If unused:** Your licenses include advanced sign-in rules, but they may still be loose or incomplete.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** AAD_PREMIUM_P2
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Entra ID P2
 
 ### Deep protection and visibility on PCs and devices
 
@@ -52,8 +52,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.
 - **Why it matters:** Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.
 - **If unused:** You may be paying for advanced device protection on seats that are not fully enrolled.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** DEFENDER_ENDPOINT_P2
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Defender for Endpoint P2
 
 ### Watchdogs on your on-site directory (if you still have one)
 
@@ -62,7 +62,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.
 - **Why it matters:** Many organizations still rely on on-site domain controllers. Cloud-only tools cannot see every attack path there.
 - **If unused:** Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Safe Attachments and Safe Links essentials
@@ -72,7 +72,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Detonate risky attachments and rewrite dangerous links for licensed users even when the full P2 investigation pack is not present.
 - **Why it matters:** Many tenants own P1-level email protections that never leave default off states.
 - **If unused:** Safe content policies may be missing, scoped to pilots, or left in evaluation mode.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Stronger email and file threat protection
@@ -82,8 +82,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.
 - **Why it matters:** Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.
 - **If unused:** Extra email protections in your license may still be off, in test mode, or only covering a few people.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** THREAT_INTELLIGENCE
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Defender for Office 365 (Threat Intelligence)
 
 ### Cross-product incident correlation
 
@@ -92,8 +92,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Connect identity, email, endpoint, and cloud signals into incidents that show the full attack story instead of isolated alerts.
 - **Why it matters:** Attackers hop products. Siloed alerts hide the path from phishing to privilege.
 - **If unused:** XDR correlation may be licensed while automated investigation and response stay idle.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** DEFENDER_ENDPOINT_P2, THREAT_INTELLIGENCE
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Defender for Endpoint P2, Microsoft Defender for Office 365 (Threat Intelligence)
 
 ### Stronger control over admin accounts
 
@@ -102,8 +102,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Give people powerful admin rights only when they need them, and get better tools to catch risky sign-ins on high-value accounts.
 - **Why it matters:** Admin accounts are the keys to your email, files, and business apps. If one is stolen, an attacker can look like a trusted employee.
 - **If unused:** You are paying for stronger admin protections that are not fully turned on yet.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** AAD_PREMIUM_P2
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Entra ID P2
 
 ### Business email and calendar in the cloud
 
@@ -112,7 +112,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Host mailboxes in Microsoft 365 and apply tenant email security and sharing controls that protect everyday business communication.
 - **Why it matters:** Email remains a primary business channel and a primary attack path. Weak tenant defaults leave phishing and data exposure wide open.
 - **If unused:** Mailboxes may be licensed while core protection and audit settings stay at weak defaults.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Baseline spam and malware filtering for email
@@ -122,7 +122,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Filter obvious junk and malware before it reaches inboxes, as the foundation under optional Defender for Office 365 controls.
 - **Why it matters:** Without baseline filtering, every advanced email control sits on a weak floor.
 - **If unused:** Core anti-spam or anti-malware policies may be off, overly permissive, or unmonitored.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Alerts when a sign-in looks suspicious
@@ -132,8 +132,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Automatically spot odd sign-in behavior (impossible travel, leaked passwords, unfamiliar locations) and require extra proof or block access.
 - **Why it matters:** Attackers often use valid passwords. Risk detection helps catch the session even when the password was correct.
 - **If unused:** Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** AAD_PREMIUM_P2
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Entra ID P2
 
 ### Manage and protect company devices and apps
 
@@ -142,7 +142,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Require healthy devices, push secure settings, and protect work data on phones and PCs people already use.
 - **Why it matters:** Unmanaged devices are a common path around strong cloud identity controls.
 - **If unused:** Compliance or configuration profiles may be missing, unassigned, or never enforced.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### The log store behind security analytics
@@ -152,7 +152,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Land security and operational logs in a workspace that detections and investigations can query.
 - **Why it matters:** Sentinel without healthy log ingestion is an empty command center.
 - **If unused:** Workspaces may exist while critical tables are missing, short-retained, or never connected.
-- **Included through license SKU(s):** MICROSOFT_SENTINEL
+- **Included through license SKU(s):** Microsoft Sentinel
 - **Matching service plan(s):** No matching service plan reported
 
 ### A central security command center in the cloud
@@ -162,8 +162,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.
 - **Why it matters:** Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.
 - **If unused:** A security workspace may exist, but few detections or smart analytics are turned on.
-- **Included through license SKU(s):** MICROSOFT_SENTINEL
-- **Matching service plan(s):** MICROSOFT_SENTINEL
+- **Included through license SKU(s):** Microsoft Sentinel
+- **Matching service plan(s):** Microsoft Sentinel
 
 ### Personal work files in the cloud
 
@@ -172,7 +172,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Give people a private work drive while still enforcing sharing limits, device access, and retention expectations.
 - **Why it matters:** Personal work drives often hold the same sensitive files as shared libraries.
 - **If unused:** OneDrive sharing or sync controls may lag behind the SharePoint tenant baseline.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Shared interactive business reports
@@ -182,7 +182,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Publish and share interactive reports with colleagues under tenant-level export, sharing, and guest boundaries.
 - **Why it matters:** BI content often contains concentrated business truth; loose sharing leaks strategy.
 - **If unused:** Tenant sharing or export settings may still allow broader distribution than intended.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Low-code apps, flows, and environments
@@ -192,7 +192,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Let teams build useful apps and automations inside governed environments with DLP and tenant isolation boundaries.
 - **Why it matters:** Ungoverned makers can connect business data to personal connectors overnight.
 - **If unused:** Environment creation, connector policies, or tenant isolation may still be wide open.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### A searchable record of important activity
@@ -202,8 +202,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Reconstruct who did what across mail, files, and admin actions when something goes wrong.
 - **Why it matters:** Without audit history, investigations stall and compliance questions go unanswered.
 - **If unused:** Audit logging may be off, truncated, or never queried after an incident.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** EQUIVIO_ANALYTICS
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft 365 Advanced eDiscovery
 
 ### Oversight for risky business communications
 
@@ -212,7 +212,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Detect harassment, threats, or sensitive-data sharing patterns in business conversations.
 - **Why it matters:** Toxic or noncompliant communication creates legal and cultural risk that identity tools miss.
 - **If unused:** Communication compliance may be entitled but never scoped to the channels that matter.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Guardrails so sensitive data is harder to leak
@@ -222,8 +222,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Warn or block people when they try to share credit cards, health data, or other sensitive information in the wrong place.
 - **Why it matters:** Accidental oversharing is common. Guardrails protect customers and reduce regulatory and reputational harm.
 - **If unused:** Data-protection rules may be missing or still in "test only" mode, so nothing is enforced yet.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** MIP_S_CLP2
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Purview Information Protection P2
 
 ### Legal hold and investigation search
 
@@ -232,8 +232,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Preserve and search relevant content when legal or investigative work demands it.
 - **Why it matters:** Missing holds destroy evidence and create legal and regulatory exposure.
 - **If unused:** eDiscovery tools may be licensed while no one can run a defensible case workflow.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** EQUIVIO_ANALYTICS, LOCKBOX_ENTERPRISE
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft 365 Advanced eDiscovery, Microsoft 365 Customer Lockbox
 
 ### Early warning for risky insider activity
 
@@ -242,7 +242,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Spot patterns that suggest data theft, leak, or policy abuse by people who already have access.
 - **Why it matters:** Trusted access is powerful. Without signals, insider incidents surface only after damage.
 - **If unused:** Insider risk policies may be unlicensed in practice or never moved past trial defaults.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Retention rules that keep or remove content on schedule
@@ -252,7 +252,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Keep content for legal or regulatory periods and remove it when it is no longer needed, reducing both evidence risk and storage cost.
 - **Why it matters:** Retention protects evidence and reduces over-retention risk and storage cost.
 - **If unused:** Retention policies may be absent, so content is either deleted too early or kept indefinitely without a defensible schedule.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Labels that classify and protect files and mail
@@ -262,8 +262,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Mark sensitive content and apply encryption or access limits that travel with the file.
 - **Why it matters:** Classification without enforcement is a sticker; labels with protection change outcomes.
 - **If unused:** Labels may exist but remain unpublished, unused, or never auto-applied.
-- **Included through license SKU(s):** SPE_E5
-- **Matching service plan(s):** MIP_S_CLP2
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Purview Information Protection P2
 
 ### Team sites and shared file libraries
 
@@ -272,7 +272,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Host shared libraries with clear external sharing boundaries and default link permissions that match how the business actually works.
 - **Why it matters:** Over-broad sharing turns one mistaken link into a public data leak.
 - **If unused:** Tenant sharing defaults may still allow anyone links or unmanaged access.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 ### Chat, meetings, and teamwork hub
@@ -282,7 +282,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Keep collaboration fast while controlling guests, anonymous join, apps, and recording exposure.
 - **Why it matters:** Teams is where decisions and files move quickly — weak meeting or guest defaults become an easy side door.
 - **If unused:** External access, lobby, or app policies may still favor convenience over control.
-- **Included through license SKU(s):** SPE_E5
+- **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** No matching service plan reported
 
 
@@ -2118,5 +2118,5 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 - Owned capability ids: conditional_access, defender_endpoint_p2, defender_identity, defender_office_p1, defender_office_p2, defender_xdr, entra_id_p2, exchange_online, exchange_online_protection, identity_protection, intune, log_analytics, microsoft_sentinel, onedrive_for_business, power_bi_pro, power_platform, purview_audit, purview_communication_compliance, purview_dlp, purview_ediscovery, purview_insider_risk, purview_retention, purview_sensitivity_labels, sharepoint_online, teams
 
-- SKU `SPE_E5` (87/100): AAD_PREMIUM_P2, MFA_PREMIUM, ADALLOM_S_O365, EQUIVIO_ANALYTICS, LOCKBOX_ENTERPRISE, MIP_S_CLP2, THREAT_INTELLIGENCE, DEFENDER_ENDPOINT_P2
-- SKU `MICROSOFT_SENTINEL` (1/1): MICROSOFT_SENTINEL
+- SKU Microsoft 365 E5 (`SPE_E5`) (87/100): Microsoft Entra ID P2, Microsoft Entra ID Multifactor Authentication, Microsoft Defender for Cloud Apps, Microsoft 365 Advanced eDiscovery, Microsoft 365 Customer Lockbox, Microsoft Purview Information Protection P2, Microsoft Defender for Office 365 (Threat Intelligence), Microsoft Defender for Endpoint P2
+- SKU Microsoft Sentinel (`MICROSOFT_SENTINEL`) (1/1): Microsoft Sentinel

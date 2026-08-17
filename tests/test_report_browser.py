@@ -36,7 +36,7 @@ SECTION_HEADINGS = [
     "Where you stand",
     "What you're paying for",
     "What matters most",
-    "Why LicenseLens believes this",
+    "Findings",
 ]
 
 ALL_FINDING_STATUSES = {"gap", "partial", "ok", "not_licensed", "skipped", "error"}
@@ -75,7 +75,7 @@ _PRINT_COLORS_JS = """el => {
 }"""
 
 # Constellation state under the current media emulation. Token colors are read
-# through probe elements so `#E5695F` custom-property values and computed
+# through probe elements so `#F87171` custom-property values and computed
 # `rgb(...)` colors share one serialization and can be compared directly;
 # `digitsExpected` comes from server-rendered attributes, never a hardcoded figure.
 _CONSTELLATION_STATE_JS = """() => {
@@ -105,17 +105,17 @@ _CONSTELLATION_STATE_JS = """() => {
 }"""
 
 # Owned SKUs table under a narrow viewport. The wrapper must become the overflow
-# container (scrollWidth > clientWidth), the mono part number must occupy a single
+# container (scrollWidth > clientWidth), the SKU name must occupy a single
 # line box, and the page itself must never grow wider than the viewport.
 _SKU_TABLE_STATE_JS = """() => {
     const wrapper = document.querySelector('.sku-strip .table-scroll');
-    const code = wrapper.querySelector('tbody td code');
-    const cell = code.parentElement;
+    const nameSpan = wrapper.querySelector('tbody td .sku-name');
+    const cell = nameSpan.parentElement;
     const cs = getComputedStyle(cell);
     return {
         scrollWidth: wrapper.scrollWidth,
         clientWidth: wrapper.clientWidth,
-        codeRects: code.getClientRects().length,
+        nameRects: nameSpan.getClientRects().length,
         cellHeight: cell.clientHeight,
         cellLineHeight: parseFloat(cs.lineHeight),
         cellPadding: parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom),
@@ -391,7 +391,7 @@ def test_bundle_entry_offline_no_network(page: Page, tmp_path: Path) -> None:
     page.wait_for_load_state("load")
     external = [url for url in requests if url.startswith(("http://", "https://"))]
     assert external == [], f"unexpected external network requests: {external}"
-    assert page.locator(".finding").count() == 6, "bundle did not render all findings"
+    assert page.locator(".finding-row").count() == 6, "bundle did not render all findings"
     stylesheets = page.evaluate("() => document.styleSheets.length")
     assert stylesheets >= 1, "external stylesheet was not applied"
 
@@ -512,7 +512,7 @@ def test_js_disabled_constellation_status_colors(page: Page, tmp_path: Path, ren
 # ---------------------------------------------------------------------------
 # GROUP D — v2 mobile table lock: the Owned SKUs table scrolls inside its
 # .table-scroll wrapper at a 375px viewport instead of clipping at the page
-# edge; mono part numbers stay on one line and the license-count column is
+# edge; SKU names stay on one line and the license-count column is
 # reachable by scrolling, never by growing the page.
 # ---------------------------------------------------------------------------
 
@@ -528,8 +528,8 @@ def test_owned_skus_table_scrolls_inside_wrapper(page: Page, report_uri: str) ->
         "SKU table does not scroll inside its wrapper: "
         f"scrollWidth={state['scrollWidth']} <= clientWidth={state['clientWidth']}"
     )
-    assert state["codeRects"] == 1, (
-        f"part number wrapped in the scrollable table: {state['codeRects']} line boxes"
+    assert state["nameRects"] == 1, (
+        f"SKU name wrapped in the scrollable table: {state['nameRects']} line boxes"
     )
     single_line = state["cellLineHeight"] + state["cellPadding"] + state["cellBorder"]
     assert state["cellHeight"] <= single_line + 1, (
@@ -803,8 +803,12 @@ def test_findings_sort_control_reorders_deterministically(
 
     engine_order = [finding.check_id for finding in probe.findings]
     assert engine_order == _SORT_ENGINE_ORDER, "sort probe findings drifted from the engine order"
-    assert page.evaluate(_FINDINGS_ORDER_JS) == engine_order, (
-        f"{renderer}: default (impact) order diverged from the engine order"
+    # The DEFAULT is severity (criticality) order, most critical first.
+    assert page.evaluate(_FINDINGS_ORDER_JS) == _SORT_EXPECTED[renderer]["severity"], (
+        f"{renderer}: default (severity) order diverged from the criticality order"
+    )
+    assert page.locator("#finding-sort").input_value() == "severity", (
+        f"{renderer}: sort control does not default to severity"
     )
 
     expected = _SORT_EXPECTED[renderer]
@@ -1064,9 +1068,16 @@ def test_primary_controls_respond_to_keyboard_activation(
         return page.locator("[data-visible-count]").inner_text().strip()
 
     page.locator("#finding-search").focus()
-    page.keyboard.type("Conditional")
+    page.keyboard.type("UEBA")
     assert visible_count() == "1", (
         f"{renderer}: typing a search term did not narrow to 1 finding (got {visible_count()})"
+    )
+    # The searchable text now includes the collapsed row's belief-block content
+    # ("Search titles, checks, evidence"), so a term that appears in one
+    # finding's title and another finding's Expected slot matches both.
+    page.locator("#finding-search").fill("Conditional")
+    assert visible_count() == "2", (
+        f"{renderer}: search did not reach the belief-block evidence text (got {visible_count()})"
     )
     page.locator("#finding-search").fill("")
     assert visible_count() == "6", (
@@ -1178,9 +1189,14 @@ def test_print_emulation_renders_complete_expanded_artifact(
             f"{renderer}: section {section['id']!r} is blank in print ({section['text']} chars)"
         )
 
-    # Every finding (D articles + E/print rows) stays in the printed artifact.
-    assert len(state["findingDisplays"]) == 12, (
-        f"{renderer}: expected 12 finding articles in print, got {len(state['findingDisplays'])}"
+    # Every finding (collapsed rows + belief articles, or the print list)
+    # stays in the printed artifact. The single-file carries 6 belief
+    # articles inside 6 collapsed rows; the bundle hides its interactive
+    # list in print and shows 6 dedicated print findings instead.
+    expected_findings = 12 if renderer == "single" else 6
+    assert len(state["findingDisplays"]) == expected_findings, (
+        f"{renderer}: expected {expected_findings} finding displays in print, "
+        f"got {len(state['findingDisplays'])}"
     )
     assert all(display != "none" for display in state["findingDisplays"]), (
         f"{renderer}: a finding is hidden in the printed artifact"
@@ -1273,15 +1289,27 @@ _SCROLL_INCREMENTALLY_JS = """() => (async () => {
 
 
 def _tall_report() -> ScanResult:
-    """Browser-safe fixture with ~100 cloned gap findings so the evidence
-    (section D) and explore (section E) sections dwarf any viewport — tall
-    enough that 12% of the section could never fit on screen at once."""
+    """Browser-safe fixture with ~300 cloned gap findings plus a 40x-cloned
+    capability list so the merged Findings section (single-file) and section
+    B (bundle — its findings list paginates at 25 rows) each dwarf any
+    viewport — tall enough that 12% of the section could never fit on screen
+    at once."""
     result = browser_safe_report()
     base = next(finding for finding in result.findings if finding.check_id == "id-ca-priv-gaps")
     clones = [
-        base.model_copy(update={"check_id": f"{base.check_id}-dup-{index}"}) for index in range(100)
+        base.model_copy(update={"check_id": f"{base.check_id}-dup-{index}"}) for index in range(300)
     ]
-    return result.model_copy(update={"findings": [*result.findings, *clones]})
+    capability_clones = [
+        summary.model_copy(update={"id": f"{summary.id}-dup-{index}"})
+        for index in range(40)
+        for summary in result.capability_summaries
+    ]
+    return result.model_copy(
+        update={
+            "findings": [*result.findings, *clones],
+            "capability_summaries": [*result.capability_summaries, *capability_clones],
+        }
+    )
 
 
 @pytest.mark.parametrize("renderer", ["single", "bundle"])

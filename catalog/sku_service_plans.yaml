@@ -2,7 +2,7 @@
 # Not exhaustive — capabilities.yaml is the source of truth for entitlement mapping.
 # Expand via community PRs with verified service plan names from Graph subscribedSkus.
 
-version: 1
+version: 2
 notes:
   - sku_part_number: SPE_E5
     common_name: Microsoft 365 E5
@@ -26,6 +26,150 @@ notes:
     common_name: Microsoft Sentinel
     typically_includes:
       - MICROSOFT_SENTINEL
+
+# Human-friendly display names for SKU part numbers (skuPartNumber from Graph
+# subscribedSkus). Lookups are case-insensitive; names absent here fall back to
+# the underscore/title-case formatter in licenselens.friendly_names.
+# Naming follows Microsoft's public "Product names and service plan identifiers
+# for licensing" reference.
+friendly_sku_names:
+  # Microsoft 365 / Office 365 suites
+  SPE_E3: Microsoft 365 E3
+  SPE_E5: Microsoft 365 E5
+  SPE_E5_USGOV_GCCHIGH: Microsoft 365 E5 (GCC High)
+  SPE_E5_USGOV_DOD: Microsoft 365 E5 (DoD)
+  SPE_E3_USGOV_GCCHIGH: Microsoft 365 E3 (GCC High)
+  M365_E5_GOV: Microsoft 365 E5 (Government)
+  ENTERPRISEPACK: Office 365 E3
+  ENTERPRISEPREMIUM: Office 365 E5
+  EMSPREMIUM: Enterprise Mobility + Security E5
+  # Entra ID (formerly Azure AD)
+  AAD_PREMIUM: Microsoft Entra ID P1
+  AAD_PREMIUM_P2: Microsoft Entra ID P2
+  MICROSOFT_ENTRA_ID_GOVERNANCE: Microsoft Entra ID Governance
+  WORKLOAD_IDENTITIES_P2: Microsoft Entra Workload ID Premium
+  WORKLOAD_IDENTITIES_PREMIUM_CN: Microsoft Entra Workload ID Premium (China)
+  # Defender family
+  ATP_ENTERPRISE: Microsoft Defender for Office 365 P1
+  IDENTITY_THREAT_PROTECTION: Microsoft Defender for Identity
+  IDENTITY_THREAT_PROTECTION_GOV: Microsoft Defender for Identity (Government)
+  MICROSOFT_DEFENDER_FOR_IDENTITY: Microsoft Defender for Identity
+  DEFENDER_ENDPOINT_P1: Microsoft Defender for Endpoint P1
+  DEFENDER_ENDPOINT_P2: Microsoft Defender for Endpoint P2
+  DEFENDER_ENDPOINT_P2_GOV: Microsoft Defender for Endpoint P2 (Government)
+  MDE_P1: Microsoft Defender for Endpoint P1
+  ASC_SERVERS: Microsoft Defender for Cloud
+  ASC_CSPM: Microsoft Defender for Cloud CSPM
+  DEFENDER_CSPM: Microsoft Defender for Cloud CSPM
+  MICROSOFT_DEFENDER_FOR_CLOUD_CSPM: Microsoft Defender for Cloud CSPM
+  DEFENDER_SERVERS_P1: Microsoft Defender for Servers P1
+  DEFENDER_SERVERS_P2: Microsoft Defender for Servers P2
+  MICROSOFT_DEFENDER_FOR_SERVERS: Microsoft Defender for Servers
+  # Purview / compliance
+  INFORMATION_PROTECTION_COMPLIANCE: Microsoft Purview Information Protection Standard
+  INSIDER_RISK_MANAGEMENT: Microsoft Purview Insider Risk Management
+  # Exchange / collaboration
+  EXCHANGEENTERPRISE: Exchange Online (Plan 2)
+  EXCHANGESTANDARD: Exchange Online Standard
+  SHAREPOINTENTERPRISE: SharePoint Online (Plan 2)
+  SHAREPOINTSTANDARD: SharePoint Online (Plan 1)
+  TEAMS_EXPLORATORY: Microsoft Teams Exploratory
+  # Intune / endpoint management
+  INTUNE_A: Microsoft Intune Plan 1
+  # Power Platform / Power BI
+  FLOW_PER_USER: Power Automate per user plan
+  POWERAPPS_PER_USER: Power Apps per user plan
+  POWER_BI_PRO: Power BI Pro
+  POWER_BI_STANDARD: Power BI (free)
+  POWER_BI_PREMIUM_PER_USER: Power BI Premium Per User
+  PBI_PREMIUM_PER_USER: Power BI Premium Per User
+  # Sentinel / Azure
+  MICROSOFT_SENTINEL: Microsoft Sentinel
+  AZURE_SENTINEL: Microsoft Sentinel
+  AZURE_MONITOR_LOGS: Azure Monitor Logs
+
+# Human-friendly display names for service plan names (servicePlanName from
+# Graph subscribedSkus). Same lookup and fallback rules as friendly_sku_names.
+friendly_plan_names:
+  # Entra ID (formerly Azure AD)
+  AAD_PREMIUM: Microsoft Entra ID P1
+  AAD_PREMIUM_P2: Microsoft Entra ID P2
+  AAD_PREMIUM_P2_FOR_FACULTY: Microsoft Entra ID P2 for Faculty
+  AAD_WRKLDID_P1: Microsoft Entra Workload ID P1
+  AAD_WRKLDID_P2: Microsoft Entra Workload ID P2
+  ENTRA_IDENTITY_GOVERNANCE: Microsoft Entra ID Governance
+  MFA_PREMIUM: Microsoft Entra ID Multifactor Authentication
+  # Defender family
+  ATA: Microsoft Defender for Identity
+  ATP_ENTERPRISE: Microsoft Defender for Office 365 P1
+  WINDEFATP: Microsoft Defender for Endpoint
+  MDATP_XPLAT: Microsoft Defender for Endpoint
+  MDE_P1: Microsoft Defender for Endpoint P1
+  MDI_SERVICE_PLAN: Microsoft Defender for Identity
+  MICROSOFT_DEFENDER_FOR_IDENTITY: Microsoft Defender for Identity
+  DEFENDER_ENDPOINT_P1: Microsoft Defender for Endpoint P1
+  DEFENDER_ENDPOINT_P2: Microsoft Defender for Endpoint P2
+  THREAT_INTELLIGENCE: Microsoft Defender for Office 365 (Threat Intelligence)
+  THREAT_INTELLIGENCE_GOV: Microsoft Defender for Office 365 (Threat Intelligence) (Government)
+  # Sentinel
+  MICROSOFT_SENTINEL: Microsoft Sentinel
+  AZURE_SENTINEL: Microsoft Sentinel
+  # Purview / compliance
+  MIP_S_CLP1: Microsoft Purview Information Protection P1
+  MIP_S_CLP2: Microsoft Purview Information Protection P2
+  INFORMATION_PROTECTION_COMPLIANCE: Microsoft Purview Information Protection Standard
+  INFORMATION_BARRIERS: Microsoft Purview Information Barriers
+  DATA_LIFECYCLE_MANAGEMENT: Microsoft Purview Data Lifecycle Management
+  RECORDS_MANAGEMENT: Microsoft Purview Records Management
+  INSIDER_RISK_MANAGEMENT: Microsoft Purview Insider Risk Management
+  MIR_SERVICE: Microsoft Purview Insider Risk Management
+  COMMUNICATION_COMPLIANCE: Microsoft Purview Communication Compliance
+  COMM_COMPLIANCE: Microsoft Purview Communication Compliance
+  EQUIVIO_ANALYTICS: Microsoft 365 Advanced eDiscovery
+  EXCHANGE_ANALYTICS: Microsoft 365 Advanced eDiscovery
+  LOCKBOX_ENTERPRISE: Microsoft 365 Customer Lockbox
+  M365_ADVANCED_AUDITING: Microsoft 365 Advanced Auditing
+  AUDIT_ENTERPRISE: Microsoft 365 Audit
+  ADALLOM_S_O365: Microsoft Defender for Cloud Apps
+  # Exchange / email protection
+  EOP_ENTERPRISE: Exchange Online Protection
+  EOP_ENTERPRISE_PREMIUM: Exchange Online Protection
+  EXCHANGE_S_ENTERPRISE: Exchange Online (Plan 2)
+  EXCHANGE_S_ENTERPRISE_GOV: Exchange Online (Plan 2) (Government)
+  EXCHANGE_S_STANDARD: Exchange Online (Plan 1)
+  EXCHANGE_S_STANDARD_GOV: Exchange Online (Plan 1) (Government)
+  EXCHANGE_S_FOUNDATION: Exchange Online Foundation
+  EXCHANGESTANDARD: Exchange Online Standard
+  # Collaboration / communication
+  SHAREPOINTENTERPRISE: SharePoint Online (Plan 2)
+  SHAREPOINTENTERPRISE_GOV: SharePoint Online (Plan 2) (Government)
+  SHAREPOINTSTANDARD: SharePoint Online (Plan 1)
+  SHAREPOINTWAC: Office for the web
+  ONEDRIVESTANDARD: OneDrive for Business
+  TEAMS1: Microsoft Teams
+  TEAMS_COMMERCIAL_TRIAL: Microsoft Teams (Trial)
+  TEAMS_GOV: Microsoft Teams (Government)
+  MCOSTANDARD: Microsoft 365 Phone System
+  MCOSTANDARD_GOV: Microsoft 365 Phone System (Government)
+  # Intune / endpoint management
+  INTUNE_A: Microsoft Intune Plan 1
+  INTUNE_A_GOV: Microsoft Intune Plan 1 (Government)
+  INTUNE_A_VL: Microsoft Intune Plan 1
+  INTUNE_EDU: Microsoft Intune for Education
+  MDM_SALES_COLLABORATION: Microsoft Intune
+  # Power Platform / Power BI
+  FLOW_O365_P2: Power Automate for Microsoft 365
+  FLOW_O365_P3: Power Automate for Microsoft 365
+  FLOW_PER_USER: Power Automate per user plan
+  POWERAPPS_O365_P2: Power Apps for Microsoft 365
+  POWERAPPS_O365_P3: Power Apps for Microsoft 365
+  POWERAPPS_PER_USER: Power Apps per user plan
+  POWER_BI_PRO: Power BI Pro
+  POWER_BI_STANDARD: Power BI (free)
+  POWER_BI_PREMIUM_PER_USER: Power BI Premium Per User
+  BI_AZURE_P2: Power BI Pro
+  BI_AZURE_P3: Power BI Pro
+  BI_AZURE_P_2_GOV: Power BI Pro (Government)
 
 # servicePlanId GUID <-> canonical plan name reference (source: Microsoft Learn
 # "Product names and service plan identifiers for licensing", 2026-08).

@@ -1,6 +1,6 @@
 /* ==========================================================================
    Security License Lens — offline report app stylesheet (report app v2).
-   Design identity: "Warm Charcoal" (DESIGN_V2.md, the true v2 contract).
+   Design identity: "SOC Dark" (DESIGN_V2.md, the true v2 contract).
 
    App-shell + A-E layout layer for the bundle. The shared foundation
    (report/v2/_v2_styles.css.j2) supplies the token palette, base, status
@@ -38,7 +38,7 @@
    declare yet (values byte-identical to DESIGN_V2 2; safe duplicates).
    -------------------------------------------------------------------------- */
 :root {
-  --grad-hero: linear-gradient(165deg, var(--surface-2) 0%, var(--surface-1) 55%, var(--canvas) 100%);
+  --grad-hero: linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%);
   --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
   --blur-nav: blur(8px);
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.25);
@@ -46,10 +46,10 @@
   --shadow-3: 0 4px 12px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.4);
   /* Translucent twin of --surface-3: the one authorized backdrop-filter
      surface (sticky nav, DESIGN_V2 2.3). Opaque --surface-3 is the fallback. */
-  --nav-surface: rgba(51, 46, 39, 0.86);
+  --nav-surface: rgba(33, 42, 53, 0.86);
   /* Focus ring (DESIGN_V2 2.3): the bundle owns its copy so the ring never
      depends on the shared foundation staying in sync. */
-  --accent-focus: #FFF6E3;
+  --accent-focus: #A5F3FC;
 }
 
 /* --------------------------------------------------------------------------
@@ -506,7 +506,8 @@ section.hero {
    B — "What you're paying for": SKU strip, capability constellation,
    capability detail list (progressive disclosure, not one giant card).
    -------------------------------------------------------------------------- */
-.sku-strip { margin-block-end: 20px; overflow-x: auto; }
+.sku-strip { margin-block-end: 20px; }
+.sku-details summary .tech-title { margin: 0; display: inline; }
 .sku-table { width: auto; min-width: min(320px, 100%); }
 .sku-table th, .sku-table td {
   border: 0;
@@ -669,19 +670,10 @@ button.constellation-caption[aria-pressed="true"] { color: var(--accent); }
 .move-note { color: var(--text-3); font-size: 0.8125rem; }
 
 /* --------------------------------------------------------------------------
-   D — "Why LicenseLens believes this": open typographic finding articles
-   separated by rules; the selected finding becomes the elevated surface.
+   Findings section — the merged belief-block + explorer surface. The client
+   renders one collapsed <details class="finding-row"> per finding; the
+   belief-block typography below styles the expanded body.
    -------------------------------------------------------------------------- */
-.finding-wrap + .finding-wrap { border-block-start: 1px solid var(--border); }
-
-.finding { padding-block: 16px; }
-
-.finding-wrap.is-selected .finding {
-  background: var(--grad-raised);
-  box-shadow: var(--shadow-2);
-  border-radius: 10px;
-  padding-inline: 20px;
-}
 
 .finding-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .finding-head h3 { margin: 0; }
@@ -740,7 +732,8 @@ button.constellation-caption[aria-pressed="true"] { color: var(--accent); }
   font-variant-numeric: tabular-nums;
 }
 
-.charts-title { margin-block: 0 4px; }
+.findings-charts { margin-block: 0 16px; }
+.findings-charts .charts { margin-block-start: 12px; }
 
 .search-box { margin-block: 16px 12px; }
 .search-box__label {
@@ -854,6 +847,44 @@ button.constellation-caption[aria-pressed="true"] { color: var(--accent); }
   word-break: break-word;
   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
 }
+
+/* The finding row is a native disclosure: collapsed by default, the summary
+   carries the caret, status marker, title, and a one-line signal; opening it
+   (caret rotate + tech-body fade, the same pattern as details.tech) reveals
+   the full belief block. display:flex on the summary removes the default
+   disclosure marker, so the caret is the single affordance. */
+.finding-row summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  cursor: pointer;
+  min-width: 0;
+}
+.finding-row summary .caret {
+  flex: none;
+  color: var(--text-3);
+  transition: transform 150ms ease-out;
+}
+.finding-row[open] summary .caret { transform: rotate(90deg); }
+.finding-row[open] > .tech-body { animation: fade-in 150ms ease-out both; }
+.finding-row summary .status-marker { flex: none; }
+.finding-row summary h3 { margin: 0; }
+.finding-row__signal {
+  flex-basis: 100%;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.finding-row[open] > .tech-body {
+  margin-block-start: 12px;
+  padding-block-start: 12px;
+  border-block-start: 1px solid var(--border);
+}
+.finding-row > .tech-body .finding-summary { max-width: 72ch; }
 
 /* Long unbreakable tokens inside an E row must wrap inside their flex
    cells instead of forcing the row's min-content width past the viewport. */
@@ -1301,6 +1332,24 @@ main section.is-revealed {
 
   .workload-icon { forced-color-adjust: auto; }
 
+  /* Two-class selectors so the system ink beats the screen `.status-marker.gap`
+     rules (app.css loads after the inline foundation, so this block must carry
+     its own override). Chromium's forced-colors palette adjustment remaps
+     author colors per parent (disclosure summaries map to a link-ish palette
+     entry), so the marker must resolve to the system color directly. */
+  .status-marker.gap,
+  .status-marker.error,
+  .status-marker.partial,
+  .status-marker.ok,
+  .status-marker.not_licensed,
+  .status-marker.skipped,
+  .status-marker svg {
+    color: CanvasText;
+    background: transparent;
+    fill: none;
+    stroke: CanvasText;
+  }
+
   .finding-row.gap,
   .finding-row.error,
   .finding-row.partial,
@@ -1350,9 +1399,6 @@ main section.is-revealed {
     transform: none !important;
     animation: none !important;
   }
-
-  /* Capability-selection filtering must never hide findings in print. */
-  .finding-wrap[hidden] { display: block !important; }
 
   /* Closed disclosures render expanded: technical evidence is part of the
      printed record. Owns the same contract as the single-file foundation

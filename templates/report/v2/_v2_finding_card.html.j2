@@ -1,5 +1,5 @@
 {# ==========================================================================
-   Security License Lens — v2 finding article (section D belief block)
+   Security License Lens — v2 finding article (expanded belief block)
 
    Renders ONE finding article from the v2 view-model payload built by
    src/licenselens/report/viewmodel.py. The body is the six-slot belief block
@@ -8,6 +8,10 @@
    slots 1-2 (Expected / Observed) first, slots 3-4 (Why it matters / Recommended
    action) next, then the technical evidence inside a native
    <details class="tech"> disclosure.
+
+   This article is the expanded body of the merged Findings section's collapsed
+   <details class="explore-row"> row — one row per finding, collapsed by default;
+   expanding the row reveals this block.
 
    Include contract (consumed by both the single-file and bundle renderers):
      - `block` — one dict from build_sections(result)["D"], ordered the same
@@ -34,11 +38,11 @@
         viewmodel.py). Non-skipped findings are unchanged.
       - `prim` — imported below from report/v2/_v2_primitives.html.j2.
 
-   Deep-linking contract (DESIGN_V2.md section 5E): the article carries
-   id="finding-<check_id>"; `#finding-<check_id>` selects, reveals, and
-   scrolls to it. The only external URL rendered is block.admin_destination
-   (the Microsoft admin deep link); no <img>, no emoji, no literal slot
-   values.
+   Deep-linking contract (DESIGN_V2.md Findings section): the article carries
+   id="finding-<check_id>"; `#finding-<check_id>` opens the parent row,
+   selects, reveals, and scrolls to it. The only external URL rendered is
+   block.admin_destination (the Microsoft admin deep link); no <img>, no
+   emoji, no literal slot values.
    ========================================================================== #}
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
 {%- set _skipped = f.status == 'skipped' -%}

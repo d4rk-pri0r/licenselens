@@ -350,11 +350,11 @@ def test_evidence_drawer_surfaces_data_sources_and_limitations(app_uri: str, pag
 def test_evidence_cannot_inject_markup(app_uri: str, page: Page) -> None:
     page.goto(app_uri(malicious_report()))
     assert page.locator("script").count() == 2, "injected <script> reached the DOM"
-    assert page.locator(".finding img").count() == 0, "injected <img> reached finding DOM"
-    assert page.locator(".finding script").count() == 0
-    assert page.locator("details.tech img").count() == 0
+    assert page.locator(".finding-row img").count() == 0, "injected <img> reached finding DOM"
+    assert page.locator(".finding-row script").count() == 0
+    assert page.locator(".finding-row details.tech img").count() == 0
 
-    finding = page.locator(".finding").first
+    finding = page.locator(".finding-row").first
     text_content = finding.text_content()
     assert MALICIOUS in text_content, "evidence content missing from the finding"
     assert "<img" not in finding.evaluate("el => el.innerHTML")
@@ -416,9 +416,9 @@ def test_csv_header_row_present(app_uri: str, page: Page) -> None:
 
 def test_print_list_contains_complete_unpaginated_findings(app_uri: str, page: Page) -> None:
     page.goto(app_uri(viz_report()))
-    assert page.locator(".finding").count() == 6
+    assert page.locator(".finding-row").count() == 6
     assert page.locator("[data-print-list] .print-finding").count() == 6
-    assert page.locator("[data-print-list] .finding").count() == 0
+    assert page.locator("[data-print-list] .finding-row").count() == 0
     display = page.locator("[data-print-list]").evaluate("el => getComputedStyle(el).display")
     assert display == "none"
 

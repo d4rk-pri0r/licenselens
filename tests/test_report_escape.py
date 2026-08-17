@@ -75,7 +75,7 @@ SECTION_HEADINGS = [
     "Where you stand",
     "What you're paying for",
     "What matters most",
-    "Why LicenseLens believes this",
+    "Findings",
 ]
 
 
