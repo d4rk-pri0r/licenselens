@@ -34,8 +34,8 @@ VIEWPORTS = [(375, 812), (768, 1024), (1024, 768), (1280, 900), (1440, 1000)]
 
 SECTION_HEADINGS = [
     "Where you stand",
-    "What you're paying for",
     "What matters most",
+    "What you're paying for",
     "Findings",
 ]
 

@@ -128,6 +128,28 @@
 .opening-meta code { color: var(--text-1); }
 .opening-tenant-id { color: var(--text-2); }
 
+/* Stage 7 → single path forward: one restrained action anchor into C. */
+.hero-action { margin-block: 20px 0 4px; }
+.hero-action a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+.hero-action a:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  background: var(--surface-2);
+}
+
 /* Below-fold reveals: B, C, and Findings fade + 6px rise on first entry,
    one-shot
    IntersectionObserver (single-file only; the bundle app drives its own). */
@@ -221,8 +243,8 @@ body.revealed .reveal-target.is-revealed {
     {% endif %}
     <nav class="toc" aria-label="Sections">
       <a href="#section-a">Where you stand</a>
-      <a href="#section-b">What you're paying for</a>
       <a href="#section-c">What matters most</a>
+      <a href="#section-b">What you're paying for</a>
       <a href="#section-findings">Findings</a>
     </nav>
   </header>
@@ -343,51 +365,23 @@ body.revealed .reveal-target.is-revealed {
         {%- endif -%}
         <p class="posture-sentence">{{ _posture.realized_sentence }}</p>
 
-        {# Stage 7: highest-impact actions, each linked to its move in C. #}
-        {%- if _moves -%}
-        <ol class="top-actions">
-          {%- for _move in _moves -%}
-          <li class="top-action opening-stage">
-            <a href="#move-{{ loop.index }}">{{ _move.title }}</a>
-            {%- if _move.effort_label -%}<span class="effort-label">{{ _move.effort_label | lower }}</span>{%- endif -%}
-          </li>
-          {%- endfor -%}
-        </ol>
-        {%- endif -%}
-
-        {# Exposed / gap rail: retained from v1 when anything is exposed. #}
-        {%- set _gap_titles = [] -%}
-        {%- if result.has_exposed -%}
-          {%- for _f in _findings -%}
-            {%- if _f.check_id in result.exposed_check_ids -%}{%- set _ = _gap_titles.append(_f.title) -%}{%- endif -%}
-          {%- endfor -%}
-        {%- endif -%}
-        {%- if not _gap_titles -%}
-          {%- for _f in _findings -%}
-            {%- if _f.status in ('gap', 'error') -%}{%- set _ = _gap_titles.append(_f.title) -%}{%- endif -%}
-          {%- endfor -%}
-        {%- endif -%}
-        {%- if _gap_titles -%}
-        <div class="exposed-rail">
-          <p class="micro-label">Exposed or action required</p>
-          <ul>
-            {%- for _t in _gap_titles[:3] -%}
-            <li>{{ _t }}</li>
-            {%- endfor -%}
-          </ul>
-          {%- if _gap_titles | length > 3 -%}
-          <p class="caption">and {{ _gap_titles | length - 3 }} more</p>
-          {%- endif -%}
-        </div>
-        {%- endif -%}
+        {# Stage 7 → a single path forward: one restrained link into C. #}
+        <p class="hero-action opening-stage">
+          <a href="#section-c">View prioritized actions</a>
+        </p>
       </div>
     </section>
+
+    {# ======================================================================
+       C - What matters most (prioritized moves) — directly under Posture.
+       ====================================================================== #}
+    {% include "report/v2/_v2_moves.html.j2" %}
 
     {# ======================================================================
        B - What you're paying for: owned SKUs, the signature constellation,
        and capability summary rows with on-demand context.
        ====================================================================== #}
-    <section id="section-b" class="reveal-target" style="--reveal-delay: 0ms">
+    <section id="section-b" class="reveal-target" style="--reveal-delay: 40ms">
       <p class="micro-label section-kicker">Entitlements</p>
       <h2>What you're paying for</h2>
       <p class="section-help">
@@ -431,11 +425,6 @@ body.revealed .reveal-target.is-revealed {
       {{ capability_constellation(_constellation_ctx, workload_svg_map=_svg_map) }}
       {{ capability_cards(capabilities, _constellation_ctx) }}
     </section>
-
-    {# ======================================================================
-       C - What matters most (prioritized moves).
-       ====================================================================== #}
-    {% include "report/v2/_v2_moves.html.j2" %}
 
     {# ======================================================================
        Findings — the merged D+E section: charts at a glance (collapsed),

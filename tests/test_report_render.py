@@ -247,8 +247,8 @@ def test_no_metadata_emoji(tmp_path: Path) -> None:
 
 SECTION_HEADINGS = [
     "Where you stand",
-    "What you're paying for",
     "What matters most",
+    "What you're paying for",
     "Findings",
 ]
 

@@ -99,7 +99,7 @@ references tokens.
 | `--surface-1` | `#131720` | Primary surface (sections, findings, table bodies) |
 | `--surface-2` | `#1A2029` | Secondary surface (capability rows, move items, filter bars) |
 | `--surface-3` | `#212A35` | Raised surface (open disclosures, selected panes, sticky nav) |
-| `--surface-4` | `#2A3542` | Highest surface (focused panes, masthead chrome) |
+| `--surface-4` | `#2A3542` | Highest surface (focused panes) |
 | `--border` | `#232D38` | Default 1px rule |
 | `--border-strong` | `#33404E` | Strong / emphasis 1px rule |
 | `--text-1` | `#EDF2F7` | Primary ink (cool near-white) |
@@ -179,7 +179,7 @@ System-only, offline-safe stacks (locked values).
 | Display (signature line) | `2rem / 650 / 1.2` | Hero opening line only; `letter-spacing: -0.01em` |
 | Hero figure (dominant metric) | `3.5rem / 650 / 1.05` | The one dominant metric; `tabular-nums` |
 | Metric figure (secondary) | `1.75rem / 600 / 1.15` | Supporting stats; `tabular-nums` |
-| h1 (masthead) | `1.5rem / 650 / 1.25` | Exactly one per page |
+| h1 (masthead) | `2rem / 650 / 1.25` | Exactly one per page; anchors the canvas |
 | Section heading (h2) | `1.25rem / 600 / 1.3` | Sections A–C + Findings |
 | Card / finding title (h3) | `1.06rem / 600 / 1.35` | Finding titles, capability names |
 | Body | `1rem / 400 / 1.6` | Prose (up from v1's 0.95rem) |
@@ -244,12 +244,12 @@ so the tree stays `h1 → h2 → h3`.
 
 ## 5. Information architecture (A–C + Findings, in this order)
 
-The report is a single bounded `<main>` containing four sections, exactly in order A, B, C,
-Findings. Section labels:
+The report is a single bounded `<main>` containing four sections, exactly in order A, C, B,
+Findings — Priorities sit directly under Posture. Section labels:
 
 - **A — "Where you stand"** (signature opening; hierarchy-first)
-- **B — "What you're paying for"** (entitlements → capabilities; signature constellation)
 - **C — "What matters most"** (prioritized recommendations)
+- **B — "What you're paying for"** (entitlements → capabilities; signature constellation)
 - **Findings — the merged findings surface** (charts at a glance, search, filters, sort,
   one collapsed row per finding; expanding a row reveals the full belief block)
 
@@ -285,12 +285,12 @@ illustrative sample data only):
    when N is 0 the sentence must read as the positive equivalent (e.g. "All M of your
    priority capabilities are operational"), derived from the same fields — never a
    hardcoded string. `realized_sentence` remains the supporting sentence beneath.
-7. **Highest-impact actions** — the top 2–3 items from `moves` (section C's source list),
-   title + effort label, each linked to its move in section C.
+7. **Single path forward** — one restrained "View prioritized actions" anchor linking to
+   section C (an accent-outlined pill, 44px target, never a list of action buttons).
 
-When `has_exposed` is true or any gap/error finding exists, the 3px `--state-action` left
-rail from v1 is retained: it lists the exposed/gap check titles (from `exposed_check_ids`
-resolved against findings), capped at three with "and N more" trailing text.
+The hero ends with that single anchor. The v1 exposed/gap rail is intentionally retired
+from the hero: exposure/gap awareness lives in the distribution (stage 4b), the findings
+surface, and the prioritized moves in section C.
 
 ### B. "What you're paying for"
 
@@ -394,13 +394,14 @@ The **selected / focused finding** becomes an elevated surface (`--surface-3`,
 ## 6. Sticky contextual navigation and section-aware state
 
 - **Bundle app only:** a sticky nav (`position: sticky; top: 0`) listing A–C + Findings
-  with the workload nav, rendered on `--surface-3` with the `--blur-nav` backdrop blur
-  (section 2.3 guards). Links carry `aria-current="true"` for the section currently in
-  view, updated by an IntersectionObserver scrollspy (no scroll listeners). Keyboard
-  focus into any nav item is visible per section 13.
-- **Single-file renderer:** a compact table-of-contents list under the masthead linking to
-  the four sections (same anchors, same labels) — no sticky behavior required, no
-  scrollspy.
+  with the workload nav, rendered as a segmented control (accent-outlined pills on
+  `--surface-1`, 44px targets, `aria-current` pinning the active segment) on `--surface-3`
+  with the `--blur-nav` backdrop blur (section 2.3 guards). Links carry
+  `aria-current="true"` for the section currently in view, updated by an
+  IntersectionObserver scrollspy (no scroll listeners). Keyboard focus into any nav item
+  is visible per section 13.
+- **Single-file renderer:** the same segmented control under the masthead (no sticky
+  behavior, no scrollspy), linking to the four sections with the same anchors and labels.
 - Workload nav state and section state are the same mechanism: `aria-current` on exactly
   one nav target; `is-active` class is never the only indicator.
 
@@ -534,7 +535,7 @@ expanding. Everything is server-rendered; animation is an opt-in enhancement (JS
 | 4b | Distribution bar fill | segments `scaleX(0→1)` left-to-right, `600ms ease-out`, delay `200ms` |
 | 5 | Distribution labels (3–4) | fade + rise, `250ms`, stagger `60ms` |
 | 6 | Implication sentence | fade + rise, `300ms ease-out`, delay `380ms` |
-| 7 | Top actions (2–3) | fade + rise, `300ms`, stagger `80ms` |
+| 7 | "View prioritized actions" link | fade + rise, `300ms ease-out`, delay `440ms` |
 
 Sequence is data-driven at every stage. Under `prefers-reduced-motion` the final state is
 instant (below).

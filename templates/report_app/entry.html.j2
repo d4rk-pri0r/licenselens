@@ -43,12 +43,6 @@
   {%- set mode_str = exec_copy["scan_mode"].get(result.scan_mode, result.scan_mode) -%}
   {%- if result.auth_mode and result.auth_mode != result.scan_mode -%}{%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}{%- endif -%}
   {%- set packs = result.packs_scanned | join(', ') -%}
-  {%- set rail_items = [] -%}
-  {%- for f in findings -%}
-    {%- if f.check_id in result.exposed_check_ids or f.status in ['gap', 'error'] -%}
-      {%- set _ = rail_items.append(f) -%}
-    {%- endif -%}
-  {%- endfor -%}
   {%- set cwl = {} -%}
   {%- for e in constellation -%}
     {%- set _ = cwl.update({e.id: e.workload or 'general'}) -%}
@@ -86,8 +80,8 @@
     <div class="app-nav__bar">
       <div class="app-nav__sections" data-section-nav>
         <a class="app-nav__link" href="#section-a" data-section-link="a" aria-current="true">Where you stand</a>
-        <a class="app-nav__link" href="#section-b" data-section-link="b">What you're paying for</a>
         <a class="app-nav__link" href="#section-c" data-section-link="c">What matters most</a>
+        <a class="app-nav__link" href="#section-b" data-section-link="b">What you're paying for</a>
         <a class="app-nav__link" href="#section-findings" data-section-link="findings">Findings</a>
       </div>
       <div class="app-nav__workloads" data-workload-nav role="group" aria-label="Workload navigation">
@@ -233,33 +227,46 @@
             {% endif %}
           </div>
 
-          <div class="opening-actions" data-opening-stage="actions">
-            {% for move in moves[:3] %}
-            <a class="opening-action" href="#move-{{ loop.index }}" style="animation-delay: {{ 440 + loop.index0 * 80 }}ms">
-              <span class="opening-action__title">{{ move.title }}</span>
-              {% if move.effort_label %}<span class="opening-action__effort">{{ move.effort_label | lower }}</span>{% endif %}
-            </a>
-            {% endfor %}
-          </div>
-
-          {% if result.has_exposed or rail_items %}
-          <div class="exposure-rail">
-            <p class="exposure-rail__head">Exposed</p>
-            <ul>
-              {% for f in rail_items[:3] %}
-              <li>{{ f.title }}</li>
-              {% endfor %}
-              {% if rail_items | length > 3 %}
-              <li class="exposure-rail__more">and {{ rail_items | length - 3 }} more</li>
-              {% endif %}
-            </ul>
-          </div>
-          {% endif %}
+          <p class="hero-action" data-opening-stage="actions" style="animation-delay: 440ms">
+            <a href="#section-c">View prioritized actions</a>
+          </p>
         </div>
       </section>
 
       {# B - What you're paying for #}
-      <section id="section-b" data-reveal data-reveal-index="1" aria-labelledby="b-title">
+      {# C - What matters most: the prioritized top moves, a numbered sequence. #}
+      <section id="section-c" data-reveal data-reveal-index="1" aria-labelledby="c-title">
+        <p class="kicker">Priorities</p>
+        <h2 id="c-title">What matters most</h2>
+        <p class="section-help">
+          Ranked by security impact, evidence confidence, and estimated effort.
+        </p>
+        {% if moves %}
+        <ol class="move-list">
+          {% for move in moves %}
+          <li class="move-item" id="move-{{ loop.index }}">
+            <span class="move-index mono" aria-hidden="true">{{ '%02d' | format(loop.index) }}</span>
+            <div class="move-body">
+              <div class="move-head">
+                <strong class="move-title">{{ move.title }}</strong>
+                {% if move.effort_label %}<span class="move-effort">{{ move.effort_label | lower }}</span>{% endif %}
+              </div>
+              {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
+              {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
+              {% if move.check_ids %}<p class="move-ids">Checks: <span class="mono">{{ move.check_ids | join(', ') }}</span></p>{% endif %}
+              {% if move.deep_link %}<p class="move-link"><a href="{{ move.deep_link }}">Open the admin page</a></p>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+        <p class="move-note">Effort is a rough guide, not a quote.</p>
+        {% else %}
+        <p class="caption">No prioritized moves were produced by this scan.</p>
+        {% endif %}
+      </section>
+
+      {# B - What you're paying for #}
+      <section id="section-b" data-reveal data-reveal-index="2" aria-labelledby="b-title">
         <p class="kicker">Entitlements</p>
         <h2 id="b-title">What you're paying for</h2>
         <p class="section-help">
@@ -329,37 +336,6 @@
         </div>
         {% else %}
         <p class="caption">No licensed capabilities were resolved from entitlements.</p>
-        {% endif %}
-      </section>
-
-      {# C - What matters most: the prioritized top moves, a numbered sequence. #}
-      <section id="section-c" data-reveal data-reveal-index="2" aria-labelledby="c-title">
-        <p class="kicker">Priorities</p>
-        <h2 id="c-title">What matters most</h2>
-        <p class="section-help">
-          Ranked by security impact, evidence confidence, and estimated effort.
-        </p>
-        {% if moves %}
-        <ol class="move-list">
-          {% for move in moves %}
-          <li class="move-item" id="move-{{ loop.index }}">
-            <span class="move-index mono" aria-hidden="true">{{ '%02d' | format(loop.index) }}</span>
-            <div class="move-body">
-              <div class="move-head">
-                <strong class="move-title">{{ move.title }}</strong>
-                {% if move.effort_label %}<span class="move-effort">{{ move.effort_label | lower }}</span>{% endif %}
-              </div>
-              {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
-              {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
-              {% if move.check_ids %}<p class="move-ids">Checks: <span class="mono">{{ move.check_ids | join(', ') }}</span></p>{% endif %}
-              {% if move.deep_link %}<p class="move-link"><a href="{{ move.deep_link }}">Open the admin page</a></p>{% endif %}
-            </div>
-          </li>
-          {% endfor %}
-        </ol>
-        <p class="move-note">Effort is a rough guide, not a quote.</p>
-        {% else %}
-        <p class="caption">No prioritized moves were produced by this scan.</p>
         {% endif %}
       </section>
 
