@@ -102,13 +102,8 @@ def write_markdown_report(
             if cap.if_unused:
                 lines.append(f"- **If unused:** {cap.if_unused}")
             sku_text = ", ".join(friendly_sku_name(name) for name in cap.matched_skus)
-            lines.append(
-                "- **Included through license SKU(s):** "
-                f"{sku_text or 'Not reported'}"
-            )
-            plan_text = ", ".join(
-                friendly_plan_name(name) for name in cap.matched_service_plans
-            )
+            lines.append(f"- **Included through license SKU(s):** {sku_text or 'Not reported'}")
+            plan_text = ", ".join(friendly_plan_name(name) for name in cap.matched_service_plans)
             lines.append(
                 "- **Matching service plan(s):** "
                 f"{plan_text or 'No matching service plan reported'}"

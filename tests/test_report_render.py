@@ -439,9 +439,7 @@ def test_findings_are_one_collapsed_details_row_per_finding(tmp_path: Path) -> N
     root = parse_html(html)
 
     rows = [
-        el
-        for el in root.iter("details")
-        if "explore-row" in (el.attrib.get("class") or "").split()
+        el for el in root.iter("details") if "explore-row" in (el.attrib.get("class") or "").split()
     ]
     assert len(rows) == len(result.findings), (
         f"expected one collapsed row per finding, got {len(rows)} rows for "
@@ -450,8 +448,7 @@ def test_findings_are_one_collapsed_details_row_per_finding(tmp_path: Path) -> N
     for row in rows:
         assert "open" not in row.attrib, "finding row must be collapsed by default"
         articles = [
-            el for el in row.iter("article")
-            if "finding" in (el.attrib.get("class") or "").split()
+            el for el in row.iter("article") if "finding" in (el.attrib.get("class") or "").split()
         ]
         assert len(articles) == 1, "each row must contain exactly one belief-block article"
         assert row.attrib.get("data-check-id"), "finding row missing data-check-id"
@@ -466,9 +463,7 @@ def test_findings_default_to_severity_order(tmp_path: Path) -> None:
     root = parse_html(html)
 
     rows = [
-        el
-        for el in root.iter("details")
-        if "explore-row" in (el.attrib.get("class") or "").split()
+        el for el in root.iter("details") if "explore-row" in (el.attrib.get("class") or "").split()
     ]
     severity_rank = {"critical": 0, "high": 1, "medium": 2, "low": 3, "info": 4}
     ranks = [severity_rank.get(row.attrib.get("data-severity"), 99) for row in rows]
@@ -477,9 +472,7 @@ def test_findings_default_to_severity_order(tmp_path: Path) -> None:
         "finding row missing the engine-order index"
     )
     engine_indices = [row.attrib["data-engine-idx"] for row in rows]
-    assert engine_indices == sorted(engine_indices, key=int), (
-        "severity ties must keep engine order"
-    )
+    assert engine_indices == sorted(engine_indices, key=int), "severity ties must keep engine order"
 
     assert '<option value="severity" selected>Severity (default)</option>' in html, (
         "sort control does not default to Severity"

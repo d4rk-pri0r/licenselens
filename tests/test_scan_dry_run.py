@@ -181,9 +181,7 @@ def test_reports_distinguish_detected_from_prioritized_capabilities(tmp_path: Pa
         for cap in result.capability_summaries:
             assert ", ".join(friendly_sku_name(name) for name in cap.matched_skus) in report
             if cap.matched_service_plans:
-                friendly = ", ".join(
-                    friendly_plan_name(name) for name in cap.matched_service_plans
-                )
+                friendly = ", ".join(friendly_plan_name(name) for name in cap.matched_service_plans)
                 assert friendly in report
     assert "licensed capabilities detected" in html
     assert "prioritized capabilities" in html
