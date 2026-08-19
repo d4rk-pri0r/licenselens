@@ -1221,10 +1221,10 @@ body.revealed [data-opening-stage="implication"] {
   opacity: 0;
   animation: opening-rise 300ms ease-out 380ms both;
 }
-/* Stage 7: top actions fade + rise, 300ms, 80ms stagger (inline). */
-body.revealed .opening-action {
+/* Stage 7: single action anchor fade + rise, 300ms, delay 440ms. */
+body.revealed [data-opening-stage="actions"] {
   opacity: 0;
-  animation: opening-rise 300ms ease-out both;
+  animation: opening-rise 300ms ease-out 440ms both;
 }
 
 /* Constellation resolve: nodes transition neutral -> status color column by
@@ -1261,7 +1261,6 @@ main section.is-revealed {
   [data-opening-stage],
   .dist-item,
   .dist-seg,
-  .opening-action,
   main section.is-pending-reveal {
     opacity: 1 !important;
     transform: none !important;
@@ -1287,7 +1286,6 @@ main section.is-revealed {
   .move-item,
   .finding-row,
   .chart,
-  .opening-action,
   details.tech {
     background: Canvas;
     border-color: CanvasText;
@@ -1385,8 +1383,7 @@ main section.is-revealed {
   main section.is-pending-reveal,
   [data-opening-stage],
   .dist-item,
-  .dist-seg,
-  .opening-action {
+  .dist-seg {
     opacity: 1 !important;
     transform: none !important;
     animation: none !important;
@@ -1402,7 +1399,7 @@ main section.is-revealed {
     box-shadow: none !important;
   }
 
-  .opening-action { border-color: var(--print-border) !important; }
+  .hero-action a { border-color: var(--print-border) !important; }
 
   /* Radial gauge is replaced by its accessible description line. */
   .posture-gauge__viz { display: none; }

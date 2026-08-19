@@ -99,14 +99,16 @@ body {
 
 [hidden] { display: none !important; }
 
-/* Masthead chrome: highest surface, strong rule, radius 0 (§4). */
+/* Masthead chrome: open on the canvas, radius 0 (§4). The header is
+   box-aligned with main (same 1160px border-box + 32px gutters) so the
+   masthead column matches the sections' 1096px content column. */
 header {
   max-width: 1160px;
   margin-block: 0 24px;
   margin-inline: auto;
   padding-inline: 32px;
-  background: var(--surface-4);
-  border: 1px solid var(--border-strong);
+  background: transparent;
+  border: 0;
   border-radius: 0;
 }
 
@@ -121,7 +123,7 @@ main {
 /* --------------------------------------------------------------------------
    §3. Typography — locked type scale, heading hierarchy h1 -> h2 -> h3.
    -------------------------------------------------------------------------- */
-h1 { font-size: 1.5rem; font-weight: 650; line-height: 1.25; }
+h1 { font-size: 2rem; font-weight: 650; line-height: 1.25; }
 h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
 h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.35; }
 
@@ -657,7 +659,7 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 }
 .dist-item { display: inline-flex; align-items: center; gap: 6px; }
 
-/* Implication + top actions close the opening sequence. */
+/* Implication + the single action anchor close the opening sequence. */
 .implication {
   margin-block: 20px 0;
   font-size: 1rem;
@@ -666,15 +668,6 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 }
 .posture-sentence { color: var(--text-2); margin-block: 8px 0; }
 
-.top-actions {
-  list-style: none;
-  margin-block: 20px 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.top-action { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
 .effort-label {
   display: inline-block;
   padding: 2px 8px;
@@ -683,14 +676,6 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   font-size: 0.75rem;
   color: var(--text-2);
 }
-
-/* Exposed rail: 3px action rail listing exposed / gap check titles. */
-.exposed-rail {
-  margin-block-start: 24px;
-  padding-inline-start: 16px;
-  border-inline-start: 3px solid var(--state-action);
-}
-.exposed-rail ul { margin: 4px 0 0; padding-inline-start: 1.2rem; }
 
 /* --------------------------------------------------------------------------
    §5E. Exploration — charts, search, filter groups, sort, counts, list,
@@ -1010,15 +995,39 @@ details.explore-row .finding-head h3 { font-size: 1.06rem; }
   font-size: 0.8125rem;
 }
 
-/* Table of contents (single-file §6). */
+/* Table of contents (single-file §6): a prominent segmented control —
+   the report's primary orientation affordance, not plain links. */
 .toc {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
-  padding-block: 8px 16px;
+  gap: 6px;
+  padding-block: 12px 16px;
   border-block-start: 1px solid var(--border);
 }
-.toc a { font-size: 0.8125rem; }
+.toc a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+.toc a:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent);
+}
+.toc a:first-child {
+  color: var(--text-1);
+  background: var(--surface-3);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
 
 /* --------------------------------------------------------------------------
    Technical tables — radius 0, mono cells, scrollable at 640px.
@@ -1081,10 +1090,7 @@ body.revealed .dist-item:nth-child(2) { animation-delay: 320ms; }
 body.revealed .dist-item:nth-child(3) { animation-delay: 380ms; }
 body.revealed .dist-item:nth-child(4) { animation-delay: 440ms; }
 body.revealed .implication { animation-duration: 300ms; animation-delay: 380ms; }
-body.revealed .top-action { animation-duration: 300ms; }
-body.revealed .top-action:nth-child(1) { animation-delay: 540ms; }
-body.revealed .top-action:nth-child(2) { animation-delay: 620ms; }
-body.revealed .top-action:nth-child(3) { animation-delay: 700ms; }
+body.revealed .hero-action { animation-duration: 300ms; animation-delay: 440ms; }
 
 /* Stage 4a: radial gauge draw (700ms, delay 160ms). */
 body.revealed .radial-arc {
@@ -1556,6 +1562,28 @@ footer {
 .opening-meta code { color: var(--text-1); }
 .opening-tenant-id { color: var(--text-2); }
 
+/* Stage 7 → single path forward: one restrained action anchor into C. */
+.hero-action { margin-block: 20px 0 4px; }
+.hero-action a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface-1);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+.hero-action a:hover {
+  color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  background: var(--surface-2);
+}
+
 /* Below-fold reveals: B, C, and Findings fade + 6px rise on first entry,
    one-shot
    IntersectionObserver (single-file only; the bundle app drives its own). */
@@ -1640,8 +1668,8 @@ body.revealed .reveal-target.is-revealed {
     
     <nav class="toc" aria-label="Sections">
       <a href="#section-a">Where you stand</a>
-      <a href="#section-b">What you're paying for</a>
       <a href="#section-c">What matters most</a>
+      <a href="#section-b">What you're paying for</a>
       <a href="#section-findings">Findings</a>
     </nav>
   </header>
@@ -1729,16 +1757,74 @@ body.revealed .reveal-target.is-revealed {
 
         <p class="implication opening-stage">5 of your 6 priority capabilities need attention.</p><p class="posture-sentence">5 of 6 priority capabilities still need attention</p>
 
-        <ol class="top-actions"><li class="top-action opening-stage">
-            <a href="#move-1">Restrict user consent so only admins approve non-trivial permissions</a><span class="effort-label">~a few hours</span></li><li class="top-action opening-stage">
-            <a href="#move-2">Disable SMS, Voice, and Email OTP authentication methods</a><span class="effort-label">~a few hours</span></li><li class="top-action opening-stage">
-            <a href="#move-3">Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in…</a><span class="effort-label">~a few hours</span></li></ol><div class="exposed-rail">
-          <p class="micro-label">Exposed or action required</p>
-          <ul><li>Require strong sign-in for powerful admin roles</li><li>Some paid device-management seats may not be enrolled</li><li>Review apps with broad permissions for everyone</li></ul><p class="caption">and 39 more</p></div></div>
+        
+        <p class="hero-action opening-stage">
+          <a href="#section-c">View prioritized actions</a>
+        </p>
+      </div>
     </section>
 
     
-    <section id="section-b" class="reveal-target" style="--reveal-delay: 0ms">
+    
+    <section id="section-c" class="reveal-target" style="--reveal-delay: 0ms">
+      <p class="micro-label section-kicker">Priorities</p>
+      <h2>What matters most</h2>
+      <p class="section-help">
+        Ranked by security impact, evidence confidence, and estimated effort.
+      </p>
+      <ol class="move-list">
+        
+        <li class="move-item move-item--lead" id="move-1">
+          <span class="move-index mono">01</span>
+          <div class="move-body">
+            <div class="move-head">
+              <strong class="move-title">Restrict user consent so only admins approve non-trivial permissions</strong>
+              <span class="effort-label">~a few hours</span>
+            </div>
+            <p class="move-why"><strong>Why:</strong> Users can still approve app permissions themselves, which is a common path for consent phishing.</p>
+            <p class="move-action"><strong>Action:</strong> Restrict user consent so only admins approve non-trivial permissions.</p>
+            <p class="move-ids">Checks: <span class="mono">id-app-user-consent-restricted</span></p>
+            <p class="move-link"><a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserSettingsMenuBlade">Open the admin page</a></p>
+          </div>
+        </li>
+        
+        <li class="move-item" id="move-2">
+          <span class="move-index mono">02</span>
+          <div class="move-body">
+            <div class="move-head">
+              <strong class="move-title">Disable SMS, Voice, and Email OTP authentication methods</strong>
+              <span class="effort-label">~a few hours</span>
+            </div>
+            <p class="move-why"><strong>Why:</strong> SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.</p>
+            <p class="move-action"><strong>Action:</strong> Disable SMS, Voice, and Email OTP authentication methods.</p>
+            <p class="move-ids">Checks: <span class="mono">id-auth-weak-methods-disabled</span></p>
+            <p class="move-link"><a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade">Open the admin page</a></p>
+          </div>
+        </li>
+        
+        <li class="move-item" id="move-3">
+          <span class="move-index mono">03</span>
+          <div class="move-body">
+            <div class="move-head">
+              <strong class="move-title">Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in…</strong>
+              <span class="effort-label">~a few hours</span>
+            </div>
+            <p class="move-why"><strong>Why:</strong> We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.</p>
+            <p class="move-action"><strong>Action:</strong> Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions.</p>
+            <p class="move-ids">Checks: <span class="mono">id-break-glass-exclusion</span></p>
+            <p class="move-link"><a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers">Open the admin page</a></p>
+          </div>
+        </li>
+        
+      </ol>
+      <p class="move-note">
+        Effort is a rough guide, not a quote.
+      </p>
+    </section>
+    
+
+    
+    <section id="section-b" class="reveal-target" style="--reveal-delay: 40ms">
       <p class="micro-label section-kicker">Entitlements</p>
       <h2>What you're paying for</h2>
       <p class="section-help">
@@ -2715,65 +2801,6 @@ body.revealed .reveal-target.is-revealed {
     </details>
   </article></div>
     </section>
-
-    
-    
-    <section id="section-c" class="reveal-target" style="--reveal-delay: 40ms">
-      <p class="micro-label section-kicker">Priorities</p>
-      <h2>What matters most</h2>
-      <p class="section-help">
-        Ranked by security impact, evidence confidence, and estimated effort.
-      </p>
-      <ol class="move-list">
-        
-        <li class="move-item move-item--lead" id="move-1">
-          <span class="move-index mono">01</span>
-          <div class="move-body">
-            <div class="move-head">
-              <strong class="move-title">Restrict user consent so only admins approve non-trivial permissions</strong>
-              <span class="effort-label">~a few hours</span>
-            </div>
-            <p class="move-why"><strong>Why:</strong> Users can still approve app permissions themselves, which is a common path for consent phishing.</p>
-            <p class="move-action"><strong>Action:</strong> Restrict user consent so only admins approve non-trivial permissions.</p>
-            <p class="move-ids">Checks: <span class="mono">id-app-user-consent-restricted</span></p>
-            <p class="move-link"><a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserSettingsMenuBlade">Open the admin page</a></p>
-          </div>
-        </li>
-        
-        <li class="move-item" id="move-2">
-          <span class="move-index mono">02</span>
-          <div class="move-body">
-            <div class="move-head">
-              <strong class="move-title">Disable SMS, Voice, and Email OTP authentication methods</strong>
-              <span class="effort-label">~a few hours</span>
-            </div>
-            <p class="move-why"><strong>Why:</strong> SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.</p>
-            <p class="move-action"><strong>Action:</strong> Disable SMS, Voice, and Email OTP authentication methods.</p>
-            <p class="move-ids">Checks: <span class="mono">id-auth-weak-methods-disabled</span></p>
-            <p class="move-link"><a href="https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade">Open the admin page</a></p>
-          </div>
-        </li>
-        
-        <li class="move-item" id="move-3">
-          <span class="move-index mono">03</span>
-          <div class="move-body">
-            <div class="move-head">
-              <strong class="move-title">Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in…</strong>
-              <span class="effort-label">~a few hours</span>
-            </div>
-            <p class="move-why"><strong>Why:</strong> We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.</p>
-            <p class="move-action"><strong>Action:</strong> Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions.</p>
-            <p class="move-ids">Checks: <span class="mono">id-break-glass-exclusion</span></p>
-            <p class="move-link"><a href="https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers">Open the admin page</a></p>
-          </div>
-        </li>
-        
-      </ol>
-      <p class="move-note">
-        Effort is a rough guide, not a quote.
-      </p>
-    </section>
-    
 
     
     <section id="section-findings" class="reveal-target" style="--reveal-delay: 80ms">
