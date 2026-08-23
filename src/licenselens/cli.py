@@ -88,6 +88,7 @@ IDENTITY_ACCENT = "#88b4d8"
 class AuthModeOption(StrEnum):
     DEVICE = "device"
     CLIENT_SECRET = "client_secret"
+    CERTIFICATE = "certificate"
     AZURE_CLI = "azure_cli"
     OIDC = "oidc"
 
@@ -119,6 +120,7 @@ def _to_auth_mode(option: AuthModeOption | None, *, live: bool) -> AuthMode:
     return {
         AuthModeOption.DEVICE: AuthMode.DEVICE_CODE,
         AuthModeOption.CLIENT_SECRET: AuthMode.CLIENT_SECRET,
+        AuthModeOption.CERTIFICATE: AuthMode.CERTIFICATE,
         AuthModeOption.AZURE_CLI: AuthMode.AZURE_CLI,
         AuthModeOption.OIDC: AuthMode.OIDC,
     }[option]
@@ -469,7 +471,7 @@ def doctor_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli | oidc.",
+        help="Live auth mode: device | client_secret | certificate | azure_cli | oidc.",
     ),
     profile: str = typer.Option(
         "basic",
@@ -695,7 +697,7 @@ def scan_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli | oidc.",
+        help="Live auth mode: device | client_secret | certificate | azure_cli | oidc.",
     ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
@@ -1399,7 +1401,7 @@ def discover_workspace_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli | oidc.",
+        help="Live auth mode: device | client_secret | certificate | azure_cli | oidc.",
     ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
@@ -1408,6 +1410,12 @@ def discover_workspace_cmd(
         "--client-secret",
         envvar="AZURE_CLIENT_SECRET",
         help="Client secret (prefer env AZURE_CLIENT_SECRET).",
+    ),
+    certificate: str | None = typer.Option(
+        None,
+        "--certificate",
+        envvar="AZURE_CLIENT_CERTIFICATE_PATH",
+        help="Path to a PEM/PFX client certificate (app-only, secret-free).",
     ),
     subscription_id: str | None = typer.Option(
         None,
@@ -1429,6 +1437,7 @@ def discover_workspace_cmd(
             tenant_id=tenant_id,
             client_id=client_id,
             client_secret=client_secret,
+            certificate_path=certificate,
         )
     except AuthError as exc:
         console.print(f"[red]Auth configuration error:[/red] {exc}")

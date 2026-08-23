@@ -30,6 +30,8 @@ _AUTH_MODE_ALIASES: dict[str, AuthMode] = {
     "workload_identity": AuthMode.OIDC,
     "workload-identity": AuthMode.OIDC,
     "federated": AuthMode.OIDC,
+    "certificate": AuthMode.CERTIFICATE,
+    "cert": AuthMode.CERTIFICATE,
 }
 
 
@@ -132,6 +134,7 @@ def run_batch(
                 client_id=entry.get("client_id"),
                 client_secret=entry.get("client_secret"),
                 oidc_token=entry.get("oidc_token") or oidc_token,
+                certificate_path=entry.get("certificate"),
             )
             result = run_scan(
                 auth,

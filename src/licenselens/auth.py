@@ -17,6 +17,7 @@ DEFAULT_PUBLIC_CLIENT_ID = "14d82eec-204b-4c2f-b7e8-296a70dab67e"  # Microsoft G
 class AuthMode(StrEnum):
     DEVICE_CODE = "device_code"
     CLIENT_SECRET = "client_secret"
+    CERTIFICATE = "certificate"
     AZURE_CLI = "azure_cli"
     DRY_RUN = "dry_run"
     OIDC = "oidc"
@@ -83,12 +84,16 @@ def resolve_auth_inputs(
     tenant_id: str | None = None,
     client_id: str | None = None,
     client_secret: str | None = None,
-) -> tuple[str | None, str | None, str | None]:
+    certificate_path: str | None = None,
+    certificate_thumbprint: str | None = None,
+) -> tuple[str | None, str | None, str | None, str | None, str | None]:
     """Merge CLI options with standard Azure environment variables."""
     tid = tenant_id or _env("AZURE_TENANT_ID")
     cid = client_id or _env("AZURE_CLIENT_ID")
     secret = client_secret or _env("AZURE_CLIENT_SECRET")
-    return tid, cid, secret
+    cert_path = certificate_path or _env("AZURE_CLIENT_CERTIFICATE_PATH")
+    cert_thumb = certificate_thumbprint or _env("AZURE_CLIENT_CERT_THUMBPRINT")
+    return tid, cid, secret, cert_path, cert_thumb
 
 
 def _fetch_github_oidc_token() -> str | None:
@@ -125,6 +130,8 @@ def build_credential(
     client_id: str | None = None,
     client_secret: str | None = None,
     oidc_token: str | None = None,
+    certificate_path: str | None = None,
+    certificate_thumbprint: str | None = None,
 ) -> Any:
     """Build an azure-identity credential for the requested mode."""
     if mode == AuthMode.DRY_RUN:
@@ -134,6 +141,7 @@ def build_credential(
         from azure.identity import (
             AzureCliCredential,
             ClientAssertionCredential,
+            ClientCertificateCredential,
             ClientSecretCredential,
             DeviceCodeCredential,
         )
@@ -142,6 +150,20 @@ def build_credential(
             "azure-identity is required for live authentication. "
             "Install with: pip install 'licenselens'"
         ) from exc
+
+    if mode == AuthMode.CERTIFICATE:
+        if not tenant_id or not client_id or not certificate_path:
+            raise AuthConfigError(
+                "Certificate auth requires tenant id, client id, and a certificate "
+                "path. Pass --tenant-id / --client-id / --certificate (or "
+                "AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_CERTIFICATE_PATH)."
+            )
+        return ClientCertificateCredential(
+            tenant_id=tenant_id,
+            client_id=client_id,
+            certificate_path=certificate_path,
+            thumbprint=certificate_thumbprint,
+        )
 
     if mode == AuthMode.AZURE_CLI:
         return AzureCliCredential()
@@ -209,13 +231,17 @@ def build_auth_context(
     client_id: str | None = None,
     client_secret: str | None = None,
     oidc_token: str | None = None,
+    certificate_path: str | None = None,
+    certificate_thumbprint: str | None = None,
 ) -> AuthContext:
     """Build auth context, resolving env vars and constructing credentials."""
-    tid, cid, secret = resolve_auth_inputs(
+    tid, cid, secret, cert_path, cert_thumb = resolve_auth_inputs(
         mode=mode,
         tenant_id=tenant_id,
         client_id=client_id,
         client_secret=client_secret,
+        certificate_path=certificate_path,
+        certificate_thumbprint=certificate_thumbprint,
     )
     warnings: list[str] = []
 
@@ -228,6 +254,8 @@ def build_auth_context(
         client_id=cid,
         client_secret=secret,
         oidc_token=oidc_token,
+        certificate_path=cert_path,
+        certificate_thumbprint=cert_thumb,
     )
 
     if mode == AuthMode.DEVICE_CODE and getattr(

@@ -34,14 +34,16 @@ Full CLI flags: [CLI reference](cli.md). Fixture and comments:
 ## App-only auth (once per customer)
 
 1. Entra ID → App registrations → New registration (single tenant or multi).
-2. Certificates & secrets → client secret (certificate credentials are **not**
-   implemented by LicenseLens).
+2. Certificates & secrets → a client secret, a **client certificate** (PEM/PFX,
+   used with `auth: certificate`), or a **federated credential** for OIDC.
 3. API permissions (application) + **admin consent** — see
    [app-registration.md](app-registration.md) and [permissions.md](permissions.md).
-4. Store `tenant_id`, `client_id`, and secret in a secrets manager — not in git.
+4. Store `tenant_id`, `client_id`, and the secret in a secrets manager — not in git.
 
 Prefer `AZURE_CLIENT_ID` / `AZURE_CLIENT_SECRET` (and per-tenant `AZURE_TENANT_ID`
-or YAML `tenant_id`) over embedding secrets in YAML.
+or YAML `tenant_id`) over embedding secrets in YAML. For secret-free unattended
+runs, prefer `auth: certificate` (cert path via
+`AZURE_CLIENT_CERTIFICATE_PATH` or a YAML `certificate:` key) or `auth: oidc`.
 
 ## OIDC workload-identity federation (`--auth oidc`)
 

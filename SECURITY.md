@@ -28,7 +28,7 @@ Include:
 - No telemetry is sent by default; reports are written only to paths you choose
 - Do not commit customer tokens, `.env` files, live reports, or unredacted exports
 - Default dormant-account evidence redacts UPN local-parts only; treat full JSON as sensitive
-- Production MSP use should prefer a dedicated app registration with the client secret in a secret manager (or Azure CLI); certificate credentials are **not implemented**
+- Production MSP use should prefer a dedicated app registration with the client secret in a secret manager (or Azure CLI); certificate (`--auth certificate`, PEM/PFX client cert) and OIDC/workload-identity federation are the recommended secret-free unattended patterns
 - Collectors must not call write APIs
 
 ## Data handling

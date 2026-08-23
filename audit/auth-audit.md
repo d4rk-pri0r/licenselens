@@ -11,6 +11,14 @@ Every claim is grounded in the actual code and docs. Where a feature is **not**
 implemented (e.g., certificate auth), that is stated plainly as a gap. This is
 an analysis document only — no code, YAML, or docs were modified.
 
+> **Update (2026-08).** Certificate-based authentication (`--auth certificate`,
+> PEM/PFX client cert via `AZURE_CLIENT_CERTIFICATE_PATH` or a YAML
+> `certificate:` key) is now a first-class mode in `scan`/`doctor`/
+> `discover-workspace` and `batch`. The "not implemented" gaps recorded in this
+> audit for certificate auth are closed; OIDC and certificate are both supported
+> secret-free unattended options. Remaining aspirational items: secrets-manager
+> integration and GDAP/partner-scoped least privilege.
+
 ---
 
 ## 1. Permissions the product requests

@@ -56,6 +56,12 @@ def test_oidc_auth_mode_aliases_parse_to_oidc():
     assert default is AuthMode.CLIENT_SECRET
 
 
+def test_certificate_auth_mode_aliases_parse_to_certificate():
+    """§16: batch accepts the secret-free certificate (app-only) mode."""
+    for alias in ("certificate", "cert"):
+        assert _parse_auth_mode(alias, default=AuthMode.CLIENT_SECRET) is AuthMode.CERTIFICATE
+
+
 def test_run_batch_exports_action_plan_per_tenant(tmp_path: Path):
     """§15/§18: batch can write a structured activation backlog per tenant."""
     cfg = _config(
