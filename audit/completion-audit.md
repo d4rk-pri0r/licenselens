@@ -67,9 +67,11 @@ states plainly what remains intentionally deferred.
 
 1. **Real-tenant validation (§14/§27)** — the framework, recording schema, issue templates, and honest-zero metrics are in place, but **no real or controlled tenant run has been recorded and falsified** yet. This is the Phase-5 external-validation milestone the goal defines as subsequent work; the system intentionally reports zero rather than inventing numbers. This is the single genuine "not yet achieved" requirement.
 
-2. **Certificate-based auth (§16)** — certificate/workload-identity credentials are documented as "not implemented" (client secret, device code, Azure CLI, and GitHub OIDC federation are supported; OIDC now also works in batch). Certificate auth remains an aspirational MSP pattern, documented as a gap in `audit/auth-audit.md`.
+## Requirements closed since the first audit pass
 
-3. **MSP portfolio-level prioritization / batch-level backlog-export (§15/§16)** — the MSP workflow audit identifies that `batch` lacks an action-plan `--export` and portfolio-level prioritization; these are scoped "minimum credible features" recommendations for follow-on work, not regressions.
+- **Certificate-based auth (§16)** — implemented as a first-class mode: `--auth certificate` (PEM/PFX client cert) in `scan`/`doctor`/`discover-workspace` and `batch`, with `AZURE_CLIENT_CERTIFICATE_PATH` / a YAML `certificate:` key. OIDC and certificate are now both supported secret-free unattended options.
+- **Batch activation backlog (§15/§18)** — `licenselens batch --export json|csv|action-plan` now writes a structured per-tenant action plan, closing the "batch lacks backlog export" gap.
+- **Flagship test-class standard (§5)** — every one of the 34 flagship checks now has positive + negative + missing/error test coverage (maturity dashboard measures 34/34, replacing the placeholder zero).
 
 ## Completion criteria evaluation (§33)
 
@@ -77,7 +79,7 @@ states plainly what remains intentionally deferred.
 - **Security methodology**: Flagships defensible, denominators correct, claims proportional, uncertainties honest, licensing sourced. ✅
 - **Engineering**: Scoring deterministic, critical edge cases tested, failure states safe, evidence reproducible, public release coherent (version consistency + passing release gate). ✅
 - **Conference**: BSides demo reliable (deterministic + rehearsed playbook), skeptical practitioner can inspect logic, strong "not vibe-coded" answer. ✅ Ignite-quality story supported. ✅
-- **MSP**: Multiple tenants assessed credibly (batch + isolation), authorization explainable, least privilege improving (OIDC), results → activation backlog, reassessment → diff. ✅
+- **MSP**: Multiple tenants assessed credibly (batch + isolation), authorization explainable, least privilege improving (OIDC + certificate secret-free modes), results → activation backlog (including per-tenant batch export), reassessment → diff. ✅
 
 ## Definition of Done
 
