@@ -105,6 +105,11 @@ def test_idprotect_partial_report_only():
     assert result.status == FindingStatus.PARTIAL
 
 
+def test_idprotect_gap_when_no_risk_policies():
+    result = evaluate_idprotect_off(_check("id-idprotect-off"), {"ca_policies": []})
+    assert result.status == FindingStatus.GAP
+
+
 _MFA_ALL = {
     "displayName": "MFA all",
     "state": "enabled",

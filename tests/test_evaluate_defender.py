@@ -106,6 +106,33 @@ def test_mde_gap_when_authoritative_inventory_gap_wide():
     assert result.status == FindingStatus.GAP
 
 
+def test_mde_error_when_inventory_unavailable():
+    # Missing machine inventory is an explicit failure, not a silent pass.
+    result = evaluate_mde_onboard_gap(
+        _check("mde-onboard-gap"),
+        {"mde_summary": {}},
+    )
+    assert result.status == FindingStatus.ERROR
+
+
+def test_mdo_direct_path_gap_when_no_enabled_policies():
+    result = evaluate_mdo_p2_policies(
+        _check("mdo-p2-policies-default"),
+        {
+            "exchange_threat_usable": True,
+            "exchange_threat_policies": {
+                "surfaces": {
+                    "safe_links": {"status": "ok", "items": []},
+                    "safe_attachments": {"status": "ok", "items": []},
+                    "preset_security": {"status": "ok", "items": []},
+                }
+            },
+        },
+    )
+    assert result.status == FindingStatus.GAP
+    assert result.evidence.get("proxy") is False
+
+
 def test_mdi_demo_partial_without_controls():
     # Demo score has no MDI-named controls → partial / cannot confirm
     controls = extract_control_scores(DEMO_SECURE_SCORE)

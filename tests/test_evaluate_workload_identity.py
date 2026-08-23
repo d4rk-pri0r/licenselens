@@ -81,6 +81,16 @@ def test_ca_workload_identity_gap_when_sp_targeting_has_no_risk_conditions():
     assert result.evidence["service_principal_targeting_policies"] == ["Workload identity risk"]
 
 
+def test_ca_workload_identity_gap_when_no_policies():
+    # Empty/absent evidence must never produce a false OK.
+    result = evaluate_ca_workload_identity(
+        _check("id-ca-workload-identity"),
+        {"ca_policies": []},
+    )
+    assert result.status == FindingStatus.GAP
+    assert result.evidence["enforced_workload_risk_policies"] == []
+
+
 # -- id-break-glass-exclusion -------------------------------------------------
 
 

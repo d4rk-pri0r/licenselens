@@ -254,6 +254,15 @@ def test_number_matching_partial_when_authenticator_absent():
     assert result.status == FindingStatus.PARTIAL
 
 
+def test_number_matching_error_on_collection_failure():
+    result = evaluate_auth_number_matching(
+        _check("id-number-matching"),
+        {"auth_methods_bundle_error": "403 denied"},
+    )
+    assert result.status == FindingStatus.ERROR
+    assert result.evidence["error"] == "403 denied"
+
+
 # -- id-cross-tenant-mfa-trust -----------------------------------------------
 
 

@@ -8,14 +8,18 @@ from licenselens.engine.evaluate import (
     evaluate_auth_methods_migration,
     evaluate_auth_weak_methods_disabled,
     evaluate_ca_device_code_block,
+    evaluate_ca_high_risk_signins,
     evaluate_ca_high_risk_users,
     evaluate_ca_legacy_auth_block,
+    evaluate_ca_managed_devices,
     evaluate_ca_mfa_all_users,
+    evaluate_ca_phishing_resistant_all,
     evaluate_ca_phishing_resistant_privileged,
     evaluate_ga_count_bounds,
     evaluate_guest_directory_access_limited,
     evaluate_password_never_expire,
     evaluate_pim_no_permanent_privileged,
+    evaluate_priv_cloud_only,
 )
 from licenselens.models import CheckDefinition, FindingStatus, Workload
 
@@ -159,6 +163,185 @@ def test_phishing_resistant_privileged_ok() -> None:
     assert result.status == FindingStatus.OK
 
 
+def test_phishing_resistant_privileged_gap_when_missing() -> None:
+    result = evaluate_ca_phishing_resistant_privileged(
+        _check("id-ca-phishing-resistant-privileged"),
+        {"ca_policies": []},
+    )
+    assert result.status == FindingStatus.GAP
+
+
+def test_phishing_resistant_privileged_partial_report_only() -> None:
+    policies = [
+        {
+            "displayName": "PR MFA admins RO",
+            "state": "enabledForReportingButNotEnforced",
+            "conditions": {
+                "users": {"includeUsers": [], "includeRoles": [GA]},
+            },
+            "grantControls": {
+                "authenticationStrength": {
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "displayName": "Phishing-resistant MFA",
+                }
+            },
+        }
+    ]
+    result = evaluate_ca_phishing_resistant_privileged(
+        _check("id-ca-phishing-resistant-privileged"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.PARTIAL
+
+
+def test_phishing_resistant_all_ok_when_enforced() -> None:
+    policies = [
+        {
+            "displayName": "PR MFA all",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"]},
+                "clientAppTypes": ["all"],
+            },
+            "grantControls": {
+                "authenticationStrength": {
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "displayName": "Phishing-resistant MFA",
+                }
+            },
+        }
+    ]
+    result = evaluate_ca_phishing_resistant_all(
+        _check("id-ca-phishing-resistant-all"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.OK
+
+
+def test_phishing_resistant_all_gap_when_missing() -> None:
+    result = evaluate_ca_phishing_resistant_all(
+        _check("id-ca-phishing-resistant-all"),
+        {"ca_policies": []},
+    )
+    assert result.status == FindingStatus.GAP
+
+
+def test_phishing_resistant_all_partial_report_only() -> None:
+    policies = [
+        {
+            "displayName": "PR MFA all RO",
+            "state": "enabledForReportingButNotEnforced",
+            "conditions": {
+                "users": {"includeUsers": ["All"]},
+                "clientAppTypes": ["all"],
+            },
+            "grantControls": {
+                "authenticationStrength": {
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "displayName": "Phishing-resistant MFA",
+                }
+            },
+        }
+    ]
+    result = evaluate_ca_phishing_resistant_all(
+        _check("id-ca-phishing-resistant-all"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.PARTIAL
+
+
+def test_managed_devices_ok_when_enforced() -> None:
+    policies = [
+        {
+            "displayName": "Require compliant device",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"]},
+                "clientAppTypes": ["all"],
+            },
+            "grantControls": {"builtInControls": ["compliantDevice"]},
+        }
+    ]
+    result = evaluate_ca_managed_devices(
+        _check("id-ca-managed-devices"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.OK
+
+
+def test_managed_devices_gap_when_missing() -> None:
+    result = evaluate_ca_managed_devices(
+        _check("id-ca-managed-devices"),
+        {"ca_policies": []},
+    )
+    assert result.status == FindingStatus.GAP
+
+
+def test_managed_devices_partial_report_only() -> None:
+    policies = [
+        {
+            "displayName": "Require compliant device RO",
+            "state": "enabledForReportingButNotEnforced",
+            "conditions": {
+                "users": {"includeUsers": ["All"]},
+                "clientAppTypes": ["all"],
+            },
+            "grantControls": {"builtInControls": ["compliantDevice"]},
+        }
+    ]
+    result = evaluate_ca_managed_devices(
+        _check("id-ca-managed-devices"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.PARTIAL
+
+
+def test_high_risk_signins_ok_when_blocked() -> None:
+    policies = [
+        {
+            "displayName": "Block high risk sign-in",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"]},
+                "signInRiskLevels": ["high"],
+            },
+            "grantControls": {"builtInControls": ["block"]},
+        }
+    ]
+    result = evaluate_ca_high_risk_signins(
+        _check("id-ca-high-risk-signins"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.OK
+
+
+def test_high_risk_signins_gap_when_missing() -> None:
+    result = evaluate_ca_high_risk_signins(
+        _check("id-ca-high-risk-signins"),
+        {"ca_policies": []},
+    )
+    assert result.status == FindingStatus.GAP
+
+
+def test_high_risk_signins_partial_report_only() -> None:
+    policies = [
+        {
+            "displayName": "Block high risk sign-in RO",
+            "state": "enabledForReportingButNotEnforced",
+            "conditions": {
+                "users": {"includeUsers": ["All"]},
+                "signInRiskLevels": ["high"],
+            },
+            "grantControls": {"builtInControls": ["block"]},
+        }
+    ]
+    result = evaluate_ca_high_risk_signins(
+        _check("id-ca-high-risk-signins"),
+        {"ca_policies": policies},
+    )
+    assert result.status == FindingStatus.PARTIAL
+
+
 def test_device_code_block_gap() -> None:
     result = evaluate_ca_device_code_block(
         _check("id-ca-device-code-block"),
@@ -173,6 +356,22 @@ def test_auth_migration_complete_ok() -> None:
         {"auth_methods_bundle": {"policy": {"policyMigrationState": "migrationComplete"}}},
     )
     assert result.status == FindingStatus.OK
+
+
+def test_auth_migration_in_progress_partial() -> None:
+    result = evaluate_auth_methods_migration(
+        _check("id-auth-methods-migration"),
+        {"auth_methods_bundle": {"policy": {"policyMigrationState": "migrationInProgress"}}},
+    )
+    assert result.status == FindingStatus.PARTIAL
+
+
+def test_auth_migration_unknown_gap() -> None:
+    result = evaluate_auth_methods_migration(
+        _check("id-auth-methods-migration"),
+        {"auth_methods_bundle": {"policy": {"policyMigrationState": "preMigration"}}},
+    )
+    assert result.status == FindingStatus.GAP
 
 
 def test_auth_weak_methods_gap() -> None:
@@ -246,6 +445,72 @@ def test_pim_no_permanent_gap() -> None:
         },
     )
     assert result.status == FindingStatus.GAP
+
+
+def test_pim_no_permanent_ok_when_no_standing() -> None:
+    result = evaluate_pim_no_permanent_privileged(
+        _check("id-pim-no-permanent-privileged"),
+        {
+            "role_assignments": [],
+            "role_eligibilities": [
+                {"principalId": "u1", "roleDefinitionId": GA},
+            ],
+        },
+    )
+    assert result.status == FindingStatus.OK
+    assert result.evidence["standing_highly_privileged_assignments"] == 0
+
+
+def test_priv_cloud_only_ok_when_no_hybrid() -> None:
+    result = evaluate_priv_cloud_only(
+        _check("id-priv-cloud-only"),
+        {
+            "role_assignments": [
+                {"principalId": "u1", "roleDefinitionId": GA},
+            ],
+            "principal_directory": {
+                "u1": {
+                    "userPrincipalName": "admin@contoso.com",
+                    "onPremisesSyncEnabled": False,
+                }
+            },
+        },
+    )
+    assert result.status == FindingStatus.OK
+    assert result.evidence["cloud_only"] == 1
+
+
+def test_priv_cloud_only_gap_when_hybrid_synced() -> None:
+    result = evaluate_priv_cloud_only(
+        _check("id-priv-cloud-only"),
+        {
+            "role_assignments": [
+                {"principalId": "u1", "roleDefinitionId": GA},
+            ],
+            "principal_directory": {
+                "u1": {
+                    "userPrincipalName": "admin@contoso.com",
+                    "onPremisesSyncEnabled": True,
+                }
+            },
+        },
+    )
+    assert result.status == FindingStatus.GAP
+    assert result.evidence["hybrid_or_synced"] == 1
+
+
+def test_priv_cloud_only_partial_when_unknown() -> None:
+    result = evaluate_priv_cloud_only(
+        _check("id-priv-cloud-only"),
+        {
+            "role_assignments": [
+                {"principalId": "u1", "roleDefinitionId": GA},
+            ],
+            "principal_directory": {"u1": {}},
+        },
+    )
+    assert result.status == FindingStatus.PARTIAL
+    assert result.evidence["unknown"] == 1
 
 
 def test_guest_directory_member_like_gap() -> None:

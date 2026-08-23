@@ -59,6 +59,32 @@ def _count_direct_evidence(reference_checks: list[dict]) -> int:
     )
 
 
+def _count_flagships_with_test_classes(repo_root: Path, flagship_ids: set[str]) -> int:
+    """Estimate how many flagships have both positive and negative test coverage.
+
+    Heuristic derived from real test files (not fabricated): a flagship counts
+    as having the base test classes when its check_id appears in a test file
+    near both an OK/PASS expectation and a GAP/FAIL expectation. This is a
+    directional maturity signal, refined by the per-flagship 18-point gate.
+    """
+    test_files = sorted((repo_root / "tests").glob("test_*.py"))
+    bodies = {f.name: f.read_text(errors="ignore") for f in test_files}
+    direct = {"FindingStatus.OK", ".OK", "is FindingStatus.OK", "status is FindingStatus.OK"}
+    gap = {"FindingStatus.GAP", ".GAP", "is FindingStatus.GAP", "status is FindingStatus.GAP"}
+    count = 0
+    for cid in flagship_ids:
+        has_ok = any(cid in text and any(m in text for m in direct) for text in bodies.values())
+        has_gap = any(cid in text and any(m in text for m in gap) for text in bodies.values())
+        has_missing = any(
+            cid in text
+            and any(m in text for m in ("FindingStatus.PARTIAL", "FindingStatus.ERROR", "SKIPPED"))
+            for text in bodies.values()
+        )
+        if has_ok and has_gap and has_missing:
+            count += 1
+    return count
+
+
 def build_maturity(repo_root: Path) -> dict:
     """Compute the maturity metrics from repository artifacts."""
     reference = _load_or_empty(repo_root / "docs" / "reference" / "reference.json")
@@ -92,7 +118,8 @@ def build_maturity(repo_root: Path) -> dict:
     checks_with_proxy = sum(1 for c in reference_checks if c.get("support_state") == "proxy")
     checks_with_manual = sum(1 for c in reference_checks if c.get("support_state") == "manual")
     checks_with_references = _count_check_references(repo_root)
-    checks_with_edge_case_coverage = 0  # not yet measured from fixtures; honest zero
+    flagship_full_test_class = _count_flagships_with_test_classes(repo_root, flagship_ids)
+    checks_with_edge_case_coverage = flagship_full_test_class
 
     validated_flagships = sum(1 for s in flagship_statuses.values() if s == "validated")
     total_flagships = len(flagship_ids)

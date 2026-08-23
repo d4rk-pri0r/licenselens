@@ -46,6 +46,14 @@ def test_sen_analytics_missing_workspace_error():
     assert result.status == FindingStatus.ERROR
 
 
+def test_sen_analytics_no_rules_gap():
+    result = evaluate_sen_analytics_coverage(
+        _check("sen-analytics-rule-coverage"),
+        {"sentinel_rules": {"total_rules": 0, "enabled_rules": 0}},
+    )
+    assert result.status == FindingStatus.GAP
+
+
 def test_sen_ueba_demo_gap():
     result = evaluate_sen_ueba(
         _check("sen-ueba-not-enabled"),
@@ -68,3 +76,22 @@ def test_purview_dlp_demo_gap():
         {"purview_dlp": DEMO_DLP_BUNDLE},
     )
     assert result.status == FindingStatus.GAP
+
+
+def test_purview_dlp_proxy_no_controls_partial():
+    # No direct Graph evidence and no Secure Score controls: unresolved, not a
+    # fabricated gap or a silent pass.
+    result = evaluate_purview_dlp(
+        _check("pur-dlp-not-enforced"),
+        {
+            "purview_dlp": {
+                "dlp_secure_score": {
+                    "matched_count": 0,
+                    "ratio": None,
+                    "weak_control_count": 0,
+                }
+            }
+        },
+    )
+    assert result.status == FindingStatus.PARTIAL
+    assert result.evidence.get("proxy") is True

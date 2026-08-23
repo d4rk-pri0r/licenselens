@@ -107,6 +107,23 @@ def test_enrollment_without_licensed_units_is_partial() -> None:
     assert result.status is not FindingStatus.GAP
 
 
+def test_enrollment_ok_when_authoritative_eligible_inventory_available() -> None:
+    evidence = _demo()
+    devices = _bundle(evidence)["managed_devices"]
+    _bundle(evidence)["eligible_devices"] = len(devices)
+    result = evaluate_endpoint_enrollment_coverage(_check("endpoint-enrollment-coverage"), evidence)
+    assert result.status is FindingStatus.OK
+    assert result.evidence["coverage_ratio"] == 1.0
+
+
+def test_enrollment_surface_error_is_partial_not_gap() -> None:
+    evidence = _demo()
+    _bundle(evidence)["errors"]["managed_devices"] = "403 Forbidden"
+    result = evaluate_endpoint_enrollment_coverage(_check("endpoint-enrollment-coverage"), evidence)
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.GAP
+
+
 def test_compliance_no_policies_is_gap() -> None:
     evidence = _demo()
     _bundle(evidence)["compliance_policies"] = []
@@ -200,6 +217,16 @@ def test_policy_coverage_none_is_gap() -> None:
         _check("endpoint-security-policy-coverage"), evidence
     )
     assert result.status is FindingStatus.GAP
+
+
+def test_policy_coverage_surface_error_is_partial_not_gap() -> None:
+    evidence = _demo()
+    _bundle(evidence)["errors"]["configuration_policies"] = "403 Forbidden"
+    result = evaluate_endpoint_security_policy_coverage(
+        _check("endpoint-security-policy-coverage"), evidence
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.GAP
 
 
 def test_mde_connector_atp_missing_is_partial() -> None:

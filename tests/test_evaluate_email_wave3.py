@@ -149,6 +149,65 @@ def test_split_dns_spf_gap_for_one_domain() -> None:
     assert "fabrikam.com" in result.evidence["spf_missing"]
 
 
+def test_mailbox_audit_disabled_is_gap() -> None:
+    evidence = _demo()
+    _set_surface_prop(evidence, "exo_audit", "organization_audit", "AuditDisabled", True)
+    result = evaluate_exo_mailbox_audit_enabled(_check("exo-mailbox-audit-enabled"), evidence)
+    assert result.status is FindingStatus.GAP
+
+
+def test_mailbox_audit_unreadable_is_partial() -> None:
+    evidence = _demo()
+    evidence["exchange_bundle"]["adapters"]["exo_audit"]["surfaces"]["organization_audit"][
+        "status"
+    ] = "unavailable"
+    result = evaluate_exo_mailbox_audit_enabled(_check("exo-mailbox-audit-enabled"), evidence)
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.OK
+
+
+def test_smtp_auth_enabled_is_gap() -> None:
+    evidence = _demo()
+    _set_surface_prop(
+        evidence, "exo_smtp_auth", "smtp_auth", "SmtpClientAuthenticationDisabled", False
+    )
+    result = evaluate_exo_smtp_auth_disabled(_check("exo-smtp-auth-disabled"), evidence)
+    assert result.status is FindingStatus.GAP
+
+
+def test_dmarc_reject_gap_when_weak_policy() -> None:
+    evidence = _demo()
+    evidence["dns_records"]["records"]["contoso.com"]["dmarc"]["policy"] = "quarantine"
+    result = evaluate_exo_dmarc_reject(_check("exo-dmarc-reject"), evidence)
+    assert result.status is FindingStatus.GAP
+    assert "contoso.com" in result.evidence["dmarc_not_reject"]
+
+
+def test_dmarc_reject_skipped_when_no_domains() -> None:
+    result = evaluate_exo_dmarc_reject(
+        _check("exo-dmarc-reject"), {"dns_records": {"records": {}, "domains": []}}
+    )
+    assert result.status is FindingStatus.SKIPPED
+
+
+def test_dkim_disabled_domain_is_gap() -> None:
+    evidence = _demo()
+    _set_surface_prop(evidence, "exo_dkim", "dkim", "Enabled", False)
+    result = evaluate_exo_dkim_enabled(_check("exo-dkim-enabled"), evidence)
+    assert result.status is FindingStatus.GAP
+    assert "contoso.com" in result.evidence["disabled_domains"]
+
+
+def test_dkim_unreadable_is_partial() -> None:
+    evidence = _demo()
+    evidence["exchange_bundle"]["adapters"]["exo_dkim"]["surfaces"]["dkim"]["status"] = (
+        "unavailable"
+    )
+    result = evaluate_exo_dkim_enabled(_check("exo-dkim-enabled"), evidence)
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.OK
+
+
 def test_allowed_forwarding_exception_is_ok() -> None:
     evidence = _demo()
     _set_surface_prop(evidence, "exo_remote_domains", "remote_domains", "AutoForwardEnabled", True)

@@ -207,6 +207,14 @@ def test_bitlocker_name_match_is_detected() -> None:
     assert result.status is FindingStatus.OK
 
 
+def test_bitlocker_surface_error_is_partial_not_gap() -> None:
+    evidence = _demo()
+    _surface_error(evidence, "device_configurations")
+    result = evaluate_endpoint_bitlocker_policy(_check("ep-bitlocker-policy"), evidence)
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.GAP
+
+
 # ---------------------------------------------------------------------------
 # ep-tamper-protection
 # ---------------------------------------------------------------------------
@@ -276,6 +284,14 @@ def test_tamper_unknown_devices_keep_ok_with_limitation() -> None:
     result = evaluate_endpoint_tamper_protection(_check("ep-tamper-protection"), evidence)
     assert result.status is FindingStatus.OK
     assert result.limitations
+
+
+def test_tamper_surface_error_is_partial_not_gap() -> None:
+    evidence = _demo()
+    _surface_error(evidence, "device_configurations")
+    result = evaluate_endpoint_tamper_protection(_check("ep-tamper-protection"), evidence)
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.GAP
 
 
 # ---------------------------------------------------------------------------
