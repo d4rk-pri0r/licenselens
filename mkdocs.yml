@@ -22,8 +22,20 @@ nav:
       - App registration: app-registration.md
       - MSP batch auth: msp-batch.md
   - Profiles & custom rules: profiles.md
+  - Methodology:
+      - Assessment model: methodology/assessment-model.md
+      - Evidence model: methodology/evidence-model.md
+      - Scoring: methodology/scoring.md
+      - Entitlement model: methodology/entitlement-model.md
+      - Uncertainty: methodology/uncertainty.md
+      - Validation: methodology/validation.md
+      - Practitioner validation: practitioner-validation.md
+      - Validation recording: validation-recording.md
+      - Limitations: methodology/limitations.md
   - Collectors & backends: collectors.md
   - Report & export: report.md
+  - Conference demo: conference-demo.md
+  - Flagships: flagships.md
   - Checks: checks.md
   - Permissions: permissions.md
   - Reference:

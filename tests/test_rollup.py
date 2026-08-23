@@ -148,3 +148,70 @@ def test_out_of_scope_packs_excluded_from_you_own():
     # Starter pack out of scope: purview capability not counted even though owned.
     assert rollup.you_own == 1
     assert rollup.fully_working == 1
+
+
+def test_capability_with_no_findings_is_excluded_from_both_sides():
+    """§9: missing evidence never inflates nor degrades a capability's contribution.
+
+    A capability whose in-scope checks yielded no findings at all contributes to
+    neither ``you_own`` nor ``fully_working``/``needs_attention`` — it cannot
+    award credit for an unevaluated check, nor push anything toward fail.
+    """
+    checks = [
+        _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
+        _check("id-b", ["identity_protection"], CheckPack.IDENTITY),
+    ]
+    findings = [_finding("id-a", FindingStatus.OK)]
+    rollup, outcomes = capability_rollup(
+        checks, findings, ["conditional_access", "identity_protection"], [], ["identity"]
+    )
+    assert rollup.you_own == 1
+    assert rollup.fully_working == 1
+    assert rollup.realized_percent == 100
+    assert len(outcomes) == 1
+
+
+def test_missing_evidence_never_makes_tenant_look_more_secure():
+    """§9: dropping a finding cannot increase ``fully_working`` or the ratio.
+
+    A failed/shadowed capability becomes ``partly_set_up`` (visible), never a
+    clean pass; a fully-missing surface is excluded rather than credited.
+    """
+    checks = [
+        _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
+        _check("id-b", ["identity_protection"], CheckPack.IDENTITY),
+    ]
+    baseline = [
+        _finding("id-a", FindingStatus.OK),
+        _finding("id-b", FindingStatus.OK),
+    ]
+    _, base_outcomes = capability_rollup(
+        checks, baseline, ["conditional_access", "identity_protection"], [], ["identity"]
+    )
+    assert len(base_outcomes) == 2
+    assert all(o.status == "fully_working" for o in base_outcomes)
+
+    # Same checks, but identity_protection evidence is missing (no finding).
+    shadowed = [_finding("id-a", FindingStatus.OK)]
+    _, shadow_outcomes = capability_rollup(
+        checks, shadowed, ["conditional_access", "identity_protection"], [], ["identity"]
+    )
+    assert len(shadow_outcomes) == 1
+    assert shadow_outcomes[0].status == "fully_working"
+    credited = [o for o in shadow_outcomes if o.id == "identity_protection"]
+    assert not any(o.status == "fully_working" for o in credited)
+
+
+def test_error_finding_never_counts_as_ok_or_gap():
+    """§9: an error/unknown result is ``partly_set_up``, never silently pass/fail."""
+    checks = [
+        _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
+    ]
+    rollup, outcomes = capability_rollup(
+        checks, [_finding("id-a", FindingStatus.ERROR)], ["conditional_access"], [], ["identity"]
+    )
+    assert rollup.you_own == 1
+    assert rollup.partly_set_up == 1
+    assert rollup.fully_working == 0
+    assert rollup.needs_attention == 0
+    assert outcomes[0].status == "partly_set_up"
