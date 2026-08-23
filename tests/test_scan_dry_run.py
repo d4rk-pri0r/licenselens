@@ -29,7 +29,7 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     assert mdo.evidence.get("proxy") is False
     assert mdo.evidence.get("exchange_direct") is True
     assert mdo.evidence.get("email_proxy_enabled") is False
-    assert by_id["mde-onboard-gap"].status == FindingStatus.GAP
+    assert by_id["mde-onboard-gap"].status == FindingStatus.PARTIAL
     assert by_id["mdi-sensors-missing"].status in {
         FindingStatus.GAP,
         FindingStatus.PARTIAL,

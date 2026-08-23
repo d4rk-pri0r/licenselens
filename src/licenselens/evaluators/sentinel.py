@@ -71,26 +71,27 @@ def evaluate_sen_analytics_coverage(
         return Evaluation(
             status=FindingStatus.OK,
             summary=(
-                f"Sentinel analytics coverage looks healthy: {enabled} enabled "
-                f"scheduled/NRT rule(s) across {tactics} MITRE tactic(s)."
+                f"Sentinel analytics-rule deployment baseline is met: {enabled} "
+                f"enabled scheduled/NRT rule(s) across {tactics} MITRE tactic(s)."
             ),
             evidence=evidence_out,
             customer_summary=(
-                "Your security workspace has a solid set of alarms turned on across "
-                "multiple attack stages."
+                "Your security workspace has a configured set of detection alarms "
+                "covering multiple attack stages. Rule counts do not prove these "
+                "detections are effective in your environment."
             ),
         )
 
     return Evaluation(
         status=FindingStatus.PARTIAL,
         summary=(
-            f"Thin Sentinel analytics coverage: {enabled} enabled scheduled/NRT "
+            f"Thin Sentinel analytics-rule deployment: {enabled} enabled scheduled/NRT "
             f"rule(s), {tactics} tactic(s) (total rules={total})."
         ),
         evidence=evidence_out,
         customer_summary=(
-            "Some detection alarms are on, but coverage still looks light for a "
-            "paid security command center."
+            "Some detection alarms are on, but the configured rule baseline is still "
+            "light for a paid security command center."
         ),
     )
 

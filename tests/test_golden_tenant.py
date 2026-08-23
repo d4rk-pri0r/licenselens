@@ -36,10 +36,10 @@ FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 
 GOLDEN_TOTAL_FINDINGS = 166
 GOLDEN_COUNTS_BY_STATUS = {
-    "gap": 39,
+    "gap": 37,
     "not_licensed": 6,
     "ok": 90,
-    "partial": 19,
+    "partial": 21,
     "skipped": 12,
 }
 GOLDEN_CHECK_STATUSES = {
@@ -49,6 +49,11 @@ GOLDEN_CHECK_STATUSES = {
     "id-dormant-privileged": FindingStatus.GAP,
     "id-pim-no-permanent-privileged": FindingStatus.GAP,
     "id-pim-unused": FindingStatus.PARTIAL,
+    # §6 denominator semantics: without an authoritative eligible-device
+    # inventory, license-vs-device is a licensing-leverage signal, so these are
+    # PARTIAL (never GAP-as-coverage nor OK).
+    "mde-onboard-gap": FindingStatus.PARTIAL,
+    "endpoint-enrollment-coverage": FindingStatus.PARTIAL,
 }
 
 

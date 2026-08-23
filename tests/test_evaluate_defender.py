@@ -46,16 +46,20 @@ def test_mdo_direct_exchange_demo_is_ok_or_partial():
 
 
 def test_mde_demo_is_gap():
+    # Without an authoritative eligible-device inventory, license-vs-onboarded is
+    # a proxy licensing-leverage signal and can never reach OK or GAP-as-coverage.
     result = evaluate_mde_onboard_gap(
         _check("mde-onboard-gap"),
         {"mde_summary": DEMO_MDE_SUMMARY},
     )
-    assert result.status == FindingStatus.GAP
+    assert result.status == FindingStatus.PARTIAL
     assert result.evidence["onboarded_machines"] == 40
     assert result.evidence["licensed_units"] == 100
+    assert result.evidence.get("proxy") is True
 
 
-def test_mde_ok_when_coverage_high():
+def test_mde_never_ok_on_licensed_seats_alone():
+    # High license-to-device match is still not endpoint coverage.
     result = evaluate_mde_onboard_gap(
         _check("mde-onboard-gap"),
         {
@@ -67,7 +71,39 @@ def test_mde_ok_when_coverage_high():
             }
         },
     )
+    assert result.status == FindingStatus.PARTIAL
+    assert "looks healthy" not in (result.summary or "").lower()
+
+
+def test_mde_ok_when_authoritative_eligible_inventory_available():
+    result = evaluate_mde_onboard_gap(
+        _check("mde-onboard-gap"),
+        {
+            "mde_summary": {
+                "onboarded_machines": 95,
+                "eligible_devices": 100,
+                "truncated": False,
+                "count_method": "test",
+            }
+        },
+    )
     assert result.status == FindingStatus.OK
+    assert result.evidence["coverage_ratio"] == 0.95
+
+
+def test_mde_gap_when_authoritative_inventory_gap_wide():
+    result = evaluate_mde_onboard_gap(
+        _check("mde-onboard-gap"),
+        {
+            "mde_summary": {
+                "onboarded_machines": 40,
+                "eligible_devices": 100,
+                "truncated": False,
+                "count_method": "test",
+            }
+        },
+    )
+    assert result.status == FindingStatus.GAP
 
 
 def test_mdi_demo_partial_without_controls():

@@ -68,11 +68,14 @@ def evaluate_sen_data_connectors(
         return Evaluation(
             status=FindingStatus.OK,
             summary=(
-                f"Sentinel data connectors look healthy: {total} connector(s), "
+                f"Sentinel data-source baseline is met: {total} connector(s), "
                 f"{len(key)} high-value source(s) connected."
             ),
             evidence=evidence_out,
-            customer_summary=("Your security workspace is fed by several high-value data sources."),
+            customer_summary=(
+                "Your security workspace reports several connected data sources. "
+                "Connected counts do not prove collection quality or detection value."
+            ),
         )
 
     return Evaluation(

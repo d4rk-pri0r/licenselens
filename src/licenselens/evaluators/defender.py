@@ -64,8 +64,8 @@ def evaluate_mdi_sensors(
     pct = f"{float(ratio) * 100:.0f}%" if ratio is not None else "n/a"
     if ratio is not None and float(ratio) >= 0.85:
         cust = (
-            "Score signals suggest on-site directory protection is largely healthy — "
-            "confirm sensors in the Defender portal."
+            "Secure Score signals suggest most related protections appear "
+            "configured — confirm the actual sensors in the Defender portal."
         )
     elif status == FindingStatus.PARTIAL:
         cust = (

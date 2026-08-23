@@ -88,7 +88,7 @@ def test_demo_endpoint_matrix_produces_defined_statuses() -> None:
         evaluate_endpoint_enrollment_coverage(
             _check("endpoint-enrollment-coverage"), evidence
         ).status
-        is FindingStatus.GAP
+        is FindingStatus.PARTIAL
     )
 
 
