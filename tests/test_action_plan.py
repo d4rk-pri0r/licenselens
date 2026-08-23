@@ -68,9 +68,7 @@ def test_demo_export_action_plan_csv_row_count_matches_json(tmp_path: Path):
     assert csv_path.is_file()
 
     payload = json.loads((out / "security-license-lens-report.json").read_text(encoding="utf-8"))
-    expected = sum(
-        1 for f in payload["findings"] if f["status"] in {"gap", "partial"}
-    )
+    expected = sum(1 for f in payload["findings"] if f["status"] in {"gap", "partial"})
     with csv_path.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
     assert len(rows) == expected
@@ -97,12 +95,19 @@ def test_demo_export_json_writes_action_plan_json(tmp_path: Path):
     assert set(rows[0]) == {
         "check_id",
         "title",
+        "capability",
+        "entitlement",
         "severity",
+        "risk",
         "effort",
+        "timeline",
+        "implementation_category",
         "reason",
+        "current_evidence",
+        "reference",
+        "manual_validation_needed",
         "customer_next_step",
         "deep_link",
-        "timeline",
     }
 
 

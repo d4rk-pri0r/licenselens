@@ -19,6 +19,8 @@ from licenselens.friendly_names import friendly_plan_name, friendly_sku_name
 from licenselens.models import (
     CapabilityOutcome,
     CapabilitySummary,
+    Confidence,
+    EvaluationMode,
     Finding,
     FindingStatus,
     ScanResult,
@@ -669,31 +671,64 @@ def _action_plan_timeline(effort: str | None) -> str:
     return _ACTION_PLAN_TIMELINE.get(effort or "", _ACTION_PLAN_TIMELINE_DEFAULT)
 
 
+_IMPLEMENTATION_CATEGORIES_BY_EFFORT: Final[dict[str, str]] = {
+    "minutes": "quick configuration",
+    "hours": "moderate deployment",
+    "half_day": "moderate deployment",
+    "days": "multi-team project",
+    "weeks": "multi-team project",
+}
+
+
+def _category_for(effort: str) -> str:
+    return _IMPLEMENTATION_CATEGORIES_BY_EFFORT.get(effort, "manual investigation")
+
+
 def build_action_plan(result: ScanResult) -> list[dict[str, object]]:
-    """Build the G1 remediation action-plan rows from the scan's findings.
+    """Build the G1 activation-backlog rows from the scan's findings.
 
     Returns one row per finding whose status is ``gap`` or ``partial``. Each row
-    carries ``check_id``, ``title``, ``severity``, ``effort``, ``reason`` (from
-    ``Finding.remediation``), ``customer_next_step``, ``deep_link``, and
-    ``timeline`` (a deterministic bucket derived from ``Finding.effort``).
-    Findings in any other status (ok, not_licensed, error, skipped) are omitted.
+    carries the structured activation-backlog metadata (§18): ``check_id``,
+    ``title``, ``capability`` (resolved from entitlements_used), ``severity``
+    (risk), ``effort``, ``timeline``, ``implementation_category``,
+    ``reason`` (from ``Finding.remediation``), ``current_evidence`` (data
+    sources), ``reference`` (first Microsoft doc), ``manual_validation_needed``
+    (whether operator confirmation is required), ``customer_next_step``, and
+    ``deep_link``. Findings in any other status (ok, not_licensed, error,
+    skipped) are omitted.
 
     Deterministic: identical ``ScanResult`` in, identical list out.
     """
+    cap_by_id = {c.id: c for c in result.capability_summaries}
     rows: list[dict[str, object]] = []
     for finding in result.findings:
         if finding.status.value not in {"gap", "partial"}:
             continue
+        entitlement = list(finding.entitlements_used or [])
+        cap_id = entitlement[0] if entitlement else None
+        cap_name = cap_by_id.get(cap_id).plain_name if cap_id in cap_by_id else (cap_id or "")
+        manual_kinds = {EvaluationMode.MANUAL, EvaluationMode.UNSUPPORTED}
+        manual_needed = (
+            finding.evaluation_mode in manual_kinds or finding.confidence == Confidence.LOW
+        )
+        reference = finding.references[0] if finding.references else ""
         rows.append(
             {
                 "check_id": finding.check_id,
                 "title": finding.title,
+                "capability": cap_name,
+                "entitlement": entitlement,
                 "severity": finding.severity.value,
+                "risk": finding.severity.value,
                 "effort": finding.effort.value,
+                "timeline": _action_plan_timeline(finding.effort.value),
+                "implementation_category": _category_for(finding.effort.value),
                 "reason": finding.remediation,
+                "current_evidence": list(finding.data_sources),
+                "reference": reference,
+                "manual_validation_needed": manual_needed,
                 "customer_next_step": finding.customer_next_step,
                 "deep_link": finding.deep_link,
-                "timeline": _action_plan_timeline(finding.effort.value),
             }
         )
     return rows

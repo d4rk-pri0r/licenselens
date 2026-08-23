@@ -68,11 +68,20 @@ licenselens scan --live --auth client_secret --profile identity -o reports --exp
 licenselens scan --live --auth client_secret -o reports --export json
 ```
 
-The action-plan rows carry `check_id`, `title`, `severity`, `effort`,
-`timeline`, `reason`, `customer_next_step`, and `deep_link`. The serialized text
-is threaded through the same redaction pipeline as the other report surfaces, so
-tenant ids, UPN-like strings, and (when enabled) tenant domains are stripped
-before the file is written.
+The action-plan rows carry structured activation-backlog metadata (§18): each
+row exposes the security `capability`, the `entitlement` that unlocks it, the
+`severity`/`risk`, the `effort` and a deterministic `timeline`, an
+`implementation_category` (quick configuration / moderate deployment /
+multi-team project / manual investigation), the `reason` (remediation), the
+`current_evidence` (data sources), an authoritative Microsoft `reference`, a
+`manual_validation_needed` flag, and `customer_next_step` / `deep_link`. The
+serialized text is threaded through the same redaction pipeline as the other
+report surfaces, so tenant ids, UPN-like strings, and (when enabled) tenant
+domains are stripped before the file is written.
+
+This export is the **activation backlog**: convert any GAP into a
+customer/MSP work item (capability → current evidence → desired state → risk →
+entitlement → reference → category → manual-validation flag).
 
 ## Compliance mappings in the findings explorer
 

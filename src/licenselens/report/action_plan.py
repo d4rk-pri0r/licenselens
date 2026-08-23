@@ -29,10 +29,17 @@ from licenselens.report.viewmodel import build_action_plan
 _CSV_COLUMNS: Final[tuple[str, ...]] = (
     "check_id",
     "title",
+    "capability",
+    "entitlement",
     "severity",
+    "risk",
     "effort",
     "timeline",
+    "implementation_category",
     "reason",
+    "current_evidence",
+    "reference",
+    "manual_validation_needed",
     "customer_next_step",
     "deep_link",
 )
