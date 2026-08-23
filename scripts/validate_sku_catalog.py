@@ -103,8 +103,10 @@ def validate_sku_catalog(
         cap_id = str(item["id"])
         names = {
             str(n).upper()
-            for n in [*(item.get("service_plan_names") or []),
-                      *(item.get("service_plan_aliases") or [])]
+            for n in [
+                *(item.get("service_plan_names") or []),
+                *(item.get("service_plan_aliases") or []),
+            ]
         }
         capability_names[cap_id] = names
         listed_guids: set[str] = set()
@@ -116,9 +118,7 @@ def validate_sku_catalog(
                 )
                 continue
             if guid in listed_guids:
-                violations.append(
-                    f"capability '{cap_id}': GUID {guid} listed more than once"
-                )
+                violations.append(f"capability '{cap_id}': GUID {guid} listed more than once")
             listed_guids.add(guid)
             guid_to_capabilities.setdefault(guid, []).append(cap_id)
         capability_guids[cap_id] = listed_guids

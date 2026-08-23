@@ -679,9 +679,13 @@ capabilities:
     service_plan_names:
       - DEFENDER_ENDPOINT_P1
       - MDE_P1
-    # No sourced servicePlanId GUIDs: DEFENDER_ENDPOINT_P1 / MDE_P1 are product
-    # String_Ids; the underlying plan in the licensing reference is MDE_LITE.
-    service_plan_ids: []
+      - MDE_LITE
+    # MDE_LITE (292cc034-7b7c-4950-aaf5-943befd3f1d4) is the service-plan GUID
+    # for Defender for Endpoint Plan 1 per the Microsoft licensing reference
+    # (verified 2026-08). DEFENDER_ENDPOINT_P1 / MDE_P1 are the product
+    # String_Ids whose underlying plan is MDE_LITE.
+    service_plan_ids:
+      - 292cc034-7b7c-4950-aaf5-943befd3f1d4
     sku_part_numbers:
       - DEFENDER_ENDPOINT_P1
       - MDE_P1

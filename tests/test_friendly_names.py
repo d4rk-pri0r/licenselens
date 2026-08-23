@@ -43,7 +43,7 @@ def test_known_sku_names_resolve(raw: str, friendly: str) -> None:
         ("LOCKBOX_ENTERPRISE", "Microsoft 365 Customer Lockbox"),
         ("MIP_S_CLP2", "Microsoft Purview Information Protection P2"),
         ("MIP_S_CLP1", "Microsoft Purview Information Protection P1"),
-        ("THREAT_INTELLIGENCE", "Microsoft Defender for Office 365 (Threat Intelligence)"),
+        ("THREAT_INTELLIGENCE", "Microsoft Defender for Office 365 (Plan 2)"),
         ("DEFENDER_ENDPOINT_P2", "Microsoft Defender for Endpoint P2"),
         ("EXCHANGE_S_ENTERPRISE", "Exchange Online (Plan 2)"),
         ("EXCHANGE_S_STANDARD", "Exchange Online (Plan 1)"),

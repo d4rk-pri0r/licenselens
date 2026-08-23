@@ -109,8 +109,9 @@ friendly_plan_names:
   MICROSOFT_DEFENDER_FOR_IDENTITY: Microsoft Defender for Identity
   DEFENDER_ENDPOINT_P1: Microsoft Defender for Endpoint P1
   DEFENDER_ENDPOINT_P2: Microsoft Defender for Endpoint P2
-  THREAT_INTELLIGENCE: Microsoft Defender for Office 365 (Threat Intelligence)
-  THREAT_INTELLIGENCE_GOV: Microsoft Defender for Office 365 (Threat Intelligence) (Government)
+  MDE_LITE: Microsoft Defender for Endpoint Plan 1
+  THREAT_INTELLIGENCE: Microsoft Defender for Office 365 (Plan 2)
+  THREAT_INTELLIGENCE_GOV: Microsoft Defender for Office 365 (Plan 2) (Government)
   # Sentinel
   MICROSOFT_SENTINEL: Microsoft Sentinel
   AZURE_SENTINEL: Microsoft Sentinel
@@ -213,3 +214,4 @@ service_plan_guids:
   57ff2da0-773e-42df-b2af-ffb7a2317929: TEAMS1
   8e0c0a52-6a6c-4d40-8370-dd62790dcd70: THREAT_INTELLIGENCE
   871d91ec-ec1a-452b-a83f-bd76c7d770ef: WINDEFATP
+  292cc034-7b7c-4950-aaf5-943befd3f1d4: MDE_LITE
