@@ -56,6 +56,35 @@ def test_oidc_auth_mode_aliases_parse_to_oidc():
     assert default is AuthMode.CLIENT_SECRET
 
 
+def test_run_batch_exports_action_plan_per_tenant(tmp_path: Path):
+    """§15/§18: batch can write a structured activation backlog per tenant."""
+    cfg = _config(
+        tmp_path,
+        [{"slug": "alpha", "tenant_id": "t-a"}],
+    )
+    out = tmp_path / "out"
+    rows = run_batch(cfg, output_dir=out, dry_run=True, export="json")
+    assert len(rows) == 1 and rows[0]["status"] == "ok"
+    report_dir = Path(rows[0]["report_dir"])
+    plan = report_dir / "action-plan.json"
+    assert plan.is_file()
+    import json
+
+    backlog = json.loads(plan.read_text(encoding="utf-8"))
+    assert backlog and isinstance(backlog, list)
+    row = backlog[0]
+    for key in (
+        "check_id",
+        "capability",
+        "entitlement",
+        "implementation_category",
+        "current_evidence",
+        "reference",
+        "manual_validation_needed",
+    ):
+        assert key in row, f"missing activation-backlog field {key}"
+
+
 def test_run_batch_dry_run(tmp_path: Path):
     cfg = _config(
         tmp_path,

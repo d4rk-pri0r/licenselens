@@ -12,6 +12,7 @@ from licenselens.cli_scan_config import resolve_scan_profile, write_report_archi
 from licenselens.engine.runner import run_scan
 from licenselens.output import build_report_dir
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
+from licenselens.report.action_plan import write_action_plan
 
 _AUTH_MODE_ALIASES: dict[str, AuthMode] = {
     "dry_run": AuthMode.DRY_RUN,
@@ -83,6 +84,7 @@ def run_batch(
     backends: list[str] | None = None,
     report_archive: bool = False,
     oidc_token: str | None = None,
+    export: str | None = None,
 ) -> list[dict[str, Any]]:
     """Run scans for each tenant entry; returns summary rows."""
     defaults, tenants = load_tenants_config(config_path)
@@ -153,6 +155,10 @@ def run_batch(
             write_markdown_report(result, out / "security-license-lens-report.md")
             if tenant_archive:
                 write_report_archive(output_dir=out, result=result)
+            if export:
+                fmt = "csv" if export in {"action-plan", "csv"} else "json"
+                ext = "csv" if fmt == "csv" else "json"
+                write_action_plan(result, out / f"action-plan.{ext}", fmt=fmt)
             gaps = result.counts_by_status.get("gap", 0) + result.counts_by_status.get("partial", 0)
             exposed = result.exposed_count
             if exposed:

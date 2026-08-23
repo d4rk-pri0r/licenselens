@@ -8,6 +8,16 @@ Vendor-neutral multi-tenant workflow. No product branding in reports.
 licenselens batch tenants.yaml -o reports
 ```
 
+Add `--export action-plan|csv|json` to write a structured activation backlog
+(§18) beside every tenant report — each tenant gets an `action-plan.<ext>` with
+its capability → current-evidence → implementation-category → reference →
+manual-validation metadata. This turns a portfolio-wide gap report directly
+into per-customer implementation work queues:
+
+```bash
+licenselens batch tenants.yaml -o reports --live --export json
+```
+
 With live credentials (default live auth mode is **`client_secret`** when
 `--live` is set):
 

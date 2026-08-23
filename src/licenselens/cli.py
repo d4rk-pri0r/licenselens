@@ -1341,6 +1341,15 @@ def batch_cmd(
         "--report-archive/--no-report-archive",
         help="Write a deterministic offline report ZIP per tenant.",
     ),
+    export: str | None = typer.Option(
+        None,
+        "--export",
+        help=(
+            "Write a structured activation-backlog action-plan per tenant "
+            "(action-plan.csv / action-plan.json) beside each report. "
+            "Values: action-plan | csv | json."
+        ),
+    ),
 ) -> None:
     """Run scans for every tenant listed in a tenants.yaml config."""
     if not config.is_file():
@@ -1359,6 +1368,7 @@ def batch_cmd(
             rules_path=rules,
             backends=backend,
             report_archive=report_archive,
+            export=export,
         )
     except (LicenseLensError, OSError, ValueError, ScanConfigError) as exc:
         console.print(f"[red]Batch failed:[/red] {exc}")
