@@ -25,6 +25,10 @@ _AUTH_MODE_ALIASES: dict[str, AuthMode] = {
     "azure_cli": AuthMode.AZURE_CLI,
     "azure-cli": AuthMode.AZURE_CLI,
     "cli": AuthMode.AZURE_CLI,
+    "oidc": AuthMode.OIDC,
+    "workload_identity": AuthMode.OIDC,
+    "workload-identity": AuthMode.OIDC,
+    "federated": AuthMode.OIDC,
 }
 
 
@@ -78,6 +82,7 @@ def run_batch(
     rules_path: Path | None = None,
     backends: list[str] | None = None,
     report_archive: bool = False,
+    oidc_token: str | None = None,
 ) -> list[dict[str, Any]]:
     """Run scans for each tenant entry; returns summary rows."""
     defaults, tenants = load_tenants_config(config_path)
@@ -124,6 +129,7 @@ def run_batch(
                 tenant_id=tenant_id,
                 client_id=entry.get("client_id"),
                 client_secret=entry.get("client_secret"),
+                oidc_token=entry.get("oidc_token") or oidc_token,
             )
             result = run_scan(
                 auth,

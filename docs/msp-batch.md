@@ -54,6 +54,12 @@ export AZURE_CLIENT_ID=...
 licenselens scan --auth oidc -o reports --report-archive
 ```
 
+`batch` supports the same secret-free mode per tenant by setting
+`auth: oidc` (or `auth_mode: oidc`) in `tenants.yaml`. The same federated
+credentials / `id-token: write` setup applies; an explicit `oidc_token` may be
+passed per tenant, otherwise the GitHub Actions token is fetched from the
+runtime environment:
+
 ## Scheduled continuous assessment (CI monitoring)
 
 The repository ships a scheduled, secret-free monitoring workflow at
@@ -101,7 +107,8 @@ Every key `run_batch` reads:
 | `slug` | Report directory name (falls back to `tenant_id`) |
 | `tenant_id` | Entra tenant GUID |
 | `azure_tenant_id` | Alias for `tenant_id` |
-| `auth` / `auth_mode` | Values: `dry-run`, `device`, `client-secret`, `azure-cli` (underscore variants of these values are also accepted) |
+| `auth` / `auth_mode` | Values: `dry-run`, `device`, `client-secret`, `azure-cli`, `oidc` (underscore variants accepted; `workload-identity`/`federated` map to `oidc`) |
+| `oidc_token` | Optional explicit OIDC assertion for `auth: oidc`; when omitted, the GitHub Actions OIDC token is fetched from the standard environment |
 | `client_id` | App registration id (else `AZURE_CLIENT_ID`) |
 | `client_secret` | Accepted in YAML but **must not be committed**; prefer `AZURE_CLIENT_SECRET` |
 | `packs` | List or comma-separated pack ids. Default packs are **identity + endpoint** (not `starter`) |

@@ -3,7 +3,8 @@ from pathlib import Path
 import pytest
 import yaml
 
-from licenselens.batch import load_tenants_config, run_batch
+from licenselens.auth import AuthMode
+from licenselens.batch import _parse_auth_mode, load_tenants_config, run_batch
 from licenselens.engine.runner import run_scan
 
 
@@ -45,6 +46,14 @@ def test_load_tenants_config_rejects_non_list(tmp_path: Path):
     cfg.write_text(yaml.safe_dump({"tenants": {"alpha": {}}}), encoding="utf-8")
     with pytest.raises(ValueError):
         load_tenants_config(cfg)
+
+
+def test_oidc_auth_mode_aliases_parse_to_oidc():
+    """§16 least-privilege: batch must accept the secret-free workflow-identity mode."""
+    for alias in ("oidc", "workload_identity", "workload-identity", "federated"):
+        assert _parse_auth_mode(alias, default=AuthMode.CLIENT_SECRET) is AuthMode.OIDC
+    default = _parse_auth_mode("client_secret", default=AuthMode.CLIENT_SECRET)
+    assert default is AuthMode.CLIENT_SECRET
 
 
 def test_run_batch_dry_run(tmp_path: Path):
