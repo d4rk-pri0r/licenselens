@@ -36,9 +36,7 @@ REPORT_JSON_FILENAME: Final = "security-license-lens-report.json"
 TENANTS_GLOBAL: Final = "window.LICENSELENS_TENANTS"
 
 #: CSP for the merged view — inline script/style, no network, no external assets.
-_MERGED_CSP: Final = (
-    "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'"
-)
+_MERGED_CSP: Final = "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'"
 
 #: One UPN-like string: ``local@domain.tld``. Mirrors the redaction module's
 #: pattern so tenant domains can be harvested from a raw JSON dict (the merged
@@ -107,9 +105,7 @@ def _resolve_report_json(path: Path) -> Path:
     if path.is_dir():
         candidate = path / REPORT_JSON_FILENAME
         if not candidate.is_file():
-            raise FileNotFoundError(
-                f"tenant directory {path} has no {REPORT_JSON_FILENAME}"
-            )
+            raise FileNotFoundError(f"tenant directory {path} has no {REPORT_JSON_FILENAME}")
         return candidate
     return path
 
@@ -125,9 +121,7 @@ def _load_payload(path: Path) -> dict[str, Any]:
     return raw
 
 
-def _derive_slug(
-    payload: dict[str, Any], index: int, assigned: dict[str, dict[str, Any]]
-) -> str:
+def _derive_slug(payload: dict[str, Any], index: int, assigned: dict[str, dict[str, Any]]) -> str:
     """Derive a deterministic, unique tenant slug from the payload.
 
     Prefers ``tenant_slug``, then ``tenant_id``, then a stable positional index.
@@ -160,8 +154,7 @@ def _union_redaction_targets(payloads: list[dict[str, Any]]) -> RedactionTargets
             tenant_ids.add(str(tenant_id))
         serialized = json.dumps(payload, ensure_ascii=True, sort_keys=True)
         domains.update(
-            match.group(0).partition("@")[2].lower()
-            for match in _UPN_PATTERN.finditer(serialized)
+            match.group(0).partition("@")[2].lower() for match in _UPN_PATTERN.finditer(serialized)
         )
     return RedactionTargets(
         tenant_ids=tuple(sorted(tenant_ids)),
@@ -187,11 +180,11 @@ def _render_document(tenants: dict[str, dict[str, Any]]) -> str:
         body = _render_empty_state()
     return (
         "<!DOCTYPE html>\n"
-        "<html lang=\"en\">\n"
+        '<html lang="en">\n'
         "<head>\n"
-        "  <meta charset=\"utf-8\" />\n"
-        "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n"
-        f"  <meta http-equiv=\"Content-Security-Policy\" content=\"{_MERGED_CSP}\" />\n"
+        '  <meta charset="utf-8" />\n'
+        '  <meta name="viewport" content="width=device-width, initial-scale=1" />\n'
+        f'  <meta http-equiv="Content-Security-Policy" content="{_MERGED_CSP}" />\n'
         "  <title>Security License Lens — merged tenant view</title>\n"
         "  <style>\n"
         f"{_STYLES}\n"
@@ -215,29 +208,29 @@ def _render_tenants_body(tenants: dict[str, dict[str, Any]]) -> str:
         for index, slug in enumerate(slugs)
     )
     return (
-        "  <header class=\"app-header\">\n"
-        "    <div class=\"logo\">\n"
-        "      <div class=\"logo-mark\" aria-hidden=\"true\"></div>\n"
+        '  <header class="app-header">\n'
+        '    <div class="logo">\n'
+        '      <div class="logo-mark" aria-hidden="true"></div>\n'
         "      <div>\n"
         "        <h1>Security License Lens</h1>\n"
-        "        <p class=\"tagline\">Merged multi-tenant view — switch tenants below.</p>\n"
+        '        <p class="tagline">Merged multi-tenant view — switch tenants below.</p>\n'
         "      </div>\n"
         "    </div>\n"
         "  </header>\n"
-        "  <main class=\"app-main\" id=\"main\">\n"
-        "    <section aria-labelledby=\"tenant-switcher-title\">\n"
-        "      <h2 id=\"tenant-switcher-title\">Tenants</h2>\n"
-        "      <div class=\"tenant-switcher\" role=\"group\" aria-label=\"Switch tenant\">\n"
+        '  <main class="app-main" id="main">\n'
+        '    <section aria-labelledby="tenant-switcher-title">\n'
+        '      <h2 id="tenant-switcher-title">Tenants</h2>\n'
+        '      <div class="tenant-switcher" role="group" aria-label="Switch tenant">\n'
         f"{buttons}\n"
         "      </div>\n"
         "    </section>\n"
-        "    <section aria-labelledby=\"summary-title\">\n"
-        "      <h2 id=\"summary-title\">Summary</h2>\n"
-        "      <div class=\"tenant-summary\" data-tenant-summary></div>\n"
+        '    <section aria-labelledby="summary-title">\n'
+        '      <h2 id="summary-title">Summary</h2>\n'
+        '      <div class="tenant-summary" data-tenant-summary></div>\n'
         "    </section>\n"
-        "    <section aria-labelledby=\"findings-title\">\n"
-        "      <h2 id=\"findings-title\">Findings</h2>\n"
-        "      <div class=\"tenant-findings\" data-tenant-findings></div>\n"
+        '    <section aria-labelledby="findings-title">\n'
+        '      <h2 id="findings-title">Findings</h2>\n'
+        '      <div class="tenant-findings" data-tenant-findings></div>\n'
         "    </section>\n"
         "  </main>\n"
     )
@@ -246,19 +239,19 @@ def _render_tenants_body(tenants: dict[str, dict[str, Any]]) -> str:
 def _render_empty_state() -> str:
     """Render the empty-state body for a zero-tenant merged view."""
     return (
-        "  <header class=\"app-header\">\n"
-        "    <div class=\"logo\">\n"
-        "      <div class=\"logo-mark\" aria-hidden=\"true\"></div>\n"
+        '  <header class="app-header">\n'
+        '    <div class="logo">\n'
+        '      <div class="logo-mark" aria-hidden="true"></div>\n'
         "      <div>\n"
         "        <h1>Security License Lens</h1>\n"
-        "        <p class=\"tagline\">Merged multi-tenant view.</p>\n"
+        '        <p class="tagline">Merged multi-tenant view.</p>\n'
         "      </div>\n"
         "    </div>\n"
         "  </header>\n"
-        "  <main class=\"app-main\" id=\"main\">\n"
-        "    <section aria-labelledby=\"empty-title\">\n"
-        "      <h2 id=\"empty-title\">No tenants</h2>\n"
-        "      <p class=\"empty-state\">No tenant reports were provided to merge.</p>\n"
+        '  <main class="app-main" id="main">\n'
+        '    <section aria-labelledby="empty-title">\n'
+        '      <h2 id="empty-title">No tenants</h2>\n'
+        '      <p class="empty-state">No tenant reports were provided to merge.</p>\n'
         "    </section>\n"
         "  </main>\n"
     )

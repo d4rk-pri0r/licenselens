@@ -1401,16 +1401,12 @@ def _cross_tenant_fixtures(tmp_path: Path) -> tuple[Path, Path]:
     tenant_a["tenant_slug"] = "tenant-a"
     tenant_a["tenant_id"] = "aaaa-aaaa-aaaa-aaaa"
     tenant_a["tenant_display_name"] = "Tenant Alpha"
-    tenant_a["warnings"] = [
-        "cross-tenant reference: tenantB-upn@b.com and bbbb-bbbb-bbbb-bbbb"
-    ]
+    tenant_a["warnings"] = ["cross-tenant reference: tenantB-upn@b.com and bbbb-bbbb-bbbb-bbbb"]
     tenant_b = dict(payload)
     tenant_b["tenant_slug"] = "tenant-b"
     tenant_b["tenant_id"] = "bbbb-bbbb-bbbb-bbbb"
     tenant_b["tenant_display_name"] = "Tenant Beta"
-    tenant_b["warnings"] = [
-        "cross-tenant reference: tenantA-upn@a.com and aaaa-aaaa-aaaa-aaaa"
-    ]
+    tenant_b["warnings"] = ["cross-tenant reference: tenantA-upn@a.com and aaaa-aaaa-aaaa-aaaa"]
     path_a = tmp_path / "tenant-a.json"
     path_b = tmp_path / "tenant-b.json"
     path_a.write_text(json.dumps(tenant_a), encoding="utf-8")
@@ -1565,9 +1561,7 @@ def test_merged_html_focus_visible_on_tabs(page: Page, tmp_path: Path) -> None:
             f"tab {index} focus outline must be a solid ring, got style={outline['style']!r}"
         )
         width_px = float(outline["width"].removesuffix("px"))
-        assert width_px >= 2.0, (
-            f"tab {index} focus outline must be >= 2px, got {outline['width']}"
-        )
+        assert width_px >= 2.0, f"tab {index} focus outline must be >= 2px, got {outline['width']}"
 
 
 def test_merged_html_forced_colors_renders(page: Page, tmp_path: Path) -> None:
@@ -1600,4 +1594,3 @@ def test_merged_html_print_renders(page: Page, tmp_path: Path) -> None:
     summary = page.locator("[data-tenant-summary]").inner_text()
     assert "Realized" in summary
     assert page.locator("[data-tenant-findings] .finding").count() > 0
-

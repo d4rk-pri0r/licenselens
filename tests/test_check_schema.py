@@ -60,7 +60,7 @@ def test_malformed_mapping_value_is_rejected(tmp_path: Path):
         "workload: identity\n"
         "mappings:\n"
         '  nist: ["not-a-control"]\n'
-        "  mitre: [\"T1078\"]\n",
+        '  mitre: ["T1078"]\n',
         encoding="utf-8",
     )
     data = yaml.safe_load(fixture.read_text(encoding="utf-8"))
@@ -78,7 +78,7 @@ def test_empty_mapping_list_is_rejected(tmp_path: Path):
         "workload: identity\n"
         "mappings:\n"
         "  nist: []\n"
-        "  mitre: [\"T1078\"]\n",
+        '  mitre: ["T1078"]\n',
         encoding="utf-8",
     )
     data = yaml.safe_load(fixture.read_text(encoding="utf-8"))

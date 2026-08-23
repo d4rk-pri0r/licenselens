@@ -114,7 +114,7 @@ def test_guard_flags_unpinned_action(tmp_path: Path) -> None:
 
 
 def test_guard_flags_missing_schedule(tmp_path: Path) -> None:
-    problems = _problems(tmp_path, "  schedule:\n    - cron: \"30 7 * * *\"\n", "")
+    problems = _problems(tmp_path, '  schedule:\n    - cron: "30 7 * * *"\n', "")
     assert any("schedule" in p for p in problems)
 
 

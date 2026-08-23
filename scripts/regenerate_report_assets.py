@@ -333,9 +333,7 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                     heading = page.locator("h2", has_text="What you're paying for").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.evaluate("() => window.scrollBy(0, 100)")
-                    page.locator(".constellation").first.evaluate(
-                        "el => { el.scrollLeft = 500; }"
-                    )
+                    page.locator(".constellation").first.evaluate("el => { el.scrollLeft = 500; }")
                     page.wait_for_timeout(SETTLE_MS)
                 elif kind == "mobile":
                     # Same section at full viewport height: the constellation

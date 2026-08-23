@@ -78,10 +78,8 @@ def test_severity_override_flips_finding_severity_in_html_output(tmp_path: Path)
     result = run_scan(auth, dry_run=True, profile=compose_profile("core", organization_profile=org))
 
     html = write_html_report(result, tmp_path / "report.html").read_text(encoding="utf-8")
-    row = next(
-        line for line in html.splitlines() if f'data-check-id="{target.check_id}"' in line
-    )
-    assert "data-severity=\"critical\"" in row
+    row = next(line for line in html.splitlines() if f'data-check-id="{target.check_id}"' in line)
+    assert 'data-severity="critical"' in row
 
 
 def test_existing_waiver_and_exclusion_profiles_still_validate() -> None:

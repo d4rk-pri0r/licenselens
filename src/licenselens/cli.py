@@ -1264,8 +1264,7 @@ def merge_reports_cmd(
     reports: list[Path] | None = typer.Option(
         None,
         "--reports",
-        help="Explicit report JSON file paths. Repeatable or space-separated. "
-        "Overrides <dir>.",
+        help="Explicit report JSON file paths. Repeatable or space-separated. Overrides <dir>.",
     ),
     output: Path = typer.Option(
         ...,
@@ -1296,9 +1295,7 @@ def merge_reports_cmd(
         raise typer.Exit(code=2)
 
     if not tenant_paths:
-        console.print(
-            f"[red]No {REPORT_JSON_FILENAME} files found to merge.[/red]"
-        )
+        console.print(f"[red]No {REPORT_JSON_FILENAME} files found to merge.[/red]")
         raise typer.Exit(code=2)
 
     try:
