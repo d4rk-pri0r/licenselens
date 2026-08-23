@@ -28,4 +28,6 @@ remediation: >
   and groups, and verify auto-labeling where content is created in bulk.
 references:
   - https://learn.microsoft.com/purview/create-sensitivity-labels
+flagship: true
+flagship_security_intent: "Publish sensitivity labels through an enabled label policy so classification and protection reach users."
 enabled: true

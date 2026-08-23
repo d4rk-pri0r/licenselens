@@ -33,4 +33,6 @@ references:
 mappings:
   nist: ["SI-3", "SI-7"]
   mitre: ["T1562"]
+flagship: true
+flagship_security_intent: "Configure, assign, and prove tamper protection enabled so malware cannot silently disable Defender."
 enabled: true

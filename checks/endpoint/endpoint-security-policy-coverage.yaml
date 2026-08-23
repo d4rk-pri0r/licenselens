@@ -33,4 +33,6 @@ references:
 mappings:
   nist: ["CM-6", "SI-3"]
   mitre: ["T1059"]
+flagship: true
+flagship_security_intent: "Cover managed devices with antivirus, firewall, disk-encryption, and ASR endpoint-security policies."
 enabled: true

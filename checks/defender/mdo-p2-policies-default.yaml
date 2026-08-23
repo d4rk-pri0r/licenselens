@@ -29,4 +29,6 @@ remediation: >
   preset security policies or equivalent custom policies in block mode.
 references:
   - https://learn.microsoft.com/defender-office-365/preset-security-policies
+flagship: true
+flagship_security_intent: "Enforce Safe Attachments and Safe Links in block mode for all recipients to stop phishing and malware."
 enabled: true

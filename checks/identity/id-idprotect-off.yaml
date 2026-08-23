@@ -32,4 +32,6 @@ references:
 mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Enforce Identity Protection user-risk and sign-in-risk policies so risky logins are blocked."
 enabled: true

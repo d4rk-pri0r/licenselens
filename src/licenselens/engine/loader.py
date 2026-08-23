@@ -115,6 +115,8 @@ def load_checks(root: Path | None = None) -> list[CheckDefinition]:
                 why_it_matters=_clean(raw.get("why_it_matters")),
                 source_path=str(path),
                 mappings=_parse_mappings(raw.get("mappings")),
+                flagship=bool(raw.get("flagship", False)),
+                flagship_security_intent=_clean(raw.get("flagship_security_intent")),
             )
         )
     return checks

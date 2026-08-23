@@ -24,4 +24,6 @@ remediation: >
   Set p=reject on every domain DMARC record.
 references:
   - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
+flagship: true
+flagship_security_intent: "Set every domain's DMARC policy to reject so spoofed mail cannot reach inboxes."
 enabled: true

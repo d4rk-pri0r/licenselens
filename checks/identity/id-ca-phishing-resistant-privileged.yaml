@@ -27,4 +27,6 @@ references:
 mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Require phishing-resistant MFA for highly privileged directory roles via Conditional Access."
 enabled: true

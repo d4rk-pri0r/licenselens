@@ -28,4 +28,6 @@ references:
 mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Require compliant or hybrid-joined managed devices for cloud app access via Conditional Access."
 enabled: true

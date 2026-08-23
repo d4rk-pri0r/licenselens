@@ -24,4 +24,6 @@ remediation: >
   Enable DKIM signing for each accepted domain in Defender.
 references:
   - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dkim-configure
+flagship: true
+flagship_security_intent: "Enable DKIM signing for every accepted domain so unsigned mail is not trusted or spoofed."
 enabled: true

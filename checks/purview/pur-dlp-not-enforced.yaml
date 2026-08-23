@@ -29,4 +29,6 @@ remediation: >
   and endpoints; move from simulation to enforce after tuning.
 references:
   - https://learn.microsoft.com/purview/dlp-learn-about-dlp
+flagship: true
+flagship_security_intent: "Enforce Purview DLP policies in production so sensitive data cannot leak through mail, files, or endpoints."
 enabled: true

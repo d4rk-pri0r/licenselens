@@ -31,4 +31,6 @@ references:
 mappings:
   nist: ["SC-28", "CM-6"]
   mitre: ["T1486", "T1040"]
+flagship: true
+flagship_security_intent: "Configure and assign a BitLocker disk-encryption policy so lost or stolen devices do not leak data."
 enabled: true

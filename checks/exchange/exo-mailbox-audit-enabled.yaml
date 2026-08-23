@@ -24,4 +24,6 @@ remediation: >
   Ensure organization mailbox auditing is enabled (AuditDisabled false).
 references:
   - https://learn.microsoft.com/purview/audit-mailboxes
+flagship: true
+flagship_security_intent: "Keep mailbox auditing enabled organization-wide so illicit mailbox access is investigable."
 enabled: true

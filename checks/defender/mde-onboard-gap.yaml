@@ -30,4 +30,6 @@ remediation: >
   unhealthy sensors; align license assignment with actual endpoints.
 references:
   - https://learn.microsoft.com/defender-endpoint/onboarding
+flagship: true
+flagship_security_intent: "Onboard licensed devices to Defender for Endpoint so EDR coverage and license value are realized."
 enabled: true

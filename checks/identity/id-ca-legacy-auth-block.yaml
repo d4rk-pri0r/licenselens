@@ -27,4 +27,6 @@ references:
 mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Block legacy authentication clients tenant-wide so outdated sign-in methods cannot bypass modern MFA."
 enabled: true

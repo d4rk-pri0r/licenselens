@@ -42,4 +42,6 @@ references:
 mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Require justification, an authentication context, and a short time limit for privileged-role activation."
 enabled: true

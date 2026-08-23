@@ -262,6 +262,11 @@ class CheckDefinition(BaseModel):
     #: Optional compliance/attack-surface mappings (e.g. ``{"nist": ["AC-2"],
     #: "mitre": ["T1078"]}``). Absent for checks that carry no mappings.
     mappings: dict[str, list[str]] = Field(default_factory=dict)
+    #: Whether this check is a "flagship" control tracked in the flagship
+    #: registry (catalog/flagships.yaml) and gated by the §25 quality gate.
+    flagship: bool = False
+    #: Short customer-facing "why it matters" sentence for flagship checks.
+    flagship_security_intent: str = ""
 
     @property
     def display_customer_title(self) -> str:
@@ -480,3 +485,68 @@ class ScanResult(BaseModel):
     @property
     def exposed_count(self) -> int:
         return len(self.exposed_check_ids)
+
+
+class TenantValidationRecord(BaseModel):
+    """A sanitized record of one real-tenant / practitioner validation run.
+
+    This model captures the outcome of a human-confirmed validation of a real
+    tenant (or a controlled lab) so the project can compute honest summary
+    metrics. **No validation numbers are invented**: every field defaults to an
+    empty/zero value until a real run is recorded.
+
+    Sensitivity rule: this record is **sanitized**. It must never contain real
+    tenant ids, user principal names (UPNs), client secrets, or unredacted live
+    reports. ``tenant_profile`` and ``license_summary`` hold only coarse,
+    non-identifying labels (e.g. ``"m365-e5"``, ``"E5"``) so the record is safe
+    to commit.
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    record_id: str | None = None
+    tenant_profile: str = ""
+    license_summary: list[str] = Field(default_factory=list)
+    scanned_at: str | None = None
+    reviewer: str = ""
+    method: str = ""
+    confirmed_findings: list[str] = Field(default_factory=list)
+    rejected_findings: list[str] = Field(default_factory=list)
+    reclassified_findings: list[str] = Field(default_factory=list)
+    manual_only_findings: list[str] = Field(default_factory=list)
+    unknown_findings: list[str] = Field(default_factory=list)
+    false_negative_discoveries: list[str] = Field(default_factory=list)
+    api_limitations: list[str] = Field(default_factory=list)
+    unexpected_edge_cases: list[str] = Field(default_factory=list)
+    raw_finding_count: int = 0
+
+    @model_validator(mode="after")
+    def reject_overlapping_findings(self) -> Self:
+        """Fail closed if a check_id appears in more than one outcome category.
+
+        A single check cannot be both human-confirmed and rejected (or
+        reclassified, etc.) in the same validation run. Overlap is ambiguous and
+        must be resolved by the reviewer rather than silently counted twice.
+        Repeating a check_id within a single category is allowed (it is deduped
+        when metrics are computed).
+        """
+        seen: dict[str, str] = {}
+        for category, label in (
+            (self.confirmed_findings, "confirmed"),
+            (self.rejected_findings, "rejected"),
+            (self.reclassified_findings, "reclassified"),
+            (self.manual_only_findings, "manual_only"),
+            (self.unknown_findings, "unknown"),
+            (self.false_negative_discoveries, "false_negative"),
+        ):
+            for check_id in category:
+                previous = seen.get(check_id)
+                if previous is not None and previous != label:
+                    msg = (
+                        f"check_id {check_id!r} appears in both "
+                        f"{previous!r} and {label!r}; a check cannot be "
+                        "in more than one outcome category in the same record"
+                    )
+                    raise ValueError(msg)
+                seen[check_id] = label
+        return self

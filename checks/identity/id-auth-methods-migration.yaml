@@ -27,4 +27,6 @@ references:
 mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Complete the authentication methods policy migration so MFA and SSPR settings live in one place."
 enabled: true

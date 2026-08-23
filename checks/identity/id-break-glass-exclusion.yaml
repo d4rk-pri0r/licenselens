@@ -41,4 +41,6 @@ references:
 mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Maintain documented break-glass emergency accounts and justify every Conditional Access exclusion."
 enabled: true

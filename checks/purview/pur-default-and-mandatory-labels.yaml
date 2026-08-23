@@ -27,4 +27,6 @@ remediation: >
   email, and enable "Require users to apply a label" in the policy settings.
 references:
   - https://learn.microsoft.com/purview/sensitivity-labels-office-apps
+flagship: true
+flagship_security_intent: "Assign a default sensitivity label and require labeling so unlabeled sensitive content does not leak."
 enabled: true

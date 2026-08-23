@@ -27,4 +27,6 @@ references:
 mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Require multi-factor authentication for every user via Conditional Access to prevent password-only sign-in."
 enabled: true

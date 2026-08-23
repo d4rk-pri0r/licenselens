@@ -1,0 +1,319 @@
+version: 1
+flagships:
+- check_id: id-ca-mfa-all-users
+  security_intent: Require multi-factor authentication for every user via Conditional
+    Access to prevent password-only sign-in.
+  entitlement: conditional_access
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa
+  source_type: microsoft_learn
+- check_id: id-ca-phishing-resistant-privileged
+  security_intent: Require phishing-resistant MFA for highly privileged directory
+    roles via Conditional Access.
+  entitlement: conditional_access
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/role-based-access-control/privileged-roles-permissions
+  source_type: microsoft_learn
+- check_id: id-ca-phishing-resistant-all
+  security_intent: Require phishing-resistant MFA for all users via Conditional Access
+    to defeat phishing of ordinary MFA methods.
+  entitlement: conditional_access
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/authentication/concept-authentication-strengths
+  source_type: microsoft_learn
+- check_id: id-ca-priv-gaps
+  security_intent: Gate privileged sign-ins with phishing-resistant MFA and block
+    legacy authentication via Conditional Access.
+  entitlement: conditional_access
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/conditional-access/overview
+  source_type: microsoft_learn
+- check_id: id-ca-legacy-auth-block
+  security_intent: Block legacy authentication clients tenant-wide so outdated sign-in
+    methods cannot bypass modern MFA.
+  entitlement: conditional_access
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication
+  source_type: microsoft_learn
+- check_id: id-ca-managed-devices
+  security_intent: Require compliant or hybrid-joined managed devices for cloud app
+    access via Conditional Access.
+  entitlement: conditional_access
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-compliant-device
+  source_type: microsoft_learn
+- check_id: id-ca-high-risk-signins
+  security_intent: Block sign-ins marked high risk by Identity Protection via Conditional
+    Access.
+  entitlement: identity_protection
+  evidence_source: graph_identity_protection (direct, Microsoft Graph identityProtection
+    risk detections)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/id-protection/howto-identity-protection-configure-risk-policies
+  source_type: microsoft_learn
+- check_id: id-break-glass-exclusion
+  security_intent: Maintain documented break-glass emergency accounts and justify
+    every Conditional Access exclusion.
+  entitlement: entra_id_p2
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access
+  source_type: microsoft_learn
+- check_id: id-ca-workload-identity
+  security_intent: Protect workload identities (service principals) with risk-based
+    Conditional Access policies.
+  entitlement: workload_identities_premium
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/conditional-access/workload-identity
+  source_type: microsoft_learn
+- check_id: id-number-matching
+  security_intent: Require Microsoft Authenticator number matching to defeat MFA-fatigue
+    and push-bombing attacks.
+  entitlement: conditional_access
+  evidence_source: graph_auth_methods (direct, Microsoft Graph authenticationMethodsPolicy)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/authentication/how-to-mfa-number-match
+  source_type: microsoft_learn
+- check_id: id-auth-methods-migration
+  security_intent: Complete the authentication methods policy migration so MFA and
+    SSPR settings live in one place.
+  entitlement: conditional_access
+  evidence_source: graph_auth_methods (direct, Microsoft Graph authenticationMethodsPolicy)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/authentication/how-to-authentication-methods-manage
+  source_type: microsoft_learn
+- check_id: id-priv-cloud-only
+  security_intent: Keep highly privileged accounts cloud-only and separate from on-premises
+    directories.
+  entitlement: entra_id_p2
+  evidence_source: graph_signins_roles (direct, Microsoft Graph directoryRoles and
+    signInActivity)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access
+  source_type: microsoft_learn
+- check_id: id-pim-no-permanent-privileged
+  security_intent: Remove permanent active assignments for highly privileged roles
+    in favor of just-in-time PIM access.
+  entitlement: entra_id_p2
+  evidence_source: graph_pim (direct, Microsoft Graph privilegedRoleAssignments)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+  source_type: microsoft_learn
+- check_id: id-pim-activation-controls
+  security_intent: Require justification, an authentication context, and a short time
+    limit for privileged-role activation.
+  entitlement: entra_id_p2
+  evidence_source: graph_pim_policies (direct, Microsoft Graph privilegedRoleSettings)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+  source_type: microsoft_learn
+- check_id: id-pim-unused
+  security_intent: Operationalize privileged access through PIM activation with MFA
+    instead of standing permanent roles.
+  entitlement: entra_id_p2
+  evidence_source: graph_pim (direct, Microsoft Graph privilegedRoleAssignments)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+  source_type: microsoft_learn
+- check_id: id-dormant-privileged
+  security_intent: Disable or move to just-in-time access any privileged accounts
+    that sit unused and become takeover targets.
+  entitlement: entra_id_p2
+  evidence_source: graph_signins_roles (direct, Microsoft Graph directoryRoles and
+    signInActivity)
+  assessment_type: direct
+  status: draft
+  source_url: https://attack.mitre.org/techniques/T1078/004/
+  source_type: microsoft_docs
+- check_id: id-idprotect-off
+  security_intent: Enforce Identity Protection user-risk and sign-in-risk policies
+    so risky logins are blocked.
+  entitlement: identity_protection
+  evidence_source: graph_identity_protection (direct, Microsoft Graph identityProtection
+    risk policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/entra/id-protection/overview-identity-protection
+  source_type: microsoft_learn
+- check_id: mde-onboard-gap
+  security_intent: Onboard licensed devices to Defender for Endpoint so EDR coverage
+    and license value are realized.
+  entitlement: defender_endpoint_p2
+  evidence_source: mde_onboarding (direct, Microsoft Defender for Endpoint machines
+    API)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/defender-endpoint/onboarding
+  source_type: microsoft_learn
+- check_id: ep-tamper-protection
+  security_intent: Configure, assign, and prove tamper protection enabled so malware
+    cannot silently disable Defender.
+  entitlement: defender_endpoint_p2
+  evidence_source: intune_collector (direct, Microsoft Intune device configuration
+    and protection state)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/defender-endpoint/prevent-changes-to-security-settings-with-tamper-protection
+  source_type: microsoft_learn
+- check_id: ep-bitlocker-policy
+  security_intent: Configure and assign a BitLocker disk-encryption policy so lost
+    or stolen devices do not leak data.
+  entitlement: intune
+  evidence_source: intune_collector (direct, Microsoft Intune device configuration)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/mem/intune/protect/encrypt-devices
+  source_type: microsoft_learn
+- check_id: ep-asr-rules
+  security_intent: Configure and assign attack surface reduction rules to block ransomware
+    and fileless malware behaviors.
+  entitlement: defender_endpoint_p2
+  evidence_source: intune_collector (direct, Microsoft Intune endpoint-security profiles)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/defender-endpoint/attack-surface-reduction-rules-reference
+  source_type: microsoft_learn
+- check_id: endpoint-enrollment-coverage
+  security_intent: Enroll licensed devices into Intune so cloud identity and compliance
+    controls reach every endpoint.
+  entitlement: intune
+  evidence_source: intune_collector (direct, Microsoft Intune managed devices)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/mem/intune/fundamentals/deployment-guide-enroll
+  source_type: microsoft_learn
+- check_id: endpoint-security-policy-coverage
+  security_intent: Cover managed devices with antivirus, firewall, disk-encryption,
+    and ASR endpoint-security policies.
+  entitlement: intune
+  evidence_source: intune_collector (direct, Microsoft Intune endpoint-security policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/mem/intune/protect/endpoint-security
+  source_type: microsoft_learn
+- check_id: endpoint-compliance-policy-assigned
+  security_intent: Define and assign Intune compliance policies so unhealthy devices
+    are flagged and gated from work data.
+  entitlement: intune
+  evidence_source: intune_collector (direct, Microsoft Intune compliance policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/mem/intune/protect/device-compliance-get-started
+  source_type: microsoft_learn
+- check_id: mdo-p2-policies-default
+  security_intent: Enforce Safe Attachments and Safe Links in block mode for all recipients
+    to stop phishing and malware.
+  entitlement: defender_office_p2
+  evidence_source: graph_mdo (dynamic, Microsoft Graph Defender for Office 365 policies
+    with Secure Score fallback)
+  assessment_type: dynamic
+  status: draft
+  source_url: https://learn.microsoft.com/defender-office-365/preset-security-policies
+  source_type: microsoft_learn
+- check_id: sen-analytics-rule-coverage
+  security_intent: Run enabled Sentinel scheduled analytics rules so SIEM spend produces
+    detection yield.
+  entitlement: microsoft_sentinel
+  evidence_source: sentinel_analytics (direct, Microsoft Sentinel analytics rules)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+  source_type: microsoft_learn
+- check_id: sen-data-connectors
+  security_intent: Connect high-value data sources to Sentinel so the security workspace
+    has real signals to correlate.
+  entitlement: microsoft_sentinel
+  evidence_source: sentinel_data_connectors_collector (direct, Microsoft Sentinel
+    data connectors)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/azure/sentinel/connect-data-sources
+  source_type: microsoft_learn
+- check_id: pur-dlp-not-enforced
+  security_intent: Enforce Purview DLP policies in production so sensitive data cannot
+    leak through mail, files, or endpoints.
+  entitlement: purview_dlp
+  evidence_source: purview_dlp (dynamic, Microsoft Purview DLP policies with Secure
+    Score fallback)
+  assessment_type: dynamic
+  status: draft
+  source_url: https://learn.microsoft.com/purview/dlp-learn-about-dlp
+  source_type: microsoft_learn
+- check_id: pur-default-and-mandatory-labels
+  security_intent: Assign a default sensitivity label and require labeling so unlabeled
+    sensitive content does not leak.
+  entitlement: purview_sensitivity_labels
+  evidence_source: power_data_collector (direct, Microsoft Purview sensitivity label
+    policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/purview/sensitivity-labels-office-apps
+  source_type: microsoft_learn
+- check_id: pur-sensitivity-labels-published
+  security_intent: Publish sensitivity labels through an enabled label policy so classification
+    and protection reach users.
+  entitlement: purview_sensitivity_labels
+  evidence_source: power_data_collector (direct, Microsoft Purview sensitivity label
+    policies)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/purview/create-sensitivity-labels
+  source_type: microsoft_learn
+- check_id: exo-mailbox-audit-enabled
+  security_intent: Keep mailbox auditing enabled organization-wide so illicit mailbox
+    access is investigable.
+  entitlement: exchange_online
+  evidence_source: exchange_collector (direct, Exchange Online mailbox audit configuration)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/purview/audit-mailboxes
+  source_type: microsoft_learn
+- check_id: exo-smtp-auth-disabled
+  security_intent: Disable SMTP AUTH organization-wide so basic-auth email submission
+    cannot bypass modern sign-in protections.
+  entitlement: exchange_online
+  evidence_source: exchange_collector (direct, Exchange Online SMTP AUTH configuration)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission
+  source_type: microsoft_learn
+- check_id: exo-dmarc-reject
+  security_intent: Set every domain's DMARC policy to reject so spoofed mail cannot
+    reach inboxes.
+  entitlement: exchange_online
+  evidence_source: exchange_collector (direct, Exchange Online domain DMARC records)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
+  source_type: microsoft_learn
+- check_id: exo-dkim-enabled
+  security_intent: Enable DKIM signing for every accepted domain so unsigned mail
+    is not trusted or spoofed.
+  entitlement: exchange_online
+  evidence_source: exchange_collector (direct, Exchange Online domain DKIM configuration)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dkim-configure
+  source_type: microsoft_learn

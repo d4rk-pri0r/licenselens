@@ -32,4 +32,6 @@ references:
 mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Disable or move to just-in-time access any privileged accounts that sit unused and become takeover targets."
 enabled: true

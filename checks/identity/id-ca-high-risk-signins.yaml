@@ -27,4 +27,6 @@ references:
 mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Block sign-ins marked high risk by Identity Protection via Conditional Access."
 enabled: true

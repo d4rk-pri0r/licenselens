@@ -33,4 +33,6 @@ references:
 mappings:
   nist: ["SI-3", "CM-6"]
   mitre: ["T1059", "T1204"]
+flagship: true
+flagship_security_intent: "Configure and assign attack surface reduction rules to block ransomware and fileless malware behaviors."
 enabled: true

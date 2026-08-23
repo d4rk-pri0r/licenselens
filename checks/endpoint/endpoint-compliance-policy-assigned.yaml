@@ -31,4 +31,6 @@ references:
 mappings:
   nist: ["CM-6", "SI-2"]
   mitre: ["T1059"]
+flagship: true
+flagship_security_intent: "Define and assign Intune compliance policies so unhealthy devices are flagged and gated from work data."
 enabled: true

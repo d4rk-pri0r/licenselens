@@ -39,4 +39,6 @@ references:
 mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Protect workload identities (service principals) with risk-based Conditional Access policies."
 enabled: true

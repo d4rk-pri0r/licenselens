@@ -24,4 +24,6 @@ remediation: >
   Disable SMTP AUTH at the organization level unless a legacy app truly needs it.
 references:
   - https://learn.microsoft.com/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission
+flagship: true
+flagship_security_intent: "Disable SMTP AUTH organization-wide so basic-auth email submission cannot bypass modern sign-in protections."
 enabled: true

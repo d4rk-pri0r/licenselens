@@ -27,4 +27,6 @@ references:
 mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Require phishing-resistant MFA for all users via Conditional Access to defeat phishing of ordinary MFA methods."
 enabled: true

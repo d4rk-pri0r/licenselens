@@ -29,4 +29,6 @@ remediation: >
   identity, endpoint, and cloud control-plane sources first.
 references:
   - https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+flagship: true
+flagship_security_intent: "Run enabled Sentinel scheduled analytics rules so SIEM spend produces detection yield."
 enabled: true

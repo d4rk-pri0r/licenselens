@@ -33,4 +33,6 @@ references:
 mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Operationalize privileged access through PIM activation with MFA instead of standing permanent roles."
 enabled: true

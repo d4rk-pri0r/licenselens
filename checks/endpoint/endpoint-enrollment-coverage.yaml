@@ -32,4 +32,6 @@ references:
 mappings:
   nist: ["CM-6", "SI-2"]
   mitre: ["T1059"]
+flagship: true
+flagship_security_intent: "Enroll licensed devices into Intune so cloud identity and compliance controls reach every endpoint."
 enabled: true

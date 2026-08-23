@@ -37,4 +37,6 @@ references:
 mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
+flagship: true
+flagship_security_intent: "Require Microsoft Authenticator number matching to defeat MFA-fatigue and push-bombing attacks."
 enabled: true
