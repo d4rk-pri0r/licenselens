@@ -27,10 +27,10 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 *Effort is a rough guide, not a quote.*
 
-- **Needs attention** (`gap`): 42
+- **Needs attention** (`gap`): 40
 - **Not in your plan** (`not_licensed`): 6
 - **Looking good** (`ok`): 91
-- **Partly set up** (`partial`): 15
+- **Partly set up** (`partial`): 17
 - **Check pending** (`skipped`): 12
 
 ## What you already pay for
@@ -83,7 +83,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.
 - **If unused:** Extra email protections in your license may still be off, in test mode, or only covering a few people.
 - **Included through license SKU(s):** Microsoft 365 E5
-- **Matching service plan(s):** Microsoft Defender for Office 365 (Threat Intelligence)
+- **Matching service plan(s):** Microsoft Defender for Office 365 (Plan 2)
 
 ### Cross-product incident correlation
 
@@ -93,7 +93,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Attackers hop products. Siloed alerts hide the path from phishing to privilege.
 - **If unused:** XDR correlation may be licensed while automated investigation and response stay idle.
 - **Included through license SKU(s):** Microsoft 365 E5
-- **Matching service plan(s):** Microsoft Defender for Endpoint P2, Microsoft Defender for Office 365 (Threat Intelligence)
+- **Matching service plan(s):** Microsoft Defender for Endpoint P2, Microsoft Defender for Office 365 (Plan 2)
 
 ### Stronger control over admin accounts
 
@@ -299,17 +299,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-phishing-resistant-privileged`
 
-### Some paid device-management seats may not be enrolled
-
-- **Status:** Needs attention
-- **In plain English:** You appear to pay for device management on many seats, but few devices are enrolled.
-- **Suggested next step:** Compare Intune licenses to enrolled devices and enroll the missing ones through the device management tools you already use.
-- **Confidence:** High confidence
-- **Data sources:** graph.deviceManagement, graph.subscribedSkus
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Devices/DevicesMenu/~/allDevices)
-- **Technical id:** `endpoint-enrollment-coverage`
-
 ### Review apps with broad permissions for everyone
 
 - **Status:** Needs attention
@@ -485,17 +474,6 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ConditionalAccessBlade)
 - **Technical id:** `id-security-defaults-on`
-
-### Some PCs may not be enrolled in advanced device protection
-
-- **Status:** Needs attention
-- **In plain English:** You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.
-- **Suggested next step:** Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
-- **Confidence:** High confidence
-- **Data sources:** mde.api.machines, graph.subscribedSkus
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/machines)
-- **Technical id:** `mde-onboard-gap`
 
 ### Turn on auto-labeling for sensitive content
 
@@ -750,6 +728,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Domains)
 - **Technical id:** `id-password-never-expire`
 
+### Some paid device-management seats may not be enrolled
+
+- **Status:** Partly set up
+- **In plain English:** Without an authoritative eligible-device inventory we cannot confirm how much of the intended device population is actually managed.
+- **Suggested next step:** Compare Intune licenses to enrolled devices and enroll the missing ones through the device management tools you already use.
+- **Confidence:** Low confidence — verify in portal
+- **Data sources:** graph.deviceManagement, graph.subscribedSkus (proxy licensing signal)
+- **Limitations:** Enrollment is compared against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify eligible devices in the Microsoft Intune admin center; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
+- **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Devices/DevicesMenu/~/allDevices)
+- **Technical id:** `endpoint-enrollment-coverage`
+
 ### Powerful accounts may sign in without strong extra checks
 
 - **Status:** Partly set up
@@ -760,6 +749,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-priv-gaps`
+
+### Some PCs may not be enrolled in advanced device protection
+
+- **Status:** Partly set up
+- **In plain English:** Without an authoritative eligible-device inventory we cannot confirm how much of the intended device population is actually protected.
+- **Suggested next step:** Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).
+- **Confidence:** Low confidence — verify in portal
+- **Data sources:** mde.api.machines, graph.subscribedSkus (proxy licensing signal)
+- **Limitations:** Coverage is reported against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify actual eligible devices in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/machines)
+- **Technical id:** `mde-onboard-gap`
 
 ### Some device-protection sensors may be inactive or unhealthy
 
@@ -786,7 +786,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 ### Your security command center may have few alarms turned on
 
 - **Status:** Partly set up
-- **In plain English:** Some detection alarms are on, but coverage still looks light for a paid security command center.
+- **In plain English:** Some detection alarms are on, but the configured rule baseline is still light for a paid security command center.
 - **Suggested next step:** Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.
 - **Confidence:** Medium confidence
 - **Data sources:** azure.arm.securityInsights
@@ -2118,5 +2118,5 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 - Owned capability ids: conditional_access, defender_endpoint_p2, defender_identity, defender_office_p1, defender_office_p2, defender_xdr, entra_id_p2, exchange_online, exchange_online_protection, identity_protection, intune, log_analytics, microsoft_sentinel, onedrive_for_business, power_bi_pro, power_platform, purview_audit, purview_communication_compliance, purview_dlp, purview_ediscovery, purview_insider_risk, purview_retention, purview_sensitivity_labels, sharepoint_online, teams
 
-- SKU Microsoft 365 E5 (`SPE_E5`) (87/100): Microsoft Entra ID P2, Microsoft Entra ID Multifactor Authentication, Microsoft Defender for Cloud Apps, Microsoft 365 Advanced eDiscovery, Microsoft 365 Customer Lockbox, Microsoft Purview Information Protection P2, Microsoft Defender for Office 365 (Threat Intelligence), Microsoft Defender for Endpoint P2
+- SKU Microsoft 365 E5 (`SPE_E5`) (87/100): Microsoft Entra ID P2, Microsoft Entra ID Multifactor Authentication, Microsoft Defender for Cloud Apps, Microsoft 365 Advanced eDiscovery, Microsoft 365 Customer Lockbox, Microsoft Purview Information Protection P2, Microsoft Defender for Office 365 (Plan 2), Microsoft Defender for Endpoint P2
 - SKU Microsoft Sentinel (`MICROSOFT_SENTINEL`) (1/1): Microsoft Sentinel

@@ -505,57 +505,6 @@
       }
     },
     {
-      "check_id": "endpoint-enrollment-coverage",
-      "title": "Intune licensed seats vs enrolled devices gap",
-      "workload": "endpoint",
-      "status": "gap",
-      "severity": "high",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "days",
-      "blast_radius": "devices",
-      "pack": "endpoint",
-      "exposure_class": "none",
-      "deep_link": "https://endpoint.microsoft.com/#view/Microsoft_Intune_Devices/DevicesMenu/~/allDevices",
-      "summary": "Large Intune enrollment gap: 2 managed vs ~100 licensed units (2%).",
-      "evidence": {
-        "managed_device_count": 2,
-        "licensed_units": 100,
-        "truncated": false,
-        "coverage_ratio": 0.02
-      },
-      "entitlements_used": [
-        "intune"
-      ],
-      "remediation": "Enroll missing devices into Intune (Windows, iOS, Android, macOS); align license assignment with actual endpoints; investigate unmanaged devices.",
-      "references": [
-        "https://learn.microsoft.com/mem/intune/fundamentals/deployment-guide-enroll"
-      ],
-      "customer_title": "Some paid device-management seats may not be enrolled",
-      "customer_summary": "You appear to pay for device management on many seats, but few devices are enrolled.",
-      "customer_next_step": "Compare Intune licenses to enrolled devices and enroll the missing ones through the device management tools you already use.",
-      "status_label": "Needs attention",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "graph.deviceManagement",
-        "graph.subscribedSkus"
-      ],
-      "limitations": [],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": [],
-      "mappings": {
-        "nist": [
-          "CM-6",
-          "SI-2"
-        ],
-        "mitre": [
-          "T1059"
-        ]
-      }
-    },
-    {
       "check_id": "id-app-risky-delegated-consent",
       "title": "Risky tenant-wide delegated app consent present",
       "workload": "identity",
@@ -1379,51 +1328,6 @@
           "T1078"
         ]
       }
-    },
-    {
-      "check_id": "mde-onboard-gap",
-      "title": "Defender for Endpoint licensed seats vs onboarded devices gap",
-      "workload": "endpoint",
-      "status": "gap",
-      "severity": "high",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "days",
-      "blast_radius": "devices",
-      "pack": "endpoint",
-      "exposure_class": "none",
-      "deep_link": "https://security.microsoft.com/machines",
-      "summary": "Large Defender for Endpoint onboarding gap: 40 onboarded vs ~100 licensed units (40%).",
-      "evidence": {
-        "onboarded_machines": 40,
-        "sample_size": 40,
-        "count_method": "demo",
-        "truncated": false,
-        "licensed_units": 100,
-        "coverage_ratio": 0.4
-      },
-      "entitlements_used": [
-        "defender_endpoint_p2"
-      ],
-      "remediation": "Onboard missing devices via Intune, GPO, or scripts; investigate unhealthy sensors; align license assignment with actual endpoints.",
-      "references": [
-        "https://learn.microsoft.com/defender-endpoint/onboarding"
-      ],
-      "customer_title": "Some PCs may not be enrolled in advanced device protection",
-      "customer_summary": "You appear to pay for advanced device protection on many seats, but relatively few devices are enrolled.",
-      "customer_next_step": "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
-      "status_label": "Needs attention",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "mde.api.machines",
-        "graph.subscribedSkus"
-      ],
-      "limitations": [],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": [],
-      "mappings": {}
     },
     {
       "check_id": "pur-sensitivity-auto-labeling",
@@ -2584,6 +2488,60 @@
       }
     },
     {
+      "check_id": "endpoint-enrollment-coverage",
+      "title": "Intune licensed seats vs enrolled devices gap",
+      "workload": "endpoint",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://endpoint.microsoft.com/#view/Microsoft_Intune_Devices/DevicesMenu/~/allDevices",
+      "summary": "Observed 2 Intune-managed device(s) vs ~100 purchased seats. Without an authoritative eligible device inventory this is a licensing-leverage signal, not confirmed enrollment coverage.",
+      "evidence": {
+        "managed_device_count": 2,
+        "licensed_units": 100,
+        "truncated": false,
+        "proxy": true
+      },
+      "entitlements_used": [
+        "intune"
+      ],
+      "remediation": "Enroll missing devices into Intune (Windows, iOS, Android, macOS); align license assignment with actual endpoints; investigate unmanaged devices.",
+      "references": [
+        "https://learn.microsoft.com/mem/intune/fundamentals/deployment-guide-enroll"
+      ],
+      "customer_title": "Some paid device-management seats may not be enrolled",
+      "customer_summary": "Without an authoritative eligible-device inventory we cannot confirm how much of the intended device population is actually managed.",
+      "customer_next_step": "Compare Intune licenses to enrolled devices and enroll the missing ones through the device management tools you already use.",
+      "status_label": "Partly set up",
+      "confidence": "low",
+      "confidence_label": "Low confidence \u2014 verify in portal",
+      "data_sources": [
+        "graph.deviceManagement",
+        "graph.subscribedSkus (proxy licensing signal)"
+      ],
+      "limitations": [
+        "Enrollment is compared against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify eligible devices in the Microsoft Intune admin center.",
+        "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-2"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
+    },
+    {
       "check_id": "id-ca-priv-gaps",
       "title": "Privileged sign-ins not strongly gated by Conditional Access",
       "workload": "identity",
@@ -2645,6 +2603,55 @@
           "T1078"
         ]
       }
+    },
+    {
+      "check_id": "mde-onboard-gap",
+      "title": "Defender for Endpoint licensed seats vs onboarded devices gap",
+      "workload": "endpoint",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "days",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/machines",
+      "summary": "Observed 40 onboarded Defender for Endpoint machine(s) vs ~100 purchased seats (40% of seats). This is a licensing-leverage signal and is not treated as device coverage; an eligible device inventory is required to confirm coverage.",
+      "evidence": {
+        "onboarded_machines": 40,
+        "sample_size": 40,
+        "count_method": "demo",
+        "truncated": false,
+        "licensed_units": 100,
+        "proxy": true,
+        "coverage_ratio": 0.4
+      },
+      "entitlements_used": [
+        "defender_endpoint_p2"
+      ],
+      "remediation": "Onboard missing devices via Intune, GPO, or scripts; investigate unhealthy sensors; align license assignment with actual endpoints.",
+      "references": [
+        "https://learn.microsoft.com/defender-endpoint/onboarding"
+      ],
+      "customer_title": "Some PCs may not be enrolled in advanced device protection",
+      "customer_summary": "Without an authoritative eligible-device inventory we cannot confirm how much of the intended device population is actually protected.",
+      "customer_next_step": "Compare licensed seats to enrolled devices and enroll the missing ones (often through your device management tools).",
+      "status_label": "Partly set up",
+      "confidence": "low",
+      "confidence_label": "Low confidence \u2014 verify in portal",
+      "data_sources": [
+        "mde.api.machines",
+        "graph.subscribedSkus (proxy licensing signal)"
+      ],
+      "limitations": [
+        "Coverage is reported against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify actual eligible devices in the Defender portal.",
+        "Based on Microsoft Secure Score signals \u2014 confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mde-sensor-health",
@@ -2761,7 +2768,7 @@
       "pack": "starter",
       "exposure_class": "none",
       "deep_link": "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in",
-      "summary": "Thin Sentinel analytics coverage: 2 enabled scheduled/NRT rule(s), 2 tactic(s) (total rules=3).",
+      "summary": "Thin Sentinel analytics-rule deployment: 2 enabled scheduled/NRT rule(s), 2 tactic(s) (total rules=3).",
       "evidence": {
         "total_rules": 3,
         "enabled_rules": 2,
@@ -2785,7 +2792,7 @@
         "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
       ],
       "customer_title": "Your security command center may have few alarms turned on",
-      "customer_summary": "Some detection alarms are on, but coverage still looks light for a paid security command center.",
+      "customer_summary": "Some detection alarms are on, but the configured rule baseline is still light for a paid security command center.",
       "customer_next_step": "Enable a starter set of detection rules for sign-ins, email, and devices, then expand coverage with your IT or security partner.",
       "status_label": "Partly set up",
       "confidence": "medium",
@@ -8460,6 +8467,7 @@
     "graph.security.cases.ediscoveryCases",
     "graph.security.incidents",
     "graph.subscribedSkus",
+    "graph.subscribedSkus (proxy licensing signal)",
     "mde.api.machines",
     "mde.api.machines.health",
     "microsoft.graph",
@@ -8507,8 +8515,8 @@
   "capability_rollup": {
     "you_own": 6,
     "fully_working": 1,
-    "needs_attention": 5,
-    "partly_set_up": 0,
+    "needs_attention": 4,
+    "partly_set_up": 1,
     "not_licensed": 3,
     "realized_percent": 17
   },
@@ -8563,19 +8571,6 @@
         "teams-third-party-apps-governed",
         "teams-unmanaged-inbound-blocked",
         "teams-unmanaged-outbound-blocked"
-      ]
-    },
-    {
-      "id": "defender_endpoint_p2",
-      "name": "Microsoft Defender for Endpoint P2",
-      "plain_name": "Deep protection and visibility on PCs and devices",
-      "status": "needs_attention",
-      "status_label": "Needs attention",
-      "related_check_ids": [
-        "mde-onboard-gap",
-        "ep-asr-rules",
-        "mde-sensor-health",
-        "ep-tamper-protection"
       ]
     },
     {
@@ -8728,6 +8723,19 @@
         "exo-sharing-contact-not-all-domains",
         "exo-smtp-auth-disabled",
         "exo-spf-published"
+      ]
+    },
+    {
+      "id": "defender_endpoint_p2",
+      "name": "Microsoft Defender for Endpoint P2",
+      "plain_name": "Deep protection and visibility on PCs and devices",
+      "status": "partly_set_up",
+      "status_label": "Partly set up",
+      "related_check_ids": [
+        "mde-onboard-gap",
+        "ep-asr-rules",
+        "mde-sensor-health",
+        "ep-tamper-protection"
       ]
     },
     {
