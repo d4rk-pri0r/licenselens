@@ -24,4 +24,7 @@ remediation: >
   Create an enforced Conditional Access policy blocking user risk level High for all users.
 references:
   - https://learn.microsoft.com/entra/id-protection/howto-identity-protection-configure-risk-policies
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

@@ -321,23 +321,24 @@ def _render_checks(model: ReferenceModel) -> str:
         f"{len(model.checks)} checks. Every check discloses its collector (backend),",
         "support state (direct, proxy, manual, unsupported, or",
         "direct_with_proxy_fallback), evaluator registration, required",
-        "capabilities, evidence keys, and source file.",
+        "capabilities, evidence keys, compliance mappings, and source file.",
         "",
         "| Check ID | Collector (backend) | State | Evaluator | Required capabilities |"
-        " Evidence keys | Source |",
+        " Evidence keys | Mappings | Source |",
         "|----------|---------------------|-------|-----------|-----------------------|"
-        "---------------|--------|",
+        "---------------|----------|--------|",
     ]
     for check in model.checks:
         lines.append(
             "| `{id}` | `{collector}` | {state} | {evaluator} | {caps} | {evidence} |"
-            " `{source}` |".format(
+            " {mappings} | `{source}` |".format(
                 id=check.id,
                 collector=check.collector,
                 state=_cell(check.support_state.value),
                 evaluator=_cell("registered" if check.evaluator_registered else "missing"),
                 caps=_cell(", ".join(check.required_capabilities) or "—"),
                 evidence=_cell(", ".join(check.evidence_keys) or "—"),
+                mappings=_cell(_format_mappings(check.mappings)),
                 source=_cell(_source_label(check.source_path) if check.source_path else "—"),
             )
         )
@@ -542,6 +543,21 @@ def _banner() -> str:
 
 def _cell(value: str) -> str:
     return value.replace("|", "\\|").replace("\n", " ")
+
+
+def _format_mappings(mappings: dict[str, tuple[str, ...]]) -> str:
+    """Render a check's compliance mappings as ``NIST: AC-2, IA-2; MITRE: T1078``.
+
+    An empty mapping dict renders the em-dash placeholder so checks without
+    mappings stay readable and never error.
+    """
+    if not mappings:
+        return "—"
+    parts = []
+    for framework in sorted(mappings):
+        ids = ", ".join(mappings[framework])
+        parts.append(f"{framework.upper()}: {ids}")
+    return "; ".join(parts)
 
 
 def _sha256(content: bytes) -> str:

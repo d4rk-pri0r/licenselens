@@ -26,4 +26,7 @@ remediation: >
   Set guestUserRoleId to Guest User or Restricted Guest in authorization policy.
 references:
   - https://learn.microsoft.com/entra/external-id/user-properties
+mappings:
+  nist: ["AC-2", "AC-3"]
+  mitre: ["T1078"]
 enabled: true

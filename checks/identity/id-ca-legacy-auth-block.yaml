@@ -24,4 +24,7 @@ remediation: >
   Enable an all-user Conditional Access policy that blocks Exchange ActiveSync and other legacy clients.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

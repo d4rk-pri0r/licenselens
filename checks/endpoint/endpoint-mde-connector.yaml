@@ -29,4 +29,7 @@ remediation: >
   device onboarding state, and remediate any unhealthy or unknown devices.
 references:
   - https://learn.microsoft.com/mem/intune/protect/advanced-threat-protection
+mappings:
+  nist: ["SI-3", "SI-4"]
+  mitre: ["T1059"]
 enabled: true

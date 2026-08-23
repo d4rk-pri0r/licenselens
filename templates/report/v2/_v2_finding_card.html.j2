@@ -58,6 +58,7 @@
          {% if f.workload %}<span class="meta-item"><span class="meta-key">Workload:</span> {{ f.workload | capitalize }}</span>{% endif %}
          {% if not _skipped %}{% if f.confidence_label %}<span class="meta-item"><span class="meta-key">Confidence:</span> {{ f.confidence_label }}</span>{% endif %}{% endif %}
          {% if not _skipped %}{% if f.evaluation_mode %}<span class="meta-item"><span class="meta-key">Evaluation:</span> {{ exec_copy["evaluation_mode"].get(f.evaluation_mode, f.evaluation_mode | replace('_', ' ')) }}</span>{% endif %}{% endif %}
+         <span class="meta-item"><span class="meta-key">Compliance:</span> {{ _mappings_label(f.mappings) }}</span>
        </div>
 
       {# Progressive disclosure level 1: the executive summary line, before the

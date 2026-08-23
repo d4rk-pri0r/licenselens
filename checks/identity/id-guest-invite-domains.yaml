@@ -26,4 +26,7 @@ remediation: >
   Configure B2B collaboration allowlists from your approved partner domains; do not guess defaults.
 references:
   - https://learn.microsoft.com/entra/external-id/allow-deny-list
+mappings:
+  nist: ["AC-2", "AC-3"]
+  mitre: ["T1078"]
 enabled: true

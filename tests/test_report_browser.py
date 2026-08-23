@@ -17,8 +17,10 @@ Groups, deliberately partitioned:
 
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
+from typing import Any
 
 import pytest
 from playwright.sync_api import Page
@@ -26,6 +28,7 @@ from playwright.sync_api import Page
 from licenselens.models import Effort, ScanResult, Severity
 from licenselens.report.bundle import build_report_bundle
 from licenselens.report.html import write_html_report
+from licenselens.report.merged import render_merged_html
 from tests.report_fixtures import comprehensive_report
 
 pytestmark = pytest.mark.browser
@@ -1344,3 +1347,257 @@ def test_below_fold_sections_reveal_on_scroll(page: Page, tmp_path: Path, render
     assert not unrevealed, (
         f"{renderer}: sections left unrevealed after incremental scroll: {unrevealed}"
     )
+
+
+# ---------------------------------------------------------------------------
+# GROUP I — merged multi-tenant view (todo 8). The merged HTML inlines every
+# tenant's report JSON into ONE single-file document with a client-side tenant
+# switcher. It must load under file:// with ZERO network requests (CSP
+# ``default-src 'none'; script-src 'unsafe-inline'``), and switching tenants
+# must swap the visible data entirely client-side.
+# ---------------------------------------------------------------------------
+
+_SAMPLE_REPORT = (
+    Path(__file__).resolve().parent.parent
+    / "examples"
+    / "sample-report"
+    / "security-license-lens-report.json"
+)
+
+
+def _merged_tenant_fixtures(tmp_path: Path) -> tuple[Path, Path]:
+    """Duplicate the sample report into two tenant JSON fixtures with distinct
+    slugs/tenant ids so the merged view has two distinguishable tenants."""
+    payload = json.loads(_SAMPLE_REPORT.read_text(encoding="utf-8"))
+    tenant_a = dict(payload)
+    tenant_a["tenant_slug"] = "tenant-a"
+    tenant_a["tenant_id"] = "aaaa-aaaa-aaaa-aaaa"
+    tenant_a["tenant_display_name"] = "Tenant Alpha"
+    tenant_b = dict(payload)
+    tenant_b["tenant_slug"] = "tenant-b"
+    tenant_b["tenant_id"] = "bbbb-bbbb-bbbb-bbbb"
+    tenant_b["tenant_display_name"] = "Tenant Beta"
+    path_a = tmp_path / "tenant-a.json"
+    path_b = tmp_path / "tenant-b.json"
+    path_a.write_text(json.dumps(tenant_a), encoding="utf-8")
+    path_b.write_text(json.dumps(tenant_b), encoding="utf-8")
+    return path_a, path_b
+
+
+def _merged_tenants_from_html(merged_html: str) -> dict[str, dict[str, Any]]:
+    """Extract the ``window.LICENSELENS_TENANTS`` object from a merged HTML doc."""
+    marker = "window.LICENSELENS_TENANTS = "
+    start = merged_html.index(marker) + len(marker)
+    end = merged_html.index(";</script>", start)
+    return json.loads(merged_html[start:end])
+
+
+def _cross_tenant_fixtures(tmp_path: Path) -> tuple[Path, Path]:
+    """Two tenants whose payloads intentionally contain each other's tenant id
+    and UPN, so a per-tenant redaction pass would leak one tenant's identifier
+    into the other's region. The union pass must scrub both from both."""
+    payload = json.loads(_SAMPLE_REPORT.read_text(encoding="utf-8"))
+    tenant_a = dict(payload)
+    tenant_a["tenant_slug"] = "tenant-a"
+    tenant_a["tenant_id"] = "aaaa-aaaa-aaaa-aaaa"
+    tenant_a["tenant_display_name"] = "Tenant Alpha"
+    tenant_a["warnings"] = [
+        "cross-tenant reference: tenantB-upn@b.com and bbbb-bbbb-bbbb-bbbb"
+    ]
+    tenant_b = dict(payload)
+    tenant_b["tenant_slug"] = "tenant-b"
+    tenant_b["tenant_id"] = "bbbb-bbbb-bbbb-bbbb"
+    tenant_b["tenant_display_name"] = "Tenant Beta"
+    tenant_b["warnings"] = [
+        "cross-tenant reference: tenantA-upn@a.com and aaaa-aaaa-aaaa-aaaa"
+    ]
+    path_a = tmp_path / "tenant-a.json"
+    path_b = tmp_path / "tenant-b.json"
+    path_a.write_text(json.dumps(tenant_a), encoding="utf-8")
+    path_b.write_text(json.dumps(tenant_b), encoding="utf-8")
+    return path_a, path_b
+
+
+def test_merged_html_empty_state_and_two_tenants(tmp_path: Path) -> None:
+    """Plain (non-browser) unit test: zero tenants renders an empty-state, and
+    two tenants write a file whose ``window.LICENSELENS_TENANTS`` holds 2 entries."""
+    empty = render_merged_html([], tmp_path / "empty.html")
+    empty_html = empty.read_text(encoding="utf-8")
+    assert "No tenants" in empty_html
+    assert "No tenant reports were provided to merge." in empty_html
+    assert "window.LICENSELENS_TENANTS = {}" in empty_html
+
+    path_a, path_b = _merged_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    merged_html = merged.read_text(encoding="utf-8")
+    assert "window.LICENSELENS_TENANTS" in merged_html
+    assert "tenant-a" in merged_html
+    assert "tenant-b" in merged_html
+    # The payload object must carry exactly two tenant entries.
+    assert merged_html.count('"tenant-a":') == 1
+    assert merged_html.count('"tenant-b":') == 1
+    # CSP must adopt unsafe-inline (matching report.html.j2), never script-src 'self'.
+    assert "script-src 'unsafe-inline'" in merged_html
+    assert "script-src 'self'" not in merged_html
+    # Deterministic: two renders are byte-identical.
+    again = render_merged_html([path_a, path_b], tmp_path / "merged-again.html")
+    assert again.read_text(encoding="utf-8") == merged_html
+
+
+def test_merged_html_offline_no_network_and_switcher(page: Page, tmp_path: Path) -> None:
+    """The merged HTML loads under file:// with zero network requests, and the
+    client-side switcher swaps the visible tenant data."""
+    path_a, path_b = _merged_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+
+    requests: list[str] = []
+    page.on("request", lambda request: requests.append(request.url))
+    page.goto(merged.as_uri())
+    page.wait_for_load_state("load")
+
+    external = [url for url in requests if url.startswith(("http://", "https://"))]
+    assert external == [], f"unexpected external network requests: {external}"
+
+    # Both tenant tabs render; the first is active by default.
+    tabs = page.locator(".tenant-tab")
+    assert tabs.count() == 2
+    assert tabs.nth(0).get_attribute("aria-pressed") == "true"
+    assert tabs.nth(1).get_attribute("aria-pressed") == "false"
+
+    # The active tenant's summary shows its realized posture.
+    summary = page.locator("[data-tenant-summary]").inner_text()
+    assert "Realized" in summary
+
+    # Switching to the second tenant swaps the visible data client-side.
+    tabs.nth(1).click()
+    assert tabs.nth(1).get_attribute("aria-pressed") == "true"
+    assert tabs.nth(0).get_attribute("aria-pressed") == "false"
+    # The findings container re-renders for the newly active tenant.
+    findings = page.locator("[data-tenant-findings] .finding")
+    assert findings.count() > 0
+
+
+# ---------------------------------------------------------------------------
+# GROUP J — merged-view redaction union (todo 10). The merged HTML must apply
+# the UNION of every tenant's redaction targets to every tenant's payload, so
+# a cross-tenant identifier (tenant A's id/UPN inside tenant B's data, or vice
+# versa) is scrubbed from BOTH regions — never just its own.
+# ---------------------------------------------------------------------------
+
+
+def test_merged_html_redaction_union_prevents_cross_tenant_leak(tmp_path: Path) -> None:
+    """A per-tenant redaction pass would leave tenant A's id/UPN visible inside
+    tenant B's region and back. The union pass must scrub both from both."""
+    path_a, path_b = _cross_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    tenants = _merged_tenants_from_html(merged.read_text(encoding="utf-8"))
+
+    tenant_a = tenants["tenant-a"]
+    tenant_b = tenants["tenant-b"]
+
+    # Tenant A's own id/UPN are redacted from its own region.
+    assert "aaaa-aaaa-aaaa-aaaa" not in json.dumps(tenant_a)
+    assert "tenantA-upn@a.com" not in json.dumps(tenant_a)
+    # Tenant B's id/UPN are redacted from tenant A's region (cross-tenant).
+    assert "bbbb-bbbb-bbbb-bbbb" not in json.dumps(tenant_a)
+    assert "tenantB-upn@b.com" not in json.dumps(tenant_a)
+
+    # Tenant B's own id/UPN are redacted from its own region.
+    assert "bbbb-bbbb-bbbb-bbbb" not in json.dumps(tenant_b)
+    assert "tenantB-upn@b.com" not in json.dumps(tenant_b)
+    # Tenant A's id/UPN are redacted from tenant B's region (cross-tenant).
+    assert "aaaa-aaaa-aaaa-aaaa" not in json.dumps(tenant_b)
+    assert "tenantA-upn@a.com" not in json.dumps(tenant_b)
+
+    # The redaction replacement is present in both regions, proving the union
+    # pass actually ran on each tenant.
+    assert "[redacted]" in json.dumps(tenant_a)
+    assert "[redacted]" in json.dumps(tenant_b)
+
+
+def test_merged_html_redaction_union_is_deterministic(tmp_path: Path) -> None:
+    """The union redaction must be deterministic across renders."""
+    path_a, path_b = _cross_tenant_fixtures(tmp_path)
+    first = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    second = render_merged_html([path_a, path_b], tmp_path / "merged-again.html")
+    assert first.read_text(encoding="utf-8") == second.read_text(encoding="utf-8")
+
+
+def test_merged_html_keyboard_navigates_switcher(page: Page, tmp_path: Path) -> None:
+    """The tenant switcher is keyboard-operable: Tab reaches each tab and
+    Enter/Space activates it, swapping the visible tenant data."""
+    path_a, path_b = _merged_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    page.goto(merged.as_uri())
+    page.wait_for_load_state("load")
+
+    tabs = page.locator(".tenant-tab")
+    assert tabs.count() == 2
+
+    # Focus the first tab and activate the second via the keyboard.
+    tabs.nth(0).focus()
+    assert tabs.nth(0).evaluate("el => el.matches(':focus')"), "first tab is not focusable"
+    page.keyboard.press("Tab")
+    assert tabs.nth(1).evaluate("el => el.matches(':focus')"), "Tab did not reach the second tab"
+    page.keyboard.press("Enter")
+    assert tabs.nth(1).get_attribute("aria-pressed") == "true", (
+        "Enter did not activate the second tenant tab"
+    )
+    assert tabs.nth(0).get_attribute("aria-pressed") == "false"
+    # The findings container re-rendered for the newly active tenant.
+    assert page.locator("[data-tenant-findings] .finding").count() > 0
+
+
+def test_merged_html_focus_visible_on_tabs(page: Page, tmp_path: Path) -> None:
+    """Every tenant tab shows a visible focus ring (solid >= 2px) on keyboard focus."""
+    path_a, path_b = _merged_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    page.goto(merged.as_uri())
+    page.wait_for_load_state("load")
+
+    tabs = page.locator(".tenant-tab")
+    for index in range(tabs.count()):
+        tab = tabs.nth(index)
+        tab.focus()
+        assert tab.evaluate("el => el.matches(':focus')"), f"tab {index} is not focusable"
+        outline = tab.evaluate(_FOCUS_OUTLINE_JS)
+        assert outline["style"] == "solid", (
+            f"tab {index} focus outline must be a solid ring, got style={outline['style']!r}"
+        )
+        width_px = float(outline["width"].removesuffix("px"))
+        assert width_px >= 2.0, (
+            f"tab {index} focus outline must be >= 2px, got {outline['width']}"
+        )
+
+
+def test_merged_html_forced_colors_renders(page: Page, tmp_path: Path) -> None:
+    """Under forced-colors (Windows High Contrast), the merged dashboard still
+    renders its tenant tabs and active tenant data."""
+    path_a, path_b = _merged_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    page.emulate_media(forced_colors="active", color_scheme="light")
+    page.goto(merged.as_uri())
+    page.wait_for_load_state("load")
+
+    tabs = page.locator(".tenant-tab")
+    assert tabs.count() == 2
+    assert tabs.nth(0).get_attribute("aria-pressed") == "true"
+    summary = page.locator("[data-tenant-summary]").inner_text()
+    assert "Realized" in summary
+
+
+def test_merged_html_print_renders(page: Page, tmp_path: Path) -> None:
+    """Under print media the merged dashboard renders its tenant tabs and the
+    active tenant's summary/findings."""
+    path_a, path_b = _merged_tenant_fixtures(tmp_path)
+    merged = render_merged_html([path_a, path_b], tmp_path / "merged.html")
+    page.emulate_media(media="print")
+    page.goto(merged.as_uri())
+    page.wait_for_load_state("load")
+
+    tabs = page.locator(".tenant-tab")
+    assert tabs.count() == 2
+    summary = page.locator("[data-tenant-summary]").inner_text()
+    assert "Realized" in summary
+    assert page.locator("[data-tenant-findings] .finding").count() > 0
+

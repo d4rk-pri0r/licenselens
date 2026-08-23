@@ -34,4 +34,7 @@ remediation: >
   setting applies tenant-wide to all Authenticator MFA approvals.
 references:
   - https://learn.microsoft.com/entra/identity/authentication/how-to-mfa-number-match
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

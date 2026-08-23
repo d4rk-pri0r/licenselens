@@ -63,8 +63,57 @@ licenselens scan --profile identity --config org-overlay.yaml --rules rules.yaml
   `expires_on`, and an optional `kind: break_glass` with `principal_ids` for
   named emergency-access accounts.
 - **`custom_rules`** — post-evaluation assertions over findings (see below).
+- **`severity_override`** — per-check severity overrides: a list of
+  `{check_id, severity}` pairs that reclassify a check's severity before the
+  report is written (see [Severity overrides](#severity-overrides)).
+- **`omissions`** — free-text omission notes (a list of strings) documenting
+  what a profile deliberately does not assess.
+- **`annotations`** — owner/reason annotations: a list of `{owner, reason}`
+  pairs recording who owns a profile decision and why.
 - **`redaction`** — schema fields `redact_tenant_ids`, `redact_user_principals`,
   `redact_domains`, and a `replacement` token (see [Redaction](#redaction)).
+
+## Severity overrides
+
+`severity_override` lets a profile reclassify a check's severity per tenant or
+per organization. Each entry names a `check_id` and the `severity` to apply
+(`critical`, `high`, `medium`, `low`, `info`). Duplicate `check_id` entries are
+rejected at validation time.
+
+```yaml
+severity_override:
+  - check_id: id-ca-legacy-auth-block
+    severity: critical
+  - check_id: id-guest-sharing
+    severity: low
+```
+
+## Omissions and annotations
+
+`omissions` records what a profile deliberately does not assess (free-text
+notes), and `annotations` records who owns a profile decision and why:
+
+```yaml
+omissions:
+  - "Email pack not assessed (no Graph read API for MDO policy config)."
+annotations:
+  - owner: security-team
+    reason: "Legacy auth blocking is the top priority for this tenant."
+```
+
+## Report provenance
+
+`severity_override`, `omissions`, and `annotations` all surface in the report's
+**provenance** footer payload (`build_provenance`):
+
+- `severity_overrides` — the profile's per-check severity overrides
+  (`[{"check_id", "severity"}]`), empty when the scan carried none.
+- `omissions` — the profile's free-text omission notes, empty when none.
+- `annotations` — the profile's owner/reason annotations
+  (`[{"owner", "reason"}]`), empty when none.
+
+This makes the report self-describing: a reader can see which checks were
+reclassified, what was deliberately omitted, and who owns the decisions.
 
 ## Custom rules
 

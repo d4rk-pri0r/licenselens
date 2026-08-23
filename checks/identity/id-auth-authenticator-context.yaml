@@ -24,4 +24,7 @@ remediation: >
   Enable display of application name and geographic location for Microsoft Authenticator push notifications.
 references:
   - https://learn.microsoft.com/entra/identity/authentication/how-to-mfa-additional-context
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

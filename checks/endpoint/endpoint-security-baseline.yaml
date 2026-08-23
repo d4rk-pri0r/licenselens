@@ -29,4 +29,7 @@ remediation: >
   managed platform and resolve any device conflicts.
 references:
   - https://learn.microsoft.com/mem/intune/protect/security-baselines
+mappings:
+  nist: ["CM-6", "SI-2"]
+  mitre: ["T1059"]
 enabled: true

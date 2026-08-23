@@ -26,4 +26,7 @@ remediation: >
   Set allowInvitesFrom to adminsAndGuestInviters (or stricter).
 references:
   - https://learn.microsoft.com/entra/external-id/external-collaboration-settings-configure
+mappings:
+  nist: ["AC-2", "AC-3"]
+  mitre: ["T1078"]
 enabled: true

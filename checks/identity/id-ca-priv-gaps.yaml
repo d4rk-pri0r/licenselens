@@ -30,4 +30,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/overview
   - https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

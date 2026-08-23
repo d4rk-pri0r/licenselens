@@ -28,4 +28,7 @@ remediation: >
   confirm conditional access gates block unhealthy devices until they comply.
 references:
   - https://learn.microsoft.com/mem/intune/protect/compliance-policy-monitor
+mappings:
+  nist: ["CM-6", "SI-2"]
+  mitre: ["T1059"]
 enabled: true

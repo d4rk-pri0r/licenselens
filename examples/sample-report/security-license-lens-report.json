@@ -493,7 +493,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "endpoint-enrollment-coverage",
@@ -535,7 +544,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-2"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "id-app-risky-delegated-consent",
@@ -579,7 +597,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-app-user-consent-restricted",
@@ -620,7 +647,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-auth-weak-methods-disabled",
@@ -661,7 +697,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-break-glass-exclusion",
@@ -710,7 +755,16 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-device-code-block",
@@ -752,7 +806,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-high-risk-signins",
@@ -794,7 +857,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-high-risk-users",
@@ -836,7 +908,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-legacy-auth-block",
@@ -878,7 +959,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-phishing-resistant-all",
@@ -920,7 +1010,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-activation-controls",
@@ -965,7 +1064,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-ga-activation-alert",
@@ -1003,7 +1111,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-ga-activation-approval",
@@ -1042,7 +1159,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-no-outside-pam",
@@ -1081,7 +1207,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-no-permanent-privileged",
@@ -1120,7 +1255,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-unused",
@@ -1174,7 +1318,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-security-defaults-on",
@@ -1216,7 +1369,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "mde-onboard-gap",
@@ -1260,7 +1422,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-sensitivity-auto-labeling",
@@ -1301,7 +1464,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-access-reviews-scope",
@@ -1344,7 +1508,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-access-reviews-unused",
@@ -1386,7 +1559,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ai-agents-risky-block",
@@ -1427,7 +1609,16 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-app-admin-consent-workflow",
@@ -1466,7 +1657,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-app-expiring-credentials",
@@ -1513,7 +1713,15 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-app-password-addition-blocked",
@@ -1551,7 +1759,15 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-app-registration-admin-only",
@@ -1589,7 +1805,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-auth-authenticator-context",
@@ -1630,7 +1855,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-managed-devices",
@@ -1673,7 +1907,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-mfa-registration-managed",
@@ -1716,7 +1959,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-dormant-privileged",
@@ -1774,7 +2026,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-guest-directory-access-limited",
@@ -1812,7 +2073,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-guest-inviter-restricted",
@@ -1850,7 +2120,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-privileged-assignment-alert",
@@ -1888,7 +2167,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "pur-dlp-not-enforced",
@@ -1955,7 +2243,8 @@
       ],
       "evaluation_mode": "proxy",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "sen-automation-rules",
@@ -1996,7 +2285,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "sen-log-analytics-retention",
@@ -2037,7 +2327,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "sen-ueba-not-enabled",
@@ -2081,7 +2372,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-broadcast-not-always-record",
@@ -2129,7 +2421,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-microsoft-apps-governed",
@@ -2178,7 +2471,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-recording-disabled",
@@ -2234,7 +2528,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-password-never-expire",
@@ -2278,7 +2573,15 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ca-priv-gaps",
@@ -2332,7 +2635,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "mde-sensor-health",
@@ -2382,7 +2694,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SI-3",
+          "SI-4"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "pur-dlp-locations-complete",
@@ -2424,7 +2745,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "sen-analytics-rule-coverage",
@@ -2474,7 +2796,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "sen-data-connectors",
@@ -2518,7 +2841,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-app-ownerless-or-stale",
@@ -2562,7 +2886,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-auth-methods-migration",
@@ -2600,7 +2933,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-cross-tenant-defaults",
@@ -2638,7 +2980,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-cross-tenant-mfa-trust",
@@ -2680,7 +3031,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ga-finer-roles",
@@ -2719,7 +3079,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-number-matching",
@@ -2759,7 +3128,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-pim-other-activation-alert",
@@ -2797,7 +3175,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "mdi-sensors-missing",
@@ -2843,7 +3230,8 @@
       ],
       "evaluation_mode": "proxy",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-custom-apps-governed",
@@ -2889,7 +3277,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-third-party-apps-governed",
@@ -2935,7 +3324,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-dmarc-agency-contact",
@@ -2972,7 +3362,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-dmarc-federal-contact",
@@ -3009,7 +3400,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-logs-to-soc",
@@ -3050,7 +3442,16 @@
       ],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AU-6",
+          "AU-12"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "mdo-alert-policies-enabled",
@@ -3089,7 +3490,8 @@
       ],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-audit-retention",
@@ -3128,7 +3530,8 @@
       ],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-impersonation-partner-domains",
@@ -3164,7 +3567,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-impersonation-users-protected",
@@ -3200,7 +3604,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-anyone-link-expiration",
@@ -3238,7 +3643,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-anyone-link-view",
@@ -3276,7 +3682,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-guest-invite-domains",
@@ -3316,7 +3723,16 @@
       "limitations": [],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-idprotect-notify-high-risk",
@@ -3357,7 +3773,16 @@
       ],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "pur-communication-compliance-readiness",
@@ -3396,7 +3821,8 @@
       ],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "endpoint-compliance-policy-assigned",
@@ -3436,7 +3862,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-2"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "endpoint-mde-connector",
@@ -3476,7 +3911,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SI-3",
+          "SI-4"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "endpoint-security-policy-coverage",
@@ -3526,7 +3970,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-3"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "ep-asr-rules",
@@ -3566,7 +4019,17 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SI-3",
+          "CM-6"
+        ],
+        "mitre": [
+          "T1059",
+          "T1204"
+        ]
+      }
     },
     {
       "check_id": "ep-bitlocker-policy",
@@ -3605,7 +4068,17 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SC-28",
+          "CM-6"
+        ],
+        "mitre": [
+          "T1486",
+          "T1040"
+        ]
+      }
     },
     {
       "check_id": "ep-compliance-enforcement",
@@ -3650,7 +4123,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-2"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "ep-mam-app-protection",
@@ -3690,7 +4172,17 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SC-28",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1040",
+          "T1486"
+        ]
+      }
     },
     {
       "check_id": "ep-tamper-protection",
@@ -3733,7 +4225,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SI-3",
+          "SI-7"
+        ],
+        "mitre": [
+          "T1562"
+        ]
+      }
     },
     {
       "check_id": "exo-dkim-enabled",
@@ -3773,7 +4274,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-dmarc-published",
@@ -3814,7 +4316,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-dmarc-reject",
@@ -3855,7 +4358,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-external-sender-warnings",
@@ -3895,7 +4399,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-forwarding-external-disabled",
@@ -3936,7 +4441,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-mailbox-audit-enabled",
@@ -3975,7 +4481,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-sharing-calendar-not-all-domains",
@@ -4017,7 +4524,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-sharing-contact-not-all-domains",
@@ -4057,7 +4565,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-smtp-auth-disabled",
@@ -4096,7 +4605,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "exo-spf-published",
@@ -4137,7 +4647,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-ca-mfa-all-users",
@@ -4182,7 +4693,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-ga-count-bounds",
@@ -4223,7 +4743,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-idprotect-off",
@@ -4269,7 +4798,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-priv-cloud-only",
@@ -4311,7 +4849,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "mdo-anti-spam-no-allowed-domains",
@@ -4350,7 +4897,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-connection-filter-no-ip-allow",
@@ -4389,7 +4937,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-connection-filter-no-safe-list",
@@ -4428,7 +4977,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-impersonation-domains-owned",
@@ -4469,7 +5019,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-malware-file-filter",
@@ -4510,7 +5061,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-malware-zap",
@@ -4551,7 +5103,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-outbound-spam-forwarding-block",
@@ -4592,7 +5145,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-p2-policies-default",
@@ -4703,7 +5257,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-attachments-block",
@@ -4744,7 +5299,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-attachments-spo-teams",
@@ -4783,7 +5339,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-links-block-list",
@@ -4825,7 +5382,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-links-click-through",
@@ -4866,7 +5424,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-links-click-tracking",
@@ -4907,7 +5466,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-links-real-time-scan",
@@ -4948,7 +5508,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safety-tips-enabled",
@@ -4993,7 +5554,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-spam-phish-not-inbox",
@@ -5033,7 +5595,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-transport-rule-external-forward",
@@ -5078,7 +5641,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-unified-audit-enabled",
@@ -5118,7 +5682,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-export-controls",
@@ -5157,7 +5722,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-publish-to-web-disabled",
@@ -5196,7 +5762,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-dlp-all-environments",
@@ -5241,7 +5808,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-dlp-nondefault-envs",
@@ -5281,7 +5849,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-env-creation-admin-only",
@@ -5321,7 +5890,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-pages-creation-admin-only",
@@ -5361,7 +5931,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-tenant-isolation-allowlist",
@@ -5403,7 +5974,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-tenant-isolation-enabled",
@@ -5442,7 +6014,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-default-and-mandatory-labels",
@@ -5484,7 +6057,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-dlp-enforcement-block",
@@ -5524,7 +6098,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-dlp-notifications",
@@ -5564,7 +6139,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-dlp-policy-present",
@@ -5605,7 +6181,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-endpoint-dlp",
@@ -5647,7 +6224,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-insider-risk-readiness",
@@ -5693,7 +6271,8 @@
       ],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-retention-policy-coverage",
@@ -5734,7 +6313,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-sensitivity-labels-published",
@@ -5777,7 +6357,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-domain-restrictions",
@@ -5820,7 +6401,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-onedrive-sharing-limited",
@@ -5858,7 +6440,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-sharing-capability-limited",
@@ -5896,7 +6479,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-unmanaged-device-access",
@@ -5934,7 +6518,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-anonymous-start-disabled",
@@ -5987,7 +6572,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-external-access-per-domain",
@@ -6028,7 +6614,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-guest-access-restricted",
@@ -6068,7 +6655,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-unmanaged-inbound-blocked",
@@ -6106,7 +6694,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "endpoint-compliance-noncompliance-action",
@@ -6145,7 +6734,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-2"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "endpoint-security-baseline",
@@ -6184,7 +6782,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-6",
+          "SI-2"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "id-app-certificate-lifetime",
@@ -6223,7 +6830,15 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "id-app-password-lifetime",
@@ -6262,7 +6877,15 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-5"
+        ],
+        "mitre": [
+          "T1098"
+        ]
+      }
     },
     {
       "check_id": "mdo-mailbox-intelligence",
@@ -6304,7 +6927,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-quarantine-policy",
@@ -6346,7 +6970,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "mdo-safe-documents",
@@ -6386,7 +7011,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-external-invite-disabled",
@@ -6425,7 +7051,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-guest-access-disabled",
@@ -6464,7 +7091,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-python-r-visuals-disabled",
@@ -6503,7 +7131,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-resource-key-auth-blocked",
@@ -6542,7 +7171,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-sensitivity-labels-enabled",
@@ -6581,7 +7211,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-sp-api-restricted",
@@ -6623,7 +7254,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pbi-sp-profiles-disabled",
@@ -6662,7 +7294,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-share-with-everyone-disabled",
@@ -6702,7 +7335,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pp-trial-creation-admin-only",
@@ -6742,7 +7376,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "pur-ediscovery-readiness",
@@ -6787,7 +7422,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-default-link-specific",
@@ -6825,7 +7461,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-default-link-view",
@@ -6863,7 +7500,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "spo-verification-reauth",
@@ -6903,7 +7541,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-anonymous-lobby",
@@ -6956,7 +7595,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-dialin-lobby",
@@ -7009,7 +7649,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-email-integration-disabled",
@@ -7047,7 +7688,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-external-control-disabled",
@@ -7100,7 +7742,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "teams-unmanaged-outbound-blocked",
@@ -7138,7 +7781,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "xdr-incident-readiness",
@@ -7178,7 +7822,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IR-4",
+          "AU-6"
+        ],
+        "mitre": [
+          "T1059"
+        ]
+      }
     },
     {
       "check_id": "teams-internal-auto-admit",
@@ -7231,7 +7884,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "az-defender-plan-enabled",
@@ -7265,7 +7919,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "id-ca-workload-identity",
@@ -7300,7 +7955,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-identity-protection-workload",
@@ -7335,7 +7999,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-2"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "id-entitlement-access-packages",
@@ -7370,7 +8043,16 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
     },
     {
       "check_id": "pbi-premium-capacity-governance",
@@ -7406,7 +8088,8 @@
       "limitations": [],
       "evaluation_mode": "direct",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     },
     {
       "check_id": "az-cspm-out-of-scope",
@@ -7440,7 +8123,8 @@
       "limitations": [],
       "evaluation_mode": "manual",
       "source_references": [],
-      "accepted_risks": []
+      "accepted_risks": [],
+      "mappings": {}
     }
   ],
   "profile_ids": [],

@@ -383,6 +383,7 @@ def _finding_entry(finding: Finding) -> dict[str, object]:
         "evidence": finding.evidence,
         "data_sources": finding.data_sources,
         "limitations": finding.limitations,
+        "mappings": finding.mappings,
     }
 
 
@@ -620,6 +621,11 @@ def build_provenance(result: ScanResult) -> dict[str, object]:
       :func:`_sampling_disclosure`.
     * ``identity`` — ``{"name", "scanned_at", "display_scanned_at"}`` from
       :func:`_assessment_identity`.
+    * ``severity_overrides`` — the profile's per-check severity overrides
+      (``[{"check_id", "severity"}]``), empty when the scan carried none.
+    * ``omissions`` — the profile's free-text omission notes, empty when none.
+    * ``annotations`` — the profile's owner/reason annotations
+      (``[{"owner", "reason"}]``), empty when none.
 
     Deterministic: identical ``ScanResult`` in, identical dict out.
     """
@@ -638,4 +644,56 @@ def build_provenance(result: ScanResult) -> dict[str, object]:
         "methodology": _methodology_sentence(modes),
         "sampling": {"sampled": sampled, "text": sampling_text},
         "identity": _assessment_identity(result),
+        "severity_overrides": getattr(result, "severity_overrides", []),
+        "omissions": getattr(result, "omissions", []),
+        "annotations": getattr(result, "annotations", []),
     }
+
+
+#: Deterministic timeline bucket for each effort value. Unknown/unset effort
+#: values fall back to the default quarter bucket so a new enum member never
+#: surfaces raw.
+_ACTION_PLAN_TIMELINE: Final[dict[str, str]] = {
+    "minutes": "This week",
+    "hours": "This month",
+    "half_day": "This quarter",
+    "days": "Next quarter",
+}
+
+#: Default timeline bucket when a finding's effort is unset or unknown.
+_ACTION_PLAN_TIMELINE_DEFAULT: Final[str] = "This quarter"
+
+
+def _action_plan_timeline(effort: str | None) -> str:
+    """Map an effort value to its deterministic timeline bucket."""
+    return _ACTION_PLAN_TIMELINE.get(effort or "", _ACTION_PLAN_TIMELINE_DEFAULT)
+
+
+def build_action_plan(result: ScanResult) -> list[dict[str, object]]:
+    """Build the G1 remediation action-plan rows from the scan's findings.
+
+    Returns one row per finding whose status is ``gap`` or ``partial``. Each row
+    carries ``check_id``, ``title``, ``severity``, ``effort``, ``reason`` (from
+    ``Finding.remediation``), ``customer_next_step``, ``deep_link``, and
+    ``timeline`` (a deterministic bucket derived from ``Finding.effort``).
+    Findings in any other status (ok, not_licensed, error, skipped) are omitted.
+
+    Deterministic: identical ``ScanResult`` in, identical list out.
+    """
+    rows: list[dict[str, object]] = []
+    for finding in result.findings:
+        if finding.status.value not in {"gap", "partial"}:
+            continue
+        rows.append(
+            {
+                "check_id": finding.check_id,
+                "title": finding.title,
+                "severity": finding.severity.value,
+                "effort": finding.effort.value,
+                "reason": finding.remediation,
+                "customer_next_step": finding.customer_next_step,
+                "deep_link": finding.deep_link,
+                "timeline": _action_plan_timeline(finding.effort.value),
+            }
+        )
+    return rows

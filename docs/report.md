@@ -52,6 +52,60 @@ Add `--report-archive` on `scan` / `demo` / `quickstart` / `batch` (or set
 `security-license-lens-report.zip` beside the HTML/JSON/MD files. The ZIP is a
 deterministic offline bundle of the same report artifacts.
 
+## Action-plan export (`--export`)
+
+`scan`, `demo`, and `quickstart` accept `--export action-plan|csv|json` to write
+a remediation action plan beside the reports:
+
+| `--export` value | Output file | Format |
+|------------------|-------------|--------|
+| `action-plan` | `action-plan.csv` | Deterministic CSV (fixed column order, RFC 4180 escaping) |
+| `csv` | `action-plan.csv` | Same deterministic CSV |
+| `json` | `action-plan.json` | Plain JSON array of the same rows |
+
+```bash
+licenselens scan --live --auth client_secret --profile identity -o reports --export action-plan
+licenselens scan --live --auth client_secret -o reports --export json
+```
+
+The action-plan rows carry `check_id`, `title`, `severity`, `effort`,
+`timeline`, `reason`, `customer_next_step`, and `deep_link`. The serialized text
+is threaded through the same redaction pipeline as the other report surfaces, so
+tenant ids, UPN-like strings, and (when enabled) tenant domains are stripped
+before the file is written.
+
+## Compliance mappings in the findings explorer
+
+Every finding carries optional compliance/attack-surface **mappings** (for
+example `{"nist": ["AC-2"], "mitre": ["T1078"]}`) sourced from the check YAML.
+In the HTML report's **Explore everything** view:
+
+- Each finding row shows a **Compliance** meta line listing the mapped
+  frameworks and controls (e.g. `NIST: AC-2; MITRE: T1078`).
+- A **compliance mappings** filter facet (`Mapped` / `Unmapped`) lets you
+  isolate controls that carry NIST or MITRE references from those that do not.
+  Selecting several values in a group matches any of them; different groups
+  combine.
+
+## Merged multi-tenant dashboard (`merge-reports`)
+
+`licenselens merge-reports <dir> -o <out>` inlines every tenant's
+`security-license-lens-report.json` into **one** single-file HTML dashboard with
+a client-side tenant switcher. It is the natural companion to `batch`: point it
+at a batch output root to get a single cross-tenant view.
+
+```bash
+licenselens batch tenants.yaml -o reports --live
+licenselens merge-reports reports -o reports/merged.html
+```
+
+The merged view reads a multi-tenant data shape
+(`window.LICENSELENS_TENANTS = {slug: <tenant data>}`) and swaps the active
+tenant entirely client-side with zero network requests. It applies the **union**
+of every tenant's redaction targets, so a cross-tenant identifier (tenant A's id
+or UPN appearing inside tenant B's payload, or vice versa) is scrubbed from
+every region. See [CLI reference](cli.md) for the full flag catalog.
+
 ## Sensitivity
 
 JSON and ZIP reports embed **`tenant_id`**, finding **evidence**, and related

@@ -38,4 +38,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access
   - https://learn.microsoft.com/entra/identity/conditional-access/concept-conditional-access-policies
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

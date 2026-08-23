@@ -28,4 +28,7 @@ remediation: >
   assignment covers all in-scope users and devices.
 references:
   - https://learn.microsoft.com/mem/intune/protect/device-compliance-get-started
+mappings:
+  nist: ["CM-6", "SI-2"]
+  mitre: ["T1059"]
 enabled: true

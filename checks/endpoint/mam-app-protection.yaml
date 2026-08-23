@@ -28,4 +28,7 @@ remediation: >
   platform, or confirm default policies cover all unprotected devices.
 references:
   - https://learn.microsoft.com/mem/intune/apps/app-protection-policy
+mappings:
+  nist: ["SC-28", "AC-3"]
+  mitre: ["T1040", "T1486"]
 enabled: true

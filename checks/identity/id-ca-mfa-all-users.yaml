@@ -24,4 +24,7 @@ remediation: >
   Create and enforce an all-user MFA Conditional Access policy; document break-glass exclusions in your configured settings.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

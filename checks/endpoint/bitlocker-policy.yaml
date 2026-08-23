@@ -28,4 +28,7 @@ remediation: >
   disk-encryption profile) for Windows devices and escrow recovery keys.
 references:
   - https://learn.microsoft.com/mem/intune/protect/encrypt-devices
+mappings:
+  nist: ["SC-28", "CM-6"]
+  mitre: ["T1486", "T1040"]
 enabled: true

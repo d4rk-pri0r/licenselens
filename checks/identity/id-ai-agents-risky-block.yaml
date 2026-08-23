@@ -24,4 +24,7 @@ remediation: >
   Configure available Conditional Access or identity protection controls that block risky AI agents.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/overview
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

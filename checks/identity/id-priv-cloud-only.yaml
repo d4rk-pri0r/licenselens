@@ -24,4 +24,7 @@ remediation: >
   Create cloud-only privileged accounts and remove synced accounts from standing privileged roles.
 references:
   - https://learn.microsoft.com/entra/identity/role-based-access-control/security-emergency-access
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

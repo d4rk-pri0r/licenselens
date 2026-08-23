@@ -19,6 +19,7 @@ class AuthMode(StrEnum):
     CLIENT_SECRET = "client_secret"
     AZURE_CLI = "azure_cli"
     DRY_RUN = "dry_run"
+    OIDC = "oidc"
 
 
 GRAPH_SCOPE = "https://graph.microsoft.com/.default"
@@ -90,12 +91,40 @@ def resolve_auth_inputs(
     return tid, cid, secret
 
 
+def _fetch_github_oidc_token() -> str | None:
+    """Fetch a GitHub Actions OIDC token via the standard token exchange.
+
+    Uses the ACTIONS_ID_TOKEN_REQUEST_URL / ACTIONS_ID_TOKEN_REQUEST_TOKEN
+    environment variables that GitHub Actions injects into the job runtime.
+    Returns None when the runtime env is not present (e.g. not running in
+    GitHub Actions).
+    """
+    request_url = _env("ACTIONS_ID_TOKEN_REQUEST_URL")
+    request_token = _env("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
+    if not request_url or not request_token:
+        return None
+
+    import urllib.request
+
+    req = urllib.request.Request(
+        request_url,
+        headers={"Authorization": f"Bearer {request_token}", "Accept": "application/json"},
+    )
+    with urllib.request.urlopen(req) as resp:  # noqa: S310 - trusted Actions runtime URL
+        payload = resp.read()
+    import json
+
+    data = json.loads(payload)
+    return data.get("value")
+
+
 def build_credential(
     mode: AuthMode,
     *,
     tenant_id: str | None = None,
     client_id: str | None = None,
     client_secret: str | None = None,
+    oidc_token: str | None = None,
 ) -> Any:
     """Build an azure-identity credential for the requested mode."""
     if mode == AuthMode.DRY_RUN:
@@ -104,6 +133,7 @@ def build_credential(
     try:
         from azure.identity import (
             AzureCliCredential,
+            ClientAssertionCredential,
             ClientSecretCredential,
             DeviceCodeCredential,
         )
@@ -115,6 +145,27 @@ def build_credential(
 
     if mode == AuthMode.AZURE_CLI:
         return AzureCliCredential()
+
+    if mode == AuthMode.OIDC:
+        if not tenant_id or not client_id:
+            raise AuthConfigError(
+                "OIDC (workload-identity federation) auth requires tenant id and "
+                "client id. Pass --tenant-id / --client-id or set AZURE_TENANT_ID "
+                "and AZURE_CLIENT_ID."
+            )
+        assertion = oidc_token or _fetch_github_oidc_token()
+        if not assertion:
+            raise AuthConfigError(
+                "OIDC (workload-identity federation) auth requires an OIDC token. "
+                "Pass --oidc-token or run inside GitHub Actions so the "
+                "ACTIONS_ID_TOKEN_REQUEST_URL / ACTIONS_ID_TOKEN_REQUEST_TOKEN "
+                "environment variables are available."
+            )
+        return ClientAssertionCredential(
+            tenant_id=tenant_id,
+            client_id=client_id,
+            func=lambda: assertion,
+        )
 
     if mode == AuthMode.CLIENT_SECRET:
         if not tenant_id or not client_id or not client_secret:
@@ -157,6 +208,7 @@ def build_auth_context(
     tenant_id: str | None = None,
     client_id: str | None = None,
     client_secret: str | None = None,
+    oidc_token: str | None = None,
 ) -> AuthContext:
     """Build auth context, resolving env vars and constructing credentials."""
     tid, cid, secret = resolve_auth_inputs(
@@ -175,6 +227,7 @@ def build_auth_context(
         tenant_id=tid,
         client_id=cid,
         client_secret=secret,
+        oidc_token=oidc_token,
     )
 
     if mode == AuthMode.DEVICE_CODE and getattr(

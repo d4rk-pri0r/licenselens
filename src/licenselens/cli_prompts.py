@@ -111,6 +111,7 @@ def _parse_auth_flag(auth: str) -> AuthMode:
         "azure_cli": AuthMode.AZURE_CLI,
         "azurecli": AuthMode.AZURE_CLI,
         "cli": AuthMode.AZURE_CLI,
+        "oidc": AuthMode.OIDC,
     }
     if key not in mapping:
         console.print(f"[red]Unknown auth mode:[/red] {auth}")

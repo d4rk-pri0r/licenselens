@@ -94,7 +94,8 @@
     { key: "confidence", label: "Confidence", values: CONFIDENCE_ORDER, labels: CONFIDENCE_LABEL, dynamic: false },
     { key: "mode", label: "Mode", values: MODE_ORDER, labels: MODE_LABEL, dynamic: false },
     { key: "pack", label: "Pack", values: [], labels: {}, dynamic: true },
-    { key: "workload", label: "Workload", values: [], labels: WORKLOAD_LABEL, dynamic: true }
+    { key: "workload", label: "Workload", values: [], labels: WORKLOAD_LABEL, dynamic: true },
+    { key: "mappings", label: "Compliance", values: ["mapped", "unmapped"], labels: { mapped: "Mapped", unmapped: "Unmapped" }, dynamic: false }
   ];
 
   var CSV_COLUMNS = [
@@ -221,6 +222,22 @@
     return String(f[key] == null ? "" : f[key]);
   }
 
+  function hasMappings(f) {
+    var m = f.mappings;
+    if (!m) return false;
+    return Object.keys(m).some(function (k) {
+      return Array.isArray(m[k]) && m[k].length > 0;
+    });
+  }
+
+  function mappingsLabel(f) {
+    var m = f.mappings;
+    if (!hasMappings(f)) return "—";
+    return Object.keys(m).sort().map(function (k) {
+      return k.toUpperCase() + ": " + m[k].join(", ");
+    }).join("; ");
+  }
+
   var facets = findings.map(function (f) {
     return {
       text: searchableText(f),
@@ -229,13 +246,14 @@
       confidence: String(f.confidence || ""),
       mode: String(f.evaluation_mode || "direct"),
       pack: String(f.pack || ""),
-      workload: String(f.workload || "")
+      workload: String(f.workload || ""),
+      mappings: hasMappings(f) ? "mapped" : "unmapped"
     };
   });
 
   var state = {
     search: "",
-    filters: { status: {}, severity: {}, confidence: {}, mode: {}, pack: {}, workload: {} },
+    filters: { status: {}, severity: {}, confidence: {}, mode: {}, pack: {}, workload: {}, mappings: {} },
     page: 1,
     pageSize: 25,
     sort: "severity",
@@ -443,6 +461,7 @@
     if (!groupMatches("mode", entry.mode)) return false;
     if (!groupMatches("pack", entry.pack)) return false;
     if (!groupMatches("workload", entry.workload)) return false;
+    if (!groupMatches("mappings", entry.mappings)) return false;
     return true;
   }
 
@@ -559,6 +578,7 @@
     if (f.effort) meta.appendChild(metaItem("Effort", EFFORT_LABEL[f.effort] || f.effort));
     if (f.blast_radius) meta.appendChild(metaItem("Scope", SCOPE_LABEL[f.blast_radius] || String(f.blast_radius).replace(/_/g, " ")));
     if (f.workload) meta.appendChild(metaItem("Workload", WORKLOAD_LABEL[f.workload] || cap(f.workload)));
+    meta.appendChild(metaItem("Compliance", mappingsLabel(f)));
     return meta;
   }
 
@@ -622,6 +642,7 @@
     var row = el("details", "finding-row " + status);
     row.setAttribute("data-status", status);
     row.setAttribute("data-workload", f.workload || "general");
+    row.setAttribute("data-mappings", mappingsLabel(f));
     if (f.check_id) {
       row.setAttribute("data-finding", f.check_id);
       row.setAttribute("id", "finding-" + f.check_id);

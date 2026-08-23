@@ -259,6 +259,9 @@ class CheckDefinition(BaseModel):
     #: absent the view model falls back to the matched capability's blurb.
     why_it_matters: str = ""
     source_path: str | None = None
+    #: Optional compliance/attack-surface mappings (e.g. ``{"nist": ["AC-2"],
+    #: "mitre": ["T1078"]}``). Absent for checks that carry no mappings.
+    mappings: dict[str, list[str]] = Field(default_factory=dict)
 
     @property
     def display_customer_title(self) -> str:
@@ -309,6 +312,8 @@ class Finding(BaseModel):
     evaluation_mode: EvaluationMode = EvaluationMode.DIRECT
     source_references: list[SourceReference] = Field(default_factory=list)
     accepted_risks: list[AcceptedRiskAnnotation] = Field(default_factory=list)
+    #: Optional compliance/attack-surface mappings carried from the check YAML.
+    mappings: dict[str, list[str]] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def reject_indirect_high_confidence_ok(self) -> Self:

@@ -77,6 +77,11 @@
     'azure': 'Azure',
     'general': 'General',
 } -%}
+{%- macro _mappings_label(mappings) -%}
+{%- if mappings -%}
+{%- for _fw in mappings.keys() | sort -%}{{ _fw | upper }}: {{ mappings[_fw] | join(', ') }}{% if not loop.last %}; {% endif %}{%- endfor -%}
+{%- else -%}—{%- endif -%}
+{%- endmacro -%}
 {#- Radial gauge geometry: circumference for r=48 (viewBox 120). #}
 {%- set _gauge_c = 301.6 -%}
 {%- set _gauge_offset = _gauge_c * (1 - opening.realized_percent / 100) -%}
@@ -438,7 +443,9 @@ body.revealed .reveal-target.is-revealed {
       <p class="section-help">
         Every assessed control, most critical first. Expand a row for what we
         expected, what we observed, and what to do next. Select several values in
-        a group to match any of them; different groups combine.
+        a group to match any of them; different groups combine. Filter by
+        compliance mappings (Mapped / Unmapped) to isolate controls with NIST or
+        MITRE references.
       </p>
 
       <details class="tech findings-charts">
@@ -610,13 +617,17 @@ body.revealed .reveal-target.is-revealed {
           <button type="button" class="filter-button" data-facet="pack" data-value="{{ v }}" aria-pressed="false">{{ v | replace('-', ' ') | title }}</button>
           {% endfor %}
         </div>
+        <div class="filter-group" role="group" aria-label="Filter by compliance mappings">
+          <button type="button" class="filter-button" data-facet="mappings" data-value="mapped" aria-pressed="false">Mapped</button>
+          <button type="button" class="filter-button" data-facet="mappings" data-value="unmapped" aria-pressed="false">Unmapped</button>
+        </div>
         <button type="button" class="clear-filters" data-clear-filters>Clear all</button>
         <span class="filter-count" role="status" aria-live="polite" aria-atomic="true">Showing <strong data-visible-count>{{ _findings | length }}</strong> of <strong data-total-count>{{ _findings | length }}</strong></span>
       </div>
 
       <div class="explore-list" data-findings-list>
         {%- for _rank, _eidx, f, block in _finding_pairs -%}
-        <details class="explore-row tech" data-engine-idx="{{ _eidx }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}">
+        <details class="explore-row tech" data-engine-idx="{{ _eidx }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}" data-mappings="{{ _mappings_label(f.mappings) }}">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             {{ prim.status_marker(f.status) }}
@@ -624,6 +635,7 @@ body.revealed .reveal-target.is-revealed {
             <div class="explore-row__meta">
               {% if f.severity %}<span class="meta-severity">Severity: {{ f.severity | capitalize }}</span>{% endif %}
               {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
+              <span class="meta-compliance">Compliance: {{ _mappings_label(f.mappings) }}</span>
               <code>{{ f.check_id }}</code>
             </div>
             {% if f.customer_summary or f.summary %}<span class="explore-row__signal">{{ f.customer_summary or f.summary }}</span>{% endif %}
@@ -670,6 +682,28 @@ body.revealed .reveal-target.is-revealed {
         <h2 class="report-footer__heading">Coverage</h2>
         <p class="report-footer__coverage">{{ provenance.sampling.text }}</p>
       </div>
+      {%- if provenance.severity_overrides or provenance.omissions or provenance.annotations %}
+      <div class="report-footer__block">
+        <h2 class="report-footer__heading">Profile adjustments</h2>
+        {%- if provenance.severity_overrides %}
+        <p class="report-footer__adjustment">Severity overrides:
+          {%- for override in provenance.severity_overrides %}
+          <code>{{ override.check_id }}</code> &rarr; {{ override.severity }}{% if not loop.last %}, {% endif %}
+          {%- endfor %}
+        </p>
+        {%- endif %}
+        {%- if provenance.omissions %}
+        <p class="report-footer__adjustment">Omissions: {{ provenance.omissions | join('; ') }}</p>
+        {%- endif %}
+        {%- if provenance.annotations %}
+        <p class="report-footer__adjustment">Annotations:
+          {%- for annotation in provenance.annotations %}
+          {{ annotation.reason }} ({{ annotation.owner }}){% if not loop.last %}; {% endif %}
+          {%- endfor %}
+        </p>
+        {%- endif %}
+      </div>
+      {%- endif %}
     </div>
     <p class="report-footer__identity"><span class="report-footer__name">{{ provenance.identity.name }}</span> <span aria-hidden="true">&mdash;</span> generated <time datetime="{{ provenance.identity.scanned_at }}">{{ provenance.identity.display_scanned_at }}</time></p>
     <p class="report-footer__tagline">{{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.</p>
@@ -694,6 +728,7 @@ body.revealed .reveal-target.is-revealed {
         confidence: {},
         mode: {},
         pack: {},
+        mappings: {},
         related: null, // { capId, ids } | null
         search: '',
         sort: 'severity', // criticality-first by default (see §5E)
@@ -742,7 +777,7 @@ body.revealed .reveal-target.is-revealed {
 
       function resetState() {
         state.status = {}; state.severity = {}; state.confidence = {};
-        state.mode = {}; state.pack = {}; state.workload = 'all';
+        state.mode = {}; state.pack = {}; state.mappings = {}; state.workload = 'all';
         state.related = null; state.search = ''; state.page = 1;
         if (searchInput) searchInput.value = '';
       }
@@ -803,6 +838,7 @@ body.revealed .reveal-target.is-revealed {
         var conf = row.getAttribute('data-confidence');
         var mode = row.getAttribute('data-mode');
         var pack = row.getAttribute('data-pack');
+        var mappings = row.getAttribute('data-mappings');
         if (state.related !== null && state.related.ids.indexOf(row.getAttribute('data-check-id')) === -1) return false;
         if (hasActive(state.status) && !state.status[s]) return false;
         if (state.workload !== 'all' && w !== state.workload) return false;
@@ -810,6 +846,11 @@ body.revealed .reveal-target.is-revealed {
         if (hasActive(state.confidence) && !state.confidence[conf]) return false;
         if (hasActive(state.mode) && !state.mode[mode]) return false;
         if (hasActive(state.pack) && !state.pack[pack]) return false;
+        if (hasActive(state.mappings)) {
+          var mapped = mappings && mappings !== '—';
+          if (state.mappings.mapped && !mapped) return false;
+          if (state.mappings.unmapped && mapped) return false;
+        }
         if (state.search && searchText[index].indexOf(state.search) === -1) return false;
         return true;
       }

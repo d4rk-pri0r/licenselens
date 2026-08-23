@@ -269,6 +269,25 @@
         }
       ]
     },
+    "ProfileAnnotation": {
+      "additionalProperties": false,
+      "properties": {
+        "owner": {
+          "title": "Owner",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "owner",
+        "reason"
+      ],
+      "title": "ProfileAnnotation",
+      "type": "object"
+    },
     "RedactionSettings": {
       "additionalProperties": false,
       "properties": {
@@ -333,6 +352,35 @@
       "title": "RuleSelector",
       "type": "string"
     },
+    "Severity": {
+      "enum": [
+        "critical",
+        "high",
+        "medium",
+        "low",
+        "info"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SeverityOverride": {
+      "additionalProperties": false,
+      "properties": {
+        "check_id": {
+          "title": "Check Id",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "check_id",
+        "severity"
+      ],
+      "title": "SeverityOverride",
+      "type": "object"
+    },
     "ThresholdSettings": {
       "additionalProperties": false,
       "properties": {
@@ -373,6 +421,13 @@
         "type": "string"
       },
       "title": "Allowed Forwarding Domains",
+      "type": "array"
+    },
+    "annotations": {
+      "items": {
+        "$ref": "#/$defs/ProfileAnnotation"
+      },
+      "title": "Annotations",
       "type": "array"
     },
     "backend_preferences": {
@@ -423,6 +478,13 @@
       "title": "Name",
       "type": "string"
     },
+    "omissions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Omissions",
+      "type": "array"
+    },
     "packs": {
       "items": {
         "type": "string"
@@ -450,6 +512,13 @@
         "type": "string"
       },
       "title": "Sensitive Users",
+      "type": "array"
+    },
+    "severity_override": {
+      "items": {
+        "$ref": "#/$defs/SeverityOverride"
+      },
+      "title": "Severity Override",
       "type": "array"
     },
     "thresholds": {

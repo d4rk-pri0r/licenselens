@@ -24,4 +24,7 @@ remediation: >
   Disable SMS, Voice call, and Email OTP in Authentication methods policies.
 references:
   - https://learn.microsoft.com/entra/identity/authentication/concept-authentication-methods
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

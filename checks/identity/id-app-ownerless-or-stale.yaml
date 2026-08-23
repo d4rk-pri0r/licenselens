@@ -26,4 +26,7 @@ remediation: >
   Review ownerless and stale app registrations; assign owners or delete unused apps.
 references:
   - https://learn.microsoft.com/entra/identity/enterprise-apps/manage-application-permissions
+mappings:
+  nist: ["AC-2", "IA-5"]
+  mitre: ["T1098"]
 enabled: true

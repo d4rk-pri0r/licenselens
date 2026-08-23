@@ -30,4 +30,7 @@ remediation: >
   remediate any Windows device that reports it disabled.
 references:
   - https://learn.microsoft.com/defender-endpoint/prevent-changes-to-security-settings-with-tamper-protection
+mappings:
+  nist: ["SI-3", "SI-7"]
+  mitre: ["T1562"]
 enabled: true

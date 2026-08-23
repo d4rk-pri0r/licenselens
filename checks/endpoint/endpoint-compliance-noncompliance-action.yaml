@@ -28,4 +28,7 @@ remediation: >
   are flagged or blocked within your chosen grace period.
 references:
   - https://learn.microsoft.com/mem/intune/protect/actions-for-noncompliance
+mappings:
+  nist: ["CM-6", "SI-2"]
+  mitre: ["T1059"]
 enabled: true

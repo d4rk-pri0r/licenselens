@@ -37,4 +37,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/entra/id-governance/access-reviews-overview
   - https://learn.microsoft.com/graph/api/accessreviewset-list-definitions
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

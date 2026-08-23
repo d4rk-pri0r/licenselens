@@ -26,4 +26,7 @@ remediation: >
   Enable admin consent requests and assign reviewers who monitor the queue.
 references:
   - https://learn.microsoft.com/entra/identity/enterprise-apps/configure-admin-consent-workflow
+mappings:
+  nist: ["AC-2", "IA-5"]
+  mitre: ["T1098"]
 enabled: true

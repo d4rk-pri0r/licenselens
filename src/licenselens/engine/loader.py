@@ -33,6 +33,24 @@ def _clean(text: str | None) -> str:
     return " ".join(str(text).split())
 
 
+def _parse_mappings(raw: object) -> dict[str, list[str]]:
+    """Normalize an optional ``mappings:`` block to ``{framework: [ids]}``.
+
+    Missing, empty, or malformed blocks degrade to ``{}`` so a check without
+    mappings (or with a typo) never breaks loading.
+    """
+    if not isinstance(raw, dict):
+        return {}
+    parsed: dict[str, list[str]] = {}
+    for framework, ids in raw.items():
+        if not isinstance(framework, str) or not isinstance(ids, list):
+            continue
+        cleaned = [str(item) for item in ids if item]
+        if cleaned:
+            parsed[framework] = cleaned
+    return parsed
+
+
 def _parse_metadata(raw: dict) -> dict:
     impact = raw.get("impact")
     if impact is None:
@@ -96,6 +114,7 @@ def load_checks(root: Path | None = None) -> list[CheckDefinition]:
                 customer_next_step=_clean(raw.get("customer_next_step")),
                 why_it_matters=_clean(raw.get("why_it_matters")),
                 source_path=str(path),
+                mappings=_parse_mappings(raw.get("mappings")),
             )
         )
     return checks

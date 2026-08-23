@@ -833,3 +833,128 @@ def test_scan_config_overlay_merges_custom_rules(tmp_path: Path):
     assert payload["profile_ids"] == ["identity", "org-identity"]
     check_ids = {finding["check_id"] for finding in payload["findings"]}
     assert any("org-gap-count" in cid for cid in check_ids)
+
+
+def _tenant_report_payload(tenant_id: str, slug: str) -> dict:
+    """Build a minimal ScanResult-shaped JSON dict for a tenant."""
+    return {
+        "schema_version": "1.0",
+        "tool": "security-license-lens",
+        "tool_display_name": "Security License Lens",
+        "version": "0.4.0",
+        "tenant_id": tenant_id,
+        "tenant_display_name": f"Tenant {slug}",
+        "tenant_slug": slug,
+        "scan_mode": "dry_run",
+        "auth_mode": "dry_run",
+        "scanned_at": "2026-08-13T00:00:00+00:00",
+        "owned_capabilities": ["conditional_access"],
+        "capability_summaries": [],
+        "capability_rollup": {
+            "realized_percent": 50,
+            "you_own": 1,
+            "fully_working": 0,
+            "needs_attention": 1,
+            "partly_set_up": 0,
+            "not_licensed": 0,
+        },
+        "findings": [
+            {
+                "check_id": "id-ca-priv-gaps",
+                "title": "Conditional Access gaps",
+                "status": "gap",
+                "severity": "high",
+                "workload": "identity",
+                "summary": "No CA policies.",
+                "customer_summary": "No CA policies.",
+                "customer_next_step": "Enable MFA.",
+            }
+        ],
+        "profile_ids": [],
+        "packs_scanned": ["identity"],
+    }
+
+
+def test_merge_reports_command_writes_merged_html(tmp_path: Path):
+    tenant_a = tmp_path / "tenants" / "alpha"
+    tenant_b = tmp_path / "tenants" / "beta"
+    tenant_a.mkdir(parents=True)
+    tenant_b.mkdir(parents=True)
+    (tenant_a / "security-license-lens-report.json").write_text(
+        json.dumps(_tenant_report_payload("t-a", "alpha")), encoding="utf-8"
+    )
+    (tenant_b / "security-license-lens-report.json").write_text(
+        json.dumps(_tenant_report_payload("t-b", "beta")), encoding="utf-8"
+    )
+
+    out = tmp_path / "merged.html"
+    result = runner.invoke(
+        app,
+        ["merge-reports", str(tmp_path / "tenants"), "--output", str(out)],
+    )
+    assert result.exit_code == 0, result.output
+    assert out.is_file()
+    html = out.read_text(encoding="utf-8")
+    assert "Security License Lens" in html
+    assert "alpha" in html
+    assert "beta" in html
+
+
+def test_merge_reports_empty_dir_exits_2_writes_nothing(tmp_path: Path):
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    out = tmp_path / "merged.html"
+    result = runner.invoke(
+        app,
+        ["merge-reports", str(empty), "--output", str(out)],
+    )
+    assert result.exit_code == 2, result.output
+    assert "No security-license-lens-report.json files found" in result.stdout
+    assert not out.exists()
+
+
+def test_merge_reports_reports_flag_captures_all_space_separated_paths(tmp_path: Path):
+    """--reports a.json b.json (space-separated after one flag) merges both."""
+    tenant_a = tmp_path / "tenants" / "alpha"
+    tenant_b = tmp_path / "tenants" / "beta"
+    tenant_a.mkdir(parents=True)
+    tenant_b.mkdir(parents=True)
+    report_a = tenant_a / "security-license-lens-report.json"
+    report_b = tenant_b / "security-license-lens-report.json"
+    report_a.write_text(json.dumps(_tenant_report_payload("t-a", "alpha")), encoding="utf-8")
+    report_b.write_text(json.dumps(_tenant_report_payload("t-b", "beta")), encoding="utf-8")
+
+    out = tmp_path / "merged.html"
+    result = runner.invoke(
+        app,
+        [
+            "merge-reports",
+            "--reports",
+            str(report_a),
+            str(report_b),
+            "--output",
+            str(out),
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    assert out.is_file()
+    html = out.read_text(encoding="utf-8")
+    assert "alpha" in html
+    assert "beta" in html
+
+
+def test_merge_reports_two_positional_dirs_errors_clearly(tmp_path: Path):
+    """Two positional dirs must error clearly, not silently ignore the second."""
+    dir_a = tmp_path / "a"
+    dir_b = tmp_path / "b"
+    dir_a.mkdir()
+    dir_b.mkdir()
+    out = tmp_path / "merged.html"
+    result = runner.invoke(
+        app,
+        ["merge-reports", str(dir_a), str(dir_b), "--output", str(out)],
+    )
+    assert result.exit_code == 2, result.output
+    assert "single directory" in result.stdout
+    assert "--reports" in result.stdout
+    assert not out.exists()

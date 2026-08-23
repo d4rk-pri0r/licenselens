@@ -30,4 +30,7 @@ remediation: >
   onboarding and network connectivity for each affected device.
 references:
   - https://learn.microsoft.com/defender-endpoint/troubleshoot-onboarding
+mappings:
+  nist: ["SI-3", "SI-4"]
+  mitre: ["T1059"]
 enabled: true

@@ -39,4 +39,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
   - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-require-mfa
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

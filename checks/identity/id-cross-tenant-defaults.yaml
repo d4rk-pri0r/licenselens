@@ -24,4 +24,7 @@ remediation: >
   Review cross-tenant access default inbound settings and partner-specific overrides.
 references:
   - https://learn.microsoft.com/entra/external-id/cross-tenant-access-overview
+mappings:
+  nist: ["AC-2", "AC-3"]
+  mitre: ["T1078"]
 enabled: true

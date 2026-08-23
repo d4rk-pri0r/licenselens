@@ -67,6 +67,7 @@ class ReferenceCheck(StrictReferenceModel):
     required_capabilities: tuple[str, ...]
     source_path: str
     support_state: SupportState
+    mappings: dict[str, tuple[str, ...]]
 
 
 class ReferenceProfile(StrictReferenceModel):

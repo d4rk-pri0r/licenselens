@@ -36,4 +36,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/workload-identity
   - https://learn.microsoft.com/entra/workload-id/workload-identities-overview
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

@@ -24,4 +24,7 @@ remediation: >
   Create a Conditional Access policy requiring the Phishing-resistant MFA authentication strength for all users.
 references:
   - https://learn.microsoft.com/entra/identity/authentication/concept-authentication-strengths
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

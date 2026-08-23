@@ -26,4 +26,7 @@ remediation: >
   Set Users can register applications to No in Entra user settings / authorization policy.
 references:
   - https://learn.microsoft.com/entra/identity/enterprise-apps/configure-user-consent
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1098"]
 enabled: true

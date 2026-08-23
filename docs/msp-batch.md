@@ -33,6 +33,47 @@ Full CLI flags: [CLI reference](cli.md). Fixture and comments:
 Prefer `AZURE_CLIENT_ID` / `AZURE_CLIENT_SECRET` (and per-tenant `AZURE_TENANT_ID`
 or YAML `tenant_id`) over embedding secrets in YAML.
 
+## OIDC workload-identity federation (`--auth oidc`)
+
+For scheduled, secret-free scans (for example GitHub Actions), LicenseLens
+supports **OIDC workload-identity federation** via `--auth oidc`. Instead of a
+stored client secret, an Azure `ClientAssertionCredential` is minted from a
+GitHub Actions OIDC token:
+
+- The token is fetched from the `ACTIONS_ID_TOKEN_REQUEST_URL` /
+  `ACTIONS_ID_TOKEN_REQUEST_TOKEN` runtime environment variables that GitHub
+  Actions injects into the job (or passed explicitly).
+- Only `AZURE_TENANT_ID` + `AZURE_CLIENT_ID` are required — **no client secret**
+  is stored anywhere.
+- The Azure app registration must have a **federated credential** configured for
+  the GitHub repository / environment / branch that runs the workflow.
+
+```bash
+export AZURE_TENANT_ID=...
+export AZURE_CLIENT_ID=...
+licenselens scan --auth oidc -o reports --report-archive
+```
+
+## Scheduled continuous assessment (CI monitoring)
+
+The repository ships a scheduled, secret-free monitoring workflow at
+`.github/workflows/continuous-assessment.yml`:
+
+- **Schedule** — runs daily at `30 7 * * *` (07:30 UTC) and on demand via
+  `workflow_dispatch`.
+- **OIDC** — runs `licenselens scan --auth oidc -o reports --report-archive`
+  with `id-token: write` granted only here (least privilege; `contents: read`).
+  Every action is pinned by full commit SHA (no floating tags).
+- **Artifact upload** — the machine-readable report JSON + ZIP are uploaded as
+  an expiring artifact (`retention-days: 14`).
+- **Step summary** — a step emits the posture figure + top gaps from the JSON
+  report to the GitHub step summary, so the run's summary shows the realized
+  percentage and the top actionable gaps without printing secrets.
+
+The workflow is guarded by `licenselens.ci_guard.continuous_assessment_guards`,
+which rejects unpinned actions, missing schedules, non-OIDC auth, and any
+client-secret / webhook secrets.
+
 ## `defaults` + per-tenant merge
 
 Top-level `defaults` is a map applied to every tenant. Each tenant entry is

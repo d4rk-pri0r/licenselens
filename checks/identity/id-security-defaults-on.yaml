@@ -37,4 +37,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/en-us/entra/fundamentals/security-defaults
   - https://learn.microsoft.com/entra/identity/conditional-access/overview
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

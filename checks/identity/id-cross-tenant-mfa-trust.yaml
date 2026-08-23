@@ -37,4 +37,7 @@ remediation: >
   Add partner-specific trust only for vetted organizations.
 references:
   - https://learn.microsoft.com/entra/external-id/cross-tenant-access-settings-b2b-collaboration
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

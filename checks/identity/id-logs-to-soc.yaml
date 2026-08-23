@@ -26,4 +26,7 @@ remediation: >
   Export Entra sign-in and audit logs to the organization SIEM/SOC pipeline.
 references:
   - https://learn.microsoft.com/entra/identity/monitoring-health/howto-integrate-activity-logs-with-azure-monitor-logs
+mappings:
+  nist: ["AU-6", "AU-12"]
+  mitre: ["T1078"]
 enabled: true

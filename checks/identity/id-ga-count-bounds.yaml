@@ -24,4 +24,7 @@ remediation: >
   Keep 2-8 Global Administrator principals and move day-to-day work to finer roles.
 references:
   - https://learn.microsoft.com/entra/identity/role-based-access-control/best-practices
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

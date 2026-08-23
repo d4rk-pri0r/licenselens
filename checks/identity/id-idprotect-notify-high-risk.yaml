@@ -24,4 +24,7 @@ remediation: >
   Configure Identity Protection users-at-risk detected alerts to a monitored mailbox.
 references:
   - https://learn.microsoft.com/entra/id-protection/howto-identity-protection-configure-notifications
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

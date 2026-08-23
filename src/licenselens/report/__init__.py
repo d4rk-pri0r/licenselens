@@ -1,5 +1,6 @@
-"""Report writers (HTML, JSON, Markdown, bundle)."""
+"""Report writers (HTML, JSON, Markdown, bundle, action plan)."""
 
+from licenselens.report.action_plan import write_action_plan
 from licenselens.report.bundle import (
     ReportBundleError,
     build_report_bundle,
@@ -14,6 +15,7 @@ __all__ = [
     "write_html_report",
     "write_json_report",
     "write_markdown_report",
+    "write_action_plan",
     "build_report_bundle",
     "verify_report_bundle",
     "extract_report_archive",

@@ -25,4 +25,7 @@ remediation: >
   Create an enforced Conditional Access policy requiring compliant or Microsoft Entra hybrid joined devices.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-compliant-device
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

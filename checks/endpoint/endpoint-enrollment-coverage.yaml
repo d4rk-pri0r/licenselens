@@ -29,4 +29,7 @@ remediation: >
   license assignment with actual endpoints; investigate unmanaged devices.
 references:
   - https://learn.microsoft.com/mem/intune/fundamentals/deployment-guide-enroll
+mappings:
+  nist: ["CM-6", "SI-2"]
+  mitre: ["T1059"]
 enabled: true

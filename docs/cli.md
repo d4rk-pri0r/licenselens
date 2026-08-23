@@ -84,7 +84,7 @@ is dry-run; `--live` without credentials exits with a clear error.
 | `-o` / `--output-dir` | `reports` | Directory for report files |
 | `-w` / `--workload` | — | Limit to one or more workloads (repeatable). See [Workloads vs packs](#workloads-vs-packs) |
 | `--live` / `--dry-run` | (TTY: prompt; no TTY: dry-run) | Query a real tenant vs curated demo data |
-| `--auth` | (live default: device) | `device` \| `client_secret` \| `azure_cli` |
+| `--auth` | (live default: device) | `device` \| `client_secret` \| `azure_cli` \| `oidc` |
 | `--tenant-id` | env `AZURE_TENANT_ID` | Directory (tenant) ID |
 | `--client-id` | env `AZURE_CLIENT_ID` | App registration client ID |
 | `--client-secret` | env `AZURE_CLIENT_SECRET` | Client secret (prefer the env var) |
@@ -214,6 +214,35 @@ licenselens discover-workspace --auth client_secret
 Exit `0` when at least one workspace is found; `1` when none are discovered;
 `2` on auth or API failure.
 
+### `merge-reports`
+
+Merge sibling tenant report JSONs into one single-file HTML dashboard with a
+client-side tenant switcher. Reads each tenant's
+`security-license-lens-report.json` (from a directory scan or an explicit list),
+inlines every payload into a single offline HTML document, and applies the
+**union** of every tenant's redaction targets so a cross-tenant identifier is
+scrubbed from every region. No network requests at view time.
+
+| Argument / option | Default | Description |
+|-------------------|---------|-------------|
+| `DIR` | (optional) | Directory to scan recursively for `security-license-lens-report.json` files |
+| `--reports` | — | Explicit report JSON file paths (repeatable). Overrides `DIR` |
+| `-o` / `--output` | (required) | Output path for the merged single-file HTML report |
+
+```bash
+# Merge every tenant report under a batch output root
+licenselens merge-reports reports -o reports/merged.html
+
+# Merge an explicit list of report JSONs
+licenselens merge-reports \
+  --reports reports/contoso/security-license-lens-report.json \
+  --reports reports/fabrikam/security-license-lens-report.json \
+  -o reports/merged.html
+```
+
+Exit `0` on success; `2` when the directory is missing, no report JSON files are
+found, or the merge fails.
+
 ## Auth modes
 
 CLI `--auth` values:
@@ -223,6 +252,13 @@ CLI `--auth` values:
 | `device` | Interactive device-code sign-in (live default when `--auth` is omitted) |
 | `client_secret` | App-only client credentials (`AZURE_TENANT_ID` + `AZURE_CLIENT_ID` + `AZURE_CLIENT_SECRET`) |
 | `azure_cli` | Reuse an existing `az login` session |
+| `oidc` | GitHub Actions OIDC workload-identity federation (no stored client secret) |
+
+`oidc` mints an Azure `ClientAssertionCredential` from a GitHub Actions OIDC
+token (fetched from the `ACTIONS_ID_TOKEN_REQUEST_URL` /
+`ACTIONS_ID_TOKEN_REQUEST_TOKEN` runtime env, or passed explicitly). It requires
+`AZURE_TENANT_ID` + `AZURE_CLIENT_ID` and is the auth mode used by the scheduled
+[continuous-assessment](msp-batch.md) workflow. See [MSP batch auth](msp-batch.md).
 
 Dry-run / demo paths never call Microsoft APIs.
 See [App registration](app-registration.md) for permission setup.

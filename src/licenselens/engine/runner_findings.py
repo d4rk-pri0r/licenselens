@@ -130,6 +130,7 @@ def base_finding(
         data_sources=list(data_sources or []),
         limitations=list(limitations or []),
         evaluation_mode=finding_evaluation_mode(check, evidence),
+        mappings=dict(check.mappings),
     )
     finding = apply_quality_policy(finding, strict_proxy=strict_proxy)
     finding.status_label = STATUS_PLAIN_LABELS.get(finding.status.value, finding.status.value)

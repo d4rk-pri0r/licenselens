@@ -24,4 +24,7 @@ remediation: >
   Create an enforced Conditional Access policy blocking authentication flow Device code flow for all users.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/concept-authentication-flows
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

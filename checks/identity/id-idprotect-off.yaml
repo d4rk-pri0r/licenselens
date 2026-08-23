@@ -29,4 +29,7 @@ remediation: >
   for privileged and high-value users.
 references:
   - https://learn.microsoft.com/entra/id-protection/overview-identity-protection
+mappings:
+  nist: ["AC-2", "IA-2"]
+  mitre: ["T1078"]
 enabled: true

@@ -24,4 +24,7 @@ remediation: >
   Require PIM eligibility for highly privileged roles and remove standing bypass paths.
 references:
   - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

@@ -24,4 +24,7 @@ remediation: >
   Migrate MFA and SSPR methods to the Authentication methods policy and set migration state to complete.
 references:
   - https://learn.microsoft.com/entra/identity/authentication/how-to-authentication-methods-manage
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

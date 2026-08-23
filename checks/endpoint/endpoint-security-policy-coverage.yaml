@@ -30,4 +30,7 @@ remediation: >
   firewall, disk encryption, attack surface reduction) and assign them.
 references:
   - https://learn.microsoft.com/mem/intune/protect/endpoint-security
+mappings:
+  nist: ["CM-6", "SI-3"]
+  mitre: ["T1059"]
 enabled: true

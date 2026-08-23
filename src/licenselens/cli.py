@@ -41,7 +41,13 @@ from licenselens.engine.runner import run_scan
 from licenselens.engine.runner_findings import status_count_rows
 from licenselens.errors import AuthConfigError, AuthError, GraphError, LicenseLensError
 from licenselens.models import CheckDefinition, CheckPack, ScanResult, Workload
-from licenselens.report import write_html_report, write_json_report, write_markdown_report
+from licenselens.report import (
+    write_action_plan,
+    write_html_report,
+    write_json_report,
+    write_markdown_report,
+)
+from licenselens.report.merged import REPORT_JSON_FILENAME, render_merged_html
 from licenselens.schema_contracts import CollectionStatus
 
 app = typer.Typer(
@@ -83,6 +89,26 @@ class AuthModeOption(StrEnum):
     DEVICE = "device"
     CLIENT_SECRET = "client_secret"
     AZURE_CLI = "azure_cli"
+    OIDC = "oidc"
+
+
+class ExportFormat(StrEnum):
+    """G1 action-plan export format (CSV or JSON)."""
+
+    ACTION_PLAN = "action-plan"
+    CSV = "csv"
+    JSON = "json"
+
+
+def _export_target(fmt: ExportFormat) -> tuple[str, str]:
+    """Map an export format to ``(writer fmt, output filename)``.
+
+    ``action-plan`` and ``csv`` both produce the deterministic CSV file;
+    ``json`` produces the JSON file.
+    """
+    if fmt == ExportFormat.JSON:
+        return "json", "action-plan.json"
+    return "csv", "action-plan.csv"
 
 
 def _to_auth_mode(option: AuthModeOption | None, *, live: bool) -> AuthMode:
@@ -94,6 +120,7 @@ def _to_auth_mode(option: AuthModeOption | None, *, live: bool) -> AuthMode:
         AuthModeOption.DEVICE: AuthMode.DEVICE_CODE,
         AuthModeOption.CLIENT_SECRET: AuthMode.CLIENT_SECRET,
         AuthModeOption.AZURE_CLI: AuthMode.AZURE_CLI,
+        AuthModeOption.OIDC: AuthMode.OIDC,
     }[option]
 
 
@@ -224,12 +251,16 @@ def _write_scan_artifacts(
     *,
     report_archive: bool,
     redaction: RedactionSettings,
-) -> tuple[Path, Path, Path, Path | None]:
-    """Write HTML/JSON/Markdown reports and optional deterministic ZIP archive.
+    export_format: ExportFormat | None,
+) -> tuple[Path, Path, Path, Path | None, Path | None]:
+    """Write HTML/JSON/Markdown reports, optional ZIP, and optional action plan.
 
     When the output dir already holds report artifacts from a prior run, this
     run is written to a fresh timestamped subdirectory instead of clobbering
-    the previous scan's files (which are the diff baseline).
+    the previous scan's files (which are the diff baseline). When
+    ``export_format`` is set, the G1 action plan is also written as
+    ``action-plan.csv`` (or ``.json``) beside the reports, threaded through the
+    same redaction pipeline.
     """
     existing = [
         output_dir / name for name in _REPORT_ARTIFACT_NAMES if (output_dir / name).is_file()
@@ -262,7 +293,13 @@ def _write_scan_artifacts(
         except ScanConfigError as exc:
             console.print(f"[red]Report archive failed:[/red] {exc}")
             raise typer.Exit(code=2) from exc
-    return html_path, json_path, md_path, archive_path
+    action_plan_path: Path | None = None
+    if export_format is not None:
+        fmt, filename = _export_target(export_format)
+        action_plan_path = write_action_plan(
+            result, output_dir / filename, fmt=fmt, redaction=redaction
+        )
+    return html_path, json_path, md_path, archive_path, action_plan_path
 
 
 @app.command("version")
@@ -432,7 +469,7 @@ def doctor_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli.",
+        help="Live auth mode: device | client_secret | azure_cli | oidc.",
     ),
     profile: str = typer.Option(
         "basic",
@@ -658,7 +695,7 @@ def scan_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli.",
+        help="Live auth mode: device | client_secret | azure_cli | oidc.",
     ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
@@ -742,6 +779,15 @@ def scan_cmd(
             "HTML/JSON/Markdown reports and the report ZIP (default: the "
             "profile's redaction settings, which default to on). "
             "Use --no-redact to keep raw values."
+        ),
+    ),
+    export: ExportFormat | None = typer.Option(
+        None,
+        "--export",
+        help=(
+            "Export the G1 remediation action plan as CSV or JSON "
+            "(action-plan.csv / action-plan.json) beside the reports "
+            "(default: action-plan/CSV)."
         ),
     ),
 ) -> None:
@@ -860,8 +906,12 @@ def scan_cmd(
 
     _print_collection_summary(result)
 
-    html_path, json_path, md_path, archive_path = _write_scan_artifacts(
-        result, wizard.output_dir, report_archive=report_archive, redaction=redaction
+    html_path, json_path, md_path, archive_path, action_plan_path = _write_scan_artifacts(
+        result,
+        wizard.output_dir,
+        report_archive=report_archive,
+        redaction=redaction,
+        export_format=export,
     )
 
     counts = result.counts_by_status
@@ -879,6 +929,8 @@ def scan_cmd(
     console.print(f"  MD    {md_path}")
     if archive_path is not None:
         console.print(f"  ZIP   {archive_path}")
+    if action_plan_path is not None:
+        console.print(f"  PLAN  {action_plan_path}")
     console.print(
         "[dim]To compare against a prior assessment: `licenselens diff <old.json> <new.json>`[/dim]"
     )
@@ -896,18 +948,25 @@ def _run_offline_demo(
     resolved_profile: ResolvedProfile | None,
     redaction: RedactionSettings,
     report_archive: bool,
+    export_format: ExportFormat | None,
 ) -> Path:
     """Run the offline demo scan, write artifacts, and print the summary."""
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
     console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
     result = run_scan(auth, dry_run=True, profile=resolved_profile)
-    html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
-        result, output_dir, report_archive=report_archive, redaction=redaction
+    html_path, _json_path, _md_path, archive_path, action_plan_path = _write_scan_artifacts(
+        result,
+        output_dir,
+        report_archive=report_archive,
+        redaction=redaction,
+        export_format=export_format,
     )
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
     if archive_path is not None:
         console.print(f"  ZIP   {archive_path}")
+    if action_plan_path is not None:
+        console.print(f"  PLAN  {action_plan_path}")
     console.print(
         "[green]Demo complete.[/green] This is a sample report from curated demo data — "
         "it is not a real tenant."
@@ -961,6 +1020,15 @@ def demo_cmd(
             "the reports (default: on). Use --no-redact to keep raw values."
         ),
     ),
+    export: ExportFormat | None = typer.Option(
+        None,
+        "--export",
+        help=(
+            "Export the G1 remediation action plan as CSV or JSON "
+            "(action-plan.csv / action-plan.json) beside the reports "
+            "(default: action-plan/CSV)."
+        ),
+    ),
 ) -> None:
     """Run the offline demo scan and print the HTML report path."""
     resolved_profile = _resolve_profile_or_exit(
@@ -968,7 +1036,11 @@ def demo_cmd(
     )
     redaction = _effective_redaction_settings(resolved_profile, redact)
     html_path = _run_offline_demo(
-        output_dir, resolved_profile, redaction, report_archive=report_archive
+        output_dir,
+        resolved_profile,
+        redaction,
+        report_archive=report_archive,
+        export_format=export,
     )
     if open_browser:
         import webbrowser
@@ -1026,6 +1098,15 @@ def quickstart_cmd(
             "the reports (default: on). Use --no-redact to keep raw values."
         ),
     ),
+    export: ExportFormat | None = typer.Option(
+        None,
+        "--export",
+        help=(
+            "Export the G1 remediation action plan as CSV or JSON "
+            "(action-plan.csv / action-plan.json) beside the reports "
+            "(default: action-plan/CSV)."
+        ),
+    ),
 ) -> None:
     """Walk through a read-only scan against your own tenant (no code needed)."""
     from licenselens.cli_prompts import resolve_quickstart_inputs
@@ -1054,7 +1135,13 @@ def quickstart_cmd(
             "[yellow]No tenant id provided, running the offline demo instead — "
             "pass --tenant-id or AZURE_TENANT_ID for a live walkthrough.[/yellow]"
         )
-        _run_offline_demo(output_dir, resolved_profile, redaction, report_archive=report_archive)
+        _run_offline_demo(
+            output_dir,
+            resolved_profile,
+            redaction,
+            report_archive=report_archive,
+            export_format=export,
+        )
         raise typer.Exit(code=0)
 
     if wizard.client_secret:
@@ -1103,13 +1190,19 @@ def quickstart_cmd(
         console.print(f"[red]Scan failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
 
-    html_path, _json_path, _md_path, archive_path = _write_scan_artifacts(
-        result, output_dir, report_archive=report_archive, redaction=redaction
+    html_path, _json_path, _md_path, archive_path, action_plan_path = _write_scan_artifacts(
+        result,
+        output_dir,
+        report_archive=report_archive,
+        redaction=redaction,
+        export_format=export,
     )
     _print_top_card(result)
     console.print(f"  HTML  {html_path}")
     if archive_path is not None:
         console.print(f"  ZIP   {archive_path}")
+    if action_plan_path is not None:
+        console.print(f"  PLAN  {action_plan_path}")
     console.print(
         "[green]Done.[/green] Open the HTML report and use the top-card list as your "
         "conversation starter with IT."
@@ -1159,6 +1252,61 @@ def diff_cmd(
         console.print(f"[red]Diff failed:[/red] {exc}")
         raise typer.Exit(code=2) from exc
     console.print(f"  Diff  {out}")
+    raise typer.Exit(code=0)
+
+
+@app.command("merge-reports")
+def merge_reports_cmd(
+    directory: list[Path] | None = typer.Argument(
+        None,
+        help="Directory to scan recursively for security-license-lens-report.json files.",
+    ),
+    reports: list[Path] | None = typer.Option(
+        None,
+        "--reports",
+        help="Explicit report JSON file paths. Repeatable or space-separated. "
+        "Overrides <dir>.",
+    ),
+    output: Path = typer.Option(
+        ...,
+        "--output",
+        "-o",
+        help="Output path for the merged single-file HTML report.",
+    ),
+) -> None:
+    """Merge sibling tenant report JSONs into one single-file HTML dashboard."""
+    if reports:
+        # In explicit-files mode, any positional args are treated as additional
+        # report files (so `--reports a.json b.json` merges both).
+        tenant_paths = list(reports) + list(directory or [])
+    elif directory:
+        if len(directory) > 1:
+            console.print(
+                "[red]merge-reports accepts a single directory; use repeated "
+                "--reports for explicit files.[/red]"
+            )
+            raise typer.Exit(code=2)
+        scan_dir = directory[0]
+        if not scan_dir.is_dir():
+            console.print(f"[red]Directory not found:[/red] {scan_dir}")
+            raise typer.Exit(code=2)
+        tenant_paths = sorted(scan_dir.rglob(REPORT_JSON_FILENAME))
+    else:
+        console.print("[red]Provide a <dir> to scan or --reports <paths>.[/red]")
+        raise typer.Exit(code=2)
+
+    if not tenant_paths:
+        console.print(
+            f"[red]No {REPORT_JSON_FILENAME} files found to merge.[/red]"
+        )
+        raise typer.Exit(code=2)
+
+    try:
+        render_merged_html(tenant_paths, output)
+    except (OSError, ValueError, FileNotFoundError) as exc:
+        console.print(f"[red]Merge failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+    console.print(f"  Merged  {output}")
     raise typer.Exit(code=0)
 
 
@@ -1244,7 +1392,7 @@ def discover_workspace_cmd(
     auth: AuthModeOption | None = typer.Option(
         None,
         "--auth",
-        help="Live auth mode: device | client_secret | azure_cli.",
+        help="Live auth mode: device | client_secret | azure_cli | oidc.",
     ),
     tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
     client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),

@@ -24,4 +24,7 @@ remediation: >
   Configure PIM notification rules for privileged role assignment events.
 references:
   - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-how-to-change-default-settings
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

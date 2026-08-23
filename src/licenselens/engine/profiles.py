@@ -105,13 +105,21 @@ def apply_profile_to_findings(
     annotations_by_check: dict[str, list[AcceptedRiskAnnotation]] = {}
     for annotation in annotations:
         annotations_by_check.setdefault(annotation.check_id, []).append(annotation)
+    severity_by_check = {
+        override.check_id: override.severity for override in profile.profile.severity_override
+    }
     return [
         finding.model_copy(
             update={
                 "accepted_risks": [
                     *finding.accepted_risks,
                     *annotations_by_check.get(finding.check_id, []),
-                ]
+                ],
+                **(
+                    {"severity": severity_by_check[finding.check_id]}
+                    if finding.check_id in severity_by_check
+                    else {}
+                ),
             }
         )
         for finding in findings
@@ -125,6 +133,15 @@ def apply_profile_to_scan_result(result: ScanResult, profile: ResolvedProfile) -
             "findings": findings,
             "profile_ids": [ProfileId(profile_id) for profile_id in profile.profile_ids],
             "accepted_risks": accepted_risk_annotations(profile.profile),
+            "severity_overrides": [
+                {"check_id": override.check_id, "severity": override.severity.value}
+                for override in profile.profile.severity_override
+            ],
+            "omissions": list(profile.profile.omissions),
+            "annotations": [
+                {"owner": annotation.owner, "reason": annotation.reason}
+                for annotation in profile.profile.annotations
+            ],
         }
     )
 
@@ -190,6 +207,7 @@ def _declared_check_ids(profile: AssessmentProfile) -> set[str]:
         *profile.check_ids,
         *(risk.check_id for risk in profile.accepted_risks),
         *(exclusion.check_id for exclusion in profile.exclusions),
+        *(override.check_id for override in profile.severity_override),
     }
 
 

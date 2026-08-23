@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_validator, model_validator
 
+from licenselens.models import Severity
 from licenselens.schema_contracts import (
     CURRENT_SCHEMA_VERSION,
     SUPPORTED_SCHEMA_MAJOR,
@@ -129,6 +130,16 @@ class AcceptedRiskWaiver(StrictConfigModel):
         return False
 
 
+class SeverityOverride(StrictConfigModel):
+    check_id: str
+    severity: Severity
+
+
+class ProfileAnnotation(StrictConfigModel):
+    owner: str
+    reason: str
+
+
 class CustomRuleCondition(StrictConfigModel):
     selector: RuleSelector
     operator: RuleOperator
@@ -183,6 +194,9 @@ class AssessmentProfile(StrictConfigModel):
         default_factory=list,
         json_schema_extra={"x-licenselens-mergeable": True},
     )
+    severity_override: list[SeverityOverride] = Field(default_factory=list)
+    omissions: list[str] = Field(default_factory=list)
+    annotations: list[ProfileAnnotation] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def reject_unsupported_schema_version(self) -> Self:
@@ -216,6 +230,10 @@ class AssessmentProfile(StrictConfigModel):
             if len(values) != len(set(values)):
                 msg = f"duplicate {label} id"
                 raise ValueError(msg)
+        override_ids = [override.check_id for override in self.severity_override]
+        if len(override_ids) != len(set(override_ids)):
+            msg = "duplicate severity override check_id"
+            raise ValueError(msg)
         return self
 
 

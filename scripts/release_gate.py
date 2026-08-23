@@ -564,7 +564,11 @@ def check_release_guards() -> StepResult:
     """Run the cross-platform release/CI workflow static guards in-process."""
     start = time.monotonic()
     sys.path.insert(0, str(REPO_ROOT / "src"))
-    from licenselens.ci_guard import ci_guards, docs_freshness_guards
+    from licenselens.ci_guard import (
+        ci_guards,
+        continuous_assessment_guards,
+        docs_freshness_guards,
+    )
     from licenselens.release_guard import (
         release_guards,
         third_party_notices_guards,
@@ -577,6 +581,7 @@ def check_release_guards() -> StepResult:
         release_guards(REPO_ROOT)
         + windows_ci_guards(REPO_ROOT)
         + ci_guards(REPO_ROOT)
+        + continuous_assessment_guards(REPO_ROOT)
         + docs_freshness_guards(REPO_ROOT)
         + third_party_notices_guards(REPO_ROOT)
     )

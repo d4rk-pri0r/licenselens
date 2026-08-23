@@ -26,4 +26,7 @@ remediation: >
   Configure authorization policy permission grant policies so users cannot consent broadly.
 references:
   - https://learn.microsoft.com/entra/identity/enterprise-apps/configure-user-consent
+mappings:
+  nist: ["AC-2", "IA-5"]
+  mitre: ["T1098"]
 enabled: true

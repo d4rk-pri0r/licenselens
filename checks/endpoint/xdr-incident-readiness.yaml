@@ -29,4 +29,7 @@ remediation: >
   Defender for Identity, and Defender for Office 365 are connected.
 references:
   - https://learn.microsoft.com/defender-xdr/microsoft-365-defender
+mappings:
+  nist: ["IR-4", "AU-6"]
+  mitre: ["T1059"]
 enabled: true

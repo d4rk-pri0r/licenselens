@@ -1,0 +1,118 @@
+name: Continuous Assessment
+
+# Scheduled, secret-free LicenseLens scans using GitHub Actions OIDC workload
+# identity (no client secret stored anywhere). Runs daily at 07:30 UTC and on
+# demand via workflow_dispatch.
+#
+# Trust posture (locked by licenselens.ci_guard.continuous_assessment_guards):
+#   * every action is pinned by full commit SHA (no floating tags),
+#   * least privilege: `contents: read`; `id-token: write` is granted ONLY here
+#     (and in the release workflow) because OIDC federation needs it — the CI
+#     workflow (ci.yml) still rejects `id-token: write`,
+#   * no client secret: the Azure federated credential is minted from the
+#     Actions OIDC token, so no Email/Teams/Slack webhook or client-secret
+#     secrets are referenced,
+#   * machine-readable report JSON + ZIP are uploaded as an expiring artifact,
+#   * a step summary emits the posture figure + top gaps from the JSON report.
+
+on:
+  schedule:
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  assess:
+    name: Scan tenant with OIDC workload identity
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Run LicenseLens scan (OIDC, no stored secret)
+        # Exit 1 means gaps/partial findings (expected); any other code is a
+        # real failure. The report JSON + ZIP land in reports/.
+        env:
+          AZURE_TENANT_ID: ${{ secrets.LICENSELENS_AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.LICENSELENS_AZURE_CLIENT_ID }}
+        run: |
+          set +e
+          licenselens scan --auth oidc -o reports --report-archive
+          code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 1 ]; then exit "$code"; fi
+          ls -la reports/
+
+      - name: Emit step summary (posture + top gaps)
+        # Reads the machine-readable JSON report and writes a GitHub step
+        # summary. No secrets are printed; only posture + gap titles.
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = Path("reports/security-license-lens-report.json")
+          if not report.is_file():
+              print("::error::report JSON not found; cannot emit summary")
+              raise SystemExit(2)
+
+          data = json.loads(report.read_text(encoding="utf-8"))
+          rollup = data.get("capability_rollup", {})
+          realized = rollup.get("realized_percent", 0)
+          sentence = rollup.get("realized_sentence", "")
+
+          gaps = [
+              f for f in data.get("findings", [])
+              if f.get("status") in {"gap", "partial"}
+          ]
+          gaps.sort(key=lambda f: f.get("severity", ""), reverse=True)
+          top = gaps[:5]
+
+          lines = [
+              "## LicenseLens continuous assessment",
+              "",
+              f"**Posture:** {realized}% realized",
+              "",
+              f"{sentence}",
+              "",
+              f"**Findings:** {len(gaps)} gap/partial",
+              "",
+            ]
+          if top:
+              lines.append("**Top gaps:**")
+              lines.append("")
+              for f in top:
+                  lines.append(f"- `{f.get('check_id')}` {f.get('title')}")
+          else:
+              lines.append("No actionable gaps detected.")
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if not summary_path:
+              print("::warning::GITHUB_STEP_SUMMARY not set; skipping step summary")
+          else:
+              Path(summary_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload report artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: licenselens-assessment
+          path: |
+            reports/security-license-lens-report.json
+            reports/security-license-lens-report.zip
+          if-no-files-found: error
+          retention-days: 14

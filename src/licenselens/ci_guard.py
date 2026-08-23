@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Final
 
@@ -11,11 +12,19 @@ from licenselens.windows_ci import action_is_pinned
 
 WORKFLOW_FILE: Final = ".github/workflows/ci.yml"
 DOCS_FRESHNESS_FILE: Final = ".github/workflows/docs-freshness.yml"
+CONTINUOUS_ASSESSMENT_FILE: Final = ".github/workflows/continuous-assessment.yml"
 PROVENANCE_SCAN: Final = "scripts/provenance_scan.py"
 
 REQUIRED_JOBS: Final = ("test", "build", "report-browser")
 SUPPORTED_PYTHON: Final = ("3.12", "3.13")
 _FORBIDDEN_WRITE: Final = ("id-token", "packages", "attestations", "pages")
+
+#: Permissions the continuous-assessment workflow is allowed to grant write.
+#: Unlike the CI workflow (which signs/publishes nothing and must reject
+#: ``id-token``), the monitoring workflow legitimately needs ``id-token: write``
+#: to mint a GitHub Actions OIDC token for Azure workload-identity federation.
+#: Everything else stays least-privilege.
+_CONTINUOUS_ASSESSMENT_ALLOWED_WRITE: Final = ("id-token",)
 
 
 def _all_steps(jobs: dict) -> list[tuple[str, dict]]:
@@ -173,4 +182,84 @@ def docs_freshness_guards(repo_root: Path) -> list[str]:
     )
     if PROVENANCE_SCAN not in joined or "--workspace" not in joined:
         problems.append("docs-freshness: must run provenance_scan --workspace on generated docs")
+    return problems
+
+
+def continuous_assessment_guards(repo_root: Path) -> list[str]:
+    """Static guards over the scheduled monitoring workflow.
+
+    Unlike :func:`ci_guards`, this workflow legitimately needs ``id-token:
+    write`` to mint a GitHub Actions OIDC token for Azure workload-identity
+    federation (no stored client secret). The CI workflow's rejection of
+    ``id-token`` is intentionally NOT relaxed here — this guard is scoped to
+    ``continuous-assessment.yml`` only.
+    """
+    path = repo_root / CONTINUOUS_ASSESSMENT_FILE
+    if not path.is_file():
+        return [f"missing workflow file: {CONTINUOUS_ASSESSMENT_FILE}"]
+
+    text = path.read_text(encoding="utf-8")
+    try:
+        data = yaml.safe_load(text)
+    except yaml.YAMLError as exc:
+        return [f"continuous-assessment YAML does not parse: {exc}"]
+    if not isinstance(data, dict):
+        return ["continuous-assessment workflow must be a YAML mapping"]
+
+    problems: list[str] = []
+
+    # PyYAML's YAML 1.1 loader parses the `on:` key as boolean True; read it
+    # from either spelling so the schedule trigger is validated correctly.
+    on = data.get("on") or data.get(True)
+    if not isinstance(on, dict) or "schedule" not in on:
+        problems.append("continuous-assessment: must have an 'on: schedule' trigger")
+    if not isinstance(on, dict) or "workflow_dispatch" not in on:
+        problems.append("continuous-assessment: must have 'workflow_dispatch' trigger")
+
+    perms = data.get("permissions")
+    if not isinstance(perms, dict):
+        problems.append("continuous-assessment: missing top-level permissions block")
+    else:
+        if perms.get("contents") != "read":
+            problems.append("continuous-assessment: 'contents' permission must be 'read'")
+        for key in _FORBIDDEN_WRITE:
+            if key in _CONTINUOUS_ASSESSMENT_ALLOWED_WRITE:
+                continue
+            if perms.get(key) == "write":
+                problems.append(
+                    f"continuous-assessment: '{key}' must not be write "
+                    "(only id-token is allowed for OIDC)"
+                )
+
+    jobs = data.get("jobs")
+    if not isinstance(jobs, dict) or not jobs:
+        return problems + ["continuous-assessment: missing jobs mapping"]
+
+    for jname, step in _all_steps(jobs):
+        uses = step.get("uses")
+        if uses and not action_is_pinned(uses):
+            problems.append(f"continuous-assessment job '{jname}': unpinned action '{uses}'")
+
+    joined = "\n".join(
+        _run_text(step)
+        for job in jobs.values()
+        if isinstance(job, dict)
+        for step in job.get("steps", [])
+        if isinstance(step, dict)
+    )
+    if "--auth oidc" not in joined:
+        problems.append("continuous-assessment: must run scan with '--auth oidc'")
+    if "licenselens diff" in joined:
+        problems.append("continuous-assessment: must not run 'licenselens diff' (G8 deferred)")
+    # Only the OIDC tenant-id + client-id secrets are allowed (they are not
+    # credentials by themselves — the OIDC token is minted at runtime). Any
+    # other secret reference (client secret, Email/Teams/Slack webhook) is
+    # rejected.
+    allowed = {"LICENSELENS_AZURE_TENANT_ID", "LICENSELENS_AZURE_CLIENT_ID"}
+    for match in re.finditer(r"\$\{\{\s*secrets\.([A-Z0-9_]+)\s*\}\}", text):
+        if match.group(1) not in allowed:
+            problems.append(
+                f"continuous-assessment: forbidden secret reference "
+                f"'secrets.{match.group(1)}' (only OIDC tenant-id/client-id allowed)"
+            )
     return problems

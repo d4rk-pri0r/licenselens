@@ -24,4 +24,7 @@ remediation: >
   Target highly privileged directory roles with an enforced phishing-resistant MFA Conditional Access policy.
 references:
   - https://learn.microsoft.com/entra/identity/role-based-access-control/privileged-roles-permissions
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

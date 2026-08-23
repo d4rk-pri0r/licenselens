@@ -25,4 +25,7 @@ remediation: >
   Create an enforced Conditional Access policy targeting user action Register security information with managed device grants.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-registration
+mappings:
+  nist: ["IA-2", "IA-5"]
+  mitre: ["T1078"]
 enabled: true

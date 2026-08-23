@@ -30,4 +30,7 @@ remediation: >
   activation with MFA/justification, and review permanent role assignments.
 references:
   - https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+mappings:
+  nist: ["AC-2", "AC-6"]
+  mitre: ["T1078"]
 enabled: true

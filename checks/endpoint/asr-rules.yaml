@@ -30,4 +30,7 @@ remediation: >
   rules (block mode where safe), and assign it to all Windows device groups.
 references:
   - https://learn.microsoft.com/defender-endpoint/attack-surface-reduction-rules-reference
+mappings:
+  nist: ["SI-3", "CM-6"]
+  mitre: ["T1059", "T1204"]
 enabled: true

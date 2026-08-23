@@ -14,7 +14,9 @@ Locks the view-model contracts over the frozen ``report_fixtures`` inputs:
 from __future__ import annotations
 
 from licenselens.catalog.expected_states import expected_state_map
+from licenselens.models import ExposureClass, FindingStatus, Workload
 from licenselens.report.viewmodel import (
+    build_action_plan,
     build_belief_block,
     build_constellation,
     build_opening,
@@ -26,6 +28,7 @@ from licenselens.report.viewmodel import (
 from licenselens.schema_contracts import CollectionStatus, CollectionSummary, EvaluationMode
 from tests.report_fixtures import (
     SCANNED_AT,
+    _finding,
     comprehensive_report,
     empty_report,
     sparse_optional_fields_report,
@@ -369,3 +372,111 @@ def test_skip_reason_empty_for_non_skipped_findings() -> None:
         assert block["skip_reason"] == "", (
             f"non-skipped {finding.check_id} must carry an empty skip_reason"
         )
+
+
+# ---------------------------------------------------------------------------
+# Action plan (todo 1)
+# ---------------------------------------------------------------------------
+
+
+def test_action_plan_returns_one_row_per_gap_or_partial_finding() -> None:
+    """3 gap + 2 partial + 4 ok findings yield exactly 5 action-plan rows."""
+    result = comprehensive_report()
+    result.findings = [
+        _finding(
+            f"gap-{index}",
+            f"Gap {index}",
+            FindingStatus.GAP,
+            ExposureClass.ELEVATED,
+            Workload.IDENTITY,
+        )
+        for index in range(3)
+    ] + [
+        _finding(
+            f"partial-{index}",
+            f"Partial {index}",
+            FindingStatus.PARTIAL,
+            ExposureClass.NONE,
+            Workload.ENDPOINT,
+        )
+        for index in range(2)
+    ] + [
+        _finding(
+            f"ok-{index}",
+            f"Ok {index}",
+            FindingStatus.OK,
+            ExposureClass.NONE,
+            Workload.IDENTITY,
+        )
+        for index in range(4)
+    ]
+    rows = build_action_plan(result)
+    assert len(rows) == 5
+
+
+def test_action_plan_rows_carry_all_eight_keys() -> None:
+    result = comprehensive_report()
+    result.findings = [
+        _finding(
+            "gap-0",
+            "Gap 0",
+            FindingStatus.GAP,
+            ExposureClass.ELEVATED,
+            Workload.IDENTITY,
+        ),
+        _finding(
+            "partial-0",
+            "Partial 0",
+            FindingStatus.PARTIAL,
+            ExposureClass.NONE,
+            Workload.ENDPOINT,
+        ),
+    ]
+    expected_keys = {
+        "check_id",
+        "title",
+        "severity",
+        "effort",
+        "reason",
+        "customer_next_step",
+        "deep_link",
+        "timeline",
+    }
+    for row in build_action_plan(result):
+        assert set(row) == expected_keys
+
+
+def test_action_plan_deterministic() -> None:
+    result = comprehensive_report()
+    result.findings = [
+        _finding(
+            f"gap-{index}",
+            f"Gap {index}",
+            FindingStatus.GAP,
+            ExposureClass.ELEVATED,
+            Workload.IDENTITY,
+        )
+        for index in range(3)
+    ] + [
+        _finding(
+            f"partial-{index}",
+            f"Partial {index}",
+            FindingStatus.PARTIAL,
+            ExposureClass.NONE,
+            Workload.ENDPOINT,
+        )
+        for index in range(2)
+    ] + [
+        _finding(
+            f"ok-{index}",
+            f"Ok {index}",
+            FindingStatus.OK,
+            ExposureClass.NONE,
+            Workload.IDENTITY,
+        )
+        for index in range(4)
+    ]
+    first = build_action_plan(result)
+    second = build_action_plan(result)
+    assert first == second
+    assert repr(first) == repr(second)

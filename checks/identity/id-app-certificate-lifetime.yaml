@@ -26,4 +26,7 @@ remediation: >
   Inventory app certificates and enforce lifetimes of 365 days or less.
 references:
   - https://learn.microsoft.com/entra/identity-platform/security-best-practices-for-app-registration
+mappings:
+  nist: ["IA-5"]
+  mitre: ["T1098"]
 enabled: true
