@@ -4,7 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.3.x   | Yes (current) |
+| 0.4.x   | Yes (current) |
+| 0.3.x   | Yes |
 | 0.2.x   | No |
 | 0.1.x   | No |
 

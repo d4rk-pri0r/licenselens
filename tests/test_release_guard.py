@@ -21,6 +21,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 from licenselens import __version__
 from licenselens.release_guard import (
     REQUIRED_JOBS,
@@ -273,6 +275,51 @@ def test_verify_version_script_fails_on_mismatch() -> None:
     result = _run_script("verify_version.py", "v9.9.9")
     assert result.returncode == 1
     assert "mismatch" in result.stderr
+
+
+def test_verify_version_tree_checks_docs_coherence_discovering_stale_surface(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """§19: the pre-release tree check fails when a public doc surface is stale.
+
+    A user installing the latest stable package must see the product described
+    by the main public docs. This locks a regression where the PyPI readme /
+    security / support / releases surfaces fall behind the package version.
+    """
+    ok = _run_script("verify_version.py")
+    assert ok.returncode == 0, ok.stderr
+
+    sys.path.insert(0, str(REPO_ROOT / "scripts" / "release"))
+    import verify_version as vv  # type: ignore[import-not-found]
+
+    fake = tmp_path / "repo"
+    (fake / "src" / "licenselens").mkdir(parents=True)
+    (fake / "docs" / "reference").mkdir(parents=True)
+    (fake / "pyproject.toml").write_text('[project]\nname="x"\nversion="0.4.0"\n')
+    (fake / "src" / "licenselens" / "__init__.py").write_text('__version__ = "0.4.0"\n')
+    (fake / "CHANGELOG.md").write_text("## [0.4.0] — 2026-08-16\n")
+    (fake / "SUPPORT.md").write_text("| 0.3.x | Supported (current) |\n")
+    (fake / "SECURITY.md").write_text("| 0.3.x | Yes (current) |\n")
+    (fake / "docs" / "package-readme.md").write_text(
+        "## Full check pack (v0.4.0)\npackage/sample **0.4.0**\n"
+    )
+    (fake / "docs" / "security.md").write_text("| 0.4.x | Yes (current) |\n")
+    (fake / "docs" / "support.md").write_text("| 0.4.x | Supported (current) |\n")
+    (fake / "docs" / "releases.md").write_text("## [0.4.0] — 2026-08-16\n")
+    (fake / "docs" / "reference" / "manifest.json").write_text(
+        '{"package_version":"0.4.0","sample_version":"0.4.0"}'
+    )
+    monkeypatch.setattr(vv, "version_from_pyproject", lambda _repo_root: "0.4.0")
+
+    problems = vv.check_docs_coherence(fake)
+    assert any("SUPPORT.md" in p for p in problems), problems
+    assert any("SECURITY.md" in p for p in problems), problems
+
+    monkeypatch.undo()
+    monkeypatch.setattr(vv, "version_from_pyproject", lambda _repo_root: "0.4.0")
+    fake.joinpath("SUPPORT.md").write_text("| 0.4.x | Supported (current) |\n")
+    fake.joinpath("SECURITY.md").write_text("| 0.4.x | Yes (current) |\n")
+    assert vv.check_docs_coherence(fake) == []
 
 
 def test_verify_signing_script_rejects_unsigned(tmp_path: Path) -> None:

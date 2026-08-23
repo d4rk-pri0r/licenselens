@@ -68,8 +68,93 @@ def check_tag(tag: str) -> int:
     return 0
 
 
+def _minor_line(version: str) -> str:
+    """Return the ``MAJOR.MINOR`` line for ``MAJOR.MINOR.PATCH``."""
+    parts = version.split(".")
+    return ".".join(parts[:2])
+
+
+def check_docs_coherence(repo_root: Path) -> list[str]:
+    """Return violations where public docs describe a different version than the package.
+
+    Audits the surfaces a user of the latest stable package sees for internal
+    (product-maturity goal §19) consistency: the PyPI readme, the security and
+    support polices, the releases page, and the generated reference manifest.
+    Each must refer to the current package version/minor line.
+    """
+    package_version = version_from_pyproject(repo_root)
+    minor = _minor_line(package_version)
+    problems: list[str] = []
+
+    def _has(path: str, needle: str) -> bool:
+        text = (repo_root / path).read_text(encoding="utf-8")
+        return needle in text
+
+    def _has_plain(path: str, needle: str) -> bool:
+        text = (repo_root / path).read_text(encoding="utf-8").replace("**", "")
+        return needle in text
+
+    # PyPI readme (package-readme.md is the project readme in pyproject.toml).
+    if not _has("docs/package-readme.md", f"(v{package_version})"):
+        problems.append(
+            "docs/package-readme.md does not declare "
+            f"(v{package_version}) in its check-pack heading"
+        )
+    if not _has_plain("docs/package-readme.md", f"package/sample {package_version}"):
+        problems.append(
+            "docs/package-readme.md check-pack summary does not reference "
+            f"package/sample {package_version}"
+        )
+
+    # Security / support policies list the current minor line.
+    for policy in ("SECURITY.md", "docs/security.md"):
+        if f"{minor}.x" not in _read(repo_root / policy):
+            problems.append(
+                f"{policy} supported-versions table does not list current line {minor}.x"
+            )
+
+    for policy in ("SUPPORT.md", "docs/support.md"):
+        if f"{minor}.x" not in _read(repo_root / policy):
+            problems.append(
+                f"{policy} supported-versions table does not list current line {minor}.x"
+            )
+
+    # Releases page has a section for the current version (heading may or may
+    # not be bracket-linked; the release tag may not be cut yet, so a tag link
+    # must not be required).
+    releases_text = _read(repo_root / "docs/releases.md")
+    if f"## {package_version}" not in releases_text and f"## [{package_version}]" not in releases_text:
+        problems.append(f"docs/releases.md has no [{package_version}] release section")
+
+    # Generated reference manifest agrees on the package/sample versions.
+    manifest_path = repo_root / "docs" / "reference" / "manifest.json"
+    try:
+        import json
+
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        problems.append("docs/reference/manifest.json is missing or not valid JSON")
+        return problems
+    if manifest.get("package_version") != package_version:
+        problems.append(
+            "docs/reference/manifest.json package_version "
+            f"{manifest.get('package_version')!r} != {package_version!r}"
+        )
+    if manifest.get("sample_version") != package_version:
+        problems.append(
+            "docs/reference/manifest.json sample_version "
+            f"{manifest.get('sample_version')!r} != {package_version!r}"
+        )
+
+    return problems
+
+
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
 def check_tree() -> int:
-    """Pre-release path: pyproject, ``__init__``, and the CHANGELOG must agree."""
+    """Pre-release path: pyproject, ``__init__``, CHANGELOG, and public docs agree."""
     package_version = version_from_pyproject(REPO_ROOT)
     init_version = version_from_init(REPO_ROOT)
     changelog_version = changelog_top_version(REPO_ROOT)
@@ -87,12 +172,14 @@ def check_tree() -> int:
             f"CHANGELOG.md top version {changelog_version!r} "
             f"!= pyproject.toml version {package_version!r}"
         )
+    problems.extend(check_docs_coherence(REPO_ROOT))
     if problems:
         for problem in problems:
             print(f"version mismatch: {problem}", file=sys.stderr)
         return 1
     print(
-        f"tree version consistent: pyproject == __init__ == CHANGELOG == {package_version!r}"
+        "tree version consistent: pyproject == __init__ == CHANGELOG "
+        f"== public docs == {package_version!r}"
     )
     return 0
 

@@ -105,9 +105,9 @@ licenselens discover-workspace --auth client_secret
 licenselens batch tenants.yaml -o reports
 ```
 
-## Full check pack (v0.3.0)
+## Full check pack (v0.4.0)
 
-**140 checks** · **29 capabilities** · **11 profiles** · **109** pinned SCuBA coverage rows · package/sample **0.3.0**
+**166 checks** · **31 capabilities** · **11 profiles** · **135** pinned SCuBA coverage rows (131 mapped) · package/sample **0.4.0**
 
 Evaluation modes (from the registry): **direct**, **proxy**, **manual** (operator-confirmed), and **dynamic** (`direct_with_proxy_fallback` — direct evidence first, Secure Score only when direct is unavailable). Per-finding report rows still serialize the observed mode (`direct` or `proxy`) when a dynamic check runs.
 

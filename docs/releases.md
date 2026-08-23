@@ -6,8 +6,17 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
 `CHANGELOG.md` at the repository root; tagged releases are published to
 [GitHub Releases](https://github.com/d4rk-pri0r/licenselens/releases).
 
-## [Unreleased]
+## 0.4.0 — 2026-08-16
 
+Highlights of the current release. The authoritative, full change log is
+`CHANGELOG.md` at the repository root; this page summarizes the headline
+changes for each minor series.
+
+- **Hardened release pipeline** — gated build-once/promote job: distributions
+  are built once from the release tag, checksum-verified, scanned into SPDX +
+  CycloneDX SBOMs, provenance/SBOM-attested, optionally signed with Microsoft
+  Artifact Signing, then promoted to PyPI (trusted publishing) and GitHub
+  Releases.
 - **Master release gate** — `scripts/release_gate.py` is a reproducible,
   fail-closed quality gate (Ruff, full pytest with coverage floor, Playwright
   report suite, coverage validator, MkDocs strict + codespell + lychee, package
@@ -15,7 +24,7 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
   docs/report regeneration, and a secret/host-path/source-leakage scan). Its
   ledger records what ran and what is deferred to Windows CI (the PyInstaller
   exe) and to the operator (live tenants).
-- **140-check pack** — 12 checks at the 0.3.0 tag grew to 140 across identity,
+- **166-check pack** — 140 checks at the tag grew to 166 across identity,
   collaboration, defender, exchange, purview, endpoint, power-bi,
   power-platform, sentinel, and azure (`docs/reference/checks.md`).
 - **Profiles** — 11 built-in profiles under `catalog/profiles/`
@@ -29,17 +38,17 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
   build (`packaging/windows/`).
 - **MkDocs documentation site** — public docs at
   https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
-- **SCuBA coverage reference** — 109 pinned coverage rows
+- **SCuBA coverage reference** — 135 pinned coverage rows
   (`docs/reference/coverage.md`).
 - **Report redesign (v2, "Warm Charcoal")** — the HTML report is rebuilt as a
-  dark, offline-first dashboard with an opening animation (org identity →
-  posture count-up → radial gauge → distribution → implication → top actions,
-  500–1000ms total), a hierarchy-first posture figure (one dominant metric, not
-  a grid of equal cards), the interactive capability constellation with branded
-  Microsoft workload icons (inline SVG in the single-file report, hashed `<img>`
-  assets in the bundle), five sections, and native `<details>` progressive
+  dark, offline-first dashboard with an opening animation, a hierarchy-first
+  posture figure, the interactive capability constellation with branded
+  Microsoft workload icons, five sections, and native `<details>` progressive
   disclosure; fully readable with JavaScript disabled and
   `prefers-reduced-motion` is honored.
+- **Methodology documentation** — a formal methodology suite under
+  `docs/methodology/` (assessment model, evidence model, scoring, entitlement,
+  uncertainty, validation, limitations).
 - **Fixes** — the PowerShell bridge now accepts hashtable params (Pester contract
   passes cross-platform), the installer no longer leaves literal-backslash
   directories on non-Windows hosts, and `.playwright-mcp/` plus a stray debug

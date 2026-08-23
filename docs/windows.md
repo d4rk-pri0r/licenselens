@@ -96,7 +96,7 @@ Per-user lifecycle scripts live in `packaging/windows/` and install under
 
 ```powershell
 # Install from a locally downloaded, verified archive + manifest
-.\Install-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-0.3.0.zip `
+.\Install-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-0.4.0.zip `
     -ManifestPath .\release-manifest.json -AddToPath
 
 # Update to a newer verified version (previous version is kept for rollback)

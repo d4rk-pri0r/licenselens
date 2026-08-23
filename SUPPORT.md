@@ -10,7 +10,8 @@ for the current minor series; older series receive no fixes.
 
 | Version | Status | Python | Notes |
 |---------|--------|--------|-------|
-| 0.3.x | **Supported** | 3.12, 3.13 | Current release line |
+| 0.4.x | **Supported** | 3.12, 3.13 | Current release line |
+| 0.3.x | Supported | 3.12, 3.13 | Superseded by 0.4 |
 | 0.2.x | End-of-life | 3.12 | Superseded by 0.3 |
 | 0.1.x | End-of-life | 3.12 | Superseded by 0.2/0.3 |
 
