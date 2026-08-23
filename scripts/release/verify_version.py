@@ -123,7 +123,10 @@ def check_docs_coherence(repo_root: Path) -> list[str]:
     # not be bracket-linked; the release tag may not be cut yet, so a tag link
     # must not be required).
     releases_text = _read(repo_root / "docs/releases.md")
-    if f"## {package_version}" not in releases_text and f"## [{package_version}]" not in releases_text:
+    if (
+        f"## {package_version}" not in releases_text
+        and f"## [{package_version}]" not in releases_text
+    ):
         problems.append(f"docs/releases.md has no [{package_version}] release section")
 
     # Generated reference manifest agrees on the package/sample versions.

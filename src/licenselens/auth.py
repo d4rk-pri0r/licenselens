@@ -141,10 +141,16 @@ def build_credential(
         from azure.identity import (
             AzureCliCredential,
             ClientAssertionCredential,
-            ClientCertificateCredential,
             ClientSecretCredential,
             DeviceCodeCredential,
         )
+
+        try:
+            from azure.identity import CertificateCredential as _CertCred
+        except ImportError:  # older azure-identity exposed it as ClientCertificateCredential
+            from azure.identity import (
+                ClientCertificateCredential as _CertCred,  # type: ignore[no-redef]
+            )
     except ImportError as exc:  # pragma: no cover
         raise AuthConfigError(
             "azure-identity is required for live authentication. "
@@ -158,7 +164,7 @@ def build_credential(
                 "path. Pass --tenant-id / --client-id / --certificate (or "
                 "AZURE_TENANT_ID, AZURE_CLIENT_ID, AZURE_CLIENT_CERTIFICATE_PATH)."
             )
-        return ClientCertificateCredential(
+        return _CertCred(
             tenant_id=tenant_id,
             client_id=client_id,
             certificate_path=certificate_path,
