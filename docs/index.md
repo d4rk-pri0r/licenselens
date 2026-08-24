@@ -44,11 +44,26 @@ Z*.
 
     ---
 
-    140 declarative checks across identity, email, endpoint, and more.
+    166 declarative checks across identity, email, endpoint, and more.
 
     [:octicons-arrow-right-24: Browse the checks](checks.md)
 
 </div>
+
+<div markdown="1">
+
+## Quick start
+
+```bash
+pipx install licenselens
+licenselens demo
+```
+
+[![PyPI version](https://img.shields.io/pypi/v/licenselens)](https://pypi.org/project/licenselens/)
+[![CI](https://img.shields.io/github/actions/workflow/status/d4rk-pri0r/licenselens/ci.yml?branch=main)](https://github.com/d4rk-pri0r/licenselens/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/pypi/pyversions/licenselens)](https://pypi.org/project/licenselens/)
+
+[:material-open-in-new: Try the sample report](sample-report.html)
 
 ## What it looks like
 
