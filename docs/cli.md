@@ -124,9 +124,13 @@ Offline demo scan against curated sample data (not a real tenant). Always exits
 | `--rules` | — | Custom rules YAML |
 | `--backend` | — | Preferred collection backend(s) (repeatable) |
 | `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
+| `--after` / `--before` | before | Run the after-remediation demo scenario (applies a deterministic overlay to the evidence so a `diff` against the baseline shows closed gaps) |
 
 ```bash
 licenselens demo -o reports --open
+licenselens demo -o before --export json
+licenselens demo -o after --after --export json
+licenselens diff before/security-license-lens-report.json after/security-license-lens-report.json
 ```
 
 ### `quickstart`

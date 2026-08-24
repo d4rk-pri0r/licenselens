@@ -198,7 +198,73 @@ def envelopes_to_evidence(
     evidence.setdefault("break_glass_principal_ids", bg)
     approved = list(ctx.extras.get("approved_guest_domains") or [])
     evidence.setdefault("approved_guest_domains", approved)
+
+    if ctx.extras.get("demo_scenario") == "after":
+        _apply_after_remediation_overlay(evidence)
+    evidence.pop("demo_scenario", None)
     return evidence
+
+
+def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
+    """Simulate a remediated tenant for the ``--after`` demo scenario.
+
+    This is a deterministic post-pass that runs *after* the envelope loop and
+    the break-glass/approved-domains defaults, so the values below win over any
+    envelope-provided evidence. It only touches keys the evaluators actually
+    read, and never introduces keys that would break other evaluators.
+    """
+    evidence["ca_policies"] = [
+        {
+            "displayName": "Require MFA for all users",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "clientAppTypes": ["all"],
+            },
+            "grantControls": {"builtInControls": ["mfa"]},
+        },
+        {
+            "displayName": "Require MFA for sign-in risk",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "clientAppTypes": ["all"],
+                "signInRiskLevels": ["high"],
+            },
+            "grantControls": {"builtInControls": ["mfa"]},
+        },
+        {
+            "displayName": "Require password change for user risk",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "clientAppTypes": ["all"],
+                "userRiskLevels": ["high"],
+            },
+            "grantControls": {"builtInControls": ["passwordChange"]},
+        },
+    ]
+    evidence["mde_summary"] = {
+        "onboarded_machines": 95,
+        "eligible_devices": 100,
+        "truncated": False,
+        "count_method": "after-remediation",
+    }
+    evidence["security_defaults_policy"] = {"isEnabled": False}
+
+    bundle = evidence.get("intune_bundle")
+    if isinstance(bundle, dict):
+        bundle["managed_devices"] = [{"id": "dev-1"}]
+        bundle["eligible_devices"] = len(bundle["managed_devices"])
+        bundle["truncated"] = False
+        bundle["asr_policies"] = [
+            {
+                "id": "asr-1",
+                "displayName": "Block ransomware behaviors",
+                "assigned": True,
+                "rule_count": 3,
+            }
+        ]
 
 
 def collection_summaries_from(result: CollectionResult) -> list[CollectionSummary]:

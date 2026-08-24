@@ -49,13 +49,23 @@ licenselens demo -o reports --open
    summary, limitations, and the traceable evidence path.
 7. **Show Microsoft/security guidance supporting the desired state** — each
    flagship check carries an authoritative Microsoft reference link.
-8. **Apply or simulate the remediation** — demonstrate the G1 activation
-   backlog (`--export action-plan`) that turns a GAP into an actionable work
-   item.
-9. **Re-run the assessment** — run `licenselens demo` again and/or `diff` two
-   artifacts.
-10. **Show the finding change** — `licenselens diff before.json after.json`
-    reports closed / new / regressed gaps, so the presenter shows
+8. **Apply or simulate the remediation** — run the baseline demo and export its
+   JSON artifact:
+   ```bash
+   licenselens demo -o before --export json
+   ```
+9. **Re-run the assessment after remediation** — run the `--after` demo
+   scenario, which applies a deterministic after-remediation overlay to the
+   evidence, and export its JSON artifact:
+   ```bash
+   licenselens demo -o after --after --export json
+   ```
+10. **Show the finding change** — `diff` the two artifacts to show the closed
+    gaps:
+    ```bash
+    licenselens diff before/security-license-lens-report.json after/security-license-lens-report.json
+    ```
+    The diff reports resolved / new / regressed gaps, so the presenter shows
     remediation-driven improvement.
 
 ## Rehearsal checklist (do before the talk)

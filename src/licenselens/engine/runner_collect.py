@@ -134,6 +134,7 @@ def _run_collection(
     tenant_id: str | None,
     tenant_display_name: str | None,
     progress: ProgressCallback | None = None,
+    demo_scenario: str | None = None,
 ) -> CollectedScanState:
     owned = resolve_owned_capabilities(capabilities, skus)
     owned_set = set(owned)
@@ -149,6 +150,9 @@ def _run_collection(
     email_proxy = allow_email_proxy or (
         profile is not None and profile.profile.backend_preferences.allow_proxy
     )
+    extras = dict(profile_collection_extras(profile))
+    if demo_scenario:
+        extras["demo_scenario"] = demo_scenario
     ctx = ScanCollectionContext(
         scan_mode=scan_mode,
         auth=auth,
@@ -158,7 +162,7 @@ def _run_collection(
         workspace_resource_id=workspace_resource_id,
         allow_email_proxy=email_proxy,
         discover_workspaces=discover_workspaces,
-        extras=profile_collection_extras(profile),
+        extras=extras,
     )
     profile_ids = tuple(profile.profile_ids) if profile is not None else ()
     planner = EvidencePlanner(collectors=build_runtime_collector_specs(ctx, registry))
@@ -198,6 +202,7 @@ def collect_scan_state(
     registry: AssessmentRegistry,
     tenant_id: str | None,
     progress: ProgressCallback | None = None,
+    demo_scenario: str | None = None,
 ) -> CollectedScanState:
     """Resolve entitlements and collect evidence for the selected checks."""
     tenant_display_name: str | None = None
@@ -219,6 +224,7 @@ def collect_scan_state(
             tenant_id=tenant_id or "00000000-0000-0000-0000-000000000000",
             tenant_display_name="Demo (synthetic data)",
             progress=progress,
+            demo_scenario=demo_scenario,
         )
 
     import importlib
@@ -251,4 +257,5 @@ def collect_scan_state(
             tenant_id=tenant_id,
             tenant_display_name=tenant_display_name,
             progress=progress,
+            demo_scenario=demo_scenario,
         )

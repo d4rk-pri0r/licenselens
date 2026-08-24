@@ -951,11 +951,17 @@ def _run_offline_demo(
     redaction: RedactionSettings,
     report_archive: bool,
     export_format: ExportFormat | None,
+    demo_scenario: str | None = None,
 ) -> Path:
     """Run the offline demo scan, write artifacts, and print the summary."""
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
     console.print(f"[{IDENTITY_ACCENT}]Running offline demo scan…[/{IDENTITY_ACCENT}]")
-    result = run_scan(auth, dry_run=True, profile=resolved_profile)
+    result = run_scan(
+        auth,
+        dry_run=True,
+        profile=resolved_profile,
+        demo_scenario=demo_scenario,
+    )
     html_path, _json_path, _md_path, archive_path, action_plan_path = _write_scan_artifacts(
         result,
         output_dir,
@@ -973,6 +979,12 @@ def _run_offline_demo(
         "[green]Demo complete.[/green] This is a sample report from curated demo data — "
         "it is not a real tenant."
     )
+    if demo_scenario == "after":
+        console.print(
+            "[dim]To show the gap-closing diff: "
+            "licenselens diff <before>/security-license-lens-report.json "
+            "<after>/security-license-lens-report.json[/dim]"
+        )
     return html_path
 
 
@@ -1031,6 +1043,11 @@ def demo_cmd(
             "(default: action-plan/CSV)."
         ),
     ),
+    after: bool = typer.Option(
+        False,
+        "--after/--before",
+        help="Run the after-remediation demo scenario (shows a gap-closing diff vs the baseline).",
+    ),
 ) -> None:
     """Run the offline demo scan and print the HTML report path."""
     resolved_profile = _resolve_profile_or_exit(
@@ -1043,6 +1060,7 @@ def demo_cmd(
         redaction,
         report_archive=report_archive,
         export_format=export,
+        demo_scenario="after" if after else None,
     )
     if open_browser:
         import webbrowser

@@ -49,6 +49,7 @@ def run_scan(
     profile: ResolvedProfile | None = None,
     scanned_at: datetime | None = None,
     progress: ProgressCallback | None = None,
+    demo_scenario: str | None = None,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
@@ -69,6 +70,7 @@ def run_scan(
         registry=registry,
         tenant_id=auth.tenant_id,
         progress=progress,
+        demo_scenario=demo_scenario,
     )
     evidence = state.evidence
     evidence["scanned_at"] = scan_time.isoformat()
