@@ -48,20 +48,20 @@ def write_markdown_report(
         ]
     )
     rollup = result.capability_rollup
-    lines.append(f"**{rollup.realized_sentence}.**")
+    lines.append(f"**{rollup.realized_sentence.rstrip('.')}.**")
     lines.append("")
     lines.append(f"- **Licensed capabilities detected:** {len(result.owned_capabilities)}")
     lines.append(
-        f"- **Prioritized capabilities:** {rollup.you_own} "
+        f"- **Evaluated capabilities:** {rollup.you_own} "
         f"(priority packs: {', '.join(result.packs_scanned) or 'none'})"
     )
     lines.append(
-        f"- **Fully working:** {rollup.fully_working} of {rollup.you_own} prioritized capabilities "
+        f"- **Fully working:** {rollup.fully_working} of {rollup.you_own} evaluated capabilities "
         f"({rollup.realized_percent}% realized)"
     )
     lines.append(
         f"- **Need attention:** {rollup.needs_attention + rollup.partly_set_up} "
-        f"of {rollup.you_own} prioritized capabilities"
+        f"of {rollup.you_own} evaluated capabilities"
     )
     if result.has_exposed:
         exposed_titles = [

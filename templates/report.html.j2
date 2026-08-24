@@ -286,7 +286,7 @@ body.revealed .reveal-target.is-revealed {
             <p class="posture-sentence">
               <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
               <span aria-hidden="true">&middot;</span>
-              <strong>{{ _rollup.you_own }}</strong> prioritized capabilities
+              <strong>{{ _rollup.you_own }}</strong> evaluated capabilities
             </p>
           </div>
           <figure class="radial-figure">
@@ -295,12 +295,12 @@ body.revealed .reveal-target.is-revealed {
               <circle class="radial-arc" cx="60" cy="60" r="48" fill="none" stroke-width="10" stroke-dasharray="{{ _gauge_c }}" stroke-dashoffset="{{ _gauge_offset | round(2) }}" style="--gauge-circumference: {{ _gauge_c }};" />
             </svg>
             <figcaption id="radial-caption" class="micro-label">Realized investment</figcaption>
-            <p id="radial-desc" class="radial-print-line">Realized security investment: {{ _posture.realized_percent }}% of {{ _rollup.you_own }} owned, prioritized capabilities are fully working.</p>
+            <p id="radial-desc" class="radial-print-line">Realized security investment: {{ _posture.realized_percent }}% of {{ _rollup.you_own }} owned, evaluated security controls met the activation criteria.</p>
             <table class="chart-table">
               <caption>Realized investment</caption>
               <tbody>
                 <tr><th scope="row">Fully working capabilities</th><td class="num">{{ _posture.realized_percent }}%</td></tr>
-                <tr><th scope="row">Owned, prioritized capabilities</th><td class="num">{{ _rollup.you_own }}</td></tr>
+                <tr><th scope="row">Owned, evaluated capabilities</th><td class="num">{{ _rollup.you_own }}</td></tr>
               </tbody>
             </table>
           </figure>
@@ -335,7 +335,7 @@ body.revealed .reveal-target.is-revealed {
               {%- endif -%}
             </div>
           </div>
-          <p id="dist-desc" class="sr-only">Distribution of the {{ _rollup.you_own }} owned, prioritized capabilities: {{ _rollup.needs_attention }} action required, {{ _rollup.partly_set_up }} incomplete, {{ _rollup.fully_working }} operational, {{ _rollup.not_licensed }} not licensed.</p>
+          <p id="dist-desc" class="sr-only">Distribution of the {{ _rollup.you_own }} owned, evaluated capabilities: {{ _rollup.needs_attention }} action required, {{ _rollup.partly_set_up }} incomplete, {{ _rollup.fully_working }} operational, {{ _rollup.not_licensed }} not licensed.</p>
           <table class="chart-table">
             <caption>Operational distribution</caption>
             <tbody>
@@ -363,9 +363,9 @@ body.revealed .reveal-target.is-revealed {
         {# Stage 6: the most important implication, derived from the rollup. #}
         {%- if _rollup.you_own > 0 -%}
         {%- if _rollup.needs_attention > 0 -%}
-        <p class="implication opening-stage">{{ _rollup.needs_attention }} of your {{ _rollup.you_own }} priority capabilities need attention.</p>
+        <p class="implication opening-stage">Of the security controls associated with the entitlements and assessment scope that could be evaluated, {{ _posture.realized_percent }}% met the defined activation criteria.</p>
         {%- else -%}
-        <p class="implication opening-stage">All {{ _rollup.you_own }} of your priority capabilities are operational.</p>
+        <p class="implication opening-stage">Of the security controls associated with the entitlements and assessment scope that could be evaluated, {{ _posture.realized_percent }}% met the defined activation criteria.</p>
         {%- endif -%}
         {%- endif -%}
         <p class="posture-sentence">{{ _posture.realized_sentence }}</p>

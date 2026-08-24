@@ -9,12 +9,12 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 ## At a glance
 
-**5 of 6 priority capabilities still need attention.**
+**Of the security controls associated with the entitlements and assessment scope that could be evaluated, 17% met the defined activation criteria.**
 
 - **Licensed capabilities detected:** 25
-- **Prioritized capabilities:** 6 (priority packs: identity, endpoint)
-- **Fully working:** 1 of 6 prioritized capabilities (17% realized)
-- **Need attention:** 5 of 6 prioritized capabilities
+- **Evaluated capabilities:** 6 (priority packs: identity, endpoint)
+- **Fully working:** 1 of 6 evaluated capabilities (17% realized)
+- **Need attention:** 5 of 6 evaluated capabilities
 
 ### Top things to do first
 

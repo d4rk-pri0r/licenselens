@@ -396,8 +396,15 @@ class CapabilityRollup(BaseModel):
         if self.you_own <= 0:
             return "No assessed protections were owned."
         if missing <= 0:
-            return f"All {self.you_own} assessed protections are fully working."
-        return f"{missing} of {self.you_own} priority capabilities still need attention"
+            return (
+                "Of the security controls associated with the entitlements and assessment "
+                "scope that could be evaluated, 100% met the defined activation criteria."
+            )
+        return (
+            "Of the security controls associated with the entitlements and assessment "
+            f"scope that could be evaluated, {self.realized_percent}% met the defined "
+            "activation criteria."
+        )
 
 
 class CapabilityOutcome(BaseModel):

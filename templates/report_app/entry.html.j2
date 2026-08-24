@@ -130,10 +130,10 @@
                   </svg>
                 </div>
                 <figcaption class="sr-only">Realization</figcaption>
-                <p class="sr-only" id="posture-gauge-desc">Realization: {{ o_pct }}% of prioritized capabilities are fully working.</p>
+                <p class="sr-only" id="posture-gauge-desc">Realization: {{ o_pct }}% of evaluated security controls met the activation criteria.</p>
                 <p class="posture-gauge__print">{{ o_pct }}% realized</p>
               </figure>
-              <p class="posture-sentence">{{ o_sentence }}.</p>
+              <p class="posture-sentence">{{ o_sentence.rstrip('.') }}.</p>
             </div>
 
             <div class="hero-side">
@@ -219,11 +219,11 @@
 
           <div class="opening-implication" data-opening-stage="implication" style="animation-delay: 380ms">
             {% if rollup.you_own > 0 and rollup.needs_attention > 0 %}
-            <p><strong>{{ rollup.needs_attention }}</strong> of your <strong>{{ rollup.you_own }}</strong> priority capabilities need attention.</p>
+            <p><strong>Of the security controls associated with the entitlements and assessment scope that could be evaluated, {{ o_pct }}% met the defined activation criteria.</strong></p>
             {% elif rollup.you_own > 0 %}
-            <p>All <strong>{{ rollup.you_own }}</strong> of your priority capabilities are operational.</p>
+            <p>Of the security controls associated with the entitlements and assessment scope that could be evaluated, <strong>{{ o_pct }}%</strong> met the defined activation criteria.</p>
             {% else %}
-            <p>No prioritized capabilities were assessed in this scan.</p>
+            <p>No evaluated capabilities were assessed in this scan.</p>
             {% endif %}
           </div>
 

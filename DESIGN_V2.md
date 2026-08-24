@@ -280,11 +280,12 @@ illustrative sample data only):
    required"), `partly_set_up` ("Incomplete"), `fully_working` ("Operational"), each with
    its status marker (glyph + word + color). `not_licensed` may appear as a fourth,
    neutral item.
-6. **Most important implication** — one sentence bound from the rollup: "N of your M
-   priority capabilities need attention" where N = `needs_attention` and M = `you_own`;
-   when N is 0 the sentence must read as the positive equivalent (e.g. "All M of your
-   priority capabilities are operational"), derived from the same fields — never a
-   hardcoded string. `realized_sentence` remains the supporting sentence beneath.
+6. **Most important implication** — one sentence bound from the rollup: "Of the security
+   controls associated with the entitlements and assessment scope that could be evaluated,
+   X% met the defined activation criteria" where X = `realized_percent`; when no
+   protections were owned the sentence must read "No assessed protections were owned",
+   derived from the same fields — never a hardcoded string. `realized_sentence` remains
+   the supporting sentence beneath.
 7. **Single path forward** — one restrained "View prioritized actions" anchor linking to
    section C (an accent-outlined pill, 44px target, never a list of action buttons).
 
