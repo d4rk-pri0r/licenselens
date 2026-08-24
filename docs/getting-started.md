@@ -2,26 +2,37 @@
 
 ## Install
 
-### Operators (recommended)
+=== "pipx (Operators)"
 
-```bash
-pipx install licenselens
-licenselens demo
-```
+    ```bash
+    pipx install licenselens
+    licenselens demo
+    ```
 
-Open the HTML report written under `reports/` (default output directory).
+=== "pip (Contributors)"
 
-### Contributors
+    ```bash
+    git clone https://github.com/d4rk-pri0r/licenselens.git
+    cd licenselens
+    python3 -m venv .venv
+    source .venv/bin/activate   # Windows: .\.venv\Scripts\Activate.ps1
+    pip install -e ".[dev]"
+    ```
 
-Matches CI (`.github/workflows/ci.yml`):
+=== "Docker"
 
-```bash
-git clone https://github.com/d4rk-pri0r/licenselens.git
-cd licenselens
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .\.venv\Scripts\Activate.ps1
-pip install -e ".[dev]"
-```
+    ```bash
+    docker build -t licenselens .
+    mkdir -p reports
+    docker run --rm -v "$PWD/reports:/reports" licenselens
+    ```
+
+=== "Windows PowerShell"
+
+    ```powershell
+    Import-Module ./powershell/LicenseLens.Collectors/LicenseLens.Collectors.psd1
+    Install-LicenseLens.ps1 -AddToPath
+    ```
 
 Optional docs/release helpers (not required for day-to-day use) may be run with
 `uv run` when those tools are installed — for example `scripts/docs-check.sh` and
