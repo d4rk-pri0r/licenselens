@@ -103,6 +103,8 @@ docker run --rm licenselens checks
 A scrubbed dry-run report is committed at `examples/sample-report/` so you can
 preview HTML output without a tenant.
 
+[:material-open-in-new: Open the interactive sample report](sample-report.html)
+
 ## Compare two scans (diff)
 
 Run a scan, apply a fix, re-run, then diff the two JSON artifacts:
