@@ -295,6 +295,7 @@ def test_verify_version_tree_checks_docs_coherence_discovering_stale_surface(
     fake = tmp_path / "repo"
     (fake / "src" / "licenselens").mkdir(parents=True)
     (fake / "docs" / "reference").mkdir(parents=True)
+    (fake / "examples" / "sample-report").mkdir(parents=True)
     (fake / "pyproject.toml").write_text('[project]\nname="x"\nversion="0.4.0"\n')
     (fake / "src" / "licenselens" / "__init__.py").write_text('__version__ = "0.4.0"\n')
     (fake / "CHANGELOG.md").write_text("## [0.4.0] — 2026-08-16\n")
@@ -302,6 +303,9 @@ def test_verify_version_tree_checks_docs_coherence_discovering_stale_surface(
     (fake / "SECURITY.md").write_text("| 0.3.x | Yes (current) |\n")
     (fake / "docs" / "package-readme.md").write_text(
         "## Full check pack (v0.4.0)\npackage/sample **0.4.0**\n"
+    )
+    (fake / "examples" / "sample-report" / "README.md").write_text(
+        "Deterministic offline sample for package **0.4.0** (166 checks).\n"
     )
     (fake / "docs" / "security.md").write_text("| 0.4.x | Yes (current) |\n")
     (fake / "docs" / "support.md").write_text("| 0.4.x | Supported (current) |\n")
