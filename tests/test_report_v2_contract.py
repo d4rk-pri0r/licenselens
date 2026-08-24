@@ -420,8 +420,8 @@ def test_exec_area_renders_human_enum_copy(tmp_path: Path) -> None:
 
     # Posture sentence: data-driven reword, no awkward fragment.
     assert (
-        "Of the security controls associated with the entitlements and assessment scope that could be evaluated, "
-        in plain
+        "Of the security controls associated with the entitlements and "
+        "assessment scope that could be evaluated, " in plain
     )
     assert "still not fully working" not in plain, "awkward posture fragment still rendered"
 
