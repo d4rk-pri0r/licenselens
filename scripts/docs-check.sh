@@ -18,6 +18,10 @@ echo "==> codespell"
 uv run codespell docs mkdocs.yml
 
 echo "==> lychee (external links + file references)"
-lychee --no-progress --max-concurrency 8 docs/
+lychee --no-progress --max-concurrency 8 \
+  --exclude '^https://d4rk-pri0r\.github\.io/licenselens' \
+  --exclude '^https://(entra|portal|security|purview|endpoint|admin)\.(microsoft|azure)\.com' \
+  --exclude '^https://img\.shields\.io' \
+  docs/
 
 echo "==> docs checks passed"
