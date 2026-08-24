@@ -25,6 +25,9 @@ from pathlib import Path
 
 import yaml
 
+from licenselens.models import TenantValidationRecord
+from licenselens.validation import compute_validation_metrics
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -129,19 +132,18 @@ def build_maturity(repo_root: Path) -> dict:
 
     # Real-tenant / practitioner metrics default to zero until recorded.
     validation_dir = repo_root / "validation"
-    validated_tenant_runs = 0
-    confirmed_findings: set[str] = set()
-    rejected_findings: set[str] = set()
+    records: list[TenantValidationRecord] = []
     if validation_dir.is_dir():
-        for record_path in validation_dir.glob("*.json"):
+        for record_path in sorted(validation_dir.glob("*.json")):
             try:
-                record = json.loads(record_path.read_text(encoding="utf-8"))
-            except (OSError, ValueError):
-                diagnostics.append(f"validation record {record_path.name} is not valid JSON")
-                continue
-            validated_tenant_runs += 1
-            confirmed_findings.update(record.get("confirmed_findings") or [])
-            rejected_findings.update(record.get("rejected_findings") or [])
+                records.append(
+                    TenantValidationRecord.model_validate_json(
+                        record_path.read_text(encoding="utf-8")
+                    )
+                )
+            except (OSError, ValueError) as exc:
+                diagnostics.append(f"validation record {record_path.name} is invalid: {exc}")
+    metrics = compute_validation_metrics(records)
 
     known_methodology_issues = len(diagnostics)
 
@@ -158,9 +160,10 @@ def build_maturity(repo_root: Path) -> dict:
         "checks_requiring_manual_verification": checks_with_manual,
         "checks_with_edge_case_coverage": checks_with_edge_case_coverage,
         "known_methodology_issues": known_methodology_issues,
-        "validated_tenant_runs": validated_tenant_runs,
-        "confirmed_findings": len(confirmed_findings),
-        "rejected_findings": len(rejected_findings),
+        "validated_tenant_runs": metrics.validated_tenant_runs,
+        "confirmed_findings": metrics.human_confirmed_findings,
+        "rejected_findings": metrics.rejected_findings,
+        "reclassified_findings": metrics.reclassified_findings,
         "external_practitioner_reviews": 0,  # tracked via issue templates; honest zero
         "diagnostics": diagnostics,
     }
