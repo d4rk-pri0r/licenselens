@@ -1,6 +1,6 @@
 # Checks
 
-Security License Lens ships **140 declarative checks** across ten workload
+Security License Lens ships **166 declarative checks** across ten workload
 directories. Each check is a single YAML file under `checks/<workload>/` and
 evaluates only when its required capabilities are licensed.
 
@@ -15,7 +15,7 @@ here:
 ## Workloads
 
 Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
-140):
+166):
 
 | Workload | Checks | Examples |
 |----------|-------:|----------|

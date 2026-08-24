@@ -6,7 +6,7 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
 `CHANGELOG.md` at the repository root; tagged releases are published to
 [GitHub Releases](https://github.com/d4rk-pri0r/licenselens/releases).
 
-## 0.4.0 — 2026-08-16
+## [0.4.0] — 2026-08-16
 
 Highlights of the current release. The authoritative, full change log is
 `CHANGELOG.md` at the repository root; this page summarizes the headline

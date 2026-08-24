@@ -9,7 +9,7 @@ best-effort. The canonical policies live in the repository root files
 | Version | Status | Python |
 |---------|--------|--------|
 | 0.4.x | Supported (current) | 3.12, 3.13 |
-| 0.3.x | Supported | 3.12, 3.13 |
+| 0.3.x | Supported (legacy) | 3.12, 3.13 |
 | 0.2.x | End-of-life | 3.12 |
 | 0.1.x | End-of-life | 3.12 |
 
