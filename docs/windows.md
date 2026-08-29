@@ -30,14 +30,30 @@ licenselens scan --allow-email-proxy -o reports
 
 The bridge never calls write cmdlets; every adapter is read-only.
 
-## Running the CLI on Windows
+## Installing the CLI on Windows
+
+The primary way to run LicenseLens on Windows is `pipx install licenselens`
+from PyPI — it works today.
+
+### Prerequisites for pipx
+
+- Python 3.12+ — from [python.org](https://www.python.org/downloads/) or the
+  Microsoft Store.
+- [pipx](https://pipx.pypa.io/) — install with `py -m pip install --user pipx`,
+  then make sure pipx's bin directory is on PATH.
 
 ```powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e ".[dev]"
-licenselens demo -o reports
+# Windows primary install — pipx from PyPI (real today)
+# Prerequisites: Python 3.12+ (python.org or the Microsoft Store) and pipx
+#   (py -m pip install --user pipx; then make sure pipx's bin dir is on PATH)
+pipx install licenselens
+licenselens demo          # offline demo → HTML report
+# or: licenselens quickstart
 ```
+
+*Works today on Windows: since 0.4.0 the PyPI wheel bundles the PowerShell
+collector bridge, so the email pack and all PowerShell-only collectors run from
+a plain pipx install.*
 
 Use PowerShell or Windows Terminal for the interactive prompts; in CI or a
 non-interactive session the tool falls back to dry-run and never hangs.
@@ -65,13 +81,81 @@ Test-Path "$bridge\LicenseLens.Collectors.psd1"   # must print True
 The CLI resolves that directory automatically (checkout first, package data
 fallback), so nothing extra needs importing.
 
-## Standalone distribution
+### Standalone per-user installer (not yet available)
+
+A standalone per-user installer exists as the release-artifact workflow, but it
+is **not yet available**: as of v0.4.0, GitHub Releases carry the Python wheel
+and sdist only — no Windows archive or `release-manifest.json` has been
+published. This flow is documented for release engineers and becomes available
+only when a release publishes a signed/promotable Windows archive + manifest.
+
+**Never run `irm <url> | iex`** — download the script and its manifest over
+HTTPS, review them, then run.
+
+```powershell
+# Standalone per-user installer (release-artifact workflow) — NOT AVAILABLE YET
+# As of v0.4.0, GitHub Releases carry the Python wheel and sdist only: no Windows
+# archive or release-manifest.json has been published. This flow is documented for
+# release engineers and becomes available only when a release publishes a
+# signed/promotable Windows archive + manifest. Never run `irm <url> | iex`:
+# download the script and its manifest over HTTPS, review them, then run.
+.\Install-LicenseLens.ps1 `
+  -ReleaseBaseUrl https://github.com/d4rk-pri0r/licenselens/releases/download/<tag> `
+  -Version <version> -AddToPath
+```
+
+The Windows build is produced per-release by the tag-gated release pipeline. As
+of v0.4.0 no release has published a Windows archive or manifest yet — Releases
+currently carry the Python wheel and sdist only. Unsigned `-test-only` builds
+from CI are test artifacts, not production downloads.
+
+#### Offline/advanced variant: install from a verified local archive
+
+The lifecycle scripts install under
+`%LOCALAPPDATA%\LicenseLens\versions\<version>` (no administrator rights
+needed).
+
+```powershell
+# Install from a locally downloaded, verified archive + manifest
+.\Install-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-<version>.zip `
+    -ManifestPath .\release-manifest.json -AddToPath
+
+# Update to a newer verified version (previous version is kept for rollback)
+.\Update-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-<version>.zip `
+    -ManifestPath .\release-manifest.json
+
+# Roll back to the previously installed version after a failed update
+.\Update-LicenseLens.ps1 -Rollback
+
+# Remove the CLI (idempotent; deletes only files it recorded as owned)
+.\Uninstall-LicenseLens.ps1
+```
+
+#### Trust guarantees
+
+- **Checksum first.** Every archive is SHA-256-verified against the manifest
+  before extraction; a mismatch aborts with nothing installed.
+- **Signature only when promised.** Authenticode is checked on `licenselens.exe`
+  only when the manifest says `signed: true`. An unsigned artifact is treated as
+  `test-only`, and a promised-but-missing signature is a hard failure.
+- **Atomic shim.** The `current` shim is switched with an atomic replace, so an
+  interrupted update leaves the old or the new version — never a half-written
+  marker — and the previous version stays available for `-Rollback`.
+- **PATH consent.** The user PATH is changed only when you pass `-AddToPath`;
+  uninstall removes only the exact entry it added.
+- **Owned files only.** Uninstall deletes only paths recorded in `state.json`;
+  foreign files in the directory are left untouched.
+
+## Building the standalone distribution (release engineers)
+
+These commands require a git checkout of the repository and a Windows build
+host; they are for release engineers, not for installing the tool.
 
 A Windows x64 **one-folder** distribution (no Python required) is built from
 `packaging/windows/licenselens.spec` on a Windows host:
 
 ```powershell
-pip install -e ".[build-windows]"
+py -m pip install --editable ".[build-windows]"
 pyinstaller --clean --noconfirm packaging/windows/licenselens.spec
 ```
 
@@ -86,44 +170,6 @@ The pip/pipx wheel carries the same bridge — see the wheel note above.
   labeled `test-only`; only the release job (with Artifact Signing configured)
   may produce a signed, promotable package. SmartScreen can still warn on a
   newly signed publisher — signing establishes identity, not instant reputation.
-
-## Installing, updating, and removing the CLI
-
-Per-user lifecycle scripts live in `packaging/windows/` and install under
-`%LOCALAPPDATA%\LicenseLens\versions\<version>` (no administrator rights needed).
-**Never run `irm https://… | iex`.** Download the script and its
-`release-manifest.json` over HTTPS, review them, then run them.
-
-```powershell
-# Install from a locally downloaded, verified archive + manifest
-.\Install-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-0.4.0.zip `
-    -ManifestPath .\release-manifest.json -AddToPath
-
-# Update to a newer verified version (previous version is kept for rollback)
-.\Update-LicenseLens.ps1 -ArchivePath .\licenselens-windows-x64-<version>.zip `
-    -ManifestPath .\release-manifest.json
-
-# Roll back to the previously installed version after a failed update
-.\Update-LicenseLens.ps1 -Rollback
-
-# Remove the CLI (idempotent; deletes only files it recorded as owned)
-.\Uninstall-LicenseLens.ps1
-```
-
-The trust guarantees:
-
-- **Checksum first.** Every archive is SHA-256-verified against the manifest
-  before extraction; a mismatch aborts with nothing installed.
-- **Signature only when promised.** Authenticode is checked on `licenselens.exe`
-  only when the manifest says `signed: true`. An unsigned artifact is treated as
-  `test-only`, and a promised-but-missing signature is a hard failure.
-- **Atomic shim.** The `current` shim is switched with an atomic replace, so an
-  interrupted update leaves the old or the new version — never a half-written
-  marker — and the previous version stays available for `-Rollback`.
-- **PATH consent.** The user PATH is changed only when you pass `-AddToPath`;
-  uninstall removes only the exact entry it added.
-- **Owned files only.** Uninstall deletes only paths recorded in `state.json`;
-  foreign files in the directory are left untouched.
 
 See [Collectors and backends](collectors.md) for how the bridge fits the data
 plane, and [Limitations](limitations.md) for what email collection can and
