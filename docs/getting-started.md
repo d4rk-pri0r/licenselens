@@ -2,14 +2,14 @@
 
 ## Install
 
-=== "pipx (Operators)"
+=== "pipx (macOS / Linux)"
 
     ```bash
     pipx install licenselens
     licenselens demo
     ```
 
-=== "pip (Contributors)"
+=== "pip (Contributors only)"
 
     ```bash
     git clone https://github.com/d4rk-pri0r/licenselens.git
@@ -30,9 +30,17 @@
 === "Windows PowerShell"
 
     ```powershell
-    Import-Module ./powershell/LicenseLens.Collectors/LicenseLens.Collectors.psd1
-    Install-LicenseLens.ps1 -AddToPath
+    # Windows primary install — pipx from PyPI (real today)
+    # Prerequisites: Python 3.12+ (python.org or the Microsoft Store) and pipx
+    #   (py -m pip install --user pipx; then make sure pipx's bin dir is on PATH)
+    pipx install licenselens
+    licenselens demo          # offline demo → HTML report
+    # or: licenselens quickstart
     ```
+
+    *Works today on Windows: since 0.4.0 the PyPI wheel bundles the PowerShell collector bridge, so the email pack and all PowerShell-only collectors run from a plain pipx install.*
+
+    Requires Python 3.12+ and pipx — see the [Windows guide](windows.md#installing-the-cli-on-windows). A standalone per-user installer is documented in the [Windows guide](windows.md) — not yet available; never `irm … | iex`.
 
 Optional docs/release helpers (not required for day-to-day use) may be run with
 `uv run` when those tools are installed — for example `scripts/docs-check.sh` and
