@@ -18,8 +18,8 @@ CLI: `licenselens` · Requires Python 3.12+
 ## Quick start
 
 ```bash
-# One-command offline demo → HTML report
-pipx install licenselens   # or: pip install -e ".[dev]"
+# One-command offline demo → HTML report (macOS / Linux / Windows)
+pipx install licenselens
 licenselens demo
 
 # Interactive scan: prompts for anything missing (TTY)
@@ -28,6 +28,12 @@ licenselens scan
 # Or jump straight to a live tenant walkthrough
 licenselens quickstart
 ```
+
+On Windows, the PyPI wheel bundles the PowerShell collector bridge since 0.4.0,
+so the email pack and all PowerShell-only collectors run from a plain pipx
+install — see the [Windows guide](windows.md) (requires Python 3.12+ and pipx).
+
+Contributors: see [contributing.md](contributing.md) for the development setup.
 
 In a terminal, `licenselens scan` asks demo vs live tenant, sign-in method, and
 other missing options. Flags and `AZURE_*` env vars always win when set.
