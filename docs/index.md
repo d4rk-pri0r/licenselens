@@ -65,6 +65,12 @@ licenselens demo
 
 [:material-open-in-new: Try the sample report](sample-report.html)
 
+## Install on your platform
+
+- **View the sample report** — [:material-open-in-new: Open the interactive sample report](sample-report.html) — zero install, try it now.
+- **Windows** — `pipx install licenselens` then `licenselens demo` (or `licenselens quickstart`). Requires Python 3.12+ and pipx — see [prerequisites](windows.md#installing-the-cli-on-windows).
+- **macOS / Linux** — `pipx install licenselens` then `licenselens demo` — see the [quick start](#quick-start) above.
+
 ## What it looks like
 
 The report is a single, self-contained HTML file with a dark "Warm Charcoal"
