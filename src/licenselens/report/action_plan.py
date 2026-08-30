@@ -82,7 +82,11 @@ def write_action_plan(
             targets=derive_redaction_targets(result),
             settings=redaction,
         )
-    path.write_text(text, encoding="utf-8")
+    # newline="" keeps the serialized text byte-identical on every platform:
+    # with the default newline=None a text-mode write translates "\n" to
+    # os.linesep, which on Windows injects \r\n into quoted CSV fields and
+    # breaks round-trips. The module contract (LF line endings) holds on disk.
+    path.write_text(text, encoding="utf-8", newline="")
     return path
 
 

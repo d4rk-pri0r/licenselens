@@ -153,7 +153,12 @@ def test_action_plan_csv_escapes_commas_quotes_newlines(tmp_path: Path):
         rows = list(csv.DictReader(handle))
     assert len(rows) == 1
     assert rows[0]["title"] == 'Title with "quotes", comma'
-    assert rows[0]["reason"] == "Line one\nLine two, with comma"
+    # On-disk CSV is LF-stable on every platform (Excel opens LF CSVs); a
+    # \r\n here means the writer let text-mode newline translation leak in.
+    assert b"\r\n" not in path.read_bytes()
+    # Embedded newlines must survive as exactly one LF after normalization.
+    reason = rows[0]["reason"].replace("\r\n", "\n")
+    assert reason == "Line one\nLine two, with comma"
     assert rows[0]["customer_next_step"] == "Step, with comma"
     assert rows[0]["deep_link"] == ""
 

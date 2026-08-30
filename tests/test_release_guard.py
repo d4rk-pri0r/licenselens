@@ -296,22 +296,27 @@ def test_verify_version_tree_checks_docs_coherence_discovering_stale_surface(
     (fake / "src" / "licenselens").mkdir(parents=True)
     (fake / "docs" / "reference").mkdir(parents=True)
     (fake / "examples" / "sample-report").mkdir(parents=True)
-    (fake / "pyproject.toml").write_text('[project]\nname="x"\nversion="0.4.0"\n')
-    (fake / "src" / "licenselens" / "__init__.py").write_text('__version__ = "0.4.0"\n')
-    (fake / "CHANGELOG.md").write_text("## [0.4.0] — 2026-08-16\n")
-    (fake / "SUPPORT.md").write_text("| 0.3.x | Supported (current) |\n")
-    (fake / "SECURITY.md").write_text("| 0.3.x | Yes (current) |\n")
+    (fake / "pyproject.toml").write_text('[project]\nname="x"\nversion="0.4.0"\n', encoding="utf-8")
+    (fake / "src" / "licenselens" / "__init__.py").write_text(
+        '__version__ = "0.4.0"\n', encoding="utf-8"
+    )
+    (fake / "CHANGELOG.md").write_text("## [0.4.0] — 2026-08-16\n", encoding="utf-8")
+    (fake / "SUPPORT.md").write_text("| 0.3.x | Supported (current) |\n", encoding="utf-8")
+    (fake / "SECURITY.md").write_text("| 0.3.x | Yes (current) |\n", encoding="utf-8")
     (fake / "docs" / "package-readme.md").write_text(
-        "## Full check pack (v0.4.0)\npackage/sample **0.4.0**\n"
+        "## Full check pack (v0.4.0)\npackage/sample **0.4.0**\n",
+        encoding="utf-8",
     )
     (fake / "examples" / "sample-report" / "README.md").write_text(
-        "Deterministic offline sample for package **0.4.0** (166 checks).\n"
+        "Deterministic offline sample for package **0.4.0** (166 checks).\n",
+        encoding="utf-8",
     )
-    (fake / "docs" / "security.md").write_text("| 0.4.x | Yes (current) |\n")
-    (fake / "docs" / "support.md").write_text("| 0.4.x | Supported (current) |\n")
-    (fake / "docs" / "releases.md").write_text("## [0.4.0] — 2026-08-16\n")
+    (fake / "docs" / "security.md").write_text("| 0.4.x | Yes (current) |\n", encoding="utf-8")
+    (fake / "docs" / "support.md").write_text("| 0.4.x | Supported (current) |\n", encoding="utf-8")
+    (fake / "docs" / "releases.md").write_text("## [0.4.0] — 2026-08-16\n", encoding="utf-8")
     (fake / "docs" / "reference" / "manifest.json").write_text(
-        '{"package_version":"0.4.0","sample_version":"0.4.0"}'
+        '{"package_version":"0.4.0","sample_version":"0.4.0"}',
+        encoding="utf-8",
     )
     monkeypatch.setattr(vv, "version_from_pyproject", lambda _repo_root: "0.4.0")
 
@@ -321,8 +326,8 @@ def test_verify_version_tree_checks_docs_coherence_discovering_stale_surface(
 
     monkeypatch.undo()
     monkeypatch.setattr(vv, "version_from_pyproject", lambda _repo_root: "0.4.0")
-    fake.joinpath("SUPPORT.md").write_text("| 0.4.x | Supported (current) |\n")
-    fake.joinpath("SECURITY.md").write_text("| 0.4.x | Yes (current) |\n")
+    fake.joinpath("SUPPORT.md").write_text("| 0.4.x | Supported (current) |\n", encoding="utf-8")
+    fake.joinpath("SECURITY.md").write_text("| 0.4.x | Yes (current) |\n", encoding="utf-8")
     assert vv.check_docs_coherence(fake) == []
 
 

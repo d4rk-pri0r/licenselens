@@ -2,13 +2,24 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from licenselens.cli import app
 
 runner = CliRunner()
+
+_ANSI_RE = re.compile(r"\x1b\[[0-9;?]*[A-Za-z]")
+_BOX_DRAWING_RE = re.compile(r"[─│┌┐└┘├┤┬┴┼╭╮╰╯]")
+
+
+def _clean_help_output(text: str) -> str:
+    """Strip ANSI escapes and Rich box-drawing, collapse whitespace."""
+    cleaned = _BOX_DRAWING_RE.sub(" ", _ANSI_RE.sub(" ", text))
+    return " ".join(cleaned.split())
 
 
 def test_ui_without_demo_exits_2_in_non_tty() -> None:
@@ -31,9 +42,14 @@ def test_ui_rejects_non_loopback_host() -> None:
     assert result.exit_code == 2
 
 
-def test_ui_help_lists_flags() -> None:
+def test_ui_help_lists_flags(monkeypatch: pytest.MonkeyPatch) -> None:
+    # CI runners can resolve a very narrow Rich console, which truncates
+    # option tokens (e.g. "--d…") mid-name. Pin a wide console so flag
+    # names render contiguously, and assert against a cleaned capture.
+    monkeypatch.setenv("COLUMNS", "100")
     result = runner.invoke(app, ["ui", "--help"])
     assert result.exit_code == 0
-    assert "--demo" in result.output
-    assert "--host" in result.output
-    assert "--port" in result.output
+    output = _clean_help_output(result.output)
+    assert "--demo" in output
+    assert "--host" in output
+    assert "--port" in output
