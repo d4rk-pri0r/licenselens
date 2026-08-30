@@ -73,9 +73,9 @@ licenselens demo
 
 ## What it looks like
 
-The report is a single, self-contained HTML file with a dark "Warm Charcoal"
-theme, read top to bottom: posture, entitlements, ranked gaps with evidence,
-and an explore view of every assessed control.
+The report is a single, self-contained HTML file, read top to bottom: posture,
+entitlements, ranked gaps with evidence, and an explore view of every assessed
+control.
 
 The opening section shows the tenant identity, the percentage of licensed
 capability actually enforced, and the top recommended actions. Each capability

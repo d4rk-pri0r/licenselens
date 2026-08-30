@@ -131,12 +131,8 @@ The HTML report may also embed report JSON for offline interactivity
 
 ## The HTML report
 
-The report is a dark, offline-first dashboard — **"Warm Charcoal"**: a warm
-charcoal canvas (`#191714`) with muted, warm-neutral surfaces, a
-champagne-ivory identity accent, and a semantic ramp (red / amber / green)
-reserved for status alone. The only chromatic color in the UI is semantic; blue
-in the page comes from the branded Microsoft workload marks only. It reads top
-to bottom in five sections:
+The report is a self-contained HTML file. It reads top to bottom in five
+sections:
 
 - **Where you stand** — the opening sequence: org / tenant identity,
   assessment meta, a count-up posture figure (`<percent>% realized`, bound to

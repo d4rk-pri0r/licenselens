@@ -44,12 +44,10 @@ changes for each minor series.
   https://d4rk-pri0r.github.io/licenselens/ with a CLI reference page.
 - **SCuBA coverage reference** — 135 pinned coverage rows
   (`docs/reference/coverage.md`).
-- **Report redesign (v2, "Warm Charcoal")** — the HTML report is rebuilt as a
-  dark, offline-first dashboard with an opening animation, a hierarchy-first
-  posture figure, the interactive capability constellation with branded
-  Microsoft workload icons, five sections, and native `<details>` progressive
-  disclosure; fully readable with JavaScript disabled and
-  `prefers-reduced-motion` is honored.
+- **HTML report** — a self-contained offline dashboard: posture, entitlements,
+  ranked gaps with evidence, branded Microsoft workload icons, and native
+  `<details>` disclosure; readable with JavaScript disabled and
+  `prefers-reduced-motion` honored.
 - **Methodology documentation** — a formal methodology suite under
   `docs/methodology/` (assessment model, evidence model, scoring, entitlement,
   uncertainty, validation, limitations).

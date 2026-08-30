@@ -13,7 +13,7 @@ CLI: `licenselens` · Requires Python 3.12+
 > Documentation: [d4rk-pri0r.github.io/licenselens](https://d4rk-pri0r.github.io/licenselens/)
 
 > Sample report (dry-run): [examples/sample-report/](https://github.com/d4rk-pri0r/licenselens/tree/main/examples/sample-report) — a
-> scrubbed dry-run tenant rendered in the current v2 "Warm Charcoal" design.
+> scrubbed dry-run tenant.
 
 ## Quick start
 
@@ -54,9 +54,9 @@ licenselens batch tenants.yaml -o reports
 
 ## What it looks like
 
-The report is a single, self-contained HTML file with a dark "Warm Charcoal"
-theme, read top to bottom: posture, entitlements, ranked gaps with evidence,
-and an explore view of every assessed control.
+The report is a single, self-contained HTML file, read top to bottom: posture,
+entitlements, ranked gaps with evidence, and an explore view of every assessed
+control.
 
 The opening section shows the tenant identity, the percentage of licensed
 capability actually enforced, and the top recommended actions. Each capability
