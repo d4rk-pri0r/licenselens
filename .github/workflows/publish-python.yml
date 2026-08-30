@@ -1,0 +1,74 @@
+name: Release Python (wheel + sdist)
+
+# Minimal Python-only publish path, intentionally separate from the gated
+# multi-surface pipeline in publish.yml (which stays the release of record for
+# Windows/SBOM/attestation surfaces):
+#   * manual dispatch only — never runs on push, pull_request, tags, schedule,
+#   * wheel + sdist only (no Windows one-folder, no SBOM/attestation bundle),
+#   * every action pinned by the same full commit SHAs used in publish.yml
+#     (locked by tests/test_release_python_guard.py),
+#   * least privilege: top-level `contents: read`; `id-token: write` only on
+#     the publish job that performs PyPI trusted publishing (OIDC),
+#   * publish downloads the built artifacts and never rebuilds.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build wheel + sdist
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a
+
+      - name: Set up Python
+        uses: actions/setup-python@8549b9f8f590ad24eab7482f36f6e1e24d34597b
+        with:
+          python-version: "3.12"
+
+      - name: Build sdist + wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build
+
+      - name: Upload distributions (wheel + sdist only)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: python-dist
+          path: |
+            dist/*.whl
+            dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    name: Publish wheel + sdist to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+    environment: pypi
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: python-dist
+          path: dist
+
+      - name: Stage verification (wheel + sdist present, digests on record)
+        run: |
+          cd dist
+          test "$(ls ./*.whl | wc -l)" -ge 1
+          test "$(ls ./*.tar.gz | wc -l)" -ge 1
+          sha256sum ./*.whl ./*.tar.gz
+
+      - name: Publish to PyPI (trusted publishing / OIDC)
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33
+        with:
+          packages-dir: dist
