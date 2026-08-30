@@ -72,3 +72,12 @@
 .md-content__inner {
   padding-top: 1.5rem;
 }
+
+@media print {
+  .md-header,
+  .md-tabs,
+  .md-sidebar,
+  .md-footer {
+    display: none !important;
+  }
+}
