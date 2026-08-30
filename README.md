@@ -27,9 +27,11 @@ licenselens scan
 licenselens quickstart
 ```
 
-On Windows, the PyPI wheel bundles the PowerShell collector bridge since 0.4.0,
-so the email pack and all PowerShell-only collectors run from a plain pipx
-install — see the [Windows guide](docs/windows.md) (requires Python 3.12+ and pipx).
+On Windows, the PyPI wheel bundles the PowerShell collector bridge since
+0.4.0 (shipping in the 0.4.0 release; PyPI latest is 0.3.0 until it is
+published — see [Releases](docs/releases.md)), so the email pack and all
+PowerShell-only collectors run from a plain pipx install — see the
+[Windows guide](docs/windows.md) (requires Python 3.12+ and pipx).
 
 Contributors: see [CONTRIBUTING.md](CONTRIBUTING.md) for the development setup.
 
