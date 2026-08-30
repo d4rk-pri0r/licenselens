@@ -35,6 +35,8 @@ nav:
   - Collectors & backends: collectors.md
   - Report & export: report.md
   - Conference demo: conference-demo.md
+  - Hotel room: hotel-room.md
+  - Booth one-pager: booth-onepager.md
   - Flagships: flagships.md
   - Checks: checks.md
   - Permissions: permissions.md
@@ -51,6 +53,7 @@ nav:
   - Contributing:
       - Overview: contributing.md
       - Adding a check: adding-a-check.md
+      - Releasing Python-only: releasing-python-only.md
   - Security: security.md
   - Support & compatibility: support.md
   - Releases: releases.md

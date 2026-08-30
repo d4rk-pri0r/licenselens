@@ -92,7 +92,7 @@ That loop is the whole product."* The `--after` overlay is new in 0.4.0 — see
 
 "Four commands. Your tenant, your laptop, your data. Hotel room tonight, four
 minutes. No consent screen, no cloud, no AI." The closing QR points at the
-hotel-room quick start: https://d4rk-pri0r.github.io/licenselens/hotel-room/
+hotel-room quick start: [Run it in your hotel room tonight](hotel-room.md)
 
 ## Version honesty on stage
 
