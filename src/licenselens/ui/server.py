@@ -16,8 +16,7 @@ from urllib.parse import urlparse
 LOOPBACK_HOSTS: Final[frozenset[str]] = frozenset({"127.0.0.1", "localhost", "::1"})
 
 CSP: Final = (
-    "default-src 'none'; script-src 'self'; style-src 'self'; "
-    "connect-src 'self'; img-src 'self'"
+    "default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'"
 )
 
 SECURITY_HEADERS: Final[tuple[tuple[str, str], ...]] = (

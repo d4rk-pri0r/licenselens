@@ -35,9 +35,7 @@ PYPI_TIMEOUT_S = 10
 RELEASES_STATUS_PENDING = "not yet published to PyPI (PyPI latest: 0.3.0)"
 CHANGELOG_STATUS_PENDING = "not yet published to PyPI (PyPI latest: 0.3.0)"
 WHEEL_CLAIM = "bundles the PowerShell collector bridge since 0.4.0"
-PENDING_PARENTHETICAL = (
-    "(shipping in the 0.4.0 release; PyPI latest is 0.3.0 until it is published"
-)
+PENDING_PARENTHETICAL = "(shipping in the 0.4.0 release; PyPI latest is 0.3.0 until it is published"
 
 # Surfaces checked by the live PyPI comparison: (path, pending marker).
 PENDING_SURFACES = [

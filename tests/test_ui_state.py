@@ -113,9 +113,7 @@ def test_record_progress_is_thread_safe() -> None:
             )
             state.record_progress(f"collector-{worker}", index, total_steps, envelope)
 
-    threads = [
-        threading.Thread(target=record, args=(worker,)) for worker in range(workers)
-    ]
+    threads = [threading.Thread(target=record, args=(worker,)) for worker in range(workers)]
     for thread in threads:
         thread.start()
     for thread in threads:

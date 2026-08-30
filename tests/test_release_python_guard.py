@@ -76,10 +76,7 @@ def _runs_of(job: dict) -> str:
 
 def _uses_of(data: dict) -> list[str]:
     return [
-        s.get("uses", "")
-        for job in data["jobs"].values()
-        for s in _steps_of(job)
-        if s.get("uses")
+        s.get("uses", "") for job in data["jobs"].values() for s in _steps_of(job) if s.get("uses")
     ]
 
 
