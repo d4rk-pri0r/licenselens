@@ -1,11 +1,12 @@
 # Comparison with related tools
 
-Security License Lens answers a different question than baseline scanners,
-continuous config tests, CSPM suites, posture/vendor management tools, or
-seat-waste scripts. It starts from owned SKUs, maps them to expected high-value
-security controls, and reports **activation gaps** — capabilities an
-organization already owns that are unused, on default, or incomplete — with
-inspectable evidence.
+ScubaGear, Maester, Secure Score, CIPP, and license-waste scripts are all useful.
+They answer different questions.
+
+LicenseLens starts from the SKUs you already own, maps those SKUs to the
+controls they unlock, then reports whether those controls are actually on. The
+output is an activation gap with evidence, not a baseline score and not a
+remediation platform.
 
 ## Tool-by-tool boundary
 
@@ -19,23 +20,20 @@ inspectable evidence.
 | License waste scripts | Seat assignment efficiency | LicenseLens reports the *features* those seats unlock and whether they are actually operational, not just seat utilization. |
 | **Security License Lens** | **Owned SKUs → expected high-value controls → evidence → activation gap** | The differentiation is the entitlement → capability → observed-evidence → gap relationship. |
 
-## The differentiation
+## The question it answers
 
-> **What the customer owns** + **what security capability that entitlement
-> enables** + **what the tenant actually shows** = **activation gap**.
+You pay for X, so you should be able to use X. Are you, and what does the tenant
+show for it?
 
-LicenseLens is **complementary** to Maester, CIPP, Lighthouse, and Secure Score,
-not a replacement. It answers a question those tools do not centralize: "you pay
-for X, so you should be able to use X — are you, and what does the tenant show
-for it?" When direct evidence is unavailable for a surface, LicenseLens uses
-Secure Score as a **labeled proxy path** (never treated as authoritative).
-Findings are advisory, not a compliance certification, and LicenseLens does not
-claim superiority over any listed tool without evidence.
+That is complementary to Maester, CIPP, Lighthouse, and Secure Score. It is not
+a replacement. When LicenseLens cannot read a control directly, it may use
+Secure Score as a labeled proxy. That path is never treated as the source of
+truth.
 
-## Where overlaps exist
+Findings are advisory. This is not a compliance certification.
 
-Individual checks may overlap with the other tools (a Conditional Access MFA
-check appears in Maester and SCuBA too). Overlap on a single control does not
-make the products the same; what differs is the **contextual question** each
-product optimizes and how it weighs entitlement.
+## Overlaps
 
+A Conditional Access MFA check shows up in Maester and SCuBA too. Sharing a
+control does not make the products the same. The difference is the question each
+one is built to answer, and whether entitlement is part of that question.

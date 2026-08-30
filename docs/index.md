@@ -6,13 +6,9 @@ hide:
 
 # Security License Lens
 
-**The security you already own (and ignore).**
+You already pay for Microsoft security features. A lot of them are still sitting at default.
 
-LicenseLens finds **Microsoft security configuration debt** — high-value
-controls in E5, Entra ID P2, Defender, and related SKUs that you already pay
-for but leave at default or unused. It maps owned entitlements to the controls
-you should have on, and reports gaps as *you pay for X → expected Y → observed
-Z*.
+LicenseLens looks at the SKUs in the tenant, maps them to the controls those SKUs are supposed to enable, then checks whether those controls are actually on. Findings look like: you pay for X, we expected Y, we observed Z.
 
 <div class="grid cards" markdown>
 
@@ -20,7 +16,7 @@ Z*.
 
     ---
 
-    Install, run the offline demo, and produce your first report in minutes.
+    Install it, run the offline demo, open the HTML report.
 
     [:octicons-arrow-right-24: Get started](getting-started.md)
 
@@ -44,7 +40,7 @@ Z*.
 
     ---
 
-    166 declarative checks across identity, email, endpoint, and more.
+    166 checks across identity, email, endpoint, and related workloads.
 
     [:octicons-arrow-right-24: Browse the checks](checks.md)
 
@@ -67,39 +63,26 @@ licenselens demo
 
 ## Install on your platform
 
-- **View the sample report** — [:material-open-in-new: Open the interactive sample report](sample-report.html) — zero install, try it now.
-- **Windows** — `pipx install licenselens` then `licenselens demo` (or `licenselens quickstart`). Requires Python 3.12+ and pipx — see [prerequisites](windows.md#installing-the-cli-on-windows).
-- **macOS / Linux** — `pipx install licenselens` then `licenselens demo` — see the [quick start](#quick-start) above.
+- **View the sample report** — [:material-open-in-new: Open the interactive sample report](sample-report.html) — no install.
+- **Windows** — `pipx install licenselens` then `licenselens demo` (or `licenselens quickstart`). Needs Python 3.12+ and pipx; see [prerequisites](windows.md#installing-the-cli-on-windows).
+- **macOS / Linux** — `pipx install licenselens` then `licenselens demo`. Same commands as [quick start](#quick-start).
 
 ## What it looks like
 
-The report is a single, self-contained HTML file, read top to bottom: posture,
-entitlements, ranked gaps with evidence, and an explore view of every assessed
-control.
-
-The opening section shows the tenant identity, the percentage of licensed
-capability actually enforced, and the top recommended actions. Each capability
-is labeled with its Microsoft workload icon, the capability field cross-filters
-the page, and details expand in place with native disclosure. The report renders
-with JavaScript disabled, makes no network requests, and honors
-`prefers-reduced-motion`.
+One HTML file. Open it locally. It does not call home.
 
 ![The dashboard: what you own, what's working, and what to fix first.](images/report-hero.png)
 
-Every finding shows its evidence and a direct link to the admin page.
-
 ![Every finding shows its evidence and a direct link to the admin page.](images/report-findings.png)
-
-The same report is fully responsive and works offline at mobile width.
 
 ## The most common finding
 
 `id-ca-priv-gaps`:
 
 - **You pay for** Microsoft 365 E5, so Conditional Access is licensed for every user.
-- **We expect** MFA and legacy-auth blocking enforced through a CA policy.
-- **We observed** zero Conditional Access policies → the report marks the tenant `EXPOSED`.
-- **Do this** → enable an MFA CA policy. The gap closes on the next scan.
+- **We expect** MFA and a block on legacy auth, enforced with a CA policy.
+- **We observed** zero Conditional Access policies, so the tenant is marked `EXPOSED`.
+- **Do this** — turn on an MFA CA policy. The gap closes on the next scan.
 
 ## Why Security License Lens?
 

@@ -38,9 +38,11 @@
     # or: licenselens quickstart
     ```
 
-    *Works today on Windows: since 0.4.0 the PyPI wheel bundles the PowerShell collector bridge, so the email pack and all PowerShell-only collectors run from a plain pipx install.*
-
-    Requires Python 3.12+ and pipx — see the [Windows guide](windows.md#installing-the-cli-on-windows). A standalone per-user installer is documented in the [Windows guide](windows.md) — not yet available; never `irm … | iex`.
+    The 0.4.0 wheel includes the PowerShell collector bridge, so email and the
+    other PowerShell-only packs work from a normal pipx install. Needs Python
+    3.12+ and pipx. See the [Windows guide](windows.md#installing-the-cli-on-windows).
+    The standalone per-user installer is in that guide too; it is not published
+    yet. Do not run `irm … | iex`.
 
 Optional docs/release helpers (not required for day-to-day use) may be run with
 `uv run` when those tools are installed — for example `scripts/docs-check.sh` and

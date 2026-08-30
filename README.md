@@ -2,11 +2,10 @@
 
 **The security you already own (and ignore).**
 
-LicenseLens finds **Microsoft security configuration debt** — high-value
-controls in E5, Entra ID P2, Defender, and related SKUs that you already pay
-for but leave at default or unused. It maps owned entitlements to the controls
-you should have on, and reports gaps as *you pay for X → expected Y → observed
-Z*.
+You pay for E5, Entra ID P2, Defender, and related SKUs. A lot of the useful
+controls in those SKUs never get turned on. LicenseLens maps what you own to
+the controls that should be on, then reports the gaps: you pay for X, we
+expected Y, we observed Z.
 
 CLI: `licenselens` · Requires Python 3.12+
 
@@ -52,21 +51,17 @@ licenselens batch tenants.yaml -o reports
 
 ## What it looks like
 
-The report is a single, self-contained HTML file that includes posture, entitlements, ranked gaps with evidence,
-and an explore view of every assessed control.
-
-The opening section displays the tenant identity, the percentage of licensed
-capability actually enforced, and the top recommended actions. The report renders
-with JavaScript disabled, makes no network requests, and honors
-`prefers-reduced-motion`.
+One HTML file with posture, entitlements, ranked gaps, and an explore view of
+every assessed control. It runs with JavaScript off and does not make network
+requests.
 
 ![report hero](docs/images/report-hero.png)
 
-*The dashboard: what you own, what's working, and what to fix first.*
+*What you own, what's working, and what to fix first.*
 
 ![report findings](docs/images/report-findings.png)
 
-*Every finding shows its evidence and a direct link to the admin page.*
+*Each finding includes evidence and a link to the admin page.*
 
 <p align="center">
   <img src="docs/images/report-mobile.png" width="375" alt="The report on mobile">
@@ -111,7 +106,9 @@ licenselens batch tenants.yaml -o reports
 
 **166 checks** · **31 capabilities** · **11 profiles** · **135** pinned SCuBA coverage rows · package/sample **0.4.0**
 
-Evaluation modes (from the registry): **direct**, **proxy**, **manual** (operator-confirmed), and **dynamic** (`direct_with_proxy_fallback` — direct evidence first, Secure Score only when direct is unavailable). Per-finding report rows still serialize the observed mode (`direct` or `proxy`) when a dynamic check runs.
+Checks run as **direct**, **proxy**, **manual** (you confirm), or **dynamic**
+(direct first, Secure Score only if direct is missing). The report still records
+whether a dynamic check ended up `direct` or `proxy`.
 
 The authoritative pack lives in the generated reference (do not maintain a partial public table here):
 

@@ -1,21 +1,20 @@
 # Booth one-pager
 
-<!-- PDF deferred: print this page from the browser. No new design system. -->
+<!-- Print this page from the browser. -->
 
-**90 seconds. Presenter machine only. Never attendee consent on this laptop.**
+Run the demo on **this** laptop. Do not ask an attendee to consent on it.
 
-1. Ask: "What's your biggest Microsoft 365 license tier?"
-2. Run the demo on **this** machine — not theirs.
-3. Land on the licensed-but-unenforced percentage.
-4. Hand them the hotel-room QR: scan your own tenant tonight; credentials never leave your device.
-5. Partners: one command, every tenant you manage.
+1. Ask what their biggest Microsoft 365 license tier is.
+2. Run the demo here.
+3. Show the licensed-but-unenforced percentage.
+4. Give them the hotel-room QR so they can scan their own tenant later.
+5. Partners: one command across the tenants they manage.
 
 ```bash
 licenselens batch tenants.yaml
 ```
 
-That writes a per-tenant report plus an index. Complementary to CIPP / Lighthouse — it does not change the tenant.
+That writes a per-tenant report plus an index. It does not change the tenant.
+CIPP and Lighthouse can still do the admin work.
 
 Hotel-room page: [Run it in your hotel room tonight](hotel-room.md)
-
-No account. No telemetry. Read-only.

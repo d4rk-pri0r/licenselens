@@ -1,7 +1,7 @@
 # Concepts
 
-A short map of the model behind Security License Lens: entitlements,
-capabilities, checks, findings, and the exit codes you'll see in CI.
+The pieces behind a scan: entitlements, capabilities, checks, findings, and
+the exit codes CI will see.
 
 ## The core loop
 

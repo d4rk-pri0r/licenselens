@@ -1,31 +1,25 @@
-# BSides / conference demo workflow
+# Conference demo
 
-A rehearsable, reproducible live demonstration of LicenseLens built for
-conference reliability (product-maturity goal §20 / §26). The talk runs as a
-12-minute, six-beat arc — entirely offline on deterministic demo fixtures,
-airplane mode announced out loud and left on — with an optional controlled
-live-tenant segment held in reserve. The demo is **not** a live-tenant gamble:
-the canonical `licenselens demo` path never touches the network unless you
-choose the live segment.
+Offline talk notes for BSides and similar rooms. The live path is
+`licenselens demo`. It does not need venue wifi. Airplane mode on, say that
+out loud, leave it on.
+
+There is an optional live-tenant segment if you control the tenant. Do not
+improvise that on conference wifi.
 
 ## Reliability contract
 
-- **No dependence on unpredictable live tenant state** unless explicitly chosen
-  — the canonical `licenselens demo` path is fully offline and deterministic.
-- **Deterministic results** — identical normalized evidence always yields the
-  same findings (verified: two demo runs are byte-identical modulo the run
-  timestamp).
-- **Fast execution** — a demo scan completes in seconds.
-- **No secret exposure** — demo fixtures carry no tenant id, UPN, token, or
-  client secret; reports are redacted by default.
-- **No dependency on unstable APIs** for the core demonstration — the offline
-  fixtures stand in for Graph/MDE/ARM.
-- **Graceful offline/failure fallback** — if a collector is unavailable the
-  finding degrades to a labeled `partial`/`error` with a limitation, never a
-  silent drop.
-- **The presenter can show raw Microsoft evidence, the normalized evidence, the
-  deterministic evaluator, and the resulting finding** — nothing is hidden
-  behind undocumented reasoning.
+- Offline by default. `licenselens demo` does not touch a live tenant unless
+  you choose the live segment.
+- Same evidence in, same findings out (timestamp aside).
+- A demo scan finishes in seconds.
+- Demo fixtures have no tenant id, UPN, token, or client secret. Reports are
+  redacted by default.
+- Core demo does not depend on live Graph/MDE/ARM. Fixtures stand in.
+- If a collector is missing, the finding is labeled `partial` or `error`. It
+  is not silently dropped.
+- You can show the raw Microsoft evidence, the normalized evidence, the
+  evaluator, and the finding. Nothing is hidden behind undocumented reasoning.
 
 ## The 12-minute talk arc (BSides, airplane mode on)
 

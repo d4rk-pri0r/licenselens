@@ -1,8 +1,8 @@
 # Checks
 
-Security License Lens ships **166 declarative checks** across ten workload
-directories. Each check is a single YAML file under `checks/<workload>/` and
-evaluates only when its required capabilities are licensed.
+Security License Lens ships **166 checks** across ten workload directories.
+Each check is a single YAML file under `checks/<workload>/` and evaluates only
+when its required capabilities are licensed.
 
 The authoritative per-check catalog (collector, support state, evaluator,
 capabilities, evidence keys) is generated — do not maintain a full check table
