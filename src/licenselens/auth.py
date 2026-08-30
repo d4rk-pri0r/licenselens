@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
 from licenselens.errors import AuthConfigError, AuthError
+
+# Callback invoked by azure-identity when device-code auth requests a code:
+# (verification_url, user_code, expires_on). Used by local ui flows to show
+# the sign-in prompt; production code must never log these values.
+DeviceCodePromptCallback = Callable[[str, str, datetime], None]
 
 # Default public client used only when --client-id is omitted for device code.
 # Customers should prefer their own app registration (see docs/app-registration.md).
@@ -132,6 +139,7 @@ def build_credential(
     oidc_token: str | None = None,
     certificate_path: str | None = None,
     certificate_thumbprint: str | None = None,
+    device_code_prompt: DeviceCodePromptCallback | None = None,
 ) -> Any:
     """Build an azure-identity credential for the requested mode."""
     if mode == AuthMode.DRY_RUN:
@@ -222,6 +230,7 @@ def build_credential(
         credential = DeviceCodeCredential(
             tenant_id=tenant_id,
             client_id=public_client,
+            prompt_callback=device_code_prompt,
         )
         # Attach a flag the builder can turn into AuthContext.warnings
         credential._licenselens_used_default_client = warnings_note  # type: ignore[attr-defined]
@@ -239,6 +248,7 @@ def build_auth_context(
     oidc_token: str | None = None,
     certificate_path: str | None = None,
     certificate_thumbprint: str | None = None,
+    device_code_prompt: DeviceCodePromptCallback | None = None,
 ) -> AuthContext:
     """Build auth context, resolving env vars and constructing credentials."""
     tid, cid, secret, cert_path, cert_thumb = resolve_auth_inputs(
@@ -262,6 +272,7 @@ def build_auth_context(
         oidc_token=oidc_token,
         certificate_path=cert_path,
         certificate_thumbprint=cert_thumb,
+        device_code_prompt=device_code_prompt,
     )
 
     if mode == AuthMode.DEVICE_CODE and getattr(
