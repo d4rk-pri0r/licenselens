@@ -1483,6 +1483,91 @@ def discover_workspace_cmd(
     raise typer.Exit(code=0)
 
 
+@app.command("ui")
+def ui_cmd(
+    demo: bool = typer.Option(
+        False,
+        "--demo",
+        help="Run the offline demo path (required in non-interactive terminals).",
+    ),
+    open_browser: bool = typer.Option(
+        False,
+        "--open/--no-open",
+        help="Open the local wizard in a browser.",
+    ),
+    host: str = typer.Option(
+        "127.0.0.1",
+        "--host",
+        help="Bind address. Non-loopback values are rejected.",
+    ),
+    port: int = typer.Option(
+        8765,
+        "--port",
+        help="Port. 0 selects an ephemeral port.",
+    ),
+    output_dir: Path = typer.Option(
+        Path("reports"),
+        "--output-dir",
+        "-o",
+        help="Directory for scan reports.",
+    ),
+    profile: str | None = typer.Option(
+        None,
+        "--profile",
+        help="Scan profile id (default: core).",
+    ),
+) -> None:
+    """Start a loopback-only local wizard. No telemetry."""
+    import sys
+
+    from licenselens.ui.server import validate_bind_host
+    from licenselens.ui.state import ScanSession
+
+    try:
+        validate_bind_host(host)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(code=2) from exc
+
+    interactive = bool(sys.stdin.isatty())
+    if not interactive and not demo:
+        console.print(
+            "[red]licenselens ui needs an interactive terminal; "
+            "use --demo for a non-interactive offline run, or a terminal.[/red]"
+        )
+        raise typer.Exit(code=2)
+
+    if not interactive and demo:
+        session = ScanSession()
+        html_path = session.start_demo(output_dir, profile)
+        console.print(f"  HTML  {html_path}")
+        raise typer.Exit(code=0)
+
+    from licenselens.ui.pages import serve_wizard
+
+    try:
+        server = serve_wizard(host, port, output_dir, profile_id=profile)
+    except OSError as exc:
+        console.print(f"[red]Could not bind {host}:{port}: {exc}[/red]")
+        raise typer.Exit(code=2) from exc
+    bound_port = server.server_address[1]
+    url = f"http://{host}:{bound_port}/"
+    console.print(f"LicenseLens local wizard: {url}")
+    console.print("Ctrl+C to stop. Nothing is sent except Microsoft sign-in/collectors you start.")
+    if open_browser:
+        import webbrowser
+
+        webbrowser.open(url)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.shutdown()
+        server.server_close()
+    raise typer.Exit(code=0)
+
+
 def main() -> None:
     app()
 

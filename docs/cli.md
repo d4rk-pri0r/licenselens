@@ -133,6 +133,28 @@ licenselens demo -o after --after --export json
 licenselens diff before/security-license-lens-report.json after/security-license-lens-report.json
 ```
 
+### `ui`
+
+Local loopback wizard (127.0.0.1 only). No telemetry. Does not bind other
+interfaces. Browser opening is opt-in.
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--demo` | off | Run the offline demo path |
+| `--open` / `--no-open` | off | Open the wizard in a browser |
+| `--host` | `127.0.0.1` | Bind address; non-loopback exits `2` |
+| `--port` | `8765` | Port; `0` picks an ephemeral port |
+| `-o` / `--output-dir` | `reports` | Directory for reports |
+| `--profile` | `core` | Scan profile id |
+
+Non-interactive terminals: `ui` without `--demo` exits `2` and does not hang.
+`ui --demo` in a non-interactive terminal runs the offline scan and prints the
+report path without serving.
+
+```bash
+licenselens ui --demo --open
+```
+
 ### `quickstart`
 
 Guided read-only live scan against your own tenant. Uses device code unless
