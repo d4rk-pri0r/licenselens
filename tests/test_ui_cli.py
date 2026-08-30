@@ -17,8 +17,13 @@ _BOX_DRAWING_RE = re.compile(r"[─│┌┐└┘├┤┬┴┼╭╮╰╯]")
 
 
 def _clean_help_output(text: str) -> str:
-    """Strip ANSI escapes and Rich box-drawing, collapse whitespace."""
-    cleaned = _BOX_DRAWING_RE.sub(" ", _ANSI_RE.sub(" ", text))
+    """Strip ANSI escapes and Rich box-drawing, collapse whitespace.
+
+    Substitutes with empty string, not space: Rich wraps each hyphen of
+    ``--demo`` in its own CSI sequence, and replacing those with spaces
+    produced ``- -demo`` on CI (GitHub Actions 33326762718 / 33326762728).
+    """
+    cleaned = _BOX_DRAWING_RE.sub("", _ANSI_RE.sub("", text))
     return " ".join(cleaned.split())
 
 
@@ -50,6 +55,7 @@ def test_ui_help_lists_flags(monkeypatch: pytest.MonkeyPatch) -> None:
     result = runner.invoke(app, ["ui", "--help"])
     assert result.exit_code == 0
     output = _clean_help_output(result.output)
-    assert "--demo" in output
-    assert "--host" in output
-    assert "--port" in output
+    compact = output.replace(" ", "")
+    assert "--demo" in compact
+    assert "--host" in compact
+    assert "--port" in compact
