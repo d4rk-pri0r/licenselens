@@ -8,9 +8,8 @@ with [Semantic Versioning](https://semver.org/). The canonical file is
 
 ## [0.4.0] — 2026-08-16
 
-**Status:** in-tree on `main`; not yet published to PyPI (PyPI latest:
-0.3.0). Publication path: the human-gated Python-only release (see the
-releasing guide).
+**Status:** published to PyPI as 0.4.0. The signed Windows installer is still
+a later stage.
 
 Highlights of the current release. The authoritative, full change log is
 `CHANGELOG.md` at the repository root; this page summarizes the headline

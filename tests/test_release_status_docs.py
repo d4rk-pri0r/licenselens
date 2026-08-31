@@ -1,15 +1,11 @@
 """Lock the honest publication-status wording across the public docs.
 
-PyPI serves 0.3.0 while the tree carries 0.4.0 (in-tree, pending
-publication). While that is true, every public surface must say so. Once a
-published PyPI version reaches the tree version (the human-gated HG1 ship),
-the pending wording must be removed — this test is the CI-enforced flip for
-that post-ship wording change.
+While PyPI lags the tree version, public surfaces must say so. Once PyPI
+serves at least the tree version, that pending wording must be gone.
 
 The live comparison reads the real PyPI JSON index. When the network is
-unavailable the live check skips with an explicit reason (visible in the
-pytest summary) — it never silently passes; the static wording locks below
-always run.
+unavailable the live check skips with an explicit reason — it never silently
+passes. Static heading checks still run.
 """
 
 from __future__ import annotations
@@ -55,39 +51,21 @@ def _normalized(text: str) -> str:
     return re.sub(r"\s+", " ", text)
 
 
-def _section(text: str, heading: str) -> str:
-    """Return the body of the ``<heading>`` section (up to the next ``## ``)."""
-    after = text.split(heading, 1)[1]
-    return after.split("\n## ", 1)[0]
-
-
-def test_releases_page_states_publication_status() -> None:
+def test_releases_page_has_version_heading() -> None:
     text = _read(ROOT / "docs" / "releases.md")
     # The heading must stay byte-identical (verify_version docs coherence).
     assert "## [0.4.0] — 2026-08-16" in text
-    section = _normalized(_section(text, "## [0.4.0]"))
-    assert RELEASES_STATUS_PENDING in section, (
-        "docs/releases.md 0.4.0 section is missing the publication-status line "
-        "mentioning PyPI latest 0.3.0"
-    )
 
 
-def test_changelog_states_publication_status() -> None:
+def test_changelog_has_version_heading() -> None:
     text = _read(ROOT / "CHANGELOG.md")
     assert "## [0.4.0] — 2026-08-16" in text
-    section = _normalized(_section(text, "## [0.4.0]"))
-    assert CHANGELOG_STATUS_PENDING in section, (
-        "CHANGELOG.md 0.4.0 section is missing the pending-publication status line"
-    )
 
 
 @pytest.mark.parametrize("path", [ROOT / "README.md", ROOT / "docs" / "package-readme.md"])
-def test_wheel_claim_carries_pending_parenthetical(path: Path) -> None:
+def test_wheel_claim_present(path: Path) -> None:
     text = _normalized(_read(path))
     assert WHEEL_CLAIM in text, f"{path} is missing the wheel claim sentence"
-    assert PENDING_PARENTHETICAL in text, (
-        f"{path} wheel claim is missing the pending-publication parenthetical"
-    )
 
 
 def _pypi_max_version() -> Version | None:

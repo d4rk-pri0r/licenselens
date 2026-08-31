@@ -29,11 +29,9 @@ Agents never tag, never dispatch this workflow, and never publish to PyPI.
 1. GitHub → Actions → **Release Python (wheel + sdist)** → Run workflow on `main`.
 2. Wait for success.
 3. Verify https://pypi.org/project/licenselens/ shows 0.4.0.
-4. Flip the publication-status wording:
-   - `docs/releases.md` and `CHANGELOG.md`: pending → published
-   - `README.md` / `docs/package-readme.md`: drop the "PyPI latest is 0.3.0" parenthetical
-   - `tests/test_release_status_docs.py` will require that flip (live PyPI lock)
-5. Push the wording commit so Pages redeploys.
+4. If the docs still say PyPI is pending, flip that wording and push so Pages
+   redeploys. The live PyPI lock in `tests/test_release_status_docs.py` requires
+   it.
 
 ## What this does not do
 
