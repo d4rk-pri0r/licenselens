@@ -15,6 +15,7 @@ nav:
   - Package README: package-readme.md
   - Quick start: getting-started.md
   - CLI reference: cli.md
+  - MCP (AI assistants): mcp.md
   - Concepts:
       - Overview: concepts.md
       - How it compares: comparison.md

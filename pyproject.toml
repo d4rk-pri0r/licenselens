@@ -42,9 +42,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+mcp = ["mcp>=2.0,<3"]
 dev = [
   "build>=1.2.0",
   "html5lib>=1.1,<2",
+  "mcp>=1.26,<3",
   "playwright>=1.61,<2",
   "pytest>=8.3.0",
   "pytest-cov>=5.0.0",

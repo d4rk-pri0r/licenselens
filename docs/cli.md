@@ -240,6 +240,36 @@ licenselens discover-workspace --auth client_secret
 Exit `0` when at least one workspace is found; `1` when none are discovered;
 `2` on auth or API failure.
 
+### `mcp`
+
+Start the LicenseLens MCP (Model Context Protocol) server over stdio so AI
+assistants such as Claude Code or Cursor can run a security posture assessment
+as a tool call. The server exposes a single read-only tool, `posture.assess`,
+which defaults to the offline demo (curated sample data, no tenant contact);
+a live assessment is opt-in and uses read-only, environment-based credentials.
+It never mutates tenant configuration, and interactive device sign-in is not
+available over MCP — use `licenselens scan --live` in a terminal instead.
+
+This command requires the optional `mcp` extra:
+
+```bash
+pipx install 'licenselens[mcp]'
+# or
+uv pip install '.[mcp]'
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| (none) | — | The server has no options; configuration comes from the tool call arguments and standard `AZURE_*` environment variables |
+
+```bash
+# Start the MCP server (blocks; stdio is the wire)
+licenselens mcp
+```
+
+Exit blocks serving tool calls over stdio until the client disconnects; `2`
+when the `mcp` extra is not installed.
+
 ### `merge-reports`
 
 Merge sibling tenant report JSONs into one single-file HTML dashboard with a

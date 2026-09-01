@@ -48,6 +48,19 @@ licenselens scan --live --auth client_secret -o reports
 licenselens batch tenants.yaml -o reports
 ```
 
+### Ask your AI assistant
+
+LicenseLens ships an MCP server (stdio, local, read-only) so Claude Code,
+Copilot, or Cursor can run an assessment and reason over the same structured
+findings the CLI emits — including ranked next steps and license constraints.
+
+```json
+{ "mcpServers": { "licenselens": {
+    "command": "uvx", "args": ["--from", "licenselens[mcp]", "licenselens", "mcp"] } } }
+```
+
+See [docs/mcp.md](docs/mcp.md) for host setup and live-tenant credentials.
+
 ## What it looks like
 
 One HTML file with posture, entitlements, ranked gaps, and an explore view of

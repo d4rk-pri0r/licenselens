@@ -1483,6 +1483,25 @@ def discover_workspace_cmd(
     raise typer.Exit(code=0)
 
 
+@app.command("mcp")
+def mcp_cmd() -> None:
+    """Start the LicenseLens MCP server (stdio) for AI assistants.
+
+    Requires the optional extra: pipx install 'licenselens[mcp]'.
+    Read-only: assesses posture; never mutates tenant configuration.
+    """
+    try:
+        from licenselens.mcp_server import main as mcp_main
+    except ImportError:
+        console.print("[red]The MCP SDK is not installed.[/red]")
+        console.print(
+            "Install it with: pipx install 'licenselens[mcp]' (or uv pip install '.[mcp]').",
+            markup=False,
+        )
+        raise typer.Exit(code=2) from None
+    mcp_main()  # blocks; owns stdout as the MCP wire
+
+
 @app.command("ui")
 def ui_cmd(
     demo: bool = typer.Option(
