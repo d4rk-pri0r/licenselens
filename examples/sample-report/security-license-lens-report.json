@@ -2819,10 +2819,11 @@
       "pack": "starter",
       "exposure_class": "none",
       "deep_link": "https://learn.microsoft.com/azure/sentinel/connect-data-sources",
-      "summary": "Thin Sentinel data connectors: 1 connector(s), only 0 high-value source(s).",
+      "summary": "Thin Sentinel data connectors: 1 connected connector(s), only 0 high-value source(s).",
       "evidence": {
         "total_connectors": 1,
         "connected_connectors": 1,
+        "connected_state_available": true,
         "connector_kinds": [
           "AzureActivity"
         ],
