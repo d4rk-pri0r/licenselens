@@ -12,6 +12,7 @@ from licenselens.cloud_endpoints import CloudEndpoints, endpoints_for, graph_bas
 from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
 from licenselens.graph_list import GraphListResult
+from licenselens.http_retry import retry_delay, should_retry
 
 DEFAULT_GRAPH_BASE: Final = "https://graph.microsoft.com/v1.0"
 _WRITE_METHODS: Final = frozenset({"POST", "PUT", "PATCH", "DELETE"})
@@ -170,16 +171,10 @@ class GraphClient:
             if response.status_code == 401 and attempt > 0:
                 raise self._error_from_response(response)
 
-            if response.status_code == 429 or response.status_code >= 500:
+            if should_retry(response.status_code):
                 if attempt >= self._max_retries:
                     raise self._error_from_response(response)
-                retry_after = response.headers.get("Retry-After")
-                delay = (
-                    float(retry_after)
-                    if retry_after and retry_after.isdigit()
-                    else min(2**attempt, 8)
-                )
-                self._sleep(delay)
+                self._sleep(retry_delay(response, attempt))
                 continue
 
             if response.status_code >= 400:
