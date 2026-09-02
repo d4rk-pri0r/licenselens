@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 
 import httpx
@@ -10,6 +11,7 @@ from licenselens.auth import AuthContext
 from licenselens.cloud_endpoints import CloudEndpoints, UnsupportedCloudError, endpoints_for
 from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
+from licenselens.http_retry import retry_delay, should_retry
 from licenselens.models import SubscribedSku
 
 MDE_RESOURCE = "https://api.securitycenter.microsoft.com"
@@ -51,6 +53,8 @@ class MdeClient:
         cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
         timeout: float = 60.0,
         base_url: str | None = None,
+        max_retries: int = 4,
+        sleep: Any = time.sleep,
     ) -> None:
         if auth.credential is None:
             raise AuthError("MDE client requires credentials.")
@@ -60,6 +64,8 @@ class MdeClient:
         if not self._endpoints.mde_supported:
             raise UnsupportedCloudError(cloud=cloud, service="mde")
         self._base_url = (base_url or self._endpoints.mde_base).rstrip("/")
+        self._max_retries = max_retries
+        self._sleep = sleep
         self._http = httpx.Client(timeout=timeout)
         self._token: str | None = None
 
@@ -96,31 +102,50 @@ class MdeClient:
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
         url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
-        headers = {
-            "Authorization": f"Bearer {self._token_value()}",
-            "Accept": "application/json",
-        }
-        try:
-            response = self._http.get(url, headers=headers, params=params)
-        except httpx.HTTPError as exc:
-            raise GraphError(f"MDE network error: {exc}") from exc
-        if response.status_code >= 400:
-            detail = (response.text or "")[:300]
-            msg = f"MDE API {response.status_code} for {url}"
-            if detail:
-                msg = f"{msg} — {detail}"
-            if response.status_code in {401, 403}:
-                msg += (
-                    " Grant WindowsDefenderATP application permission "
-                    "Machine.Read.All (or equivalent) with admin consent."
-                )
-            raise GraphError(msg, status_code=response.status_code)
-        if not response.content:
-            return {}
-        data = response.json()
-        if not isinstance(data, dict):
-            raise GraphError("Expected JSON object from MDE API.")
-        return data
+        for attempt in range(self._max_retries + 1):
+            headers = {
+                "Authorization": f"Bearer {self._token_value()}",
+                "Accept": "application/json",
+            }
+            try:
+                response = self._http.get(url, headers=headers, params=params)
+            except httpx.HTTPError as exc:
+                if attempt >= self._max_retries:
+                    raise GraphError(f"MDE network error: {exc}") from exc
+                self._sleep(min(2**attempt, 8))
+                continue
+            if response.status_code == 401 and attempt == 0:
+                # Force one token refresh (mirrors GraphClient).
+                self._token = None
+                continue
+            if response.status_code == 401 and attempt > 0:
+                raise self._error_for(url, response)
+            if should_retry(response.status_code):
+                if attempt >= self._max_retries:
+                    raise self._error_for(url, response)
+                self._sleep(retry_delay(response, attempt))
+                continue
+            if response.status_code >= 400:
+                raise self._error_for(url, response)
+            if not response.content:
+                return {}
+            data = response.json()
+            if not isinstance(data, dict):
+                raise GraphError("Expected JSON object from MDE API.")
+            return data
+        raise GraphError(f"MDE request failed after retries for {url}")
+
+    def _error_for(self, url: str, response: httpx.Response) -> GraphError:
+        detail = (response.text or "")[:300]
+        msg = f"MDE API {response.status_code} for {url}"
+        if detail:
+            msg = f"{msg} — {detail}"
+        if response.status_code in {401, 403}:
+            msg += (
+                " Grant WindowsDefenderATP application permission "
+                "Machine.Read.All (or equivalent) with admin consent."
+            )
+        return GraphError(msg, status_code=response.status_code)
 
 
 def collect_mde_machine_summary(

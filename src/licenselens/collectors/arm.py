@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from typing import Any
 from urllib.parse import quote
 
@@ -11,6 +12,7 @@ from licenselens.auth import AuthContext
 from licenselens.cloud_endpoints import CloudEndpoints, endpoints_for
 from licenselens.collectors.contracts import CloudEnvironment
 from licenselens.errors import AuthError, GraphError
+from licenselens.http_retry import retry_delay, should_retry
 
 ARM_RESOURCE = "https://management.azure.com"
 ARM_SCOPE = f"{ARM_RESOURCE}/.default"
@@ -27,6 +29,8 @@ class ArmClient:
         cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
         timeout: float = 60.0,
         base_url: str | None = None,
+        max_retries: int = 4,
+        sleep: Any = time.sleep,
     ) -> None:
         if auth.credential is None:
             raise AuthError("ARM client requires credentials.")
@@ -34,6 +38,8 @@ class ArmClient:
         self._cloud = cloud
         self._endpoints: CloudEndpoints = endpoints_for(cloud)
         self._base_url = (base_url or self._endpoints.arm_resource).rstrip("/")
+        self._max_retries = max_retries
+        self._sleep = sleep
         self._http = httpx.Client(timeout=timeout)
         self._token: str | None = None
 
@@ -69,31 +75,50 @@ class ArmClient:
 
     def get(self, path: str, *, params: dict[str, Any] | None = None) -> dict[str, Any]:
         url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
-        headers = {
-            "Authorization": f"Bearer {self._token_value()}",
-            "Accept": "application/json",
-        }
-        try:
-            response = self._http.get(url, headers=headers, params=params)
-        except httpx.HTTPError as exc:
-            raise GraphError(f"ARM network error: {exc}") from exc
-        if response.status_code >= 400:
-            detail = (response.text or "")[:400]
-            msg = f"ARM {response.status_code} for {url}"
-            if detail:
-                msg = f"{msg} — {detail}"
-            if response.status_code in {401, 403}:
-                msg += (
-                    " Grant Microsoft Sentinel Reader (or Log Analytics Reader) "
-                    "on the workspace and ensure the app has access to the subscription."
-                )
-            raise GraphError(msg, status_code=response.status_code)
-        if not response.content:
-            return {}
-        data = response.json()
-        if not isinstance(data, dict):
-            raise GraphError("Expected JSON object from ARM.")
-        return data
+        for attempt in range(self._max_retries + 1):
+            headers = {
+                "Authorization": f"Bearer {self._token_value()}",
+                "Accept": "application/json",
+            }
+            try:
+                response = self._http.get(url, headers=headers, params=params)
+            except httpx.HTTPError as exc:
+                if attempt >= self._max_retries:
+                    raise GraphError(f"ARM network error: {exc}") from exc
+                self._sleep(min(2**attempt, 8))
+                continue
+            if response.status_code == 401 and attempt == 0:
+                # Force one token refresh (mirrors GraphClient).
+                self._token = None
+                continue
+            if response.status_code == 401 and attempt > 0:
+                raise self._error_for(url, response)
+            if should_retry(response.status_code):
+                if attempt >= self._max_retries:
+                    raise self._error_for(url, response)
+                self._sleep(retry_delay(response, attempt))
+                continue
+            if response.status_code >= 400:
+                raise self._error_for(url, response)
+            if not response.content:
+                return {}
+            data = response.json()
+            if not isinstance(data, dict):
+                raise GraphError("Expected JSON object from ARM.")
+            return data
+        raise GraphError(f"ARM request failed after retries for {url}")
+
+    def _error_for(self, url: str, response: httpx.Response) -> GraphError:
+        detail = (response.text or "")[:400]
+        msg = f"ARM {response.status_code} for {url}"
+        if detail:
+            msg = f"{msg} — {detail}"
+        if response.status_code in {401, 403}:
+            msg += (
+                " Grant Microsoft Sentinel Reader (or Log Analytics Reader) "
+                "on the workspace and ensure the app has access to the subscription."
+            )
+        return GraphError(msg, status_code=response.status_code)
 
     def get_list(
         self,
