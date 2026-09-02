@@ -470,6 +470,9 @@
       "evidence": {
         "label": "Phishing-resistant MFA for privileged roles",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -732,6 +735,9 @@
       "evidence": {
         "label": "Device code flow block",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -783,6 +789,9 @@
       "evidence": {
         "label": "High-risk sign-in block",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -834,6 +843,9 @@
       "evidence": {
         "label": "High-risk user block",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -885,6 +897,9 @@
       "evidence": {
         "label": "Legacy authentication block",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -936,6 +951,9 @@
       "evidence": {
         "label": "Phishing-resistant MFA for all users",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -1787,6 +1805,9 @@
       "evidence": {
         "label": "Managed device required",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -1839,6 +1860,9 @@
       "evidence": {
         "label": "Managed device for MFA registration",
         "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0
@@ -4677,6 +4701,20 @@
         "enforced_policies": [
           "Demo: MFA for all users",
           "Demo: Require MFA for sign-in risk"
+        ],
+        "universal_policies": [
+          "Demo: MFA for all users"
+        ],
+        "scoped_policies": [
+          {
+            "policy": "Demo: Require MFA for sign-in risk",
+            "gaps": [
+              "risk_conditioned"
+            ]
+          }
+        ],
+        "scope_gaps_best": [
+          "risk_conditioned"
         ],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
