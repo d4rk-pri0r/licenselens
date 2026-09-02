@@ -257,6 +257,7 @@ def _render_manifest(
         "coverage_gap_count": sum(
             row.disposition.value in COVERAGE_GAP_STATES for row in model.coverage_rows
         ),
+        "flagship_count": sum(check.flagship for check in model.checks),
         "sources": sources,
         "generated": generated,
     }
@@ -321,17 +322,18 @@ def _render_checks(model: ReferenceModel) -> str:
         f"{len(model.checks)} checks. Every check discloses its collector (backend),",
         "support state (direct, proxy, manual, unsupported, or",
         "direct_with_proxy_fallback), evaluator registration, required",
-        "capabilities, evidence keys, compliance mappings, and source file.",
+        "capabilities, flagship status, evidence keys, compliance mappings, and",
+        "source file.",
         "",
         "| Check ID | Collector (backend) | State | Evaluator | Required capabilities |"
-        " Evidence keys | Mappings | Source |",
+        " Evidence keys | Mappings | Source | Flagship |",
         "|----------|---------------------|-------|-----------|-----------------------|"
-        "---------------|----------|--------|",
+        "---------------|----------|--------|----------|",
     ]
     for check in model.checks:
         lines.append(
             "| `{id}` | `{collector}` | {state} | {evaluator} | {caps} | {evidence} |"
-            " {mappings} | `{source}` |".format(
+            " {mappings} | `{source}` | {flagship} |".format(
                 id=check.id,
                 collector=check.collector,
                 state=_cell(check.support_state.value),
@@ -340,6 +342,7 @@ def _render_checks(model: ReferenceModel) -> str:
                 evidence=_cell(", ".join(check.evidence_keys) or "—"),
                 mappings=_cell(_format_mappings(check.mappings)),
                 source=_cell(_source_label(check.source_path) if check.source_path else "—"),
+                flagship=_cell("yes" if check.flagship else "—"),
             )
         )
     lines += [

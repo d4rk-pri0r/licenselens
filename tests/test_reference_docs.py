@@ -213,3 +213,26 @@ def test_main_succeeds_on_fresh_tree(mod, gen, tmp_path: Path, capsys) -> None:
     assert code == 0
     assert "PASS" in out
     assert "FAIL" not in out
+
+
+def test_reference_flagship_count_matches_check_yaml(mod, gen) -> None:
+    import yaml
+
+    model = build_reference_model()
+    yaml_flagships = 0
+    for path in sorted((ROOT / "checks").rglob("*.yaml")):
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        if isinstance(data, dict) and data.get("flagship") is True:
+            yaml_flagships += 1
+    flagship_registry = yaml.safe_load((ROOT / "catalog" / "flagships.yaml").read_text("utf-8"))
+
+    model_count = sum(1 for check in model.checks if check.flagship)
+    assert model_count == yaml_flagships == len(flagship_registry["flagships"]) == 34
+
+    manifest = json.loads(gen.reference_files["manifest.json"])
+    assert manifest["flagship_count"] == 34
+
+    checks_md = gen.reference_files["checks.md"]
+    assert "| Flagship |" in checks_md  # the new column header
+    reference = json.loads(gen.reference_files["reference.json"])
+    assert sum(1 for check in reference["checks"] if check["flagship"]) == 34

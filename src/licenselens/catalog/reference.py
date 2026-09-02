@@ -229,6 +229,8 @@ def _reference_check(
         required_capabilities=tuple(sorted(check.required_capabilities)),
         source_path=check.source_path or "",
         support_state=_support_state_from_registry(entry.evaluation_mode if entry else None),
+        flagship=check.flagship,
+        flagship_security_intent=check.flagship_security_intent,
         mappings={k: tuple(v) for k, v in check.mappings.items()},
     )
 

@@ -67,6 +67,8 @@ class ReferenceCheck(StrictReferenceModel):
     required_capabilities: tuple[str, ...]
     source_path: str
     support_state: SupportState
+    flagship: bool
+    flagship_security_intent: str
     mappings: dict[str, tuple[str, ...]]
 
 
