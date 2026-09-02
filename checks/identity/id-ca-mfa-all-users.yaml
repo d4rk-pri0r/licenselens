@@ -3,7 +3,7 @@ title: MFA not enforced for all users via Conditional Access
 customer_title: Require multi-factor authentication for everyone
 customer_summary: >
   Your plan can require a second factor for every sign-in. Without that rule, password-only access remains possible for many accounts.
-expected_state: Every user signs in with MFA enforced by Conditional Access.
+expected_state: An enforced Conditional Access policy requires MFA for all users across all cloud apps without risk, location, platform, or client-type scoping.
 customer_next_step: >
   Enforce a Conditional Access policy requiring multi-factor authentication for all users.
 description: >

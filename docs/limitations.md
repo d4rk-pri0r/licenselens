@@ -13,6 +13,13 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 | Purview DLP | Secure Score proxy (+ best-effort) | Full Purview policy surface app-only |
 | Sentinel | ARM analytics rules + UEBA when workspace given | Full content-hub depth |
 
+## Conditional Access scope
+
+A sign-in rule that exists is not the same as a sign-in rule that applies to
+everyone, every app, every device. LicenseLens reports a partial finding when
+the only matching rule is limited by app, risk, location, platform, or client
+type. It does not try to add several narrower rules together.
+
 ## Email pack (default off)
 
 - Default packs are **identity + endpoint**.

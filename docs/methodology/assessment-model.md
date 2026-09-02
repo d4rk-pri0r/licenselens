@@ -74,6 +74,43 @@ authoritative eligible-device inventory is supplied. See
 [deployment and coverage](./entitlement-model.md#denominators-licensing-versus-population)
 for how denominators are validated.
 
+## Effective scope
+
+A Conditional Access policy that exists is not the same as a Conditional
+Access policy that covers the intended population. Every coverage check
+therefore classifies each enforced matching policy's *effective scope* before
+claiming it covers anything: a policy is **universal** only when no scope gap
+applies, and scoped-only matches yield `partial`, never `ok`.
+
+The nine scope-gap tokens and their plain-English meanings:
+
+| Token | Plain English |
+|---|---|
+| `not_all_users` | The policy does not target all users. |
+| `not_all_cloud_apps` | The policy does not apply to all cloud apps. |
+| `user_actions_only` | The policy governs only specific user actions (for example registering security info), not sign-in to apps generally. |
+| `risk_conditioned` | The policy applies only to sign-ins or users already marked with a risk level, so ordinary sign-ins bypass it. |
+| `client_app_subset` | The policy applies only to some client types (for example browser only). |
+| `platform_subset` | The policy applies only to some device platforms. |
+| `trusted_location_bypass` | Sign-ins from trusted locations are excluded from the policy. |
+| `named_location_bypass` | Sign-ins from named excluded locations are excluded from the policy. |
+| `device_filter` | The policy applies a device filter, so access depends on device attributes. |
+
+Two boundaries of the model:
+
+- **Joint coverage is not computed.** Several narrower policies whose union
+  covers everyone are still reported as `partial`; each scoped policy is
+  listed in the finding's evidence so a reviewer can judge the union.
+- **`includeLocations` is not modelled.** A policy that *includes only some
+  locations* (rather than excluding some) is not a scope gap in this version.
+
+**Security Defaults interaction.** When Security Defaults is on, the two
+checks it actually covers — all-user MFA and legacy-authentication blocking —
+report `partial` (baseline present, the licensed Conditional Access capability
+unused) instead of `gap`. Every other Conditional Access coverage check stays
+`gap` and records a limitation that Conditional Access policies cannot be
+created until Security Defaults is disabled.
+
 ## How a finding is built
 
 Each enabled check flows through a fixed pipeline:

@@ -4,7 +4,7 @@ flagships:
   security_intent: Require multi-factor authentication for every user via Conditional
     Access to prevent password-only sign-in.
   entitlement: conditional_access
-  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa
@@ -13,7 +13,7 @@ flagships:
   security_intent: Require phishing-resistant MFA for highly privileged directory
     roles via Conditional Access.
   entitlement: conditional_access
-  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/identity/role-based-access-control/privileged-roles-permissions
@@ -22,7 +22,7 @@ flagships:
   security_intent: Require phishing-resistant MFA for all users via Conditional Access
     to defeat phishing of ordinary MFA methods.
   entitlement: conditional_access
-  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/identity/authentication/concept-authentication-strengths
@@ -31,7 +31,7 @@ flagships:
   security_intent: Gate privileged sign-ins with phishing-resistant MFA and block
     legacy authentication via Conditional Access.
   entitlement: conditional_access
-  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/identity/conditional-access/overview
@@ -40,7 +40,7 @@ flagships:
   security_intent: Block legacy authentication clients tenant-wide so outdated sign-in
     methods cannot bypass modern MFA.
   entitlement: conditional_access
-  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication
@@ -49,7 +49,7 @@ flagships:
   security_intent: Require compliant or hybrid-joined managed devices for cloud app
     access via Conditional Access.
   entitlement: conditional_access
-  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies)
+  evidence_source: graph_ca (direct, Microsoft Graph conditionalAccess policies); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-compliant-device
@@ -59,7 +59,7 @@ flagships:
     Access.
   entitlement: identity_protection
   evidence_source: graph_identity_protection (direct, Microsoft Graph identityProtection
-    risk detections)
+    risk detections); effective scope (apps/risk/location/platform/client) since 0.5
   assessment_type: direct
   status: draft
   source_url: https://learn.microsoft.com/entra/id-protection/howto-identity-protection-configure-risk-policies

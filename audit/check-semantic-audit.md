@@ -154,19 +154,25 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Actual Evidence Available:** `ca_policies` (Graph `conditionalAccess`). The evaluator
   `evaluate_ca_mfa_all_users` calls `ca_coverage_result` with predicate `ca.requires_mfa` and
   `require_all_users=True`, so only an *enforced, all-user* MFA policy clears the check. Report-only or
-  non-all-user policies yield PARTIAL; no matching policy yields GAP.
+  non-all-user policies yield PARTIAL; no matching policy yields GAP. Evidence now includes the
+  effective-scope keys `universal_policies`, `scoped_policies`, `scope_gaps_best`, and
+  `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` (Entra ID P1/P2).
 - **Known Edge Cases:** (1) A policy that covers all users via a dynamic group rather than the literal
   "All users" assignment may not satisfy `includes_all_users`. (2) Break-glass exclusions without a
-  documented rationale demote OK→PARTIAL. (3) Security Defaults providing baseline MFA is not recognized
-  here (handled by `id-security-defaults-on`).
-- **False Positive Risk:** LOW — a real all-user MFA policy is recognized; the main risk is a false
-  *negative* if the policy shape is unusual.
+  documented rationale demote OK→PARTIAL. (3) Security Defaults providing baseline MFA yields PARTIAL
+  here (baseline present, the licensed CA capability unused); the activation gap itself is
+  `id-security-defaults-on`.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** MEDIUM — a policy covering all users via a non-standard assignment shape may be
   missed, under-reporting coverage.
 - **Confidence:** HIGH (direct read; demoted to MEDIUM if exclusions are unjustified).
-- **Required Changes:** None.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-all-users-mfa`
 - **Validation Status:** not-yet-reviewed
 
@@ -174,34 +180,44 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 
 - **Current Claim:** Enforced Conditional Access blocks legacy authentication clients.
 - **Actual Evidence Available:** `ca_policies`; predicate `ca.is_legacy_auth_block` with `require_all_users=True`.
+  Evidence now includes the effective-scope keys `universal_policies`, `scoped_policies`, `scope_gaps_best`,
+  and `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access`.
-- **Known Edge Cases:** Security Defaults also blocks legacy auth; this check does not consult
-  `security_defaults_policy` (that is `id-ca-priv-gaps`'s job). A legacy-auth block scoped to a subset of
-  users is treated as a gap.
-- **False Positive Risk:** LOW.
+- **Known Edge Cases:** Security Defaults also blocks legacy auth; this check reports PARTIAL (not GAP)
+  when Security Defaults is on, because SD blocks legacy authentication at the baseline;
+  `id-ca-priv-gaps` consumes the same signal for its exposure flag. A legacy-auth block scoped to a
+  subset of users is treated as a gap.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** MEDIUM — a block policy with an unusual grant-control shape may not match the predicate.
 - **Confidence:** HIGH.
-- **Required Changes:** None.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication`
 - **Validation Status:** not-yet-reviewed
 
 #### `id-ca-phishing-resistant-all` — Phishing-resistant MFA for all users
 
 - **Current Claim:** Every user signs in with phishing-resistant MFA (FIDO2/CBA) enforced by CA.
-- **Actual Evidence Available:** `ca_policies`; predicate `ca.requires_phishing_resistant`, all-user required.
+- **Actual Evidence Available:** `ca_policies`; predicate `ca.requires_phishing_resistant`, all-user
+  required. Evidence now includes the effective-scope keys `universal_policies`, `scoped_policies`,
+  `scope_gaps_best`, and `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + phishing-resistant method availability (FIDO2/CBA).
 - **Known Edge Cases:** (1) Orgs that require phishing-resistant MFA only for privileged roles are flagged
   as a gap here (that is `id-ca-phishing-resistant-privileged`). (2) A policy requiring phishing-resistant
   MFA for all users but with an unjustified break-glass exclusion demotes to PARTIAL.
-- **False Positive Risk:** MEDIUM — a tenant that intentionally requires phishing-resistant MFA only for
-  privileged roles is reported as a gap for all users.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** LOW.
 - **Confidence:** HIGH.
-- **Required Changes:** Consider documenting that this check targets the SCuBA "all users" baseline and
-  that orgs may legitimately scope phishing-resistant MFA to privileged roles only (see
-  `id-ca-phishing-resistant-privileged`).
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-admin-mfa`
 - **Validation Status:** not-yet-reviewed
 
@@ -209,15 +225,21 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 
 - **Current Claim:** Highly privileged roles (or all users) require phishing-resistant MFA.
 - **Actual Evidence Available:** `ca_policies`; `role_targeted_result` with `HIGHLY_PRIVILEGED_ROLE_TEMPLATE_IDS`.
+  Evidence now includes the effective-scope keys `universal_policies`, `scoped_policies`, `scope_gaps_best`,
+  and `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + PIM/privileged-role licensing.
 - **Known Edge Cases:** A policy that covers all users satisfies this check (via `includes_all_users`).
   Role targeting relies on the privileged-role template ID set being current.
-- **False Positive Risk:** LOW.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** MEDIUM — if the privileged-role template ID set is stale, a policy targeting a
   newly-added privileged role may be missed.
 - **Confidence:** HIGH.
-- **Required Changes:** None.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-admin-mfa`
 - **Validation Status:** not-yet-reviewed
 
@@ -225,13 +247,19 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 
 - **Current Claim:** Enforced Conditional Access requires a managed device for access.
 - **Actual Evidence Available:** `ca_policies`; predicate `ca.requires_managed_device`, all-user required.
+  Evidence now includes the effective-scope keys `universal_policies`, `scoped_policies`, `scope_gaps_best`,
+  and `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + Intune (managed-device compliance).
 - **Known Edge Cases:** A managed-device policy scoped to specific apps (not all users) is treated as a gap.
-- **False Positive Risk:** MEDIUM — orgs that scope managed-device requirements to specific apps are flagged.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** LOW.
 - **Confidence:** HIGH.
-- **Required Changes:** None.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-azure-management`
 - **Validation Status:** not-yet-reviewed
 
@@ -239,31 +267,41 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 
 - **Current Claim:** Users can only register security info (MFA methods) from managed devices.
 - **Actual Evidence Available:** `ca_policies`; predicate requires a policy that both targets
-  `registerSecurityInfo` and requires a managed device.
+  `registerSecurityInfo` and requires a managed device. Evidence now includes the effective-scope keys
+  `universal_policies`, `scoped_policies`, `scope_gaps_best`, and `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + Intune.
 - **Known Edge Cases:** A tenant that enforces managed devices broadly (but not specifically on the
   security-info registration app) is flagged as a gap even though the practical effect is similar.
-- **False Positive Risk:** MEDIUM.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** LOW.
 - **Confidence:** HIGH.
-- **Required Changes:** Consider relaxing the predicate to accept a broader managed-device policy that
-  covers the security-info registration app transitively.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-registration`
 - **Validation Status:** not-yet-reviewed
 
 #### `id-ca-device-code-block` — Device code flow blocked
 
 - **Current Claim:** The device-code authentication flow is blocked by Conditional Access.
-- **Actual Evidence Available:** `ca_policies`; predicate `ca.is_device_code_block`.
+- **Actual Evidence Available:** `ca_policies`; predicate `ca.is_device_code_block`. Evidence now includes
+  the effective-scope keys `universal_policies`, `scoped_policies`, `scope_gaps_best`, and
+  `security_defaults_enabled`.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access`.
 - **Known Edge Cases:** Device-code flow is a phishing vector; a block policy with an unusual grant-control
   shape may not match the predicate.
-- **False Positive Risk:** LOW.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** MEDIUM.
 - **Confidence:** HIGH.
-- **Required Changes:** None.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/block-device-code-flow`
 - **Validation Status:** not-yet-reviewed
 
@@ -274,6 +312,8 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + Identity Protection (risk signals).
 - **Known Edge Cases:** Requires an all-user policy; a risk policy scoped to a subset is treated as a gap.
+- Risk conditioning is this check's purpose, so purpose_scope clears risk_conditioned; every other scope
+  dimension still counts.
 - **False Positive Risk:** LOW.
 - **False Negative Risk:** MEDIUM.
 - **Confidence:** HIGH.
@@ -288,6 +328,8 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + Identity Protection.
 - **Known Edge Cases:** Same all-user requirement as `id-ca-high-risk-signins`.
+- Risk conditioning is this check's purpose, so purpose_scope clears risk_conditioned; every other scope
+  dimension still counts.
 - **False Positive Risk:** LOW.
 - **False Negative Risk:** MEDIUM.
 - **Confidence:** HIGH.
@@ -301,16 +343,22 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Actual Evidence Available:** `ca_policies`, `role_assignments`, `security_defaults_policy`. The
   evaluator `evaluate_ca_priv_gaps` computes MFA coverage for all users or privileged roles, legacy-auth
   blocking, and an `ExposureClass.EXPOSED` flag when privileged principals exist with no enforced MFA or
-  legacy auth is broadly allowed.
+  legacy auth is broadly allowed. MFA and legacy coverage now require a universal (or role-targeted,
+  all-cloud-app) policy, not merely a matching predicate; `security_defaults_policy` is consulted for
+  the exposure flag.
 - **Assessment Type:** DIRECT.
 - **Entitlement Dependency:** `conditional_access` + privileged-role licensing.
 - **Known Edge Cases:** (1) Security Defaults, when enabled, clears the legacy-auth exposure flag.
   (2) Unjustified break-glass exclusions demote effective MFA/legacy coverage. (3) Report-only MFA does not
   clear the exposure flag.
-- **False Positive Risk:** LOW.
+- Scoped, risk-conditioned, location-bypassed, or platform/client-limited policies are reported as
+  PARTIAL, not OK.
+- **False Positive Risk:** HIGH before 0.5 (scoped/risk-conditioned policies passed as OK); MEDIUM after
+  (joint coverage across narrower policies is not computed).
 - **False Negative Risk:** MEDIUM — a policy covering only a subset of privileged roles may be missed.
 - **Confidence:** HIGH.
-- **Required Changes:** None.
+- **Required Changes:** Scope semantics implemented in 0.5 (PolicyScope + purpose_scope + Security
+  Defaults ladder). Remaining: joint coverage across narrower policies is not computed.
 - **Reference Documentation:** `https://learn.microsoft.com/entra/identity/conditional-access/howto-conditional-access-policy-admin-mfa`
 - **Validation Status:** not-yet-reviewed
 
@@ -322,6 +370,8 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Entitlement Dependency:** `conditional_access` + workload-identity risk licensing.
 - **Known Edge Cases:** Report-only workload-risk policies are treated as a gap (not enforced). Policies
   targeting service principals without risk levels are also a gap.
+- Effective-scope tokens do not apply: this check's predicate targets service-principal risk conditions
+  directly (scope N/A).
 - **False Positive Risk:** LOW.
 - **False Negative Risk:** MEDIUM.
 - **Confidence:** HIGH.

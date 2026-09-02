@@ -59,6 +59,13 @@ The operational limitations page details these; the short, honest version:
 - License seats are a licensing-leverage signal, never a coverage denominator.
 - Findings are advisory, not a guarantee.
 
+## Conditional Access effective scope
+
+- Joint coverage across several narrower Conditional Access policies is not
+  computed; each scoped policy is listed in evidence instead.
+- `includeLocations` scoping (applying only in some locations) is not modelled
+  as a gap in this version.
+
 ## Decision rule when evidence cannot support a claim
 
 When the evidence cannot support a desired conclusion:
