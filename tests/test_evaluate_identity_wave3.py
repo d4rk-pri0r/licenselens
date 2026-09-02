@@ -42,6 +42,7 @@ def test_legacy_auth_ok_when_enforced() -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["exchangeActiveSync", "other"],
             },
             "grantControls": {"builtInControls": ["block"]},
@@ -83,6 +84,7 @@ def test_mfa_all_users_unjustified_exclusion_is_partial() -> None:
                     "includeUsers": ["All"],
                     "excludeUsers": ["mystery-user"],
                 },
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
             },
             "grantControls": {"builtInControls": ["mfa"]},
@@ -106,6 +108,7 @@ def test_mfa_all_users_named_break_glass_ok() -> None:
                     "includeUsers": ["All"],
                     "excludeUsers": ["break-glass-1"],
                 },
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
             },
             "grantControls": {"builtInControls": ["mfa"]},
@@ -128,6 +131,7 @@ def test_high_risk_users_ok() -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"]},
+                "applications": {"includeApplications": ["All"]},
                 "userRiskLevels": ["high"],
             },
             "grantControls": {"builtInControls": ["block"]},
@@ -147,6 +151,7 @@ def test_phishing_resistant_privileged_ok() -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": [], "includeRoles": [GA]},
+                "applications": {"includeApplications": ["All"]},
             },
             "grantControls": {
                 "authenticationStrength": {
@@ -201,6 +206,7 @@ def test_phishing_resistant_all_ok_when_enforced() -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"]},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
             },
             "grantControls": {
@@ -257,6 +263,7 @@ def test_managed_devices_ok_when_enforced() -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"]},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
             },
             "grantControls": {"builtInControls": ["compliantDevice"]},
@@ -303,6 +310,7 @@ def test_high_risk_signins_ok_when_blocked() -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"]},
+                "applications": {"includeApplications": ["All"]},
                 "signInRiskLevels": ["high"],
             },
             "grantControls": {"builtInControls": ["block"]},

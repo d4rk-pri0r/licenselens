@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 from typing import Any
 
 from licenselens.collectors import conditional_access as ca
@@ -10,6 +11,7 @@ from licenselens.evaluators.common import Evaluation
 from licenselens.evaluators.identity_ca_lib import (
     break_glass_principal_ids,
     ca_coverage_result,
+    purpose_scope,
     role_targeted_result,
 )
 from licenselens.models import CheckDefinition
@@ -33,6 +35,9 @@ def evaluate_ca_legacy_auth_block(
         ok_customer=("Outdated sign-in methods that skip modern security checks are blocked."),
         gap_summary="No enforced Conditional Access policy blocks legacy authentication.",
         gap_customer=("Outdated sign-in methods may still work without multi-factor checks."),
+        scope_fn=functools.partial(
+            ca.scope_for_block, allowed_client_subset=ca.LEGACY_CLIENT_APP_TYPES
+        ),
     )
 
 
@@ -133,6 +138,7 @@ def evaluate_ca_mfa_registration_managed(
         gap_customer=(
             "Attackers with a stolen password may register their own multi-factor method."
         ),
+        scope_fn=purpose_scope(user_actions_only=False, all_cloud_apps=True),
     )
 
 
@@ -150,4 +156,5 @@ def evaluate_ca_device_code_block(
         ok_customer="The device-code sign-in flow used in phishing kits is blocked.",
         gap_summary="No enforced Conditional Access policy blocks device code flow.",
         gap_customer="Device-code phishing can still complete a successful sign-in.",
+        scope_fn=functools.partial(ca.scope_for_block, allowed_client_subset=frozenset()),
     )

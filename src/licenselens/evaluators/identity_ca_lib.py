@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 from collections.abc import Callable
 from typing import Any, Final
 
@@ -10,10 +11,30 @@ from licenselens.evaluators.common import Evaluation
 from licenselens.models import FindingStatus
 
 PolicyPred = Callable[[dict[str, Any]], bool]
+ScopeFn = Callable[[dict[str, Any]], ca.PolicyScope]
+
+
+def purpose_scope(**cleared: Any) -> ScopeFn:
+    """Scope function that treats the named dimensions as the policy's purpose.
+
+    A role-targeted, risk-conditioned, or user-action policy is not "scoped" by the
+    very dimension that defines it; every other dimension still counts as a gap.
+    """
+
+    def _scope(policy: dict[str, Any]) -> ca.PolicyScope:
+        return dataclasses.replace(ca.policy_scope(policy), **cleared)
+
+    return _scope
+
 
 _BREAK_GLASS_LIMITATION: Final = (
     "Named break-glass exclusions require a profile exclusion with kind=break_glass, "
     "owner, reason, and principal_ids."
+)
+
+_JOINT_SCOPE_LIMITATION: Final = (
+    "Joint coverage across several narrower Conditional Access policies is not "
+    "computed; each scoped policy is listed so a reviewer can judge the union."
 )
 
 
@@ -68,6 +89,7 @@ def ca_coverage_result(
     ok_customer: str,
     gap_summary: str,
     gap_customer: str,
+    scope_fn: ScopeFn = ca.policy_scope,
 ) -> Evaluation:
     enforced = enabled_matching(policies, predicate)
     report_only = report_only_matching(policies, predicate)
@@ -75,10 +97,26 @@ def ca_coverage_result(
         enforced = [p for p in enforced if ca.includes_all_users(p)]
         report_only = [p for p in report_only if ca.includes_all_users(p)]
 
-    issues = exclusion_issues(enforced, justified)
+    enforced_scopes = [(policy, scope_fn(policy)) for policy in enforced]
+    enforced_universal = [policy for policy, scope in enforced_scopes if scope.is_universal]
+    enforced_scoped = [
+        (policy, scope) for policy, scope in enforced_scopes if not scope.is_universal
+    ]
+    ordered_scoped = sorted(
+        enforced_scoped,
+        key=lambda item: (len(item[1].gaps), names([item[0]])[0], str(item[0].get("id") or "")),
+    )
+
+    issues = exclusion_issues(enforced_universal, justified)
     evidence_out: dict[str, Any] = {
         "label": label,
         "enforced_policies": names(enforced),
+        "universal_policies": names(enforced_universal),
+        "scoped_policies": [
+            {"policy": names([policy])[0], "gaps": list(scope.gaps)}
+            for policy, scope in ordered_scoped
+        ],
+        "scope_gaps_best": list(ordered_scoped[0][1].gaps) if ordered_scoped else [],
         "report_only_policies": names(report_only),
         "unjustified_exclusion_issues": issues,
         "break_glass_principal_count": len(justified),
@@ -87,7 +125,7 @@ def ca_coverage_result(
     if issues:
         limitations.append(_BREAK_GLASS_LIMITATION)
 
-    if enforced and not issues:
+    if enforced_universal and not issues:
         return Evaluation(
             status=FindingStatus.OK,
             summary=ok_summary,
@@ -95,7 +133,7 @@ def ca_coverage_result(
             customer_summary=ok_customer,
             limitations=limitations,
         )
-    if enforced and issues:
+    if enforced_universal and issues:
         return Evaluation(
             status=FindingStatus.PARTIAL,
             summary=(
@@ -108,6 +146,18 @@ def ca_coverage_result(
                 "without a documented emergency-access rationale."
             ),
             limitations=limitations,
+        )
+    if enforced_scoped:
+        best_gaps = ordered_scoped[0][1].gaps
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=f"{label}: enforced policy exists but is scoped ({', '.join(best_gaps)}).",
+            evidence=evidence_out,
+            customer_summary=(
+                "A protective sign-in rule is on, but it does not apply to "
+                "everyone, everywhere, all the time — see the scope notes."
+            ),
+            limitations=[*limitations, _JOINT_SCOPE_LIMITATION],
         )
     if report_only:
         return Evaluation(
@@ -158,4 +208,5 @@ def role_targeted_result(
         ok_customer=ok_customer,
         gap_summary=gap_summary,
         gap_customer=gap_customer,
+        scope_fn=purpose_scope(all_users=True),
     )
