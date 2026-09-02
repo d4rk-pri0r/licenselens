@@ -50,6 +50,9 @@ def evaluate_sen_data_connectors(
         )
 
     total = int(connectors.get("total_connectors") or 0)
+    connected_raw = connectors.get("connected_connectors")
+    connected = connected_raw if isinstance(connected_raw, int) else total
+    state_available = connectors.get("connected_state_available")
     key = list(connectors.get("key_connectors_connected") or [])
     evidence_out = dict(connectors)
 
@@ -64,12 +67,35 @@ def evaluate_sen_data_connectors(
             ),
         )
 
-    if total >= 3 and len(key) >= 2:
+    if state_available is False:
+        # No connector exposed dataTypes state: counts reflect connector
+        # objects, not confirmed data flow. required_surface_incomplete lets
+        # quality.py cap confidence (HIGH->MEDIUM) in the pipeline.
+        evidence_out["required_surface_incomplete"] = True
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"Sentinel has {total} data connector(s), but their enablement "
+                "state was not exposed by the API; counts reflect connector "
+                "objects, not confirmed data flow."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Data connectors exist, but we could not confirm that any of "
+                "them are actively ingesting."
+            ),
+            limitations=[
+                "Connector enablement state was not exposed by the API; counts "
+                "reflect connector objects, not confirmed data flow."
+            ],
+        )
+
+    if connected >= 3 and len(key) >= 2:
         return Evaluation(
             status=FindingStatus.OK,
             summary=(
-                f"Sentinel data-source baseline is met: {total} connector(s), "
-                f"{len(key)} high-value source(s) connected."
+                f"Sentinel data-source baseline is met: {connected} connected "
+                f"connector(s), {len(key)} high-value source(s) connected."
             ),
             evidence=evidence_out,
             customer_summary=(
@@ -81,7 +107,7 @@ def evaluate_sen_data_connectors(
     return Evaluation(
         status=FindingStatus.PARTIAL,
         summary=(
-            f"Thin Sentinel data connectors: {total} connector(s), only "
+            f"Thin Sentinel data connectors: {connected} connected connector(s), only "
             f"{len(key)} high-value source(s)."
         ),
         evidence=evidence_out,

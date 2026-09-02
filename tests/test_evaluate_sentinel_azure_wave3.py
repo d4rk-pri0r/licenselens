@@ -457,3 +457,94 @@ def test_summarize_automation_rules_playbook_detection() -> None:
 def test_summarize_log_analytics_workspace_missing_retention() -> None:
     summary = summarize_log_analytics_workspace({"properties": {}}, WID)
     assert summary["retention_in_days"] is None
+
+
+# ---------------------------------------------------------------------------
+# WS0-A: connectors "connected" honesty (dataTypes.state, not object presence)
+# ---------------------------------------------------------------------------
+def test_summarize_connectors_counts_only_enabled_datatypes() -> None:
+    connectors = [
+        {
+            "kind": "Office365",
+            "properties": {"dataTypes": {"Exchange": {"state": "Enabled"}}},
+        },
+        {
+            "kind": "AzureActiveDirectory",
+            "properties": {"dataTypes": {"SignInLogs": {"state": "Disabled"}}},
+        },
+        {
+            "kind": "AWS",
+            "properties": {"dataTypes": {"AWSCloudTrail": {"state": "enabled"}}},
+        },
+    ]
+    summary = summarize_data_connectors(connectors, WID)
+    assert summary["connected_state_available"] is True
+    assert summary["connected_connectors"] == 2  # Office365 + AWS; AAD is Disabled
+    assert summary["key_connectors_connected"] == ["Office365"]  # AAD not connected
+    assert summary["total_connectors"] == 3
+
+
+def test_summarize_connectors_without_state_reports_none_and_flag() -> None:
+    connectors = [
+        {"kind": "Office365", "properties": {}},
+        {"kind": "AzureActiveDirectory", "properties": {}},
+    ]
+    summary = summarize_data_connectors(connectors, WID)
+    assert summary["connected_state_available"] is False
+    assert summary["connected_connectors"] is None
+    # Key kinds fall back to presence when no state is exposed.
+    assert summary["key_connectors_connected"] == ["AzureActiveDirectory", "Office365"]
+    assert summary["total_connectors"] == 2
+
+
+def test_sen_data_connectors_no_state_never_ok() -> None:
+    result = evaluate_sen_data_connectors(
+        _check("sen-data-connectors"),
+        {
+            "sentinel_data_connectors": {
+                "total_connectors": 5,
+                "connected_connectors": None,
+                "connected_state_available": False,
+                "connector_kinds": [
+                    "AzureActiveDirectory",
+                    "MicrosoftDefenderAdvancedThreatProtection",
+                    "Office365",
+                ],
+                "key_connectors_connected": [
+                    "AzureActiveDirectory",
+                    "MicrosoftDefenderAdvancedThreatProtection",
+                    "Office365",
+                ],
+                "workspace_resource_id": WID,
+            }
+        },
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.OK
+    assert any("was not exposed by the API" in lim for lim in result.limitations)
+    assert result.evidence["required_surface_incomplete"] is True
+
+
+def test_sen_data_connectors_ok_requires_connected_count() -> None:
+    base = {
+        "total_connectors": 5,
+        "connected_state_available": True,
+        "connector_kinds": [
+            "AzureActiveDirectory",
+            "MicrosoftDefenderAdvancedThreatProtection",
+            "Office365",
+        ],
+        "key_connectors_connected": ["AzureActiveDirectory", "Office365"],
+        "workspace_resource_id": WID,
+    }
+    thin = evaluate_sen_data_connectors(
+        _check("sen-data-connectors"),
+        {"sentinel_data_connectors": {**base, "connected_connectors": 2}},
+    )
+    assert thin.status is FindingStatus.PARTIAL  # connected < 3 despite total 5
+
+    met = evaluate_sen_data_connectors(
+        _check("sen-data-connectors"),
+        {"sentinel_data_connectors": {**base, "connected_connectors": 3}},
+    )
+    assert met.status is FindingStatus.OK

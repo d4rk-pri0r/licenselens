@@ -76,6 +76,24 @@ def collect_log_analytics_workspace(
         return client.get(f"{rid}?api-version={WORKSPACE_API}")
 
 
+def _connector_connected(connector: dict[str, Any]) -> bool:
+    """True when any dataType is Enabled (case-insensitive).
+
+    Learn: https://learn.microsoft.com/rest/api/securityinsights/data-connectors/list
+    (properties.dataTypes.<name>.state ∈ Enabled|Disabled).
+    """
+    props = connector.get("properties")
+    if not isinstance(props, dict):
+        return False
+    data_types = props.get("dataTypes")
+    if not isinstance(data_types, dict):
+        return False
+    return any(
+        isinstance(entry, dict) and str(entry.get("state") or "").lower() == "enabled"
+        for entry in data_types.values()
+    )
+
+
 def summarize_data_connectors(
     connectors: list[dict[str, Any]],
     workspace_resource_id: str,
@@ -87,10 +105,28 @@ def summarize_data_connectors(
             if str(connector.get("kind") or "")
         }
     )
-    key = [kind for kind in kinds if kind in KEY_CONNECTOR_KINDS]
+    state_available = any(
+        isinstance(connector.get("properties"), dict)
+        and isinstance(connector["properties"].get("dataTypes"), dict)
+        for connector in connectors
+    )
+    if state_available:
+        connected = sum(1 for connector in connectors if _connector_connected(connector))
+        key = sorted(
+            {
+                str(connector.get("kind") or "")
+                for connector in connectors
+                if str(connector.get("kind") or "") in KEY_CONNECTOR_KINDS
+                and _connector_connected(connector)
+            }
+        )
+    else:
+        connected = None
+        key = [kind for kind in kinds if kind in KEY_CONNECTOR_KINDS]
     return {
         "total_connectors": len(connectors),
-        "connected_connectors": len(connectors),
+        "connected_connectors": connected,
+        "connected_state_available": state_available,
         "connector_kinds": kinds,
         "key_connectors_connected": key,
         "workspace_resource_id": normalize_workspace_resource_id(workspace_resource_id),
@@ -199,6 +235,7 @@ def collect_sentinel_extended_bundle(
 DEMO_SENTINEL_DATA_CONNECTORS: dict[str, Any] = {
     "total_connectors": 1,
     "connected_connectors": 1,
+    "connected_state_available": True,
     "connector_kinds": ["AzureActivity"],
     "key_connectors_connected": [],
     "workspace_resource_id": _DEMO_WORKSPACE_ID,
