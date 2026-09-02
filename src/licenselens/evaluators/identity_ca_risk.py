@@ -10,6 +10,7 @@ from licenselens.evaluators.identity_ca_lib import (
     break_glass_principal_ids,
     ca_coverage_result,
     purpose_scope,
+    security_defaults_enabled,
 )
 from licenselens.models import CheckDefinition
 
@@ -35,6 +36,7 @@ def evaluate_ca_high_risk_users(
         gap_summary="No enforced Conditional Access policy blocks high-risk users.",
         gap_customer=("Compromised accounts marked high risk may still sign in successfully."),
         scope_fn=purpose_scope(risk_conditioned=False),
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )
 
 
@@ -53,4 +55,5 @@ def evaluate_ca_high_risk_signins(
         gap_summary="No enforced Conditional Access policy blocks high-risk sign-ins.",
         gap_customer="Suspicious high-risk sign-ins may still succeed.",
         scope_fn=purpose_scope(risk_conditioned=False),
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )

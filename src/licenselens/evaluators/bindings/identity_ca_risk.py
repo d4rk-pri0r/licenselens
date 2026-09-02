@@ -19,6 +19,7 @@ def register_identity_ca_risk(catalog: RegistrationCatalog) -> None:
             input_models=(
                 "ca_policies",
                 "break_glass_principal_ids",
+                "security_defaults_policy",
             ),
             collector_id="graph_identity_protection",
             evaluation_mode=EvaluationMode.DIRECT,
@@ -29,6 +30,7 @@ def register_identity_ca_risk(catalog: RegistrationCatalog) -> None:
             input_models=(
                 "ca_policies",
                 "break_glass_principal_ids",
+                "security_defaults_policy",
             ),
             collector_id="graph_identity_protection",
             evaluation_mode=EvaluationMode.DIRECT,

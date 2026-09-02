@@ -13,6 +13,7 @@ from licenselens.evaluators.identity_ca_lib import (
     ca_coverage_result,
     purpose_scope,
     role_targeted_result,
+    security_defaults_enabled,
 )
 from licenselens.models import CheckDefinition
 
@@ -38,6 +39,8 @@ def evaluate_ca_legacy_auth_block(
         scope_fn=functools.partial(
             ca.scope_for_block, allowed_client_subset=ca.LEGACY_CLIENT_APP_TYPES
         ),
+        security_defaults_enabled=security_defaults_enabled(evidence),
+        security_defaults_clears_gap=True,
     )
 
 
@@ -55,6 +58,8 @@ def evaluate_ca_mfa_all_users(
         ok_customer="Everyone must use multi-factor authentication when signing in.",
         gap_summary="No enforced all-user MFA Conditional Access policy was found.",
         gap_customer="Not everyone is required to use multi-factor authentication.",
+        security_defaults_enabled=security_defaults_enabled(evidence),
+        security_defaults_clears_gap=True,
     )
 
 
@@ -74,6 +79,7 @@ def evaluate_ca_phishing_resistant_all(
         gap_customer=(
             "Users can still sign in with weaker multi-factor methods that phishing can defeat."
         ),
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )
 
 
@@ -95,6 +101,7 @@ def evaluate_ca_phishing_resistant_privileged(
         ok_customer="Powerful admin roles require strong phishing-resistant sign-in methods.",
         gap_summary=("No enforced phishing-resistant MFA policy covers highly privileged roles."),
         gap_customer=("Admin accounts may still sign in with weaker multi-factor methods."),
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )
 
 
@@ -112,6 +119,7 @@ def evaluate_ca_managed_devices(
         ok_customer="People must use company-managed devices to reach work apps.",
         gap_summary="No enforced managed-device Conditional Access policy was found.",
         gap_customer="Users may access work apps from unmanaged personal devices.",
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )
 
 
@@ -139,6 +147,7 @@ def evaluate_ca_mfa_registration_managed(
             "Attackers with a stolen password may register their own multi-factor method."
         ),
         scope_fn=purpose_scope(user_actions_only=False, all_cloud_apps=True),
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )
 
 
@@ -157,4 +166,5 @@ def evaluate_ca_device_code_block(
         gap_summary="No enforced Conditional Access policy blocks device code flow.",
         gap_customer="Device-code phishing can still complete a successful sign-in.",
         scope_fn=functools.partial(ca.scope_for_block, allowed_client_subset=frozenset()),
+        security_defaults_enabled=security_defaults_enabled(evidence),
     )

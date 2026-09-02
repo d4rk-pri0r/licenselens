@@ -37,10 +37,24 @@ _JOINT_SCOPE_LIMITATION: Final = (
     "computed; each scoped policy is listed so a reviewer can judge the union."
 )
 
+_SECURITY_DEFAULTS_GAP_NOTE: Final = (
+    "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+)
+
 
 def break_glass_principal_ids(evidence: dict[str, Any]) -> set[str]:
     raw = evidence.get("break_glass_principal_ids") or []
     return {str(item).lower() for item in raw if item}
+
+
+def security_defaults_enabled(evidence: dict[str, Any]) -> bool:
+    """True when the tenant's Security Defaults policy is enabled.
+
+    Fail-closed: an absent, errored, or malformed read yields False, so a
+    failed collection never invents baseline protection.
+    """
+    policy = evidence.get("security_defaults_policy") or {}
+    return bool(policy.get("isEnabled")) if isinstance(policy, dict) else False
 
 
 def enabled_matching(
@@ -90,6 +104,8 @@ def ca_coverage_result(
     gap_summary: str,
     gap_customer: str,
     scope_fn: ScopeFn = ca.policy_scope,
+    security_defaults_enabled: bool = False,
+    security_defaults_clears_gap: bool = False,
 ) -> Evaluation:
     enforced = enabled_matching(policies, predicate)
     report_only = report_only_matching(policies, predicate)
@@ -120,6 +136,7 @@ def ca_coverage_result(
         "report_only_policies": names(report_only),
         "unjustified_exclusion_issues": issues,
         "break_glass_principal_count": len(justified),
+        "security_defaults_enabled": security_defaults_enabled,
     }
     limitations: list[str] = []
     if issues:
@@ -169,6 +186,23 @@ def ca_coverage_result(
             ),
             limitations=limitations,
         )
+    if security_defaults_enabled and security_defaults_clears_gap:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Baseline protection is provided by Security Defaults; the "
+                "Conditional Access capability you license is not in use."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Microsoft's built-in baseline is on, so basic multi-factor and "
+                "legacy-sign-in blocking are present. The customizable sign-in rules "
+                "included in your plan are not in use."
+            ),
+            limitations=limitations,
+        )
+    if security_defaults_enabled:
+        limitations = [*limitations, _SECURITY_DEFAULTS_GAP_NOTE]
     return Evaluation(
         status=FindingStatus.GAP,
         summary=gap_summary,
@@ -189,6 +223,7 @@ def role_targeted_result(
     ok_customer: str,
     gap_summary: str,
     gap_customer: str,
+    security_defaults_enabled: bool = False,
 ) -> Evaluation:
     def _targets(policy: dict[str, Any]) -> bool:
         if not predicate(policy):
@@ -209,4 +244,5 @@ def role_targeted_result(
         gap_summary=gap_summary,
         gap_customer=gap_customer,
         scope_fn=purpose_scope(all_users=True),
+        security_defaults_enabled=security_defaults_enabled,
     )

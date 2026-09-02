@@ -19,6 +19,7 @@ def register_identity_access(catalog: RegistrationCatalog) -> None:
             input_models=(
                 "ca_policies",
                 "role_assignments",
+                "security_defaults_policy",
             ),
             collector_id="graph_ca",
             evaluation_mode=EvaluationMode.DIRECT,

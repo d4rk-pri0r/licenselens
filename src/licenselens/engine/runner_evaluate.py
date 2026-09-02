@@ -38,6 +38,7 @@ _OPTIONAL_MISSING = {
     "break_glass_principal_ids",
     "approved_guest_domains",
     "role_eligibilities",
+    "security_defaults_policy",
 }
 
 _ERROR_ALIASES = {
