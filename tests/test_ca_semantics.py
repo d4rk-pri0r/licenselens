@@ -167,6 +167,7 @@ _MFA_ALL = {
     "state": "enabled",
     "conditions": {
         "users": {"includeUsers": ["All"], "excludeUsers": ["mystery-admin"]},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["all"],
     },
     "grantControls": {"builtInControls": ["mfa"]},
@@ -176,6 +177,7 @@ _LEGACY_BLOCK = {
     "state": "enabled",
     "conditions": {
         "users": {"includeUsers": ["All"], "excludeUsers": ["mystery-admin"]},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["exchangeActiveSync", "other"],
     },
     "grantControls": {"builtInControls": ["block"]},
@@ -208,11 +210,13 @@ def test_priv_gaps_justified_break_glass_exclusion_is_ok() -> None:
     mfa = dict(_MFA_ALL)
     mfa["conditions"] = {
         "users": {"includeUsers": ["All"], "excludeUsers": ["break-glass-1"]},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["all"],
     }
     legacy = dict(_LEGACY_BLOCK)
     legacy["conditions"] = {
         "users": {"includeUsers": ["All"], "excludeUsers": ["break-glass-1"]},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["exchangeActiveSync", "other"],
     }
     result = evaluate_ca_priv_gaps(

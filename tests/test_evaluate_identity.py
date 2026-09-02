@@ -33,6 +33,7 @@ def test_ca_priv_gaps_ok_when_mfa_and_legacy_enforced():
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"]},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
             },
             "grantControls": {"builtInControls": ["mfa"]},
@@ -42,6 +43,7 @@ def test_ca_priv_gaps_ok_when_mfa_and_legacy_enforced():
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"]},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["exchangeActiveSync", "other"],
             },
             "grantControls": {"builtInControls": ["block"]},
@@ -115,6 +117,7 @@ _MFA_ALL = {
     "state": "enabled",
     "conditions": {
         "users": {"includeUsers": ["All"], "includeRoles": []},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["all"],
     },
     "grantControls": {"builtInControls": ["mfa"]},
@@ -124,6 +127,7 @@ _LEGACY_BLOCK = {
     "state": "enabled",
     "conditions": {
         "users": {"includeUsers": ["All"], "includeRoles": []},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["exchangeActiveSync", "other"],
     },
     "grantControls": {"builtInControls": ["block"]},
@@ -133,6 +137,7 @@ _LEGACY_REPORT = {
     "state": "enabledForReportingButNotEnforced",
     "conditions": {
         "users": {"includeUsers": ["All"], "includeRoles": []},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["exchangeActiveSync", "other"],
     },
     "grantControls": {"builtInControls": ["block"]},
@@ -142,6 +147,7 @@ _MFA_PRIV_ROLES = {
     "state": "enabled",
     "conditions": {
         "users": {"includeUsers": [], "includeRoles": ["62e90394-69f5-4237-9190-012177145e10"]},
+        "applications": {"includeApplications": ["All"]},
         "clientAppTypes": ["all"],
     },
     "grantControls": {"builtInControls": ["mfa"]},

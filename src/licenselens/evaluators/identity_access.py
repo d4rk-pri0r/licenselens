@@ -48,6 +48,39 @@ def _mfa_less_privileged_exposed(
     return privileged_principals > 0 and not mfa_enforced
 
 
+def _mfa_covers_privileged(policy: dict[str, Any]) -> bool:
+    """MFA coverage that genuinely protects privileged sign-in.
+
+    Either a universal policy, or a role-targeted policy that still spans
+    all cloud apps and is not risk-gated, user-action-scoped, client- or
+    platform-limited, location-bypassed, or device-filtered.
+    """
+    if not ca.requires_mfa(policy):
+        return False
+    scope = ca.policy_scope(policy)
+    if scope.is_universal:
+        return True
+    # Role-targeted MFA is the other legitimate way to cover privileged
+    # sign-in, but only if it still covers all cloud apps and is not risk-gated.
+    return (
+        ca.targets_privileged_roles(policy)
+        and scope.all_cloud_apps
+        and not scope.risk_conditioned
+        and not scope.user_actions_only
+        and scope.all_client_apps
+        and scope.all_platforms
+        and not scope.location_bypass
+        and not scope.device_filter
+    )
+
+
+def _legacy_covers(policy: dict[str, Any]) -> bool:
+    """A legacy-auth block that spans the full tenant, not a subset."""
+    if not ca.is_legacy_auth_block(policy):
+        return False
+    return ca.scope_for_block(policy, allowed_client_subset=ca.LEGACY_CLIENT_APP_TYPES).is_universal
+
+
 def evaluate_ca_priv_gaps(
     check: CheckDefinition,
     evidence: dict[str, Any],
@@ -61,18 +94,10 @@ def evaluate_ca_priv_gaps(
     enabled = [p for p in policies if ca.is_enabled(p)]
     report_only = [p for p in policies if ca.is_report_only(p)]
 
-    mfa_enforced = [
-        p
-        for p in enabled
-        if ca.requires_mfa(p) and (ca.includes_all_users(p) or ca.targets_privileged_roles(p))
-    ]
-    mfa_report = [
-        p
-        for p in report_only
-        if ca.requires_mfa(p) and (ca.includes_all_users(p) or ca.targets_privileged_roles(p))
-    ]
-    legacy_enforced = [p for p in enabled if ca.is_legacy_auth_block(p)]
-    legacy_report = [p for p in report_only if ca.is_legacy_auth_block(p)]
+    mfa_enforced = [p for p in enabled if _mfa_covers_privileged(p)]
+    mfa_report = [p for p in report_only if _mfa_covers_privileged(p)]
+    legacy_enforced = [p for p in enabled if _legacy_covers(p)]
+    legacy_report = [p for p in report_only if _legacy_covers(p)]
 
     justified = break_glass_principal_ids(evidence)
 
