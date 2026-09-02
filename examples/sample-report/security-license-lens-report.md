@@ -27,10 +27,10 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 *Effort is a rough guide, not a quote.*
 
-- **Needs attention** (`gap`): 40
+- **Needs attention** (`gap`): 39
 - **Not in your plan** (`not_licensed`): 6
 - **Looking good** (`ok`): 91
-- **Partly set up** (`partial`): 17
+- **Partly set up** (`partial`): 18
 - **Check pending** (`skipped`): 12
 
 ## What you already pay for
@@ -295,7 +295,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Enforce phishing-resistant MFA for Global Administrator and other highly privileged roles.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-phishing-resistant-privileged`
 
@@ -350,7 +350,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Enforce a Conditional Access policy that blocks device code flow.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-device-code-block`
 
@@ -361,7 +361,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Enforce a Conditional Access policy that blocks high sign-in risk.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-high-risk-signins`
 
@@ -372,20 +372,9 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Enforce a Conditional Access policy that blocks high user risk for all users.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-high-risk-users`
-
-### Block outdated sign-in methods
-
-- **Status:** Needs attention
-- **In plain English:** Outdated sign-in methods may still work without multi-factor checks.
-- **Suggested next step:** Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.
-- **Confidence:** High confidence
-- **Data sources:** microsoft.graph
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
-- **Technical id:** `id-ca-legacy-auth-block`
 
 ### Require strong phishing-resistant sign-in for everyone
 
@@ -394,7 +383,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Enforce phishing-resistant authentication strength for all users where feasible.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-phishing-resistant-all`
 
@@ -581,7 +570,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Enforce Conditional Access requiring compliant or hybrid-joined devices.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-managed-devices`
 
@@ -592,7 +581,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Suggested next step:** Require a managed device when users register security information.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-mfa-registration-managed`
 
@@ -738,6 +727,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** Enrollment is compared against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify eligible devices in the Microsoft Intune admin center; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Devices/DevicesMenu/~/allDevices)
 - **Technical id:** `endpoint-enrollment-coverage`
+
+### Block outdated sign-in methods
+
+- **Status:** Partly set up
+- **In plain English:** Microsoft's built-in baseline is on, so basic multi-factor and legacy-sign-in blocking are present. The customizable sign-in rules included in your plan are not in use.
+- **Suggested next step:** Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.
+- **Confidence:** High confidence
+- **Data sources:** microsoft.graph
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
+- **Technical id:** `id-ca-legacy-auth-block`
 
 ### Powerful accounts may sign in without strong extra checks
 

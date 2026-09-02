@@ -2823,15 +2823,15 @@ body.revealed .reveal-target.is-revealed {
           <figcaption id="chart-status-caption">Findings by status</figcaption>
           <div class="chart-body" role="img" aria-labelledby="chart-status-caption" aria-describedby="chart-status-desc"><div class="chart-row" data-status="gap">
               <span class="chart-row__label">Action required</span>
-              <span class="chart-value">40</span>
+              <span class="chart-value">39</span>
               <span class="chart-bar-track">
-                <span class="chart-bar status-gap" style="width: 44.0%"></span>
+                <span class="chart-bar status-gap" style="width: 42.9%"></span>
               </span>
             </div><div class="chart-row" data-status="partial">
               <span class="chart-row__label">Incomplete</span>
-              <span class="chart-value">17</span>
+              <span class="chart-value">18</span>
               <span class="chart-bar-track">
-                <span class="chart-bar status-partial" style="width: 18.7%"></span>
+                <span class="chart-bar status-partial" style="width: 19.8%"></span>
               </span>
             </div><div class="chart-row" data-status="ok">
               <span class="chart-row__label">Operational</span>
@@ -2852,12 +2852,12 @@ body.revealed .reveal-target.is-revealed {
                 <span class="chart-bar status-skipped" style="width: 13.2%"></span>
               </span>
             </div></div>
-          <div class="chart-hits" hidden><button type="button" class="chart-hit" aria-label="Filter findings: Action required (40)" aria-pressed="false" data-chart-toggle="status:gap"></button><button type="button" class="chart-hit" aria-label="Filter findings: Incomplete (17)" aria-pressed="false" data-chart-toggle="status:partial"></button><button type="button" class="chart-hit" aria-label="Filter findings: Operational (91)" aria-pressed="false" data-chart-toggle="status:ok"></button><button type="button" class="chart-hit" aria-label="Filter findings: Not licensed (6)" aria-pressed="false" data-chart-toggle="status:not_licensed"></button><button type="button" class="chart-hit" aria-label="Filter findings: Not assessed (12)" aria-pressed="false" data-chart-toggle="status:skipped"></button></div>
+          <div class="chart-hits" hidden><button type="button" class="chart-hit" aria-label="Filter findings: Action required (39)" aria-pressed="false" data-chart-toggle="status:gap"></button><button type="button" class="chart-hit" aria-label="Filter findings: Incomplete (18)" aria-pressed="false" data-chart-toggle="status:partial"></button><button type="button" class="chart-hit" aria-label="Filter findings: Operational (91)" aria-pressed="false" data-chart-toggle="status:ok"></button><button type="button" class="chart-hit" aria-label="Filter findings: Not licensed (6)" aria-pressed="false" data-chart-toggle="status:not_licensed"></button><button type="button" class="chart-hit" aria-label="Filter findings: Not assessed (12)" aria-pressed="false" data-chart-toggle="status:skipped"></button></div>
           <p id="chart-status-desc" class="sr-only">Horizontal bars showing how many findings carry each status, out of 166 findings.</p>
           <table class="chart-table">
             <caption>Findings by status</caption>
             <thead><tr><th>Status</th><th class="num">Findings</th></tr></thead>
-            <tbody><tr><td>Action required</td><td class="num">40</td></tr><tr><td>Incomplete</td><td class="num">17</td></tr><tr><td>Operational</td><td class="num">91</td></tr><tr><td>Not licensed</td><td class="num">6</td></tr><tr><td>Not assessed</td><td class="num">12</td></tr></tbody>
+            <tbody><tr><td>Action required</td><td class="num">39</td></tr><tr><td>Incomplete</td><td class="num">18</td></tr><tr><td>Operational</td><td class="num">91</td></tr><tr><td>Not licensed</td><td class="num">6</td></tr><tr><td>Not assessed</td><td class="num">12</td></tr></tbody>
           </table>
         </figure>
 
@@ -3317,10 +3317,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -3779,10 +3780,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -3875,10 +3877,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -3971,10 +3974,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -3988,103 +3992,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="8" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-ca-legacy-auth-block" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
-          <summary>
-            <span class="caret" aria-hidden="true">▸</span>
-            <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
-            <h3 class="explore-row__title"><a href="#finding-id-ca-legacy-auth-block">Block outdated sign-in methods</a></h3>
-            <div class="explore-row__meta">
-              <span class="meta-severity">Severity: High</span>
-              <span>Workload: Identity</span>
-              <span class="meta-compliance">Compliance: MITRE: T1078; NIST: IA-2, IA-5</span>
-              <code>id-ca-legacy-auth-block</code>
-            </div>
-            <span class="explore-row__signal">Outdated sign-in methods may still work without multi-factor checks.</span>
-          </summary>
-          <div class="tech-body">
-            <article class="finding gap" id="finding-id-ca-legacy-auth-block" data-status="gap" data-workload="identity" data-check-id="id-ca-legacy-auth-block" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity">
-       <div class="finding-head">
-         <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
-         <h3>Block outdated sign-in methods</h3>
-       </div>
-       <div class="finding-meta">
-         <span class="meta-item"><span class="meta-key">Severity:</span> High</span>
-         <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
-         <span class="meta-item"><span class="meta-key">Scope:</span> All users</span>
-         <span class="meta-item"><span class="meta-key">Workload:</span> Identity</span>
-         <span class="meta-item"><span class="meta-key">Confidence:</span> High confidence</span>
-         <span class="meta-item"><span class="meta-key">Evaluation:</span> Read directly</span>
-         <span class="meta-item"><span class="meta-key">Compliance:</span> MITRE: T1078; NIST: IA-2, IA-5</span>
-       </div>
-
-      
-      <p class="finding-summary">Outdated sign-in methods may still work without multi-factor checks.</p>
-
-      <div class="belief-slot">
-        <span class="belief-label">Expected</span>
-        <p>Legacy authentication clients are blocked tenant-wide.</p>
-      </div>
-
-      
-      <div class="belief-slot">
-        <span class="belief-label">Observed</span>
-        
-        <p>No enforced Conditional Access policy blocks legacy authentication.</p>
-        
-      </div>
-      
-
-      
-      <div class="belief-slot">
-        <span class="belief-label">Why it matters</span>
-        <p>Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.</p>
-        <div class="belief-meta">
-          
-          <span class="meta-item"><span class="meta-key">Value impact:</span> High</span>
-        </div>
-      </div>
-
-      <div class="belief-slot">
-        <span class="belief-label">Recommended action</span>
-        <p>Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.</p>
-      </div>
-
-      
-      <div class="belief-slot">
-        <span class="belief-label">Evidence</span>
-        <details class="tech">
-          <summary><span class="caret" aria-hidden="true">▸</span> Technical evidence</summary>
-          <div class="tech-body">
-            
-            <p><strong>Data sources:</strong> microsoft.graph</p>
-            
-            <ul class="evidence-keys">
-              <li><code>label</code>: Legacy authentication block</li>
-              <li><code>enforced_policies</code>: None reported</li>
-              <li><code>universal_policies</code>: None reported</li>
-              <li><code>scoped_policies</code>: None reported</li>
-              <li><code>scope_gaps_best</code>: None reported</li>
-              <li><code>report_only_policies</code>: None reported</li>
-              <li><code>unjustified_exclusion_issues</code>: None reported</li>
-              <li><code>break_glass_principal_count</code>: 0</li>
-              
-            </ul>
-            
-            <p><strong>Limitations:</strong> None reported</p>
-          </div>
-        </details>
-      </div>
-
-      
-      
-      <div class="belief-slot">
-        <span class="belief-label">Admin destination</span>
-        <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies">Open the admin page</a></p>
-      </div>
-      
-    </article>
-          </div>
-        </details><details class="explore-row tech" data-engine-idx="9" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-ca-phishing-resistant-all" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
+        </details><details class="explore-row tech" data-engine-idx="8" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-ca-phishing-resistant-all" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4163,10 +4071,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -4180,7 +4089,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="10" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-activation-controls" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="9" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-activation-controls" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4275,7 +4184,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="11" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-ga-activation-alert" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="10" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-ga-activation-alert" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4364,7 +4273,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="12" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-ga-activation-approval" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="11" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-ga-activation-approval" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4454,7 +4363,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="13" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-pim-no-outside-pam" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="12" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-pim-no-outside-pam" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4544,7 +4453,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="14" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-pim-no-permanent-privileged" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="13" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-pim-no-permanent-privileged" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4634,7 +4543,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="15" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-pim-unused" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="14" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-pim-unused" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4731,7 +4640,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="16" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-security-defaults-on" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
+        </details><details class="explore-row tech" data-engine-idx="15" data-status="gap" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-security-defaults-on" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4823,7 +4732,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="17" data-status="gap" data-workload="purview" data-severity="high" data-confidence="high" data-mode="direct" data-pack="starter" data-effort="hours" data-check-id="pur-sensitivity-auto-labeling" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="16" data-status="gap" data-workload="purview" data-severity="high" data-confidence="high" data-mode="direct" data-pack="starter" data-effort="hours" data-check-id="pur-sensitivity-auto-labeling" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -4915,7 +4824,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="40" data-status="partial" data-workload="endpoint" data-severity="high" data-confidence="low" data-mode="direct" data-pack="endpoint" data-effort="days" data-check-id="endpoint-enrollment-coverage" data-mappings="MITRE: T1059; NIST: CM-6, SI-2">
+        </details><details class="explore-row tech" data-engine-idx="39" data-status="partial" data-workload="endpoint" data-severity="high" data-confidence="low" data-mode="direct" data-pack="endpoint" data-effort="days" data-check-id="endpoint-enrollment-coverage" data-mappings="MITRE: T1059; NIST: CM-6, SI-2">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
@@ -5007,6 +4916,103 @@ Purview</span>
       
     </article>
           </div>
+        </details><details class="explore-row tech" data-engine-idx="40" data-status="partial" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-ca-legacy-auth-block" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
+          <summary>
+            <span class="caret" aria-hidden="true">▸</span>
+            <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+            <h3 class="explore-row__title"><a href="#finding-id-ca-legacy-auth-block">Block outdated sign-in methods</a></h3>
+            <div class="explore-row__meta">
+              <span class="meta-severity">Severity: High</span>
+              <span>Workload: Identity</span>
+              <span class="meta-compliance">Compliance: MITRE: T1078; NIST: IA-2, IA-5</span>
+              <code>id-ca-legacy-auth-block</code>
+            </div>
+            <span class="explore-row__signal">Microsoft&#39;s built-in baseline is on, so basic multi-factor and legacy-sign-in blocking are present. The customizable sign-in rules included in your plan are not in use.</span>
+          </summary>
+          <div class="tech-body">
+            <article class="finding partial" id="finding-id-ca-legacy-auth-block" data-status="partial" data-workload="identity" data-check-id="id-ca-legacy-auth-block" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity">
+       <div class="finding-head">
+         <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+         <h3>Block outdated sign-in methods</h3>
+       </div>
+       <div class="finding-meta">
+         <span class="meta-item"><span class="meta-key">Severity:</span> High</span>
+         <span class="meta-item"><span class="meta-key">Effort:</span> ~a few hours</span>
+         <span class="meta-item"><span class="meta-key">Scope:</span> All users</span>
+         <span class="meta-item"><span class="meta-key">Workload:</span> Identity</span>
+         <span class="meta-item"><span class="meta-key">Confidence:</span> High confidence</span>
+         <span class="meta-item"><span class="meta-key">Evaluation:</span> Read directly</span>
+         <span class="meta-item"><span class="meta-key">Compliance:</span> MITRE: T1078; NIST: IA-2, IA-5</span>
+       </div>
+
+      
+      <p class="finding-summary">Microsoft&#39;s built-in baseline is on, so basic multi-factor and legacy-sign-in blocking are present. The customizable sign-in rules included in your plan are not in use.</p>
+
+      <div class="belief-slot">
+        <span class="belief-label">Expected</span>
+        <p>Legacy authentication clients are blocked tenant-wide.</p>
+      </div>
+
+      
+      <div class="belief-slot">
+        <span class="belief-label">Observed</span>
+        
+        <p>Baseline protection is provided by Security Defaults; the Conditional Access capability you license is not in use.</p>
+        
+      </div>
+      
+
+      
+      <div class="belief-slot">
+        <span class="belief-label">Why it matters</span>
+        <p>Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.</p>
+        <div class="belief-meta">
+          
+          <span class="meta-item"><span class="meta-key">Value impact:</span> High</span>
+        </div>
+      </div>
+
+      <div class="belief-slot">
+        <span class="belief-label">Recommended action</span>
+        <p>Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.</p>
+      </div>
+
+      
+      <div class="belief-slot">
+        <span class="belief-label">Evidence</span>
+        <details class="tech">
+          <summary><span class="caret" aria-hidden="true">▸</span> Technical evidence</summary>
+          <div class="tech-body">
+            
+            <p><strong>Data sources:</strong> microsoft.graph</p>
+            
+            <ul class="evidence-keys">
+              <li><code>label</code>: Legacy authentication block</li>
+              <li><code>enforced_policies</code>: None reported</li>
+              <li><code>universal_policies</code>: None reported</li>
+              <li><code>scoped_policies</code>: None reported</li>
+              <li><code>scope_gaps_best</code>: None reported</li>
+              <li><code>report_only_policies</code>: None reported</li>
+              <li><code>unjustified_exclusion_issues</code>: None reported</li>
+              <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
+              
+            </ul>
+            
+            <p><strong>Limitations:</strong> None reported</p>
+          </div>
+        </details>
+      </div>
+
+      
+      
+      <div class="belief-slot">
+        <span class="belief-label">Admin destination</span>
+        <p><a href="https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies">Open the admin page</a></p>
+      </div>
+      
+    </article>
+          </div>
         </details><details class="explore-row tech" data-engine-idx="41" data-status="partial" data-workload="identity" data-severity="high" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-ca-priv-gaps" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
@@ -5081,7 +5087,7 @@ Purview</span>
               <li><code>policy_count</code>: 3</li>
               <li><code>enabled_count</code>: 3</li>
               <li><code>report_only_count</code>: 0</li>
-              <li><code>mfa_enforced_policies</code>: Demo: MFA for all users, Demo: Require MFA for sign-in risk</li>
+              <li><code>mfa_enforced_policies</code>: Demo: MFA for all users</li>
               <li><code>mfa_report_only_policies</code>: None reported</li>
               <li><code>legacy_block_enforced</code>: None reported</li>
               <li><code>legacy_block_report_only</code>: None reported</li>
@@ -8044,7 +8050,7 @@ Purview</span>
 
       <div class="belief-slot">
         <span class="belief-label">Expected</span>
-        <p>Every user signs in with MFA enforced by Conditional Access.</p>
+        <p>An enforced Conditional Access policy requires MFA for all users across all cloud apps without risk, location, platform, or client-type scoping.</p>
       </div>
 
       
@@ -8089,6 +8095,7 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
@@ -12450,7 +12457,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="18" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-access-reviews-scope" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="17" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-access-reviews-scope" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -12543,7 +12550,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="19" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-access-reviews-unused" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="18" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-access-reviews-unused" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -12636,7 +12643,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="20" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="low" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-ai-agents-risky-block" data-mappings="MITRE: T1078; NIST: AC-2, IA-2">
+        </details><details class="explore-row tech" data-engine-idx="19" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="low" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-ai-agents-risky-block" data-mappings="MITRE: T1078; NIST: AC-2, IA-2">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -12726,7 +12733,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="21" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-app-admin-consent-workflow" data-mappings="MITRE: T1098; NIST: AC-2, IA-5">
+        </details><details class="explore-row tech" data-engine-idx="20" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-app-admin-consent-workflow" data-mappings="MITRE: T1098; NIST: AC-2, IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -12816,7 +12823,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="22" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-app-expiring-credentials" data-mappings="MITRE: T1098; NIST: IA-5">
+        </details><details class="explore-row tech" data-engine-idx="21" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-app-expiring-credentials" data-mappings="MITRE: T1098; NIST: IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -12908,7 +12915,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="23" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-app-password-addition-blocked" data-mappings="MITRE: T1098; NIST: IA-5">
+        </details><details class="explore-row tech" data-engine-idx="22" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-app-password-addition-blocked" data-mappings="MITRE: T1098; NIST: IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -12997,7 +13004,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="24" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="minutes" data-check-id="id-app-registration-admin-only" data-mappings="MITRE: T1098; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="23" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="minutes" data-check-id="id-app-registration-admin-only" data-mappings="MITRE: T1098; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13086,7 +13093,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="25" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="minutes" data-check-id="id-auth-authenticator-context" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
+        </details><details class="explore-row tech" data-engine-idx="24" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="minutes" data-check-id="id-auth-authenticator-context" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13178,7 +13185,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="26" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-ca-managed-devices" data-mappings="MITRE: T1078; NIST: AC-2, IA-2">
+        </details><details class="explore-row tech" data-engine-idx="25" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-ca-managed-devices" data-mappings="MITRE: T1078; NIST: AC-2, IA-2">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13257,10 +13264,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -13274,7 +13282,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="27" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-ca-mfa-registration-managed" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
+        </details><details class="explore-row tech" data-engine-idx="26" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-ca-mfa-registration-managed" data-mappings="MITRE: T1078; NIST: IA-2, IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13353,10 +13361,11 @@ Purview</span>
               <li><code>report_only_policies</code>: None reported</li>
               <li><code>unjustified_exclusion_issues</code>: None reported</li>
               <li><code>break_glass_principal_count</code>: 0</li>
+              <li><code>security_defaults_enabled</code>: True</li>
               
             </ul>
             
-            <p><strong>Limitations:</strong> None reported</p>
+            <p><strong>Limitations:</strong> Security Defaults is on; Conditional Access policies cannot be created until it is disabled</p>
           </div>
         </details>
       </div>
@@ -13370,7 +13379,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="28" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-dormant-privileged" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="27" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="days" data-check-id="id-dormant-privileged" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13470,7 +13479,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="29" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-guest-directory-access-limited" data-mappings="MITRE: T1078; NIST: AC-2, AC-3">
+        </details><details class="explore-row tech" data-engine-idx="28" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-guest-directory-access-limited" data-mappings="MITRE: T1078; NIST: AC-2, AC-3">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13559,7 +13568,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="30" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-guest-inviter-restricted" data-mappings="MITRE: T1078; NIST: AC-2, AC-3">
+        </details><details class="explore-row tech" data-engine-idx="29" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-guest-inviter-restricted" data-mappings="MITRE: T1078; NIST: AC-2, AC-3">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13648,7 +13657,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="31" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-privileged-assignment-alert" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
+        </details><details class="explore-row tech" data-engine-idx="30" data-status="gap" data-workload="identity" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-pim-privileged-assignment-alert" data-mappings="MITRE: T1078; NIST: AC-2, AC-6">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13737,7 +13746,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="32" data-status="gap" data-workload="purview" data-severity="medium" data-confidence="low" data-mode="proxy" data-pack="starter" data-effort="hours" data-check-id="pur-dlp-not-enforced" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="31" data-status="gap" data-workload="purview" data-severity="medium" data-confidence="low" data-mode="proxy" data-pack="starter" data-effort="hours" data-check-id="pur-dlp-not-enforced" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13831,7 +13840,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="33" data-status="gap" data-workload="sentinel" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="starter" data-effort="hours" data-check-id="sen-automation-rules" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="32" data-status="gap" data-workload="sentinel" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="starter" data-effort="hours" data-check-id="sen-automation-rules" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -13923,7 +13932,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="34" data-status="gap" data-workload="sentinel" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="starter" data-effort="half_day" data-check-id="sen-log-analytics-retention" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="33" data-status="gap" data-workload="sentinel" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="starter" data-effort="half_day" data-check-id="sen-log-analytics-retention" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -14014,7 +14023,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="35" data-status="gap" data-workload="sentinel" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="starter" data-effort="hours" data-check-id="sen-ueba-not-enabled" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="34" data-status="gap" data-workload="sentinel" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="starter" data-effort="hours" data-check-id="sen-ueba-not-enabled" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -14109,7 +14118,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="36" data-status="gap" data-workload="collaboration" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="collaboration" data-effort="hours" data-check-id="teams-broadcast-not-always-record" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="35" data-status="gap" data-workload="collaboration" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="collaboration" data-effort="hours" data-check-id="teams-broadcast-not-always-record" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -14199,7 +14208,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="37" data-status="gap" data-workload="collaboration" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="collaboration" data-effort="hours" data-check-id="teams-microsoft-apps-governed" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="36" data-status="gap" data-workload="collaboration" data-severity="medium" data-confidence="medium" data-mode="direct" data-pack="collaboration" data-effort="hours" data-check-id="teams-microsoft-apps-governed" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -14292,7 +14301,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="38" data-status="gap" data-workload="collaboration" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="collaboration" data-effort="hours" data-check-id="teams-recording-disabled" data-mappings="—">
+        </details><details class="explore-row tech" data-engine-idx="37" data-status="gap" data-workload="collaboration" data-severity="medium" data-confidence="high" data-mode="direct" data-pack="collaboration" data-effort="hours" data-check-id="teams-recording-disabled" data-mappings="—">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -18075,7 +18084,7 @@ Purview</span>
       
     </article>
           </div>
-        </details><details class="explore-row tech" data-engine-idx="39" data-status="gap" data-workload="identity" data-severity="low" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-password-never-expire" data-mappings="MITRE: T1078; NIST: IA-5">
+        </details><details class="explore-row tech" data-engine-idx="38" data-status="gap" data-workload="identity" data-severity="low" data-confidence="high" data-mode="direct" data-pack="identity" data-effort="hours" data-check-id="id-password-never-expire" data-mappings="MITRE: T1078; NIST: IA-5">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
@@ -18491,16 +18500,6 @@ Purview</span>
             
             <tr>
               <td><span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span></td>
-              <td><code>id-ca-legacy-auth-block</code></td>
-              <td>Block outdated sign-in methods</td>
-              <td>identity</td>
-              <td>high</td>
-              <td>High confidence</td>
-              <td>direct</td>
-            </tr>
-            
-            <tr>
-              <td><span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span></td>
               <td><code>id-ca-phishing-resistant-all</code></td>
               <td>Require strong phishing-resistant sign-in for everyone</td>
               <td>identity</td>
@@ -18816,6 +18815,16 @@ Purview</span>
               <td>endpoint</td>
               <td>high</td>
               <td>Low confidence — verify in portal</td>
+              <td>direct</td>
+            </tr>
+            
+            <tr>
+              <td><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span></td>
+              <td><code>id-ca-legacy-auth-block</code></td>
+              <td>Block outdated sign-in methods</td>
+              <td>identity</td>
+              <td>high</td>
+              <td>High confidence</td>
               <td>direct</td>
             </tr>
             

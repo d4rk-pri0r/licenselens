@@ -9,18 +9,18 @@
   "flagship_count": 34,
   "generated": {
     "capabilities.md": "0577d3399e6271d90726ea98101eec90e379430466f887b954ee6cf45535d78c",
-    "checks.md": "d56672867f43a725a2691f9121b756610cde5f40fe0af5f3e2c1c2ca0102b0f4",
+    "checks.md": "0fcb9a0828a9daea5cd4e72daa85b75b539b045b5f624453cdd49b1b860b478f",
     "coverage.md": "5f2297da9bea71cd283f44fe91275af0ea38dab98c465e3fcbf9199f8e51fdce",
     "index.md": "4f13606e74438c8ccffa71c0469c898b669f03843d8f12da0c277009ed7122ba",
     "permissions.md": "ee9f9eacb046b235075a2255872b7923da8491abdd792a21eb099fb6b150313b",
     "profiles.md": "9a095e83b755f5486a66d2b93ee76fc871e0908d9095d344c2b30bf00beaa95a",
-    "reference.json": "83c4a2d0ff18e7e0ea708ce59e6f30b25c964df6add09494ddaf7fd7dd98bc3f"
+    "reference.json": "0a361ade1834cbe9061e5960d769ad047367ef4204e2959e3c8fc3b9d06955b3"
   },
   "generator": "scripts/generate_reference_docs.py",
   "package_version": "0.4.0",
   "permission_count": 20,
   "profile_count": 11,
-  "sample_sha256": "b73a7f22affcb1cd5473596c5a5b6d8810c6ebcd391741cd13b2f2eb03a6e34b",
+  "sample_sha256": "5c1cc3b1b1e1da13a3e1d4cc97293a65bd33da7ec78ea16300cf892c5076e039",
   "sample_version": "0.4.0",
   "sources": {
     "catalog/capabilities.yaml": "49c3958e68fd37ec96590461cbb8ca9f9623ba35a04381efe2945182aac37b46",
@@ -135,7 +135,7 @@
     "checks/identity/id-ca-high-risk-users.yaml": "02e7ef18960d5e82858d4b9cb27a1be8f7a87a7d946934597c45ad5635116b86",
     "checks/identity/id-ca-legacy-auth-block.yaml": "58d767ea645c1529d0cfb7cce5f55247b4d61004c812865d2016b835b0d50ba3",
     "checks/identity/id-ca-managed-devices.yaml": "86f054e4396a1f94d5a29c080d0c1bd215ccfd80e2b840d76617e8db9001177d",
-    "checks/identity/id-ca-mfa-all-users.yaml": "f432213d001ccdd18cc621a65a9d47b7f3b680415ddfa63bfa1a9a67a7c3bf2f",
+    "checks/identity/id-ca-mfa-all-users.yaml": "d556f95e97f52c9f0a70c63ed22258f21fb432aa0e409eda72cd845915c18511",
     "checks/identity/id-ca-mfa-registration-managed.yaml": "8ab42f6165b6ff872552fbea1acebb18284a77e09fec26f11bd036e0417260d6",
     "checks/identity/id-ca-phishing-resistant-all.yaml": "0bf6223d4b7990fae4211353a00c2ebc712212bcd97e8cd41c3ffd04174e5dce",
     "checks/identity/id-ca-phishing-resistant-privileged.yaml": "63476f6e63759b11055e726ae38ce712e2f545b5ddeb7b9ba7726fb065459f23",

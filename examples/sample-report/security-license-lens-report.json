@@ -475,7 +475,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "conditional_access"
@@ -493,7 +494,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -740,7 +743,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "conditional_access"
@@ -758,7 +762,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -794,7 +800,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "identity_protection"
@@ -812,7 +819,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -848,7 +857,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "identity_protection"
@@ -866,7 +876,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -874,60 +886,6 @@
         "nist": [
           "AC-2",
           "IA-2"
-        ],
-        "mitre": [
-          "T1078"
-        ]
-      }
-    },
-    {
-      "check_id": "id-ca-legacy-auth-block",
-      "title": "Legacy authentication not blocked by Conditional Access",
-      "workload": "identity",
-      "status": "gap",
-      "severity": "high",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "hours",
-      "blast_radius": "all_users",
-      "pack": "identity",
-      "exposure_class": "none",
-      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
-      "summary": "No enforced Conditional Access policy blocks legacy authentication.",
-      "evidence": {
-        "label": "Legacy authentication block",
-        "enforced_policies": [],
-        "universal_policies": [],
-        "scoped_policies": [],
-        "scope_gaps_best": [],
-        "report_only_policies": [],
-        "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
-      },
-      "entitlements_used": [
-        "conditional_access"
-      ],
-      "remediation": "Enable an all-user Conditional Access policy that blocks Exchange ActiveSync and other legacy clients.",
-      "references": [
-        "https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication"
-      ],
-      "customer_title": "Block outdated sign-in methods",
-      "customer_summary": "Outdated sign-in methods may still work without multi-factor checks.",
-      "customer_next_step": "Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.",
-      "status_label": "Needs attention",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "microsoft.graph"
-      ],
-      "limitations": [],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": [],
-      "mappings": {
-        "nist": [
-          "IA-2",
-          "IA-5"
         ],
         "mitre": [
           "T1078"
@@ -956,7 +914,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "conditional_access"
@@ -974,7 +933,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -1810,7 +1771,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "conditional_access",
@@ -1829,7 +1791,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -1865,7 +1829,8 @@
         "scope_gaps_best": [],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "conditional_access",
@@ -1884,7 +1849,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -2566,6 +2533,61 @@
       }
     },
     {
+      "check_id": "id-ca-legacy-auth-block",
+      "title": "Legacy authentication not blocked by Conditional Access",
+      "workload": "identity",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
+      "summary": "Baseline protection is provided by Security Defaults; the Conditional Access capability you license is not in use.",
+      "evidence": {
+        "label": "Legacy authentication block",
+        "enforced_policies": [],
+        "universal_policies": [],
+        "scoped_policies": [],
+        "scope_gaps_best": [],
+        "report_only_policies": [],
+        "unjustified_exclusion_issues": [],
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
+      },
+      "entitlements_used": [
+        "conditional_access"
+      ],
+      "remediation": "Enable an all-user Conditional Access policy that blocks Exchange ActiveSync and other legacy clients.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/conditional-access/block-legacy-authentication"
+      ],
+      "customer_title": "Block outdated sign-in methods",
+      "customer_summary": "Microsoft's built-in baseline is on, so basic multi-factor and legacy-sign-in blocking are present. The customizable sign-in rules included in your plan are not in use.",
+      "customer_next_step": "Create a Conditional Access policy that blocks legacy authentication for all users, with documented emergency-access exclusions only.",
+      "status_label": "Partly set up",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "microsoft.graph"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IA-2",
+          "IA-5"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
+    },
+    {
       "check_id": "id-ca-priv-gaps",
       "title": "Privileged sign-ins not strongly gated by Conditional Access",
       "workload": "identity",
@@ -2584,8 +2606,7 @@
         "enabled_count": 3,
         "report_only_count": 0,
         "mfa_enforced_policies": [
-          "Demo: MFA for all users",
-          "Demo: Require MFA for sign-in risk"
+          "Demo: MFA for all users"
         ],
         "mfa_report_only_policies": [],
         "legacy_block_enforced": [],
@@ -4718,7 +4739,8 @@
         ],
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
-        "break_glass_principal_count": 0
+        "break_glass_principal_count": 0,
+        "security_defaults_enabled": true
       },
       "entitlements_used": [
         "conditional_access"
