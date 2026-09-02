@@ -40,6 +40,7 @@ openspec/
 .opencode/
 .omo/
 .playwright-mcp/
+.hermes/
 
 # Local maturity goal (not part of the public product)
 maturity-goal.md
