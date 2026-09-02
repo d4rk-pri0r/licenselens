@@ -340,6 +340,7 @@ def _identity_compliant() -> dict[str, object]:
                 "state": "enabled",
                 "conditions": {
                     "users": {"includeUsers": ["All"], "excludeUsers": []},
+                    "applications": {"includeApplications": ["All"]},
                     "clientAppTypes": ["exchangeActiveSync", "other"],
                 },
                 "grantControls": {"builtInControls": ["block"]},

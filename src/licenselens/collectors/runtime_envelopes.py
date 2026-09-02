@@ -219,6 +219,7 @@ def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
             },
             "grantControls": {"builtInControls": ["mfa"]},
@@ -228,6 +229,7 @@ def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
                 "signInRiskLevels": ["high"],
             },
@@ -238,6 +240,7 @@ def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
             "state": "enabled",
             "conditions": {
                 "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "applications": {"includeApplications": ["All"]},
                 "clientAppTypes": ["all"],
                 "userRiskLevels": ["high"],
             },
