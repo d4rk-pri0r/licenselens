@@ -29,6 +29,7 @@ def _policy(**overrides: object) -> dict:
         "state": "enabled",
         "conditions": {
             "users": {"includeUsers": ["All"]},
+            "applications": {"includeApplications": ["All"]},
             "clientAppTypes": ["all"],
         },
         "grantControls": {"operator": "OR", "builtInControls": ["mfa"]},

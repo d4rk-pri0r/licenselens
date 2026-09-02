@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, replace
 from typing import Any
 
 from licenselens.collectors.privileged_roles import PRIVILEGED_ROLE_TEMPLATE_IDS
@@ -265,6 +266,159 @@ def includes_all_cloud_apps(policy: dict[str, Any]) -> bool:
     return "all" in include
 
 
+SCOPE_GAP_TOKENS: tuple[str, ...] = (
+    "not_all_users",
+    "not_all_cloud_apps",
+    "user_actions_only",
+    "risk_conditioned",
+    "client_app_subset",
+    "platform_subset",
+    "trusted_location_bypass",
+    "named_location_bypass",
+    "device_filter",
+)
+
+
+@dataclass(frozen=True, slots=True)
+class PolicyScope:
+    """Effective-scope profile of one Conditional Access policy.
+
+    A policy is *universal* (``is_universal``) when no gap token applies: it
+    targets all users, all cloud apps, all client types, all platforms, no
+    location bypass, no device filter, and is not risk-conditioned. ``gaps``
+    emits ONLY tokens from SCOPE_GAP_TOKENS, in that order. ``user_actions_only``
+    and ``not_all_cloud_apps`` are mutually exclusive (one token, one cause).
+    """
+
+    all_users: bool
+    all_cloud_apps: bool
+    user_actions_only: bool
+    risk_conditioned: bool
+    all_client_apps: bool
+    all_platforms: bool
+    location_bypass: tuple[str, ...]
+    device_filter: bool
+    excluded_apps: tuple[str, ...]
+
+    @property
+    def gaps(self) -> tuple[str, ...]:
+        tokens: list[str] = []
+        if not self.all_users:
+            tokens.append("not_all_users")
+        if self.user_actions_only:
+            tokens.append("user_actions_only")
+        elif not self.all_cloud_apps:
+            tokens.append("not_all_cloud_apps")
+        if self.risk_conditioned:
+            tokens.append("risk_conditioned")
+        if not self.all_client_apps:
+            tokens.append("client_app_subset")
+        if not self.all_platforms:
+            tokens.append("platform_subset")
+        if any(str(loc).lower() == "alltrusted" for loc in self.location_bypass):
+            tokens.append("trusted_location_bypass")
+        if any(str(loc).lower() != "alltrusted" for loc in self.location_bypass):
+            tokens.append("named_location_bypass")
+        if self.device_filter:
+            tokens.append("device_filter")
+        return tuple(tokens)
+
+    @property
+    def is_universal(self) -> bool:
+        return self.gaps == ()
+
+
+def policy_scope(policy: dict[str, Any]) -> PolicyScope:
+    """Compute the effective-scope profile of a Conditional Access policy.
+
+    Pure and tolerant of absent/None/non-dict blocks. Property semantics from
+    Microsoft Graph conditionalAccessConditionSet:
+    https://learn.microsoft.com/graph/api/resources/conditionalaccessconditionset
+
+    - applications (includeApplications ``All``/``None``/app ids,
+      includeUserActions such as ``urn:user:registersecurityinfo``):
+      https://learn.microsoft.com/graph/api/resources/conditionalaccessapplications
+    - locations (excludeLocations ``AllTrusted`` or namedLocation ids):
+      https://learn.microsoft.com/graph/api/resources/conditionalaccesslocations
+    - platforms (includePlatforms/excludePlatforms, value ``all``):
+      https://learn.microsoft.com/graph/api/resources/conditionalaccessplatforms
+    - devices (deviceFilter.rule):
+      https://learn.microsoft.com/graph/api/resources/conditionalaccessdevices
+    """
+    conditions = _conditions(policy)
+    applications = conditions.get("applications")
+    if not isinstance(applications, dict):
+        applications = {}
+    include_apps = [str(a) for a in (applications.get("includeApplications") or [])]
+    user_actions = [str(a) for a in (applications.get("includeUserActions") or [])]
+    return PolicyScope(
+        all_users=includes_all_users(policy),
+        all_cloud_apps=includes_all_cloud_apps(policy),
+        user_actions_only=not include_apps and bool(user_actions),
+        risk_conditioned=bool(
+            sign_in_risk_levels(policy)
+            or user_risk_levels(policy)
+            or service_principal_risk_levels(policy)
+        ),
+        all_client_apps=_all_client_apps(policy),
+        all_platforms=_all_platforms(conditions),
+        location_bypass=_location_bypass(conditions),
+        device_filter=_has_device_filter(conditions),
+        excluded_apps=tuple(
+            sorted(str(a) for a in (applications.get("excludeApplications") or []) if a)
+        ),
+    )
+
+
+def _all_client_apps(policy: dict[str, Any]) -> bool:
+    apps = {a.lower() for a in client_app_types(policy)}
+    return not apps or "all" in apps
+
+
+def _all_platforms(conditions: dict[str, Any]) -> bool:
+    platforms = conditions.get("platforms")
+    if not isinstance(platforms, dict):
+        return True
+    include = {str(p).lower() for p in (platforms.get("includePlatforms") or [])}
+    exclude = [str(p) for p in (platforms.get("excludePlatforms") or []) if p]
+    return (not include or "all" in include) and not exclude
+
+
+def _location_bypass(conditions: dict[str, Any]) -> tuple[str, ...]:
+    locations = conditions.get("locations")
+    if not isinstance(locations, dict):
+        return ()
+    return tuple(sorted(str(loc) for loc in (locations.get("excludeLocations") or []) if loc))
+
+
+def _has_device_filter(conditions: dict[str, Any]) -> bool:
+    devices = conditions.get("devices")
+    if not isinstance(devices, dict):
+        return False
+    device_filter = devices.get("deviceFilter")
+    if not isinstance(device_filter, dict):
+        return False
+    return bool(str(device_filter.get("rule") or "").strip())
+
+
+def scope_for_block(
+    policy: dict[str, Any],
+    *,
+    allowed_client_subset: frozenset[str],
+) -> PolicyScope:
+    """``policy_scope`` for block policies whose client-app subset is the point.
+
+    ``client_app_subset`` is not a gap when the policy's clientAppTypes are a
+    subset of ``allowed_client_subset`` (e.g. a legacy-auth block scoped to
+    exactly LEGACY_CLIENT_APP_TYPES is universal for its purpose). Client
+    app types: https://learn.microsoft.com/graph/api/resources/conditionalaccessconditionset
+    """
+    scope = policy_scope(policy)
+    if client_app_types(policy) <= allowed_client_subset:
+        return replace(scope, all_client_apps=True)
+    return scope
+
+
 def unjustified_exclusions(
     policy: dict[str, Any],
     justified_principal_ids: set[str],
@@ -283,6 +437,7 @@ DEMO_CA_POLICIES: list[dict[str, Any]] = [
         "state": "enabled",
         "conditions": {
             "users": {"includeUsers": ["All"], "includeRoles": []},
+            "applications": {"includeApplications": ["All"]},
             "clientAppTypes": ["all"],
             "signInRiskLevels": [],
             "userRiskLevels": [],
@@ -298,6 +453,7 @@ DEMO_CA_POLICIES: list[dict[str, Any]] = [
         "state": "enabled",
         "conditions": {
             "users": {"includeUsers": ["All"], "includeRoles": []},
+            "applications": {"includeApplications": ["All"]},
             "clientAppTypes": ["all"],
             "signInRiskLevels": ["high", "medium"],
             "userRiskLevels": [],
@@ -313,6 +469,7 @@ DEMO_CA_POLICIES: list[dict[str, Any]] = [
         "state": "enabled",
         "conditions": {
             "users": {"includeUsers": ["All"], "includeRoles": []},
+            "applications": {"includeApplications": ["All"]},
             "clientAppTypes": ["all"],
             "signInRiskLevels": [],
             "userRiskLevels": ["high"],
