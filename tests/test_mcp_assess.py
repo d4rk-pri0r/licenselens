@@ -42,7 +42,7 @@ def test_demo_frozen_anchors():
     statuses: dict[str, int] = {}
     for f in payload["findings"]:
         statuses[f["status"]] = statuses.get(f["status"], 0) + 1
-    assert statuses == {"gap": 40, "partial": 17, "skipped": 12, "ok": 91, "not_licensed": 6}
+    assert statuses == {"gap": 39, "partial": 18, "skipped": 12, "ok": 91, "not_licensed": 6}
     assert payload["moves"] and payload["recommended_next_steps"]
 
 

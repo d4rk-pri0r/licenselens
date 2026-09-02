@@ -26,8 +26,12 @@ from licenselens.engine.evaluate import (
     evaluate_ca_legacy_auth_block,
     evaluate_ca_mfa_all_users,
     evaluate_ca_mfa_registration_managed,
+    evaluate_ca_phishing_resistant_all,
     evaluate_ca_phishing_resistant_privileged,
+    evaluate_ca_priv_gaps,
 )
+from licenselens.engine.loader import load_checks
+from licenselens.engine.runner import _evaluate_check
 from licenselens.evaluators.identity_ca_lib import purpose_scope
 from licenselens.models import CheckDefinition, FindingStatus, Workload
 
@@ -628,3 +632,194 @@ def test_demo_mfa_all_is_universal() -> None:
 def test_demo_risk_policies_are_risk_conditioned() -> None:
     assert policy_scope(DEMO_CA_POLICIES[1]).gaps == ("risk_conditioned",)
     assert policy_scope(DEMO_CA_POLICIES[2]).gaps == ("risk_conditioned",)
+
+
+# ---------------------------------------------------------------------------
+# Security Defaults ladder (WS1-B): baseline visibility, never a false OK
+# ---------------------------------------------------------------------------
+
+
+def test_security_defaults_on_mfa_all_is_partial_paid_ca_unused() -> None:
+    result = evaluate_ca_mfa_all_users(
+        _check("id-ca-mfa-all-users"),
+        {
+            "ca_policies": [],
+            "break_glass_principal_ids": [],
+            "security_defaults_policy": {"id": "sd", "isEnabled": True},
+        },
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.summary == (
+        "Baseline protection is provided by Security Defaults; the "
+        "Conditional Access capability you license is not in use."
+    )
+    assert result.evidence["security_defaults_enabled"] is True
+
+
+def test_security_defaults_on_legacy_is_partial_paid_ca_unused() -> None:
+    result = evaluate_ca_legacy_auth_block(
+        _check("id-ca-legacy-auth-block"),
+        {
+            "ca_policies": [],
+            "break_glass_principal_ids": [],
+            "security_defaults_policy": {"isEnabled": True},
+        },
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.evidence["security_defaults_enabled"] is True
+
+
+def test_security_defaults_on_phishing_resistant_stays_gap_with_note() -> None:
+    result = evaluate_ca_phishing_resistant_all(
+        _check("id-ca-phishing-resistant-all"),
+        {
+            "ca_policies": [],
+            "break_glass_principal_ids": [],
+            "security_defaults_policy": {"isEnabled": True},
+        },
+    )
+    assert result.status is FindingStatus.GAP
+    assert (
+        "Security Defaults is on; Conditional Access policies cannot be created "
+        "until it is disabled."
+    ) in result.limitations
+
+
+def test_security_defaults_on_does_not_promote_scoped_mfa_to_ok() -> None:
+    # Guard: the scoped branch outranks the Security Defaults step, both ways.
+    scoped = _mfa_policy(_conditions(signInRiskLevels=["high"]), name="Risk MFA")
+    result = evaluate_ca_mfa_all_users(
+        _check("id-ca-mfa-all-users"),
+        {
+            "ca_policies": [scoped],
+            "break_glass_principal_ids": [],
+            "security_defaults_policy": {"isEnabled": True},
+        },
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.summary == (
+        "MFA for all users: enforced policy exists but is scoped (risk_conditioned)."
+    )
+    assert result.evidence["security_defaults_enabled"] is True
+
+
+def test_security_defaults_off_absent_is_gap() -> None:
+    for sd in ({}, {"isEnabled": False}):
+        result = evaluate_ca_mfa_all_users(
+            _check("id-ca-mfa-all-users"),
+            {
+                "ca_policies": [],
+                "break_glass_principal_ids": [],
+                "security_defaults_policy": sd,
+            },
+        )
+        assert result.status is FindingStatus.GAP
+        assert result.evidence["security_defaults_enabled"] is False
+
+
+def test_evidence_always_has_security_defaults_enabled() -> None:
+    cases = [
+        ([_mfa_policy(_conditions())], None, FindingStatus.OK, False),
+        ([_mfa_policy(_single_app_conditions())], None, FindingStatus.PARTIAL, False),
+        ([], {"isEnabled": True}, FindingStatus.PARTIAL, True),
+        ([], {"isEnabled": False}, FindingStatus.GAP, False),
+    ]
+    for policies, sd, expected_status, expected_flag in cases:
+        evidence: dict[str, Any] = {
+            "ca_policies": policies,
+            "break_glass_principal_ids": [],
+        }
+        if sd is not None:
+            evidence["security_defaults_policy"] = sd
+        result = evaluate_ca_mfa_all_users(_check("id-ca-mfa-all-users"), evidence)
+        assert result.status is expected_status
+        assert result.evidence["security_defaults_enabled"] is expected_flag
+
+
+# ---------------------------------------------------------------------------
+# Runner boundary: a failed Security Defaults read must not ERROR a CA check
+# ---------------------------------------------------------------------------
+
+
+def test_ca_checks_do_not_error_when_security_defaults_read_fails() -> None:
+    check = next(c for c in load_checks() if c.id == "id-ca-mfa-all-users")
+    finding = _evaluate_check(
+        check,
+        set(check.required_capabilities),
+        {
+            "ca_policies": [],
+            "break_glass_principal_ids": [],
+            "security_defaults_policy_error": "403 Forbidden",
+        },
+    )
+    assert finding.status in (FindingStatus.GAP, FindingStatus.PARTIAL)
+
+
+# ---------------------------------------------------------------------------
+# Privileged-gap filters (WS1-B): scope-aware coverage, not predicate-only
+# ---------------------------------------------------------------------------
+
+
+def test_priv_gaps_risk_only_mfa_does_not_clear() -> None:
+    risk_mfa = _mfa_policy(_conditions(signInRiskLevels=["high"]), name="Risk MFA")
+    legacy = _block_policy(_conditions(clientAppTypes=["exchangeActiveSync", "other"]))
+    result = evaluate_ca_priv_gaps(
+        _check("id-ca-priv-gaps"),
+        {"ca_policies": [risk_mfa, legacy], "role_assignments": []},
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.evidence["mfa_covers_privileged"] is False
+
+
+def test_priv_gaps_single_app_mfa_does_not_clear() -> None:
+    single_app = _mfa_policy(_single_app_conditions(), name="Single-app MFA")
+    legacy = _block_policy(_conditions(clientAppTypes=["exchangeActiveSync", "other"]))
+    result = evaluate_ca_priv_gaps(
+        _check("id-ca-priv-gaps"),
+        {"ca_policies": [single_app, legacy], "role_assignments": []},
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.evidence["mfa_covers_privileged"] is False
+
+
+def test_priv_gaps_single_app_legacy_block_does_not_clear() -> None:
+    mfa = _mfa_policy(_conditions())
+    legacy = _block_policy(
+        _conditions(
+            applications={"includeApplications": ["app-1"]},
+            clientAppTypes=["exchangeActiveSync", "other"],
+        )
+    )
+    result = evaluate_ca_priv_gaps(
+        _check("id-ca-priv-gaps"),
+        {"ca_policies": [mfa, legacy], "role_assignments": []},
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.evidence["legacy_block_enforced"] == []
+
+
+def test_priv_gaps_role_targeted_mfa_all_apps_clears_mfa_leg() -> None:
+    # Guard: existing behaviour preserved (brief D4 last paragraph).
+    role_mfa = {
+        "id": "role-mfa",
+        "displayName": "MFA privileged",
+        "state": "enabled",
+        "conditions": {
+            "users": {"includeUsers": [], "includeRoles": [GA_ROLE]},
+            "applications": {"includeApplications": ["All"]},
+            "clientAppTypes": ["all"],
+        },
+        "grantControls": {"operator": "OR", "builtInControls": ["mfa"]},
+    }
+    legacy = _block_policy(_conditions(clientAppTypes=["exchangeActiveSync", "other"]))
+    result = evaluate_ca_priv_gaps(
+        _check("id-ca-priv-gaps"),
+        {
+            "ca_policies": [role_mfa, legacy],
+            "role_assignments": [
+                {"principalId": "admin-1", "roleDefinitionId": GA_ROLE},
+            ],
+        },
+    )
+    assert result.status is FindingStatus.OK
+    assert "mfa_missing_for_privileged" not in result.evidence["exposure_flags"]

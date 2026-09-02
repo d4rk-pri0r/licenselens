@@ -36,14 +36,14 @@ FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 
 GOLDEN_TOTAL_FINDINGS = 166
 GOLDEN_COUNTS_BY_STATUS = {
-    "gap": 37,
+    "gap": 36,
     "not_licensed": 6,
     "ok": 90,
-    "partial": 21,
+    "partial": 22,
     "skipped": 12,
 }
 GOLDEN_CHECK_STATUSES = {
-    "id-ca-mfa-all-users": FindingStatus.GAP,
+    "id-ca-mfa-all-users": FindingStatus.PARTIAL,
     "id-ca-legacy-auth-block": FindingStatus.PARTIAL,
     "id-ca-priv-gaps": FindingStatus.GAP,
     "id-dormant-privileged": FindingStatus.GAP,
