@@ -49,6 +49,7 @@ def test_demo_frozen_anchors():
 def test_live_without_credentials_returns_structured_error(monkeypatch):
     from licenselens.mcp_assess import run_assessment
 
+    monkeypatch.setenv("LICENSELENS_MCP_ALLOW_LIVE", "1")
     for var in (
         "AZURE_TENANT_ID",
         "AZURE_CLIENT_ID",
@@ -85,8 +86,45 @@ def test_live_auth_config_error_maps_to_envelope(monkeypatch):
     """Env creds half-present -> AuthConfigError -> envelope, not a crash."""
     from licenselens.mcp_assess import run_assessment
 
+    monkeypatch.setenv("LICENSELENS_MCP_ALLOW_LIVE", "1")
     monkeypatch.setenv("AZURE_TENANT_ID", "tid")
     monkeypatch.delenv("AZURE_CLIENT_ID", raising=False)
     monkeypatch.delenv("AZURE_CLIENT_SECRET", raising=False)
     payload = run_assessment(live=True, auth="client_secret")
     assert payload["error"]["code"] == "auth_config"
+
+
+def test_live_requires_explicit_env_gate(monkeypatch):
+    from licenselens.mcp_assess import run_assessment
+
+    monkeypatch.delenv("LICENSELENS_MCP_ALLOW_LIVE", raising=False)
+    for var in (
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_ID",
+        "AZURE_CLIENT_SECRET",
+        "AZURE_CLIENT_CERTIFICATE_PATH",
+        "AZURE_CLIENT_CERT_THUMBPRINT",
+    ):
+        monkeypatch.delenv(var, raising=False)
+
+    payload = run_assessment(live=True, auth="client_secret")  # gate fires before auth work
+    assert set(payload) == {"error"}
+    assert payload["error"]["code"] == "live_disabled"
+    assert "LICENSELENS_MCP_ALLOW_LIVE" in payload["error"]["hint"]
+
+
+def test_live_gate_open_without_creds_returns_auth_unavailable(monkeypatch):
+    from licenselens.mcp_assess import run_assessment
+
+    monkeypatch.setenv("LICENSELENS_MCP_ALLOW_LIVE", "1")
+    for var in (
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_ID",
+        "AZURE_CLIENT_SECRET",
+        "AZURE_CLIENT_CERTIFICATE_PATH",
+        "AZURE_CLIENT_CERT_THUMBPRINT",
+    ):
+        monkeypatch.delenv(var, raising=False)
+
+    payload = run_assessment(live=True)
+    assert payload["error"]["code"] == "auth_unavailable"

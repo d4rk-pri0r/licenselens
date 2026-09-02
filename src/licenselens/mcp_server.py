@@ -17,7 +17,9 @@ _TOOL_DESCRIPTION = (
     "(check_id, status, severity, exposure_class, evidence), owned capabilities, "
     "ranked next moves and recommended next steps, and a capability rollup. "
     "Defaults to the offline demo (curated sample data, no tenant contact). "
-    "Set live=true for a real tenant using read-only, env-based credentials."
+    "Set live=true for a real tenant using read-only, env-based credentials; live "
+    "additionally requires LICENSELENS_MCP_ALLOW_LIVE=1 in the server's environment "
+    "(live over MCP is disabled by default)."
 )
 
 

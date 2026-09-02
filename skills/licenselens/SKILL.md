@@ -19,6 +19,8 @@ Use this skill when the user asks to:
 1. Call the `posture.assess` tool. Default = offline demo (curated sample data,
    no tenant contact). **Ask the user before setting `live=true`** — a live
    scan reads their real tenant with environment-based read-only credentials.
+   Live also requires the operator to set `LICENSELENS_MCP_ALLOW_LIVE=1` in the
+   MCP server's environment — without it the tool returns `live_disabled`.
 2. Read the result — it is the LicenseLens report schema. Ground every
    statement in these fields, by name:
    - `findings[]`: `check_id`, `status` (one of `gap | partial | ok |

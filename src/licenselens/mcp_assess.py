@@ -6,6 +6,7 @@ Failure  -> {"error": {"code": ..., "message": ..., "hint": ...}}
 
 from __future__ import annotations
 
+import os
 from datetime import datetime
 
 from licenselens.auth import AuthMode, build_auth_context
@@ -84,7 +85,7 @@ def run_assessment(
 
     Never raises: every failure mode is a structured ``{"error": {...}}`` envelope
     with ``code`` in ``auth_unavailable | auth_config | invalid_argument |
-    scan_failed`` so the MCP host always gets a parseable response.
+    live_disabled | scan_failed`` so the MCP host always gets a parseable response.
     """
     # 1. Validate args before touching auth so config errors can't masquerade
     #    as argument errors.
@@ -102,6 +103,18 @@ def run_assessment(
     validated_packs = _validate_packs(packs)
     if isinstance(validated_packs, dict):
         return validated_packs
+
+    # Live-over-MCP gate: an AI host reading untrusted page/document content must
+    # not be able to trigger tenant reads without an explicit operator opt-in
+    # in the server's environment.
+    if live and os.environ.get("LICENSELENS_MCP_ALLOW_LIVE") != "1":
+        return _error(
+            "live_disabled",
+            "Live assessment over MCP is disabled by default.",
+            "Set LICENSELENS_MCP_ALLOW_LIVE=1 in the MCP server's environment to "
+            "allow read-only live scans from an AI host, or run "
+            "`licenselens scan --live` in a terminal.",
+        )
 
     common_kwargs: dict = {
         "workloads": validated_workloads,

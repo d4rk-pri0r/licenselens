@@ -12,7 +12,8 @@ The server exposes **one tool, `posture.assess`**:
 - **Offline demo by default.** Without arguments it assesses a curated sample
   dataset on your machine — no tenant contact, no credentials needed.
 - **Live scans are opt-in.** With `live=true` it reads your tenant using
-  read-only, environment-based credentials you provide (see below).
+  read-only, environment-based credentials you provide — and only when the
+  operator has enabled live mode in the server's environment (see below).
 
 The tool returns the full LicenseLens report schema: every finding (`check_id`,
 `status`, `severity`, `exposure_class`, evidence), the capabilities the tenant
@@ -75,6 +76,18 @@ If you installed with pipx, the equivalent entry is:
 ```
 
 ## Live assessments
+
+Live mode is **off by default** over MCP. Set `LICENSELENS_MCP_ALLOW_LIVE=1` in the
+server process environment, in addition to the credentials below — without it the
+tool answers `live_disabled`.
+
+### Why live is off by default
+
+An AI host reads documents, web pages, and tool output that you do not fully
+control, and content in any of them could try to steer the assistant into
+running a tenant scan. The environment gate keeps the decision to expose your
+directory configuration with an operator-controlled setting, not something a
+prompt can turn on.
 
 A live scan uses the same credentials as the CLI. Set the environment variables
 below for the assistant process (read-only directory permissions are enough —
