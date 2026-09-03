@@ -197,9 +197,7 @@
       "id": "log_analytics",
       "name": "Azure Log Analytics",
       "plain_name": "The log store behind security analytics",
-      "matched_skus": [
-        "MICROSOFT_SENTINEL"
-      ],
+      "matched_skus": [],
       "matched_service_plans": [],
       "outcome": "Land security and operational logs in a workspace that detections and investigations can query.",
       "why_it_matters": "Sentinel without healthy log ingestion is an empty command center.",
@@ -210,12 +208,8 @@
       "id": "microsoft_sentinel",
       "name": "Microsoft Sentinel",
       "plain_name": "A central security command center in the cloud",
-      "matched_skus": [
-        "MICROSOFT_SENTINEL"
-      ],
-      "matched_service_plans": [
-        "MICROSOFT_SENTINEL"
-      ],
+      "matched_skus": [],
+      "matched_service_plans": [],
       "outcome": "Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.",
       "why_it_matters": "Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.",
       "if_unused": "A security workspace may exist, but few detections or smart analytics are turned on.",
@@ -433,20 +427,6 @@
         {
           "service_plan_id": null,
           "service_plan_name": "DEFENDER_ENDPOINT_P2",
-          "provisioning_status": "Success"
-        }
-      ]
-    },
-    {
-      "sku_id": "demo-sentinel",
-      "sku_part_number": "MICROSOFT_SENTINEL",
-      "capability_status": "Enabled",
-      "prepaid_units": 1,
-      "consumed_units": 1,
-      "service_plans": [
-        {
-          "service_plan_id": null,
-          "service_plan_name": "MICROSOFT_SENTINEL",
           "provisioning_status": "Success"
         }
       ]

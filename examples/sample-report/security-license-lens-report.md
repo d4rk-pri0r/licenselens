@@ -152,7 +152,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Land security and operational logs in a workspace that detections and investigations can query.
 - **Why it matters:** Sentinel without healthy log ingestion is an empty command center.
 - **If unused:** Workspaces may exist while critical tables are missing, short-retained, or never connected.
-- **Included through license SKU(s):** Microsoft Sentinel
+- **Included through license SKU(s):** Not reported
 - **Matching service plan(s):** No matching service plan reported
 
 ### A central security command center in the cloud
@@ -162,8 +162,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.
 - **Why it matters:** Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.
 - **If unused:** A security workspace may exist, but few detections or smart analytics are turned on.
-- **Included through license SKU(s):** Microsoft Sentinel
-- **Matching service plan(s):** Microsoft Sentinel
+- **Included through license SKU(s):** Not reported
+- **Matching service plan(s):** No matching service plan reported
 
 ### Personal work files in the cloud
 
@@ -2119,4 +2119,3 @@ A plain-language view of security capabilities you already pay for — and wheth
 - Owned capability ids: conditional_access, defender_endpoint_p2, defender_identity, defender_office_p1, defender_office_p2, defender_xdr, entra_id_p2, exchange_online, exchange_online_protection, identity_protection, intune, log_analytics, microsoft_sentinel, onedrive_for_business, power_bi_pro, power_platform, purview_audit, purview_communication_compliance, purview_dlp, purview_ediscovery, purview_insider_risk, purview_retention, purview_sensitivity_labels, sharepoint_online, teams
 
 - SKU Microsoft 365 E5 (`SPE_E5`) (87/100): Microsoft Entra ID P2, Microsoft Entra ID Multifactor Authentication, Microsoft Defender for Cloud Apps, Microsoft 365 Advanced eDiscovery, Microsoft 365 Customer Lockbox, Microsoft Purview Information Protection P2, Microsoft Defender for Office 365 (Plan 2), Microsoft Defender for Endpoint P2
-- SKU Microsoft Sentinel (`MICROSOFT_SENTINEL`) (1/1): Microsoft Sentinel
