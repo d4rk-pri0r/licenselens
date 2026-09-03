@@ -6,7 +6,9 @@ from dataclasses import dataclass
 from typing import Any
 
 from licenselens.auth import AuthContext
-from licenselens.catalog.loader import resolve_owned_capabilities
+from licenselens.catalog.loader import merge_consumption, resolve_owned_capabilities
+from licenselens.collectors.arm import subscription_id_from_resource_id
+from licenselens.collectors.consumption_entitlements import observe_consumption_entitlements
 from licenselens.collectors.runtime_envelopes import (
     collection_summaries_from,
     envelopes_to_evidence,
@@ -87,15 +89,9 @@ def maybe_discover_workspace(
     scan_mode: str,
     discover_workspaces: bool,
     workspace_resource_id: str | None,
-    owned_set: set[str],
     warnings: list[str],
 ) -> str | None:
-    if (
-        scan_mode != "live"
-        or not discover_workspaces
-        or workspace_resource_id
-        or "microsoft_sentinel" not in owned_set
-    ):
+    if scan_mode != "live" or not discover_workspaces or workspace_resource_id:
         return workspace_resource_id
     try:
         from licenselens.collectors.workspace_discover import discover_sentinel_workspaces
@@ -137,16 +133,27 @@ def _run_collection(
     demo_scenario: str | None = None,
 ) -> CollectedScanState:
     owned = resolve_owned_capabilities(capabilities, skus)
-    owned_set = set(owned)
     checks = select_checks(profile=profile, workloads=workloads)
     workspace_resource_id = maybe_discover_workspace(
         auth=auth,
         scan_mode=scan_mode,
         discover_workspaces=discover_workspaces,
         workspace_resource_id=workspace_resource_id,
-        owned_set=owned_set,
         warnings=warnings,
     )
+    observation = observe_consumption_entitlements(
+        auth,
+        workspace_resource_id=workspace_resource_id,
+        subscription_id=(
+            subscription_id_from_resource_id(workspace_resource_id)
+            if workspace_resource_id
+            else None
+        ),
+        dry_run=scan_mode != "live",
+    )
+    owned = merge_consumption(owned, observation)
+    owned_set = set(owned)
+    warnings.extend(observation.warnings)
     email_proxy = allow_email_proxy or (
         profile is not None and profile.profile.backend_preferences.allow_proxy
     )

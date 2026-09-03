@@ -829,6 +829,12 @@
         }
       ]
     },
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/providers/Microsoft.SecurityInsights/onboardingStates/default": {
+      "id": "/subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/providers/Microsoft.SecurityInsights/onboardingStates/default",
+      "name": "default",
+      "type": "Microsoft.SecurityInsights/onboardingStates",
+      "properties": {"customerManagedKey": false}
+    },
     "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel": {
       "properties": {
         "retentionInDays": 90

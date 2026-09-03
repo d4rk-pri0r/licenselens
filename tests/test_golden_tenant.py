@@ -37,8 +37,8 @@ FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 GOLDEN_TOTAL_FINDINGS = 166
 GOLDEN_COUNTS_BY_STATUS = {
     "gap": 36,
-    "not_licensed": 6,
-    "ok": 90,
+    "not_licensed": 5,
+    "ok": 91,
     "partial": 22,
     "skipped": 12,
 }
@@ -54,6 +54,10 @@ GOLDEN_CHECK_STATUSES = {
     # PARTIAL (never GAP-as-coverage nor OK).
     "mde-onboard-gap": FindingStatus.PARTIAL,
     "endpoint-enrollment-coverage": FindingStatus.PARTIAL,
+    # WS2-A: eligibility is any()-of required_capabilities. Golden ARM pricings
+    # already declare VirtualMachines Standard, so observing consumption owns
+    # defender_for_cloud_servers and this check is no longer not_licensed.
+    "az-defender-plan-enabled": FindingStatus.OK,
 }
 
 
