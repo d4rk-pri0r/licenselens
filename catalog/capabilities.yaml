@@ -275,15 +275,12 @@ capabilities:
       A security workspace may exist, but few detections or smart analytics are turned on.
     workloads: [sentinel]
     entitlement_kind: consumption
-    service_plan_names:
-      - MICROSOFT_SENTINEL
-    service_plan_aliases:
-      - Azure_Sentinel
-    # No servicePlanId GUIDs: Sentinel is Azure-only and not licensed via subscribedSkus plans.
+    service_plan_names: []
+    service_plan_aliases: []
+    # No SKU/service-plan tokens: consumption entitlements are observed in
+    # Azure (Sentinel onboarding state / workspace / pricings probes).
     service_plan_ids: []
-    sku_part_numbers:
-      - MICROSOFT_SENTINEL
-      - AZURE_SENTINEL
+    sku_part_numbers: []
     clouds: [commercial, gcc, gcc_high, dod]
     backends: [arm, graph]
     source_version: "2026-08"
@@ -920,11 +917,8 @@ capabilities:
     workloads: [sentinel, azure]
     entitlement_kind: consumption
     service_plan_names: []
-    sku_part_numbers:
-      - MICROSOFT_SENTINEL
-      - AZURE_SENTINEL
-    sku_aliases:
-      - AZURE_MONITOR_LOGS
+    sku_part_numbers: []
+    sku_aliases: []
     clouds: [commercial, gcc, gcc_high, dod]
     backends: [arm]
     source_version: "2026-08"
@@ -944,11 +938,8 @@ capabilities:
     workloads: [azure, defender]
     entitlement_kind: consumption
     service_plan_names: []
-    sku_part_numbers:
-      - DEFENDER_CSPM
-      - ASC_CSPM
-    sku_aliases:
-      - MICROSOFT_DEFENDER_FOR_CLOUD_CSPM
+    sku_part_numbers: []
+    sku_aliases: []
     clouds: [commercial, gcc, gcc_high, dod]
     backends: [arm]
     source_version: "2026-08"
@@ -968,12 +959,8 @@ capabilities:
     workloads: [azure, defender]
     entitlement_kind: consumption
     service_plan_names: []
-    sku_part_numbers:
-      - DEFENDER_SERVERS_P1
-      - DEFENDER_SERVERS_P2
-      - ASC_SERVERS
-    sku_aliases:
-      - MICROSOFT_DEFENDER_FOR_SERVERS
+    sku_part_numbers: []
+    sku_aliases: []
     clouds: [commercial, gcc, gcc_high, dod]
     backends: [arm]
     source_version: "2026-08"

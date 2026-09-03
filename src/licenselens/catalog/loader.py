@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 import yaml
 
@@ -17,6 +17,9 @@ from licenselens.catalog.capability_meta import (
 )
 from licenselens.models import Capability, CapabilitySummary, ServicePlan, SubscribedSku, Workload
 from licenselens.paths import catalog_dir
+
+if TYPE_CHECKING:
+    from licenselens.collectors.consumption_entitlements import ConsumptionObservation
 
 _GUID_PATTERN: Final = re.compile(
     r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
@@ -205,6 +208,18 @@ def resolve_owned_capabilities(
         if guid_hit or plan_hit or sku_hit:
             owned.append(cap.id)
     return sorted(set(owned))
+
+
+def merge_consumption(
+    owned: list[str],
+    observation: ConsumptionObservation,
+) -> list[str]:
+    """Union SKU-resolved ownership with Azure-observed consumption ownership.
+
+    Unknown observations never grant ownership (absence of evidence is not
+    evidence of absence); WS2-B surfaces them separately.
+    """
+    return sorted(set(owned) | set(observation.owned))
 
 
 def capability_summaries_for(

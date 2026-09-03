@@ -123,13 +123,15 @@ def test_load_expanded_catalog_kinds_and_provenance() -> None:
 def test_legacy_eight_resolution_parity_on_classic_e5() -> None:
     caps = load_capabilities()
     owned = set(resolve_owned_capabilities(caps, _classic_e5()))
-    assert LEGACY_EIGHT <= owned
+    # Consumption capabilities are observed in Azure (WS2-A), never SKU-unlocked.
+    assert LEGACY_EIGHT - {"microsoft_sentinel"} <= owned
+    assert "microsoft_sentinel" not in owned
+    assert "log_analytics" not in owned
     assert "exchange_online" in owned
     assert "teams" in owned
     assert "intune" in owned
     assert "defender_xdr" in owned
     assert "purview_audit" in owned
-    assert "log_analytics" in owned
 
 
 @pytest.mark.parametrize(
@@ -147,9 +149,6 @@ def test_legacy_eight_resolution_parity_on_classic_e5() -> None:
             "sharepoint_online",
         ),
         (CatalogCloud.COMMERCIAL, "POWER_BI_PRO", "BI_AZURE_P2", "power_bi_pro"),
-        (CatalogCloud.COMMERCIAL, "DEFENDER_CSPM", "UNUSED_PLAN", "defender_for_cloud_cspm"),
-        (CatalogCloud.DOD, "DEFENDER_SERVERS_P2", "UNUSED_PLAN", "defender_for_cloud_servers"),
-        (CatalogCloud.GCC, "MICROSOFT_SENTINEL", "MICROSOFT_SENTINEL", "microsoft_sentinel"),
     ],
 )
 def test_cloud_sku_matrix_unlocks_expected_capability(
@@ -162,6 +161,27 @@ def test_cloud_sku_matrix_unlocks_expected_capability(
     skus = [_sku(sku_part, [(plan, "Success")])]
     owned = resolve_owned_capabilities(caps, skus, cloud=cloud)
     assert expected in owned
+
+
+@pytest.mark.parametrize(
+    ("cloud", "sku_part", "plan", "expected"),
+    [
+        (CatalogCloud.COMMERCIAL, "DEFENDER_CSPM", "UNUSED_PLAN", "defender_for_cloud_cspm"),
+        (CatalogCloud.DOD, "DEFENDER_SERVERS_P2", "UNUSED_PLAN", "defender_for_cloud_servers"),
+        (CatalogCloud.GCC, "MICROSOFT_SENTINEL", "MICROSOFT_SENTINEL", "microsoft_sentinel"),
+    ],
+)
+def test_consumption_not_unlocked_by_sku(
+    cloud: CatalogCloud,
+    sku_part: str,
+    plan: str,
+    expected: str,
+) -> None:
+    """Consumption capabilities are observed via ARM probes, not SKU tokens."""
+    caps = load_capabilities()
+    skus = [_sku(sku_part, [(plan, "Success")])]
+    owned = resolve_owned_capabilities(caps, skus, cloud=cloud)
+    assert expected not in owned
 
 
 def test_dod_cloud_excludes_capabilities_not_listed_for_dod() -> None:
@@ -316,6 +336,7 @@ def test_demo_style_e5_still_unlocks_original_security_caps() -> None:
         "identity_protection",
         "defender_office_p2",
         "defender_endpoint_p2",
-        "microsoft_sentinel",
         "purview_dlp",
     } <= owned
+    assert "microsoft_sentinel" not in owned
+    assert "log_analytics" not in owned

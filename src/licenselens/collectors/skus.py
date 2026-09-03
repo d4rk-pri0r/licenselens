@@ -57,19 +57,6 @@ _DEMO_SKUS: list[SubscribedSku] = [
             ),
         ],
     ),
-    SubscribedSku(
-        sku_id="demo-sentinel",
-        sku_part_number="MICROSOFT_SENTINEL",
-        capability_status="Enabled",
-        prepaid_units=1,
-        consumed_units=1,
-        service_plans=[
-            ServicePlan(
-                service_plan_name="MICROSOFT_SENTINEL",
-                provisioning_status="Success",
-            ),
-        ],
-    ),
 ]
 
 
