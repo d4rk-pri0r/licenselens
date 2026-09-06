@@ -33,6 +33,7 @@ Include:
 - Default dormant-account evidence redacts UPN local-parts only; treat full JSON as sensitive
 - Production MSP use should prefer a dedicated app registration with the client secret in a secret manager (or Azure CLI); certificate (`--auth certificate`, PEM/PFX client cert) and OIDC/workload-identity federation are the recommended secret-free unattended patterns
 - Collectors must not call write APIs
+- LicenseLens runs one fixed metering query (`usage_by_datatype_7d`); there is no KQL execution surface and no way to pass raw query text
 
 ## Data handling
 

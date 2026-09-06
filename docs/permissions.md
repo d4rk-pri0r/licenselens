@@ -64,7 +64,7 @@ Or:
 | Role on workspace (recommended) | Purpose |
 |----------------------------------|---------|
 | **Microsoft Sentinel Reader** | Analytics rules + settings; also the entitlement probes: [Sentinel onboardingStates](https://learn.microsoft.com/rest/api/securityinsights/sentinel-onboarding-states/get?view=rest-securityinsights-2024-03-01) and [Log Analytics workspace GET](https://learn.microsoft.com/rest/api/loganalytics/workspaces/get?view=rest-loganalytics-2022-10-01) |
-| Log Analytics Reader | Often insufficient alone for SecurityInsights APIs |
+| **Log Analytics Reader** | Log Analytics Query API (`Data.Read`) for the one allowlisted Usage metering query; [access the Logs query API](https://learn.microsoft.com/azure/azure-monitor/logs/api/access-api) |
 
 Optional selective Azure (not generic CSPM):
 
