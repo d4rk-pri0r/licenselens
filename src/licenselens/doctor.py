@@ -91,6 +91,7 @@ def run_doctor(
     auth: AuthContext,
     *,
     workspace_resource_id: str | None = None,
+    subscription_id: str | None = None,
     profile: str | DoctorProfile = DoctorProfile.BASIC,
 ) -> DoctorReport:
     """Validate credentials and core Graph / optional Sentinel reads.
@@ -474,6 +475,152 @@ def run_doctor(
                     name="sentinelWorkspace",
                     ok=True,
                     detail=("Skipped (pass --workspace-resource-id to probe Sentinel)."),
+                )
+            )
+
+        # Consumption entitlement observation (same ARM surfaces as the scan):
+        # Sentinel onboarding state + Defender for Cloud pricings. Rows are
+        # optional so a 403 never blocks report.ready; details never echo the
+        # workspace resource id or the subscription GUID.
+        from licenselens.collectors.arm import subscription_id_from_resource_id
+        from licenselens.collectors.consumption_entitlements import (
+            observe_consumption_entitlements,
+        )
+
+        arm_scope_sub = (subscription_id or "").strip() or (
+            subscription_id_from_resource_id(workspace_resource_id)
+            if workspace_resource_id
+            else None
+        )
+        observation = observe_consumption_entitlements(
+            auth,
+            workspace_resource_id=workspace_resource_id,
+            subscription_id=arm_scope_sub,
+            dry_run=False,
+        )
+
+        sentinel_detail = dict(observation.evidence.get("microsoft_sentinel") or {})
+        sentinel_status = sentinel_detail.get("status")
+        if not workspace_resource_id:
+            report.checks.append(
+                DoctorCheck(
+                    name="sentinelOnboardingState",
+                    ok=True,
+                    optional=True,
+                    detail=(
+                        "Skipped (pass --workspace-resource-id to probe the "
+                        "Sentinel onboarding state)."
+                    ),
+                )
+            )
+        elif sentinel_status == 200:
+            report.checks.append(
+                DoctorCheck(
+                    name="sentinelOnboardingState",
+                    ok=True,
+                    detail=(
+                        "Sentinel onboarding state read ok — "
+                        "workspace is onboarded to Microsoft Sentinel."
+                    ),
+                )
+            )
+        elif sentinel_status == 404:
+            report.checks.append(
+                DoctorCheck(
+                    name="sentinelOnboardingState",
+                    ok=False,
+                    optional=True,
+                    detail="Workspace is not a Sentinel workspace (onboarding state returned 404).",
+                    fix=(
+                        "Onboard the workspace to Microsoft Sentinel in the Azure "
+                        "portal if you expect Sentinel checks to apply."
+                    ),
+                )
+            )
+        elif sentinel_status in (401, 403):
+            report.checks.append(
+                DoctorCheck(
+                    name="sentinelOnboardingState",
+                    ok=False,
+                    optional=True,
+                    detail=(
+                        f"Azure denied the Sentinel onboarding read (HTTP {sentinel_status}) "
+                        "— entitlement could not be determined."
+                    ),
+                    fix=(
+                        "Grant Microsoft Sentinel Reader on the workspace "
+                        "(docs/permissions.md), then re-run doctor."
+                    ),
+                )
+            )
+        else:
+            report.checks.append(
+                DoctorCheck(
+                    name="sentinelOnboardingState",
+                    ok=False,
+                    optional=True,
+                    detail=(
+                        f"Sentinel onboarding read failed (HTTP {sentinel_status}) "
+                        "— entitlement could not be determined."
+                    ),
+                    fix=("Check Azure read access and re-run doctor (docs/permissions.md)."),
+                )
+            )
+
+        pricings_detail = dict(observation.evidence.get("defender_for_cloud_pricings") or {})
+        pricings_status = pricings_detail.get("status")
+        if not arm_scope_sub:
+            report.checks.append(
+                DoctorCheck(
+                    name="defenderForCloudPricings",
+                    ok=True,
+                    optional=True,
+                    detail=(
+                        "Skipped (pass --workspace-resource-id or --subscription-id "
+                        "to probe Defender for Cloud pricings)."
+                    ),
+                )
+            )
+        elif pricings_status == 200:
+            cloud_posture = str(pricings_detail.get("cloud_posture_tier") or "Free")
+            virtual_machines = str(pricings_detail.get("virtual_machines_tier") or "Free")
+            report.checks.append(
+                DoctorCheck(
+                    name="defenderForCloudPricings",
+                    ok=True,
+                    detail=(
+                        "Defender for Cloud pricings read ok — "
+                        f"CloudPosture={cloud_posture}, VirtualMachines={virtual_machines}."
+                    ),
+                )
+            )
+        elif pricings_status in (401, 403):
+            report.checks.append(
+                DoctorCheck(
+                    name="defenderForCloudPricings",
+                    ok=False,
+                    optional=True,
+                    detail=(
+                        f"Azure denied the Defender for Cloud pricings read "
+                        f"(HTTP {pricings_status}) — entitlement could not be determined."
+                    ),
+                    fix=(
+                        "Grant Security Reader on the subscription "
+                        "(docs/permissions.md), then re-run doctor."
+                    ),
+                )
+            )
+        else:
+            report.checks.append(
+                DoctorCheck(
+                    name="defenderForCloudPricings",
+                    ok=False,
+                    optional=True,
+                    detail=(
+                        f"Defender for Cloud pricings read failed (HTTP {pricings_status}) "
+                        "— entitlement could not be determined."
+                    ),
+                    fix=("Check Azure read access and re-run doctor (docs/permissions.md)."),
                 )
             )
 

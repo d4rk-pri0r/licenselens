@@ -59,3 +59,10 @@ def test_doctor_not_ready_when_essential_check_fails():
         ],
     )
     assert report.ready is False
+
+
+def test_doctor_dry_run_full_profile_has_no_arm_probe_rows():
+    ctx = build_auth_context(mode=AuthMode.DRY_RUN)
+    report = run_doctor(ctx, profile="full")
+    names = {c.name for c in report.checks}
+    assert names == {"mode", "graphPermissions"}

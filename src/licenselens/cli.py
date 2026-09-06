@@ -476,7 +476,10 @@ def doctor_cmd(
     profile: str = typer.Option(
         "basic",
         "--profile",
-        help="Probe depth: basic (core Graph) | full (also MDE API + Sentinel).",
+        help=(
+            "Probe depth: basic (core Graph) | full (also MDE API, Sentinel "
+            "onboarding, and Defender for Cloud pricings)."
+        ),
     ),
     assessment_profile: list[str] | None = typer.Option(
         None,
@@ -552,7 +555,12 @@ def doctor_cmd(
             client_id=client_id,
             client_secret=client_secret,
         )
-        report = run_doctor(ctx, workspace_resource_id=workspace, profile=profile)
+        report = run_doctor(
+            ctx,
+            workspace_resource_id=workspace,
+            subscription_id=(subscription_id or "").strip() or None,
+            profile=profile,
+        )
     except ValueError as exc:
         console.print(f"[red]Doctor configuration error:[/red] {exc}")
         raise typer.Exit(code=2) from exc
