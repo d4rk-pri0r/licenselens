@@ -152,7 +152,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Land security and operational logs in a workspace that detections and investigations can query.
 - **Why it matters:** Sentinel without healthy log ingestion is an empty command center.
 - **If unused:** Workspaces may exist while critical tables are missing, short-retained, or never connected.
-- **Included through license SKU(s):** Not reported
+- **Observed in Azure:** /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel
 - **Matching service plan(s):** No matching service plan reported
 
 ### A central security command center in the cloud
@@ -162,7 +162,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **What it does:** Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.
 - **Why it matters:** Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.
 - **If unused:** A security workspace may exist, but few detections or smart analytics are turned on.
-- **Included through license SKU(s):** Not reported
+- **Observed in Azure:** /subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel
 - **Matching service plan(s):** No matching service plan reported
 
 ### Personal work files in the cloud

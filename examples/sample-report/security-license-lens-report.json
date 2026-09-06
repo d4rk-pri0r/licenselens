@@ -50,7 +50,9 @@
       "outcome": "Decide who can sign in, from where, on which devices, and whether they must prove it is really them (for example with multi-factor authentication).",
       "why_it_matters": "Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.",
       "if_unused": "Your licenses include advanced sign-in rules, but they may still be loose or incomplete.",
-      "docs_url": "https://learn.microsoft.com/entra/identity/conditional-access/overview"
+      "docs_url": "https://learn.microsoft.com/entra/identity/conditional-access/overview",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "defender_endpoint_p2",
@@ -65,7 +67,9 @@
       "outcome": "See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.",
       "why_it_matters": "Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.",
       "if_unused": "You may be paying for advanced device protection on seats that are not fully enrolled.",
-      "docs_url": "https://learn.microsoft.com/defender-endpoint/onboarding"
+      "docs_url": "https://learn.microsoft.com/defender-endpoint/onboarding",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "defender_identity",
@@ -78,7 +82,9 @@
       "outcome": "Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.",
       "why_it_matters": "Many organizations still rely on on-site domain controllers. Cloud-only tools cannot see every attack path there.",
       "if_unused": "Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.",
-      "docs_url": "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity"
+      "docs_url": "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "defender_office_p1",
@@ -91,7 +97,9 @@
       "outcome": "Detonate risky attachments and rewrite dangerous links for licensed users even when the full P2 investigation pack is not present.",
       "why_it_matters": "Many tenants own P1-level email protections that never leave default off states.",
       "if_unused": "Safe content policies may be missing, scoped to pilots, or left in evaluation mode.",
-      "docs_url": "https://learn.microsoft.com/defender-office-365/defender-for-office-365"
+      "docs_url": "https://learn.microsoft.com/defender-office-365/defender-for-office-365",
+      "entitlement_kind": "add_on",
+      "observed_resources": []
     },
     {
       "id": "defender_office_p2",
@@ -106,7 +114,9 @@
       "outcome": "Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.",
       "why_it_matters": "Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.",
       "if_unused": "Extra email protections in your license may still be off, in test mode, or only covering a few people.",
-      "docs_url": "https://learn.microsoft.com/defender-office-365/preset-security-policies"
+      "docs_url": "https://learn.microsoft.com/defender-office-365/preset-security-policies",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "defender_xdr",
@@ -122,7 +132,9 @@
       "outcome": "Connect identity, email, endpoint, and cloud signals into incidents that show the full attack story instead of isolated alerts.",
       "why_it_matters": "Attackers hop products. Siloed alerts hide the path from phishing to privilege.",
       "if_unused": "XDR correlation may be licensed while automated investigation and response stay idle.",
-      "docs_url": "https://learn.microsoft.com/defender-xdr/microsoft-365-defender"
+      "docs_url": "https://learn.microsoft.com/defender-xdr/microsoft-365-defender",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "entra_id_p2",
@@ -137,7 +149,9 @@
       "outcome": "Give people powerful admin rights only when they need them, and get better tools to catch risky sign-ins on high-value accounts.",
       "why_it_matters": "Admin accounts are the keys to your email, files, and business apps. If one is stolen, an attacker can look like a trusted employee.",
       "if_unused": "You are paying for stronger admin protections that are not fully turned on yet.",
-      "docs_url": "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure"
+      "docs_url": "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "exchange_online",
@@ -150,7 +164,9 @@
       "outcome": "Host mailboxes in Microsoft 365 and apply tenant email security and sharing controls that protect everyday business communication.",
       "why_it_matters": "Email remains a primary business channel and a primary attack path. Weak tenant defaults leave phishing and data exposure wide open.",
       "if_unused": "Mailboxes may be licensed while core protection and audit settings stay at weak defaults.",
-      "docs_url": "https://learn.microsoft.com/exchange/exchange-online"
+      "docs_url": "https://learn.microsoft.com/exchange/exchange-online",
+      "entitlement_kind": "base",
+      "observed_resources": []
     },
     {
       "id": "exchange_online_protection",
@@ -163,7 +179,9 @@
       "outcome": "Filter obvious junk and malware before it reaches inboxes, as the foundation under optional Defender for Office 365 controls.",
       "why_it_matters": "Without baseline filtering, every advanced email control sits on a weak floor.",
       "if_unused": "Core anti-spam or anti-malware policies may be off, overly permissive, or unmonitored.",
-      "docs_url": "https://learn.microsoft.com/defender-office-365/eop-about"
+      "docs_url": "https://learn.microsoft.com/defender-office-365/eop-about",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "identity_protection",
@@ -178,7 +196,9 @@
       "outcome": "Automatically spot odd sign-in behavior (impossible travel, leaked passwords, unfamiliar locations) and require extra proof or block access.",
       "why_it_matters": "Attackers often use valid passwords. Risk detection helps catch the session even when the password was correct.",
       "if_unused": "Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.",
-      "docs_url": "https://learn.microsoft.com/entra/id-protection/overview-identity-protection"
+      "docs_url": "https://learn.microsoft.com/entra/id-protection/overview-identity-protection",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "intune",
@@ -191,7 +211,9 @@
       "outcome": "Require healthy devices, push secure settings, and protect work data on phones and PCs people already use.",
       "why_it_matters": "Unmanaged devices are a common path around strong cloud identity controls.",
       "if_unused": "Compliance or configuration profiles may be missing, unassigned, or never enforced.",
-      "docs_url": "https://learn.microsoft.com/mem/intune/fundamentals/what-is-intune"
+      "docs_url": "https://learn.microsoft.com/mem/intune/fundamentals/what-is-intune",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "log_analytics",
@@ -202,7 +224,11 @@
       "outcome": "Land security and operational logs in a workspace that detections and investigations can query.",
       "why_it_matters": "Sentinel without healthy log ingestion is an empty command center.",
       "if_unused": "Workspaces may exist while critical tables are missing, short-retained, or never connected.",
-      "docs_url": "https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview"
+      "docs_url": "https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview",
+      "entitlement_kind": "consumption",
+      "observed_resources": [
+        "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
+      ]
     },
     {
       "id": "microsoft_sentinel",
@@ -213,7 +239,11 @@
       "outcome": "Bring security signals together in one place, detect patterns humans miss, and automate parts of incident response.",
       "why_it_matters": "Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.",
       "if_unused": "A security workspace may exist, but few detections or smart analytics are turned on.",
-      "docs_url": "https://learn.microsoft.com/azure/sentinel/overview"
+      "docs_url": "https://learn.microsoft.com/azure/sentinel/overview",
+      "entitlement_kind": "consumption",
+      "observed_resources": [
+        "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
+      ]
     },
     {
       "id": "onedrive_for_business",
@@ -226,7 +256,9 @@
       "outcome": "Give people a private work drive while still enforcing sharing limits, device access, and retention expectations.",
       "why_it_matters": "Personal work drives often hold the same sensitive files as shared libraries.",
       "if_unused": "OneDrive sharing or sync controls may lag behind the SharePoint tenant baseline.",
-      "docs_url": "https://learn.microsoft.com/onedrive/onedrive-admin"
+      "docs_url": "https://learn.microsoft.com/onedrive/onedrive-admin",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "power_bi_pro",
@@ -239,7 +271,9 @@
       "outcome": "Publish and share interactive reports with colleagues under tenant-level export, sharing, and guest boundaries.",
       "why_it_matters": "BI content often contains concentrated business truth; loose sharing leaks strategy.",
       "if_unused": "Tenant sharing or export settings may still allow broader distribution than intended.",
-      "docs_url": "https://learn.microsoft.com/power-bi/enterprise/service-admin-planning"
+      "docs_url": "https://learn.microsoft.com/power-bi/enterprise/service-admin-planning",
+      "entitlement_kind": "base",
+      "observed_resources": []
     },
     {
       "id": "power_platform",
@@ -252,7 +286,9 @@
       "outcome": "Let teams build useful apps and automations inside governed environments with DLP and tenant isolation boundaries.",
       "why_it_matters": "Ungoverned makers can connect business data to personal connectors overnight.",
       "if_unused": "Environment creation, connector policies, or tenant isolation may still be wide open.",
-      "docs_url": "https://learn.microsoft.com/power-platform/admin/admin-documentation"
+      "docs_url": "https://learn.microsoft.com/power-platform/admin/admin-documentation",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "purview_audit",
@@ -267,7 +303,9 @@
       "outcome": "Reconstruct who did what across mail, files, and admin actions when something goes wrong.",
       "why_it_matters": "Without audit history, investigations stall and compliance questions go unanswered.",
       "if_unused": "Audit logging may be off, truncated, or never queried after an incident.",
-      "docs_url": "https://learn.microsoft.com/purview/audit-solutions-overview"
+      "docs_url": "https://learn.microsoft.com/purview/audit-solutions-overview",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "purview_communication_compliance",
@@ -280,7 +318,9 @@
       "outcome": "Detect harassment, threats, or sensitive-data sharing patterns in business conversations.",
       "why_it_matters": "Toxic or noncompliant communication creates legal and cultural risk that identity tools miss.",
       "if_unused": "Communication compliance may be entitled but never scoped to the channels that matter.",
-      "docs_url": "https://learn.microsoft.com/purview/communication-compliance"
+      "docs_url": "https://learn.microsoft.com/purview/communication-compliance",
+      "entitlement_kind": "add_on",
+      "observed_resources": []
     },
     {
       "id": "purview_dlp",
@@ -295,7 +335,9 @@
       "outcome": "Warn or block people when they try to share credit cards, health data, or other sensitive information in the wrong place.",
       "why_it_matters": "Accidental oversharing is common. Guardrails protect customers and reduce regulatory and reputational harm.",
       "if_unused": "Data-protection rules may be missing or still in \"test only\" mode, so nothing is enforced yet.",
-      "docs_url": "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
+      "docs_url": "https://learn.microsoft.com/purview/dlp-learn-about-dlp",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "purview_ediscovery",
@@ -311,7 +353,9 @@
       "outcome": "Preserve and search relevant content when legal or investigative work demands it.",
       "why_it_matters": "Missing holds destroy evidence and create legal and regulatory exposure.",
       "if_unused": "eDiscovery tools may be licensed while no one can run a defensible case workflow.",
-      "docs_url": "https://learn.microsoft.com/purview/ediscovery"
+      "docs_url": "https://learn.microsoft.com/purview/ediscovery",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "purview_insider_risk",
@@ -324,7 +368,9 @@
       "outcome": "Spot patterns that suggest data theft, leak, or policy abuse by people who already have access.",
       "why_it_matters": "Trusted access is powerful. Without signals, insider incidents surface only after damage.",
       "if_unused": "Insider risk policies may be unlicensed in practice or never moved past trial defaults.",
-      "docs_url": "https://learn.microsoft.com/purview/insider-risk-management"
+      "docs_url": "https://learn.microsoft.com/purview/insider-risk-management",
+      "entitlement_kind": "add_on",
+      "observed_resources": []
     },
     {
       "id": "purview_retention",
@@ -337,7 +383,9 @@
       "outcome": "Keep content for legal or regulatory periods and remove it when it is no longer needed, reducing both evidence risk and storage cost.",
       "why_it_matters": "Retention protects evidence and reduces over-retention risk and storage cost.",
       "if_unused": "Retention policies may be absent, so content is either deleted too early or kept indefinitely without a defensible schedule.",
-      "docs_url": "https://learn.microsoft.com/purview/retention"
+      "docs_url": "https://learn.microsoft.com/purview/retention",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "purview_sensitivity_labels",
@@ -352,7 +400,9 @@
       "outcome": "Mark sensitive content and apply encryption or access limits that travel with the file.",
       "why_it_matters": "Classification without enforcement is a sticker; labels with protection change outcomes.",
       "if_unused": "Labels may exist but remain unpublished, unused, or never auto-applied.",
-      "docs_url": "https://learn.microsoft.com/purview/sensitivity-labels"
+      "docs_url": "https://learn.microsoft.com/purview/sensitivity-labels",
+      "entitlement_kind": "included",
+      "observed_resources": []
     },
     {
       "id": "sharepoint_online",
@@ -365,7 +415,9 @@
       "outcome": "Host shared libraries with clear external sharing boundaries and default link permissions that match how the business actually works.",
       "why_it_matters": "Over-broad sharing turns one mistaken link into a public data leak.",
       "if_unused": "Tenant sharing defaults may still allow anyone links or unmanaged access.",
-      "docs_url": "https://learn.microsoft.com/sharepoint/introduction"
+      "docs_url": "https://learn.microsoft.com/sharepoint/introduction",
+      "entitlement_kind": "base",
+      "observed_resources": []
     },
     {
       "id": "teams",
@@ -378,7 +430,9 @@
       "outcome": "Keep collaboration fast while controlling guests, anonymous join, apps, and recording exposure.",
       "why_it_matters": "Teams is where decisions and files move quickly \u2014 weak meeting or guest defaults become an easy side door.",
       "if_unused": "External access, lobby, or app policies may still favor convenience over control.",
-      "docs_url": "https://learn.microsoft.com/microsoftteams/teams-overview"
+      "docs_url": "https://learn.microsoft.com/microsoftteams/teams-overview",
+      "entitlement_kind": "base",
+      "observed_resources": []
     }
   ],
   "subscribed_skus": [

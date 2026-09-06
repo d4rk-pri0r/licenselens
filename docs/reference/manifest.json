@@ -20,7 +20,7 @@
   "package_version": "0.4.0",
   "permission_count": 20,
   "profile_count": 11,
-  "sample_sha256": "f493bb879834e2fb9a60dd32a9375822f09c0990d6f80e712dc5c9781cca4f50",
+  "sample_sha256": "48926904dfdf0c8c04803aec2c4f78d86ae8024338b46903f6c2a1f04e605d02",
   "sample_version": "0.4.0",
   "sources": {
     "catalog/capabilities.yaml": "89526bd9c2cd1946ef30506b145c811e3a9337f26daa687317515b5a9a589200",
@@ -202,7 +202,7 @@
     "checks/sentinel/sen-data-connectors.yaml": "5f00b95cbe1572e17c27183a2bbe6c341a786fa22a67cadb5afa69ececa2dbc5",
     "checks/sentinel/sen-log-analytics-retention.yaml": "771a473327524cbfcf93890e7e105521046b74fcbc96308c303d04e50afa45e0",
     "checks/sentinel/sen-ueba-not-enabled.yaml": "2a0aa5e9f4259c4be123db6a87ff7c98cd3b305aa1ce170abdd3d777b926dc8f",
-    "docs/permissions.md": "49e0716d09058b91ee165dcb7bd2cb10bf3609456366ccfc41cea6d554a5345c"
+    "docs/permissions.md": "fc11820ce9e87653de528509902054e2f987ace409d97752a33d4e0a674ca22d"
   },
   "untracked_row_count": 4
 }
