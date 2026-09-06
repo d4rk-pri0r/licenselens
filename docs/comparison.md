@@ -13,7 +13,7 @@ remediation platform.
 | Tool | Optimizes for | How LicenseLens differs |
 |------|----------------|--------------------------|
 | [ScubaGear](https://github.com/cisagov/ScubaGear) | CISA SCuBA baseline compliance | LicenseLens starts from owned SKUs → expected high-value controls, not a fixed baseline; both are advisory. |
-| [Maester](https://github.com/maester365/maester) | Continuous Pester config tests | Maester tests specific settings you point it at; LicenseLens derives *which* controls to check from the entitlements you own. |
+| [Maester](https://github.com/maester365/maester) | Continuous Pester config tests | Maester tests specific settings you point it at; LicenseLens derives *which* controls to check from the entitlements you own. Complementary: ingest a Maester export with `licenselens ingest maester` to see which failures you already pay to fix. |
 | Microsoft Secure Score | Numeric posture score + recommendations (not SKU-gated) | LicenseLens is entitlement-aware (what you own → activation gap) and exposes per-finding evidence; Secure Score is one labeled proxy path only when direct reads are unavailable. |
 | [CIPP](https://github.com/KelvinTegelaar/CIPP) | MSP tenant administration & standard enforcement | CIPP is a management/automation platform; LicenseLens is a read-only activation assessment. Complementary: CIPP can remediate what LicenseLens identifies. |
 | [Microsoft Lighthouse](https://learn.microsoft.com/microsoft-365/lighthouse/m365-lighthouse-overview) | Microsoft partner multi-tenant management | Lighthouse is a partner management surface; LicenseLens is an evidence-driven assessment with a repeatable activation backlog. |

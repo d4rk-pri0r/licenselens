@@ -228,6 +228,27 @@ licenselens diff reports/before.json reports/after.json -o reports/diff.md
 
 Exit `0` on success; `2` if a file is missing or the diff fails.
 
+### `ingest`
+
+Map a Maester JSON export onto a LicenseLens scan. Writes a side artifact
+(`security-license-lens-external-maester.json` and `.md`). Does **not** merge
+into the main findings list.
+
+```bash
+licenselens ingest maester maester.json --scan reports/security-license-lens-report.json -o reports
+```
+
+| Argument / option | Default | Description |
+|-------------------|---------|-------------|
+| `SOURCE` | (required) | Currently `maester` |
+| `RESULTS` | (required) | Maester `Invoke-Maester -OutputJson` file |
+| `--scan` | (required) | LicenseLens scan JSON |
+| `-o` / `--output-dir` | (required) | Directory for the side artifact |
+
+Exit `0` on success; `2` on a missing file or parse error.
+
+See [Maester](maester.md).
+
 ### `batch`
 
 Run scans for every tenant listed in a `tenants.yaml` config. One failing tenant

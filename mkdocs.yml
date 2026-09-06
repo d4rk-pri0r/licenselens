@@ -16,6 +16,7 @@ nav:
   - Quick start: getting-started.md
   - CLI reference: cli.md
   - MCP (AI assistants): mcp.md
+  - Maester: maester.md
   - Concepts:
       - Overview: concepts.md
       - How it compares: comparison.md
