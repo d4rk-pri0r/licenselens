@@ -60,7 +60,7 @@ def test_setup_makes_no_network_calls(monkeypatch):
 
 
 def test_help_renders_new_commands():
-    for cmd in ["diff", "batch", "discover-workspace", "setup"]:
+    for cmd in ["diff", "batch", "discover-workspace", "setup", "ingest"]:
         result = runner.invoke(app, [cmd, "--help"])
         assert result.exit_code == 0, result.output
         assert "Usage" in result.stdout

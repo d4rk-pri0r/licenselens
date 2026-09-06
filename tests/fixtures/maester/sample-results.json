@@ -1,0 +1,29 @@
+{
+  "TenantId": "00000000-0000-0000-0000-000000000000",
+  "Tests": [
+    {
+      "Name": "MS.AAD.1.1v1 - Legacy authentication SHALL be blocked",
+      "Result": "Failed",
+      "Tag": ["MS.AAD.1.1v1", "CISA", "Entra"],
+      "ResultDetail": {
+        "TestResult": "Legacy authentication is still allowed for some apps."
+      }
+    },
+    {
+      "Name": "MS.AAD.2.1v1 - High risk users SHALL be blocked",
+      "Result": "Passed",
+      "Tag": "MS.AAD.2.1v1",
+      "ResultDetail": {
+        "TestResult": "High-risk users are blocked."
+      }
+    },
+    {
+      "Name": "MT.1001 - Custom Maester test without a SCuBA id",
+      "Result": "Failed",
+      "Tag": ["MT.1001", "Custom"],
+      "ResultDetail": {
+        "TestResult": "No SCuBA policy id in tags."
+      }
+    }
+  ]
+}

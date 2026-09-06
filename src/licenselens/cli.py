@@ -1443,6 +1443,55 @@ def diff_cmd(
     raise typer.Exit(code=0)
 
 
+@app.command("ingest")
+def ingest_cmd(
+    source: str = typer.Argument(..., help="External source. Currently: maester."),
+    results: Path = typer.Argument(..., help="Maester Invoke-Maester -OutputJson file."),
+    scan: Path = typer.Option(
+        ...,
+        "--scan",
+        help="LicenseLens scan JSON (security-license-lens-report.json).",
+    ),
+    output_dir: Path = typer.Option(
+        ...,
+        "--output-dir",
+        "-o",
+        help="Directory for the side-artifact JSON and Markdown.",
+    ),
+) -> None:
+    """Map an external Maester export onto a LicenseLens scan. Never merges into findings."""
+    if source.strip().lower() != "maester":
+        console.print("[red]Unknown ingest source.[/red] Currently supported: maester")
+        raise typer.Exit(code=2)
+    if not results.is_file():
+        console.print(f"[red]Maester results not found:[/red] {results}")
+        raise typer.Exit(code=2)
+    if not scan.is_file():
+        console.print(f"[red]Scan report not found:[/red] {scan}")
+        raise typer.Exit(code=2)
+    from licenselens.external.maester import (
+        MaesterParseError,
+        ingest_maester,
+        parse_maester_results,
+        write_maester_ingest,
+    )
+
+    try:
+        tests = parse_maester_results(results)
+        scan_result = ScanResult.model_validate_json(scan.read_text(encoding="utf-8"))
+        report = ingest_maester(tests, scan_result)
+        json_path, md_path = write_maester_ingest(report, output_dir)
+    except MaesterParseError as exc:
+        console.print(f"[red]Maester parse error:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+    except (OSError, UnicodeError, ValueError) as exc:
+        console.print(f"[red]Ingest failed:[/red] {exc}")
+        raise typer.Exit(code=2) from exc
+    console.print(f"  JSON  {json_path}")
+    console.print(f"  MD    {md_path}")
+    raise typer.Exit(code=0)
+
+
 @app.command("merge-reports")
 def merge_reports_cmd(
     directory: list[Path] | None = typer.Argument(

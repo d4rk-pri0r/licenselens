@@ -354,6 +354,7 @@ class Finding(BaseModel):
                 EvaluationMode.PROXY,
                 EvaluationMode.MANUAL,
                 EvaluationMode.UNSUPPORTED,
+                EvaluationMode.EXTERNAL,
             }
             and self.status == FindingStatus.OK
             and self.confidence == Confidence.HIGH

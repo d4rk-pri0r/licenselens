@@ -30,6 +30,7 @@ class EvaluationMode(StrEnum):
     MANUAL = "manual"
     UNSUPPORTED = "unsupported"
     DIRECT_WITH_PROXY_FALLBACK = "direct_with_proxy_fallback"
+    EXTERNAL = "external"
 
 
 class CollectionStatus(StrEnum):
