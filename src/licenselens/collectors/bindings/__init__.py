@@ -328,6 +328,14 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="license_assignment_collector",
+            backend=Backend.GRAPH,
+            permissions=("User.Read.All",),
+            dependencies=("license_assignment",),
+            timeout_seconds=45,
+        )
+        _register_one(
+            catalog,
             collector_id="sentinel_analytics",
             backend=Backend.ARM,
             permissions=(),

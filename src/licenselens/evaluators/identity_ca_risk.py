@@ -12,6 +12,7 @@ from licenselens.evaluators.identity_ca_lib import (
     purpose_scope,
     security_defaults_enabled,
 )
+from licenselens.evaluators.identity_population import annotate_protected_population
 from licenselens.models import CheckDefinition
 
 
@@ -24,7 +25,7 @@ def evaluate_ca_high_risk_users(
     evidence: dict[str, Any],
 ) -> Evaluation:
     del check
-    return ca_coverage_result(
+    result = ca_coverage_result(
         label="High-risk user block",
         policies=_policies(evidence),
         predicate=ca.blocks_high_user_risk,
@@ -38,6 +39,7 @@ def evaluate_ca_high_risk_users(
         scope_fn=purpose_scope(risk_conditioned=False),
         security_defaults_enabled=security_defaults_enabled(evidence),
     )
+    return annotate_protected_population(result, evidence)
 
 
 def evaluate_ca_high_risk_signins(
@@ -45,7 +47,7 @@ def evaluate_ca_high_risk_signins(
     evidence: dict[str, Any],
 ) -> Evaluation:
     del check
-    return ca_coverage_result(
+    result = ca_coverage_result(
         label="High-risk sign-in block",
         policies=_policies(evidence),
         predicate=ca.blocks_high_sign_in_risk,
@@ -57,3 +59,4 @@ def evaluate_ca_high_risk_signins(
         scope_fn=purpose_scope(risk_conditioned=False),
         security_defaults_enabled=security_defaults_enabled(evidence),
     )
+    return annotate_protected_population(result, evidence)

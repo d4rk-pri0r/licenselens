@@ -244,3 +244,29 @@ def collect_risky_service_principals_runtime(
         )
     except GraphError as exc:
         return graph_failure(key, exc, f"Risky service principals could not be read: {exc}", ctx)
+
+
+def collect_license_assignment_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    from licenselens.catalog.loader import load_capabilities, resolve_owned_capabilities
+    from licenselens.collectors.license_assignment import (
+        DEMO_LICENSE_ASSIGNMENT,
+        collect_license_assignment,
+    )
+    from licenselens.collectors.runtime_envelopes import error
+
+    key = "license_assignment"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_LICENSE_ASSIGNMENT), source="demo")
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        capabilities = load_capabilities()
+        owned = resolve_owned_capabilities(capabilities, ctx.skus)
+        bundle = collect_license_assignment(
+            ctx.client, capabilities=capabilities, owned_ids=owned, skus=ctx.skus
+        )
+        return ok(key, bundle, source="graph.users.count")
+    except GraphError as exc:
+        return graph_failure(key, exc, f"License assignment counts could not be read: {exc}", ctx)

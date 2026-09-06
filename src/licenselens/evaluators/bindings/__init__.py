@@ -31,6 +31,7 @@ from licenselens.evaluators.bindings.identity_apps_consent import register_ident
 from licenselens.evaluators.bindings.identity_apps_credentials import (
     register_identity_apps_credentials,
 )
+from licenselens.evaluators.bindings.identity_assignment import register_identity_assignment
 from licenselens.evaluators.bindings.identity_auth_methods import register_identity_auth_methods
 from licenselens.evaluators.bindings.identity_break_glass import register_identity_break_glass
 from licenselens.evaluators.bindings.identity_ca_coverage import register_identity_ca_coverage
@@ -77,6 +78,7 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_exchange_mailflow(catalog)
     register_identity_access(catalog)
     register_identity_apps_consent(catalog)
+    register_identity_assignment(catalog)
     register_identity_apps_credentials(catalog)
     register_identity_auth_methods(catalog)
     register_identity_break_glass(catalog)

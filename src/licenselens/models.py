@@ -366,6 +366,9 @@ class CapabilitySummary(BaseModel):
     docs_url: str | None = None
     entitlement_kind: str = "included"
     observed_resources: list[str] = Field(default_factory=list)
+    assigned_users: int | None = None
+    enabled_users: int | None = None
+    prepaid_units: int | None = None
 
 
 class TopMove(BaseModel):

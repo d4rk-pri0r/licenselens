@@ -76,6 +76,7 @@ _ERROR_ALIASES = {
     "mde_inventory": "mde_inventory_error",
     "entra_devices": "entra_devices_error",
     "device_reconciliation": "device_reconciliation_error",
+    "license_assignment": "license_assignment_error",
     "security_alerts_bundle": "security_alerts_bundle_error",
     "xdr_custom_detections": "xdr_custom_detections_error",
 }

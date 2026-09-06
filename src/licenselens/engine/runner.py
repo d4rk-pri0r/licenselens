@@ -82,6 +82,9 @@ def run_scan(
         state.skus,
         observation=state.observation,
         workspace_resource_id=state.workspace_resource_id,
+        assignment=evidence.get("license_assignment")
+        if isinstance(evidence.get("license_assignment"), dict)
+        else None,
     )
 
     email_proxy = allow_email_proxy or (

@@ -92,6 +92,12 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             45,
         ),
         "device_reconciliation": (Backend.NOOP, (), "derived:deviceReconciliation", 10),
+        "license_assignment": (
+            Backend.GRAPH,
+            ("User.Read.All",),
+            "graph:users.count",
+            45,
+        ),
         "intune_bundle": (
             Backend.GRAPH,
             ("DeviceManagementConfiguration.Read.All", "DeviceManagementManagedDevices.Read.All"),
@@ -308,6 +314,11 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             Backend.NOOP,
             (),
             ("device_reconciliation",),
+        ),
+        "license_assignment_collector": (
+            Backend.GRAPH,
+            ("User.Read.All",),
+            ("license_assignment",),
         ),
         "intune_collector": (
             Backend.GRAPH,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import yaml
 
@@ -260,6 +260,7 @@ def capability_summaries_for(
     skus: list[SubscribedSku],
     observation: ConsumptionObservation | None = None,
     workspace_resource_id: str | None = None,
+    assignment: dict[str, Any] | None = None,
 ) -> list[CapabilitySummary]:
     """Build plain-language cards for capabilities the tenant owns."""
     by_id = {cap.id: cap for cap in capabilities}
@@ -305,6 +306,25 @@ def capability_summaries_for(
             if parent_sku:
                 matched_skus_set.add(parent_sku)
 
+        prepaid = 0
+        prepaid_found = False
+        for sku in active_skus:
+            if sku.sku_part_number.upper() in {s.upper() for s in matched_skus_set}:
+                if sku.prepaid_units is not None:
+                    prepaid += int(sku.prepaid_units)
+                    prepaid_found = True
+        assign_row = {}
+        if isinstance(assignment, dict):
+            by_cap = assignment.get("by_capability") or {}
+            if isinstance(by_cap, dict):
+                raw = by_cap.get(cap.id)
+                if isinstance(raw, dict):
+                    assign_row = raw
+        assigned = assign_row.get("assigned_users")
+        enabled = None
+        if isinstance(assignment, dict):
+            enabled = assignment.get("enabled_member_users")
+
         summaries.append(
             CapabilitySummary(
                 id=cap.id,
@@ -318,6 +338,9 @@ def capability_summaries_for(
                 docs_url=cap.docs_url,
                 entitlement_kind=cap.entitlement_kind,
                 observed_resources=_observed_arm_ids(cap.id, observation, workspace_resource_id),
+                assigned_users=int(assigned) if assigned is not None else None,
+                enabled_users=int(enabled) if enabled is not None else None,
+                prepaid_units=prepaid if prepaid_found else None,
             )
         )
     return summaries

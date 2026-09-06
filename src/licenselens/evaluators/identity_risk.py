@@ -6,6 +6,7 @@ from typing import Any, Final
 
 from licenselens.collectors import conditional_access as ca
 from licenselens.evaluators.common import Evaluation
+from licenselens.evaluators.identity_population import annotate_protected_population
 from licenselens.models import CheckDefinition, FindingStatus
 
 _RISKY_SP_STATES: Final = frozenset({"atrisk", "detected", "confirmed", "confirmedcompromised"})
@@ -62,7 +63,7 @@ def evaluate_idprotect_off(
     }
 
     if sign_in_enforced and user_enforced:
-        return Evaluation(
+        result = Evaluation(
             status=FindingStatus.OK,
             summary=(
                 "Enforced Conditional Access policies address both sign-in risk "
@@ -74,6 +75,7 @@ def evaluate_idprotect_off(
                 "extra checks or blocks."
             ),
         )
+        return annotate_protected_population(result, evidence)
 
     if sign_in_enforced or user_enforced or sign_in_report or user_report:
         bits: list[str] = []
@@ -87,7 +89,7 @@ def evaluate_idprotect_off(
                 "enforced user risk policy"
                 + (" (report-only present)" if user_report else " missing")
             )
-        return Evaluation(
+        result = Evaluation(
             status=FindingStatus.PARTIAL,
             summary="Identity Protection–style risk controls are incomplete: "
             + "; ".join(bits)
@@ -98,8 +100,9 @@ def evaluate_idprotect_off(
                 "or still in report-only mode — risky logins may not be stopped."
             ),
         )
+        return annotate_protected_population(result, evidence)
 
-    return Evaluation(
+    result = Evaluation(
         status=FindingStatus.GAP,
         summary=(
             "No Conditional Access policies with user-risk or sign-in-risk "
@@ -111,6 +114,7 @@ def evaluate_idprotect_off(
             "or account as risky. That protection may still be turned off."
         ),
     )
+    return annotate_protected_population(result, evidence)
 
 
 def evaluate_identity_protection_workload(

@@ -96,6 +96,7 @@ from licenselens.evaluators.identity_apps_credentials import (
     evaluate_app_ownerless_or_stale,
     evaluate_app_password_lifetime,
 )
+from licenselens.evaluators.identity_assignment import evaluate_protective_plan_assignment
 from licenselens.evaluators.identity_auth_methods import (
     evaluate_auth_authenticator_context,
     evaluate_auth_methods_migration,
@@ -349,6 +350,7 @@ __all__ = [
     "evaluate_password_never_expire",
     "evaluate_priv_cloud_only",
     "evaluate_idprotect_off",
+    "evaluate_protective_plan_assignment",
     "evaluate_identity_protection_workload",
     "evaluate_pbi_external_invite_disabled",
     "evaluate_pbi_guest_access_disabled",

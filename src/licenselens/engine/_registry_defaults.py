@@ -87,6 +87,7 @@ def _source_model(source_id: str) -> str:
         "mde_inventory",
         "entra_devices",
         "device_reconciliation",
+        "license_assignment",
         "security_alerts_bundle",
         "xdr_custom_detections",
     }:
