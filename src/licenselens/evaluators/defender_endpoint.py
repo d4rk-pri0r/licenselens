@@ -34,8 +34,16 @@ def evaluate_mde_onboard_gap(
     summary = dict(evidence.get("mde_summary") or {})
     licensed = summary.get("licensed_units")
     onboarded = summary.get("onboarded_machines")
+    recon = dict(evidence.get("device_reconciliation") or {})
+    if recon.get("available") is False:
+        recon = {}
     eligible = summary.get("eligible_devices")
-    truncated = bool(summary.get("truncated"))
+    truncated = bool(summary.get("truncated")) or bool(recon.get("truncated"))
+    denominator_source = None
+    if recon and recon.get("intune_active") is not None and "intune_active" in recon:
+        eligible = recon.get("intune_active")
+        denominator_source = "intune_managed_active_30d"
+        truncated = bool(recon.get("truncated")) or truncated
 
     if onboarded is None:
         return Evaluation(
@@ -81,6 +89,12 @@ def evaluate_mde_onboard_gap(
         ratio = onboarded_i / eligible_i
         evidence_out["coverage_ratio"] = ratio
         evidence_out["eligible_devices"] = eligible_i
+        if denominator_source:
+            evidence_out["denominator_source"] = denominator_source
+            limits.append(
+                "Denominator is the Intune-managed active population; unmanaged "
+                "devices and servers outside Intune are not counted."
+            )
         if ratio >= 0.85 and not truncated:
             return Evaluation(
                 status=FindingStatus.OK,

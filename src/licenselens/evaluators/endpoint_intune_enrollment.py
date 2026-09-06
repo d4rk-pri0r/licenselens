@@ -38,8 +38,16 @@ def evaluate_endpoint_enrollment_coverage(
         )
     devices = managed_devices(bundle)
     licensed = (bundle or {}).get("licensed_units")
+    recon = dict(evidence.get("device_reconciliation") or {})
+    if recon.get("available") is False:
+        recon = {}
     eligible = (bundle or {}).get("eligible_devices")
-    truncated = bool((bundle or {}).get("truncated"))
+    truncated = bool((bundle or {}).get("truncated")) or bool(recon.get("truncated"))
+    denominator_source = None
+    if recon and recon.get("entra_active") is not None and "entra_active" in recon:
+        eligible = recon.get("entra_active")
+        denominator_source = "entra_devices_active_30d"
+        truncated = bool(recon.get("truncated")) or truncated
     count = len(devices)
     evidence_out = {
         "managed_device_count": count,
@@ -71,6 +79,8 @@ def evaluate_endpoint_enrollment_coverage(
         ratio = count / eligible_i
         evidence_out["coverage_ratio"] = ratio
         evidence_out["eligible_devices"] = eligible_i
+        if denominator_source:
+            evidence_out["denominator_source"] = denominator_source
         conf = Confidence.MEDIUM if truncated else Confidence.HIGH
         limits = ["Intune device inventory pagination was truncated."] if truncated else []
         if ratio >= 0.85 and not truncated:
