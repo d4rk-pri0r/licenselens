@@ -37,8 +37,6 @@ nav:
   - Collectors & backends: collectors.md
   - Report & export: report.md
   - Conference demo: conference-demo.md
-  - Hotel room: hotel-room.md
-  - Booth one-pager: booth-onepager.md
   - Flagships: flagships.md
   - Checks: checks.md
   - Permissions: permissions.md
@@ -59,6 +57,9 @@ nav:
   - Security: security.md
   - Support & compatibility: support.md
   - Releases: releases.md
+  - Talks:
+      - Hotel room: hotel-room.md
+      - Booth one-pager: booth-onepager.md
 
 theme:
   name: material

@@ -5,9 +5,17 @@ title: "check: "
 labels: check
 ---
 
+## Tier
+
+- [ ] **Activation** — paid security product you already own (needs SKU / gap /
+      why-it-matters justification below)
+- [ ] **Hygiene** — base-workload configuration. Accepted only when this maps an
+      existing SCuBA baseline row with no local check, or fixes a false result.
+      Name the SCuBA policy id (`MS.AAD.1.1v1`, …) or the false-result issue.
+
 ## Capability / SKU
 
-Which Microsoft SKU or service plan unlocks this?
+Which Microsoft SKU or service plan unlocks this? (Required for activation.)
 
 ## Expected configuration
 

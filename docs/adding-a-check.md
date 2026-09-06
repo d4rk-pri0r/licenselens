@@ -36,10 +36,15 @@ remediation: >
 references:
   - https://learn.microsoft.com/...
 enabled: true
+tier: activation   # activation | hygiene — required when enabled
 ```
 
 Customer-facing fields appear first in the HTML/Markdown report. Technical
 titles and product names stay available in the collapsible technical section.
+
+The **hygiene** pack is frozen. New hygiene checks are accepted only when they
+map an existing SCuBA baseline row that has no local check, or when they fix a
+false result. Activation checks need the justification in step 5.
 
 ## 3. Collector (optional in early PRs)
 

@@ -42,6 +42,10 @@ Non-interactive environments default to dry-run (or exit with a clear error on
 
 Default priority packs are **identity + endpoint**. They shape the headline rollup and top actions; enabled checks still evaluate unless `--workload` filters them. Email policy config is not readable via Graph (PowerShell-only); use `--allow-email-proxy` only if you explicitly want a labeled Secure Score degraded path.
 
+Checks are either **activation** (paid security products you already own) or
+**hygiene** (base-workload configuration, optional and SCuBA-aligned). Use
+`--tier activation` to skip hygiene.
+
 ### Live / MSP
 
 ```bash

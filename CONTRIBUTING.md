@@ -51,9 +51,17 @@ Not required for every PR:
 
 Follow [docs/adding-a-check.md](docs/adding-a-check.md).
 
+Every enabled check is either **activation** or **hygiene** (`tier:` in YAML).
+The hygiene pack is frozen for MSP convenience:
+
+- **Hygiene** checks are accepted only when they (a) map an existing SCuBA
+  baseline row that has no local check, or (b) fix a false result.
+- **Activation** checks need the adding-a-check justification: which SKU/plan
+  unlocks the capability, what gap means operationally, and why it matters.
+
 Minimum bar for a new check PR:
 
-- Valid YAML with stable `id`
+- Valid YAML with stable `id` and `tier: activation` or `tier: hygiene`
 - `required_capabilities` pointing at catalog entries
 - Clear remediation and at least one reference URL
 - Unit test or fixture when collector logic is included
