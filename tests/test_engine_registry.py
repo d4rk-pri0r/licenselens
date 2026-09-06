@@ -50,9 +50,11 @@ def test_default_registry_binds_proxy_evaluators_to_proxy_mode() -> None:
         if entry.evaluation_mode is EvaluationMode.PROXY
     }
 
-    # Then: only static Secure Score proxy checks are labeled proxy.
+    # Then: static Secure Score proxies plus the WS3-B Entra diagnostic
+    # proxy are labeled proxy.
     assert proxy_modes == {
         "mdi-sensors-missing": EvaluationMode.PROXY,
+        "sen-entra-diagnostics-routed": EvaluationMode.PROXY,
     }
     assert (
         registry.evaluator_for("mdo-p2-policies-default").evaluation_mode

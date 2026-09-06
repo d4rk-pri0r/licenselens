@@ -88,6 +88,29 @@ def test_sen_data_connectors_ok() -> None:
     assert result.status is FindingStatus.OK
 
 
+def test_sen_data_connectors_connected_but_empty_usage_partial() -> None:
+    result = evaluate_sen_data_connectors(
+        _check("sen-data-connectors"),
+        {
+            "sentinel_data_connectors": {
+                "total_connectors": 4,
+                "connected_connectors": 4,
+                "connector_kinds": ["Office365", "AzureActiveDirectory", "DefenderXDR", "AWS"],
+                "key_connectors_connected": ["Office365", "AzureActiveDirectory", "DefenderXDR"],
+                "workspace_resource_id": WID,
+            },
+            "la_usage_by_table": {
+                "mode": "query",
+                "tables": {
+                    "SigninLogs": {"total_mb": 0.0, "last_seen": None, "rows": 0},
+                },
+            },
+        },
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.evidence.get("usage_empty") is True
+
+
 def test_sen_data_connectors_missing_workspace_error() -> None:
     result = evaluate_sen_data_connectors(
         _check("sen-data-connectors"),

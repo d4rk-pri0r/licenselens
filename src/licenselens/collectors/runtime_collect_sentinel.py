@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from copy import deepcopy
 from typing import Any
 
 from licenselens.cloud_endpoints import UnsupportedCloudError
@@ -175,6 +176,20 @@ _DEMO_LA_USAGE: dict[str, Any] = {
         "SigninLogs": {"total_mb": 8.0, "last_seen": "2026-09-01T00:00:00Z", "rows": 40},
         "AuditLogs": {"total_mb": 1.5, "last_seen": "2026-09-01T00:00:00Z", "rows": 12},
         "SecurityAlert": {"total_mb": 0.4, "last_seen": "2026-09-01T00:00:00Z", "rows": 3},
+        "SecurityIncident": {"total_mb": 0.2, "last_seen": "2026-09-01T00:00:00Z", "rows": 2},
+        "AADUserRiskEvents": {"total_mb": 0.3, "last_seen": "2026-09-01T00:00:00Z", "rows": 4},
+        "AADRiskyUsers": {"total_mb": 0.2, "last_seen": "2026-09-01T00:00:00Z", "rows": 3},
+        "EmailEvents": {"total_mb": 1.0, "last_seen": "2026-09-01T00:00:00Z", "rows": 20},
+        "EmailUrlInfo": {"total_mb": 0.5, "last_seen": "2026-09-01T00:00:00Z", "rows": 10},
+        "EmailAttachmentInfo": {"total_mb": 0.4, "last_seen": "2026-09-01T00:00:00Z", "rows": 8},
+        "IdentityLogonEvents": {"total_mb": 0.6, "last_seen": "2026-09-01T00:00:00Z", "rows": 15},
+        "IdentityQueryEvents": {"total_mb": 0.3, "last_seen": "2026-09-01T00:00:00Z", "rows": 7},
+        "IdentityDirectoryEvents": {
+            "total_mb": 0.2,
+            "last_seen": "2026-09-01T00:00:00Z",
+            "rows": 5,
+        },
+        "OfficeActivity": {"total_mb": 2.0, "last_seen": "2026-09-01T00:00:00Z", "rows": 30},
     },
     "window_days": 7,
     "workspace_customer_id": "00000000-0000-0000-0000-000000000000",
@@ -224,7 +239,7 @@ def collect_la_usage_runtime(
 ) -> EvidenceEnvelope:
     key = "la_usage_by_table"
     if ctx.is_dry_run:
-        return ok(key, dict(_DEMO_LA_USAGE), source="demo")
+        return ok(key, deepcopy(_DEMO_LA_USAGE), source="demo")
     if not ctx.workspace_resource_id:
         ctx.extras["sentinel_workspace_missing"] = True
         return unavailable(key, "No Sentinel workspace provided (--workspace-resource-id).")

@@ -270,6 +270,22 @@ def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
             }
         ]
 
+    usage = evidence.get("la_usage_by_table")
+    if isinstance(usage, dict):
+        tables = usage.get("tables")
+        if isinstance(tables, dict):
+            for name in (
+                "DeviceEvents",
+                "DeviceProcessEvents",
+                "DeviceNetworkEvents",
+                "DeviceLogonEvents",
+            ):
+                tables[name] = {
+                    "total_mb": 1.0,
+                    "last_seen": "2026-09-01T00:00:00Z",
+                    "rows": 25,
+                }
+
 
 def collection_summaries_from(result: CollectionResult) -> list[CollectionSummary]:
     summaries: list[CollectionSummary] = []
