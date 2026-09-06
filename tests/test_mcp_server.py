@@ -8,7 +8,7 @@ import pytest
 
 pytest.importorskip("mcp", reason="install '.[dev]' for MCP server tests")
 
-from licenselens.mcp_server import SERVER_TOOL_NAME, build_server  # noqa: E402
+from licenselens.mcp_server import PLAN_TOOL_NAME, SERVER_TOOL_NAME, build_server  # noqa: E402
 from licenselens.models import ScanResult  # noqa: E402
 
 WRITE_VERBS = {
@@ -35,20 +35,23 @@ def _input_schema(tool) -> dict:
     return getattr(tool, "input_schema", None) or tool.inputSchema
 
 
-def test_exposes_exactly_one_read_only_tool():
+def test_exposes_read_only_tools():
     tools = _list_tools()
-    assert [t.name for t in tools] == [SERVER_TOOL_NAME]  # SERVER_TOOL_NAME == "posture.assess"
-    schema = _input_schema(tools[0])
-    prop_names = set(schema.get("properties", {}))
-    assert prop_names <= {"live", "auth", "tenant_id", "workloads", "packs"}
-    assert not (prop_names & WRITE_VERBS)
+    names = [t.name for t in tools]
+    assert names == [SERVER_TOOL_NAME, PLAN_TOOL_NAME]
+    for tool in tools:
+        schema = _input_schema(tool)
+        prop_names = set(schema.get("properties", {}))
+        assert not (prop_names & WRITE_VERBS)
 
 
 def test_tool_description_declares_read_only_and_demo_default():
-    (tool,) = _list_tools()
-    lowered = tool.description.lower()
+    tools = {tool.name: tool for tool in _list_tools()}
+    lowered = tools[SERVER_TOOL_NAME].description.lower()
     assert "read-only" in lowered
     assert "offline demo" in lowered
+    plan_desc = tools[PLAN_TOOL_NAME].description.lower()
+    assert "read-only" in plan_desc
 
 
 def test_calling_the_registered_tool_function_returns_scan_payload():

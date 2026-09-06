@@ -461,6 +461,127 @@ def checks_cmd(
     console.print(table)
 
 
+@app.command("plan")
+def plan_cmd(
+    demo: bool = typer.Option(
+        True,
+        "--demo/--live",
+        help="Offline demo SKUs (default) or live tenant SKUs only (one Graph client).",
+    ),
+    output_dir: Path | None = typer.Option(
+        None,
+        "--output-dir",
+        "-o",
+        help="Write plan.md / plan.json here. Omit to print Markdown to stdout.",
+    ),
+    fmt: str = typer.Option(
+        "md",
+        "--format",
+        help="md or json.",
+    ),
+    assume_sku: list[str] | None = typer.Option(
+        None,
+        "--assume-sku",
+        help="Offline SKU part number (repeatable). Ignored with --live.",
+    ),
+    auth: AuthModeOption | None = typer.Option(
+        None,
+        "--auth",
+        help="Live auth mode: device | client_secret | certificate | azure_cli | oidc.",
+    ),
+    tenant_id: str | None = typer.Option(None, "--tenant-id", envvar="AZURE_TENANT_ID"),
+    client_id: str | None = typer.Option(None, "--client-id", envvar="AZURE_CLIENT_ID"),
+    client_secret: str | None = typer.Option(
+        None,
+        "--client-secret",
+        envvar="AZURE_CLIENT_SECRET",
+        help="Client secret (prefer env AZURE_CLIENT_SECRET).",
+    ),
+    profile_id: str | None = typer.Option(None, "--profile", help="Assessment profile id."),
+    workload: list[str] | None = typer.Option(
+        None,
+        "--workload",
+        "-w",
+        help="Limit to workload(s).",
+    ),
+    packs: list[str] | None = typer.Option(None, "--pack", help="Limit to pack(s). Repeatable."),
+) -> None:
+    """Preview what a scan would collect and evaluate. No writes. Demo is offline."""
+    from licenselens.collectors.skus import collect_subscribed_skus_live
+    from licenselens.engine.plan_preview import (
+        build_plan_preview,
+        render_plan_json,
+        render_plan_markdown,
+        skus_from_assume,
+    )
+    from licenselens.graph import GraphClient, fetch_organization_context
+
+    fmt_norm = fmt.strip().lower()
+    if fmt_norm not in {"md", "json"}:
+        console.print("[red]--format must be md or json.[/red]")
+        raise typer.Exit(code=2)
+
+    resolved = None
+    if profile_id:
+        try:
+            resolved = resolve_scan_profile(profile_id=profile_id)
+        except ScanConfigError as exc:
+            console.print(f"[red]{exc}[/red]")
+            raise typer.Exit(code=2) from exc
+
+    workloads: list[Workload] | None = None
+    if workload:
+        try:
+            workloads = [Workload(item.strip()) for item in workload]
+        except ValueError as exc:
+            console.print(f"[red]Unknown workload: {exc}[/red]")
+            raise typer.Exit(code=2) from exc
+
+    pack_enums: list[CheckPack] | None = None
+    if packs:
+        try:
+            pack_enums = [CheckPack(item.strip()) for item in packs]
+        except ValueError as exc:
+            console.print(f"[red]Unknown pack: {exc}[/red]")
+            raise typer.Exit(code=2) from exc
+
+    if demo:
+        skus = skus_from_assume(assume_sku or [])
+    else:
+        mode = AuthMode.DEVICE_CODE
+        if auth is not None:
+            mode = AuthMode(auth.value)
+        try:
+            ctx = build_auth_context(
+                mode=mode,
+                tenant_id=tenant_id,
+                client_id=client_id,
+                client_secret=client_secret,
+            )
+            with GraphClient(ctx) as client:
+                fetch_organization_context(client)
+                skus = collect_subscribed_skus_live(client)
+        except (AuthError, AuthConfigError, GraphError) as exc:
+            console.print(f"[red]Plan live auth failed:[/red] {exc}")
+            raise typer.Exit(code=2) from exc
+
+    preview = build_plan_preview(
+        skus=skus,
+        profile=resolved,
+        workloads=workloads,
+        packs=pack_enums,
+    )
+    text = render_plan_json(preview) if fmt_norm == "json" else render_plan_markdown(preview)
+    if output_dir is None:
+        console.file.write(text if text.endswith("\n") else text + "\n")
+        raise typer.Exit(code=0)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    name = "plan.json" if fmt_norm == "json" else "plan.md"
+    (output_dir / name).write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8")
+    console.print(f"Wrote {output_dir / name}")
+    raise typer.Exit(code=0)
+
+
 @app.command("doctor")
 def doctor_cmd(
     live: bool = typer.Option(
