@@ -119,6 +119,35 @@ def write_markdown_report(
         lines.append("No licensed capabilities were resolved from entitlements.")
         lines.append("")
 
+    matrix = result.detection_realization or {}
+    rows = matrix.get("rows") if isinstance(matrix, dict) else None
+    if isinstance(rows, list) and rows:
+        lines.extend(["", "## Detection realization", ""])
+        lines.append(
+            "Core tables expected for owned protections, whether they arrived "
+            "in the last seven days, and whether a live analytics rule queries them."
+        )
+        lines.append("")
+        lines.append("| Capability | Table | Tier | Arriving? | Live rules | Connector hint |")
+        lines.append("|---|---|---|---|---:|---|")
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            arriving = "Yes" if row.get("ingesting") else "No"
+            lines.append(
+                f"| {row.get('capability_name', '')} | `{row.get('table', '')}` | "
+                f"{row.get('tier', '')} | {arriving} | {row.get('watched_by', 0)} | "
+                f"{row.get('connector_hint', '')} |"
+            )
+        dead = matrix.get("dead_rules") or []
+        if dead:
+            names = ", ".join(
+                str(item.get("name") or "") for item in dead if isinstance(item, dict)
+            )
+            lines.append("")
+            lines.append(f"Dead rules (query tables that are not arriving): {names}.")
+        lines.append("")
+
     lines.extend(["", "## Where you may not be getting the full benefit", ""])
     for f in result.findings:
         label = f.status_label or STATUS_PLAIN_LABELS.get(f.status.value, f.status.value)

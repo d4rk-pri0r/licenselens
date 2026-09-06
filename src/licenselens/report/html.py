@@ -19,6 +19,7 @@ from licenselens.report.redaction import derive_redaction_targets, redact_text
 from licenselens.report.viewmodel import (
     EXEC_COPY,
     build_constellation,
+    build_detection_realization,
     build_opening,
     build_provenance,
     build_sections,
@@ -65,6 +66,7 @@ def build_report_context(
         "exposure_labels": EXPOSURE_PLAIN_LABELS,
         "exec_copy": EXEC_COPY,
         "provenance": build_provenance(result),
+        "detection_realization": build_detection_realization(result),
     }
 
 

@@ -19,6 +19,7 @@ from licenselens.report.viewmodel import (
     build_action_plan,
     build_belief_block,
     build_constellation,
+    build_detection_realization,
     build_opening,
     build_posture,
     build_provenance,
@@ -495,3 +496,23 @@ def test_action_plan_deterministic() -> None:
     second = build_action_plan(result)
     assert first == second
     assert repr(first) == repr(second)
+
+
+def test_detection_realization_rows() -> None:
+    from licenselens.auth import AuthContext, AuthMode
+    from licenselens.engine.runner import run_scan
+
+    empty = build_detection_realization(empty_report())
+    assert empty["rows"] == []
+    result = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
+    matrix = build_detection_realization(result)
+    assert matrix == build_detection_realization(result)
+    rows = matrix["rows"]
+    assert rows
+    by_table = {row["table"]: row for row in rows}
+    assert "SigninLogs" in by_table
+    assert by_table["SigninLogs"]["ingesting"] is True
+    device_rows = [row for row in rows if str(row["table"]).startswith("Device")]
+    assert device_rows
+    assert any(row["ingesting"] is False for row in device_rows)
+    assert any(row["table"] == "DeviceProcessEvents" for row in device_rows)

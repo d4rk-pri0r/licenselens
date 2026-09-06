@@ -39,7 +39,11 @@ from licenselens.report.redaction import (
     derive_redaction_targets,
     redact_text,
 )
-from licenselens.report.viewmodel import build_constellation, build_sections
+from licenselens.report.viewmodel import (
+    build_constellation,
+    build_detection_realization,
+    build_sections,
+)
 
 REPORT_APP_VERSION: Final = "2"
 DATA_JS_GLOBAL: Final = "window.LICENSELENS_REPORT_JSON"
@@ -194,7 +198,11 @@ def _serialize_data_js(
     sections = build_sections(result, expected_by_check_id)
     sections["C"] = [move.model_dump(mode="json") for move in result.moves]
     viewmodel = json.dumps(
-        {"sections": sections, "constellation": build_constellation(result)},
+        {
+            "sections": sections,
+            "constellation": build_constellation(result),
+            "detection_realization": build_detection_realization(result),
+        },
         ensure_ascii=True,
         sort_keys=True,
         separators=(",", ":"),

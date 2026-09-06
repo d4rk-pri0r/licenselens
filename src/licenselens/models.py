@@ -454,6 +454,7 @@ class ScanResult(BaseModel):
     capability_outcomes: list[CapabilityOutcome] = Field(default_factory=list)
     has_exposed: bool = False
     exposed_check_ids: list[str] = Field(default_factory=list)
+    detection_realization: dict[str, object] | None = None
 
     @model_validator(mode="after")
     def reject_unsupported_schema_version(self) -> Self:

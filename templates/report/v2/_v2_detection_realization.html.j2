@@ -1,0 +1,57 @@
+{# Detection realization — owned-capability tables vs 7-day Usage and live rules.
+   Hidden when there are no rows. Autoescape stays on; never |safe names. #}
+{%- set matrix = detection_realization or {} -%}
+{%- set rows = matrix.get('rows') or [] -%}
+{%- if rows -%}
+<section id="section-detection-realization" class="reveal-target detection-realization">
+  <p class="micro-label section-kicker">Detection realization</p>
+  <h2>Are detections watching the logs you pay for?</h2>
+  <p class="section-help">
+    Core tables expected for owned protections, whether they arrived in the last
+    seven days, and whether a live analytics rule queries them. This does not
+    measure detection quality or tuning.
+  </p>
+  <div class="table-scroll" data-table-scroll>
+    <table class="detection-realization-table">
+      <caption class="sr-only">Telemetry tables for owned capabilities</caption>
+      <thead>
+        <tr>
+          <th scope="col">Capability</th>
+          <th scope="col">Table</th>
+          <th scope="col">Tier</th>
+          <th scope="col">Arriving?</th>
+          <th scope="col" class="num">Live rules</th>
+          <th scope="col">Connector hint</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%- for row in rows -%}
+        <tr>
+          <td>{{ row.capability_name }}</td>
+          <td class="mono">{{ row.table }}</td>
+          <td>{{ row.tier }}</td>
+          <td>
+            {%- if row.ingesting -%}
+            <span class="status-word">Yes</span>
+            {%- else -%}
+            <span class="status-word status-gap">No</span>
+            {%- endif -%}
+          </td>
+          <td class="num">{{ row.watched_by }}</td>
+          <td>{{ row.connector_hint }}</td>
+        </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+  {%- if matrix.get('dead_rules') -%}
+  <p class="caption">
+    Dead rules (query tables that are not arriving):
+    {%- for dead in matrix.dead_rules -%}
+      {{ ' ' if loop.first else ', ' }}{{ dead.name }}
+    {%- endfor -%}
+    .
+  </p>
+  {%- endif -%}
+</section>
+{%- endif -%}

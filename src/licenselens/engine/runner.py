@@ -31,6 +31,7 @@ from licenselens.models import (
     ScanResult,
     Workload,
 )
+from licenselens.report.viewmodel import build_detection_realization
 
 _evaluate_check = evaluate_check
 
@@ -174,7 +175,7 @@ def run_scan(
         finding.check_id for finding in findings if finding.exposure_class == ExposureClass.EXPOSED
     ]
 
-    return ScanResult(
+    result = ScanResult(
         version=__version__,
         tenant_id=state.tenant_id,
         tenant_display_name=state.tenant_display_name,
@@ -202,6 +203,8 @@ def run_scan(
         exposed_check_ids=sorted(set(exposed_ids)),
         collection_summaries=state.collection_summaries,
     )
+    result.detection_realization = build_detection_realization(result)
+    return result
 
 
 __all__ = ["GraphClient", "run_scan", "_evaluate_check"]

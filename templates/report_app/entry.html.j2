@@ -81,6 +81,7 @@
       <div class="app-nav__sections" data-section-nav>
         <a class="app-nav__link" href="#section-a" data-section-link="a" aria-current="true">Where you stand</a>
         <a class="app-nav__link" href="#section-c" data-section-link="c">What matters most</a>
+        <a class="app-nav__link" href="#section-detection-realization" data-section-link="detection">Detection realization</a>
         <a class="app-nav__link" href="#section-b" data-section-link="b">What you're paying for</a>
         <a class="app-nav__link" href="#section-findings" data-section-link="findings">Findings</a>
       </div>
@@ -264,6 +265,8 @@
         <p class="caption">No prioritized moves were produced by this scan.</p>
         {% endif %}
       </section>
+
+      {% include "report/v2/_v2_detection_realization.html.j2" %}
 
       {# B - What you're paying for #}
       <section id="section-b" data-reveal data-reveal-index="2" aria-labelledby="b-title">

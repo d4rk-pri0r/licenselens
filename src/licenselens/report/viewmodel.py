@@ -15,6 +15,7 @@ from collections.abc import Iterable
 from typing import Final
 
 from licenselens.catalog.expected_states import expected_state_map
+from licenselens.catalog.telemetry import load_telemetry_expectations
 from licenselens.friendly_names import friendly_plan_name, friendly_sku_name
 from licenselens.models import (
     CapabilityOutcome,
@@ -734,3 +735,82 @@ def build_action_plan(result: ScanResult) -> list[dict[str, object]]:
             }
         )
     return rows
+
+
+def build_detection_realization(result: ScanResult) -> dict[str, object]:
+    """Owned-capability telemetry matrix for the detection-realization section.
+
+    Reloads the static telemetry catalog (no network). Ingesting / watched_by
+    come from the WS3-B/C finding evidence when those checks ran.
+    """
+    owned = set(result.owned_capabilities)
+    findings_by_id = {f.check_id: f for f in result.findings}
+    ingestion = findings_by_id.get("sen-telemetry-ingestion-coverage")
+    parity = findings_by_id.get("sen-rule-telemetry-parity")
+    ingestion_caps = (
+        (ingestion.evidence or {}).get("capabilities") if ingestion is not None else None
+    )
+    if not isinstance(ingestion_caps, dict):
+        ingestion_caps = {}
+    parity_ev = parity.evidence if parity is not None else {}
+    if not isinstance(parity_ev, dict):
+        parity_ev = {}
+    unwatched = {str(name) for name in (parity_ev.get("unwatched_tables") or [])}
+    dead_rules = list(parity_ev.get("dead_rules") or [])
+    mode = None
+    if ingestion is not None:
+        mode = (ingestion.evidence or {}).get("mode")
+    if mode is None:
+        mode = parity_ev.get("mode")
+
+    names = {summary.id: summary.plain_name for summary in result.capability_summaries}
+    catalog = load_telemetry_expectations()
+    rows: list[dict[str, object]] = []
+    for row in catalog.get("expectations") or []:
+        if not isinstance(row, dict):
+            continue
+        cap_id = str(row.get("capability_id") or "")
+        if cap_id not in owned:
+            continue
+        cap_ev = ingestion_caps.get(cap_id) if isinstance(ingestion_caps.get(cap_id), dict) else {}
+        core_seen = {str(n) for n in (cap_ev.get("core_seen") or [])}
+        extended_seen = {str(n) for n in (cap_ev.get("extended_seen") or [])}
+        for table in row.get("tables") or []:
+            if not isinstance(table, dict) or not table.get("name"):
+                continue
+            name = str(table["name"])
+            tier = str(table.get("tier") or "core")
+            if core_seen or extended_seen or cap_ev.get("missing_core") is not None:
+                ingesting = name in core_seen or name in extended_seen
+            else:
+                ingesting = False
+            watched = 0
+            if ingesting and name not in unwatched and parity is not None:
+                watched = 1
+            elif ingesting and name in unwatched:
+                watched = 0
+            rows.append(
+                {
+                    "capability_id": cap_id,
+                    "capability_name": names.get(cap_id, cap_id),
+                    "table": name,
+                    "tier": tier,
+                    "ingesting": ingesting,
+                    "watched_by": watched,
+                    "connector_hint": str(table.get("connector_hint") or ""),
+                }
+            )
+    rows.sort(
+        key=lambda r: (
+            str(r["capability_id"]),
+            0 if r["tier"] == "core" else 1,
+            str(r["table"]),
+        )
+    )
+    return {
+        "rows": rows,
+        "dead_rules": dead_rules[:25],
+        "unwatched_tables": sorted(unwatched),
+        "window_days": 7,
+        "mode": mode,
+    }

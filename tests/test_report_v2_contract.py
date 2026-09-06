@@ -547,3 +547,17 @@ def test_consumption_card_shows_observed_resource(tmp_path: Path) -> None:
     html2 = _render(result, tmp_path)
     assert "Observed in Azure" in html2
     assert "Azure resource" in html2  # fallback when the id list is empty
+
+
+def test_detection_realization_section_renders(tmp_path: Path) -> None:
+    from licenselens.auth import AuthContext, AuthMode
+    from licenselens.engine.runner import run_scan
+
+    result = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
+    html = _render(result, tmp_path)
+    assert 'id="section-detection-realization"' in html
+    assert "DeviceProcessEvents" in html
+    assert "Are detections watching the logs you pay for?" in html
+    md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
+    assert "## Detection realization" in md
+    assert "DeviceProcessEvents" in md
