@@ -43,7 +43,7 @@ type. It does not try to add several narrower rules together.
 - Device code can be blocked by Conditional Access → use app-only (see MSP docs).
 - Missing permissions produce **partial cards** with limitations, not silent empty success.
 - Doctor marks optional probes (MDE, email unreadability, Secure Score) as warnings so identity-ready still means ready.
-- Sentinel needs a **workspace ARM resource ID** (or subscription + resource group + workspace name) plus Azure RBAC (typically Microsoft Sentinel Reader on the workspace).
+- Sentinel / Log Analytics / Defender for Cloud need a **workspace ARM resource ID** (or subscription + resource group + workspace name) plus Azure RBAC (typically Microsoft Sentinel Reader on the workspace, Security Reader on the subscription). Without an Azure scope — or when the Azure read is denied (403) or fails — those checks report `error` (entitlement undetermined) rather than not-licensed; a 404 means genuinely not onboarded.
 
 ## Reports and redaction
 

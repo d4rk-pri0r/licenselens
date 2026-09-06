@@ -75,6 +75,14 @@ table. Nothing here is guessed or inferred.
   `service_plan_ids` empty for `microsoft_sentinel` is correct. The M365 E5
   benefit is a data-ingestion grant, not a license. Confirmed against the
   Azure Sentinel billing doc and the E5 benefit-offer page.
+  Entitlement is therefore **observed, not licensed**: LicenseLens probes the
+  workspace `onboardingStates` (SecurityInsights 2024-03-01), the Log Analytics
+  workspace GET (2022-10-01), and the Defender for Cloud `pricings` list
+  (2024-01-01) on the supplied Azure scope. `200` = in use; `404` = genuinely
+  not onboarded; `401`/`403`/network failure = unknown, and the affected
+  checks report an `error` finding (entitlement undetermined) instead of
+  not-licensed. Required RBAC: Microsoft Sentinel Reader on the workspace,
+  Security Reader on the subscription.
 
 ## Known limitations
 

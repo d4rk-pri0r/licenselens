@@ -53,6 +53,39 @@ adopts a conservative interpretation, records the assumption, and never encodes
 certainty that does not exist. The mapping audit is maintained in the repository
 and tested (`scripts/validate_sku_catalog.py`, catalog loader tests).
 
+## Consumption entitlements are observed, not licensed
+
+Microsoft Sentinel, Log Analytics, and Defender for Cloud are Azure consumption
+services. They are billed through Azure meters and have **no** service-plan
+token in `subscribedSkus`, so SKU matching can never establish (or deny) them.
+Instead, LicenseLens observes them directly through Azure Resource Manager
+reads against the supplied scope, for example
+`/subscriptions/<subscription-guid>/resourceGroups/<rg>/providers/Microsoft.OperationalInsights/workspaces/<name>`:
+
+- **Microsoft Sentinel** — the workspace onboarding state
+  ([onboardingStates, api-version 2024-03-01](https://learn.microsoft.com/rest/api/securityinsights/sentinel-onboarding-states/get?view=rest-securityinsights-2024-03-01)).
+- **Log Analytics** — the workspace itself
+  ([Workspaces Get, api-version 2022-10-01](https://learn.microsoft.com/rest/api/loganalytics/workspaces/get?view=rest-loganalytics-2022-10-01)),
+  which also yields the retention and SKU used by the retention check.
+- **Defender for Cloud** — the subscription's plan pricing rows
+  ([Pricings List, api-version 2024-01-01](https://learn.microsoft.com/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01)).
+
+Probe semantics are fixed:
+
+- `200` — the capability is in use (owned).
+- `404` — genuinely not present (not onboarded / no workspace / Free tier).
+- `401`, `403`, or a network failure — the entitlement is **unknown**: the read
+  was denied or no Azure scope was supplied. The affected checks report an
+  `error` finding (entitlement undetermined) rather than claiming the tenant is
+  not licensed, because absence of evidence is not evidence of absence.
+
+Required Azure RBAC for the reads: **Microsoft Sentinel Reader** on the
+workspace (Sentinel / Log Analytics probes) and **Security Reader** on the
+subscription (Defender for Cloud pricings). See
+[permissions](../permissions.md), the
+[Sentinel roles](https://learn.microsoft.com/azure/sentinel/roles) reference,
+and [Security Reader](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#security-reader).
+
 ## Denominators: licensing versus population
 
 A license count is **not** a device count, and a licensed seat is **not** an

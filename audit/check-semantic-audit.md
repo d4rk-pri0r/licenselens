@@ -2618,7 +2618,7 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Current Claim:** Sentinel has a configured set of detection alarms covering multiple attack stages.
 - **Actual Evidence Available:** `sentinel_rules` (Azure ARM `securityInsights` analytics rules).
 - **Assessment Type:** DIRECT.
-- **Entitlement Dependency:** Microsoft Sentinel.
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
 - **Known Edge Cases:** (1) Workspace missing → ERROR. (2) No rules → GAP. (3) Rules but none enabled → GAP.
   (4) ≥10 enabled rules + ≥3 tactics → OK; else PARTIAL. (5) Rule counts do not prove detection effectiveness.
 - **False Positive Risk:** MEDIUM — the ≥10 rules / ≥3 tactics baseline is arbitrary; a lean-but-effective
@@ -2635,7 +2635,7 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Current Claim:** Sentinel has several connected data sources, including high-value identity/M365 signals.
 - **Actual Evidence Available:** `sentinel_data_connectors` (Azure ARM).
 - **Assessment Type:** DIRECT.
-- **Entitlement Dependency:** Microsoft Sentinel.
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
 - **Known Edge Cases:** (1) Workspace missing → ERROR. (2) No connectors → GAP. (3) ≥3 total + ≥2 key → OK;
   else PARTIAL. (4) Connected counts do not prove collection quality.
 - **False Positive Risk:** MEDIUM — the connector-count baseline is arbitrary.
@@ -2651,7 +2651,7 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Current Claim:** Sentinel can react to alerts automatically (playbook action present).
 - **Actual Evidence Available:** `sentinel_automation_rules` (Azure ARM).
 - **Assessment Type:** DIRECT.
-- **Entitlement Dependency:** Microsoft Sentinel.
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
 - **Known Edge Cases:** (1) Workspace missing → ERROR. (2) No rules → GAP. (3) Rules but no playbook → PARTIAL.
 - **False Positive Risk:** LOW.
 - **False Negative Risk:** LOW.
@@ -2665,7 +2665,7 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Current Claim:** Log Analytics retention meets the 90-day target.
 - **Actual Evidence Available:** `sentinel_workspace` (`retention_in_days`).
 - **Assessment Type:** DIRECT.
-- **Entitlement Dependency:** Microsoft Sentinel / Log Analytics.
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
 - **Known Edge Cases:** (1) Workspace missing → ERROR. (2) Retention ≥90 → OK; ≥60 → PARTIAL; <60 → GAP.
 - **False Positive Risk:** LOW.
 - **False Negative Risk:** LOW.
@@ -2679,7 +2679,7 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Current Claim:** Sentinel UEBA / entity analytics is enabled.
 - **Actual Evidence Available:** `sentinel_ueba` (Azure ARM settings).
 - **Assessment Type:** DIRECT.
-- **Entitlement Dependency:** Microsoft Sentinel (UEBA).
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
 - **Known Edge Cases:** (1) Workspace missing → ERROR. (2) Settings read failure distinguished from
   explicitly-off. (3) Enabled → OK; not enabled → GAP.
 - **False Positive Risk:** LOW.

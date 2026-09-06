@@ -126,7 +126,7 @@ See [limitations.md](limitations.md) for the full list. Short version:
 
 - **Email pack off by default** — no Graph API for MDO policy config (PowerShell-only); `--allow-email-proxy` is opt-in and labeled (dynamic / Secure Score path)
 - Some surfaces are **manual** (operator-confirmed) or **proxy** (Secure Score); see the check reference for per-check state
-- Sentinel needs a **workspace ARM ID** + Azure RBAC
+- Sentinel / Log Analytics / Defender for Cloud need a **workspace ARM ID** + Azure RBAC; without an Azure scope (or on a denied read) those checks report `error` (entitlement undetermined), never a false not-licensed
 - Sign-in / MDE inventories may **truncate** on huge tenants
 - Findings are **advisory**, not a compliance certification
 - **No product telemetry** by default

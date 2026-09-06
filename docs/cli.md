@@ -49,12 +49,15 @@ No options. Exit `0` even when the catalog is empty.
 
 Preflight credentials and core Graph permissions. Optionally probe MDE and
 Sentinel, and print assessment-profile requirements before any token request.
+With `--profile full` and a workspace or subscription scope supplied, doctor
+also probes the Sentinel onboarding state and the Defender for Cloud pricings
+(same ARM reads the scan uses); both rows are optional warnings on denial.
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--live` / `--dry-run` | dry-run | Probe a real tenant (`--live`) or print dry-run messaging only |
 | `--auth` | (live default: device) | `device` \| `client_secret` \| `azure_cli` |
-| `--profile` | `basic` | **Probe depth**, not an assessment id: `basic` (core Graph) or `full` (also MDE API + Sentinel) |
+| `--profile` | `basic` | **Probe depth**, not an assessment id: `basic` (core Graph) or `full` (also MDE API, Sentinel onboarding, and Defender for Cloud pricings) |
 | `--assessment-profile` | — | Profile id (e.g. `identity`, `full`). Repeatable. Validated before auth |
 | `--tenant-id` | env `AZURE_TENANT_ID` | Directory (tenant) ID |
 | `--client-id` | env `AZURE_CLIENT_ID` | App registration client ID |

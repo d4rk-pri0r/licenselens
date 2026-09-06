@@ -63,14 +63,20 @@ Or:
 
 | Role on workspace (recommended) | Purpose |
 |----------------------------------|---------|
-| **Microsoft Sentinel Reader** | Analytics rules + settings |
+| **Microsoft Sentinel Reader** | Analytics rules + settings; also the entitlement probes: [Sentinel onboardingStates](https://learn.microsoft.com/rest/api/securityinsights/sentinel-onboarding-states/get?view=rest-securityinsights-2024-03-01) and [Log Analytics workspace GET](https://learn.microsoft.com/rest/api/loganalytics/workspaces/get?view=rest-loganalytics-2022-10-01) |
 | Log Analytics Reader | Often insufficient alone for SecurityInsights APIs |
 
 Optional selective Azure (not generic CSPM):
 
 | Scope | Role / access | Purpose |
 |-------|---------------|---------|
-| Subscription | **Security Reader** (or equivalent read on `Microsoft.Security/pricings`) | Defender for Cloud plan pricing only |
+| Subscription | **Security Reader** (or equivalent read on `Microsoft.Security/pricings`) | Defender for Cloud plan pricing only: [Pricings List](https://learn.microsoft.com/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01) |
+
+Without these reads the Sentinel / Log Analytics / Defender for Cloud checks
+report `error` (entitlement undetermined) instead of not-licensed. The built-in
+role definitions are documented by Microsoft:
+[Microsoft Sentinel Reader](https://learn.microsoft.com/azure/sentinel/roles) and
+[Security Reader](https://learn.microsoft.com/azure/role-based-access-control/built-in-roles#security-reader).
 
 Token audience (public): `https://management.azure.com`.
 US Government: `https://management.usgovcloudapi.net`.

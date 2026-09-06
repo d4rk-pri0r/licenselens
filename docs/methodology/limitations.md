@@ -53,7 +53,10 @@ The operational limitations page details these; the short, honest version:
   in.
 - Some surfaces are **manual** (operator-confirmed) or **proxy** (Secure Score);
   each check declares its mode, and proxy findings are capped/low-confidence.
-- Sentinel needs a workspace ARM ID and Azure RBAC.
+- Sentinel / Log Analytics / Defender for Cloud need a workspace ARM ID and
+  Azure RBAC; without an Azure scope (or on a denied/failed Azure read) those
+  checks report `error` (entitlement undetermined) rather than not-licensed,
+  and 404 means genuinely not onboarded.
 - Sign-in, MDE, and Intune inventories may **truncate** on very large tenants;
   samples are labeled and never presented as the population.
 - License seats are a licensing-leverage signal, never a coverage denominator.
