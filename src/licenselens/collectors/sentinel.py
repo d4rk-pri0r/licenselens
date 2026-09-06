@@ -44,8 +44,10 @@ def summarize_alert_rules(rules: list[dict[str, Any]]) -> dict[str, Any]:
     enabled_any = 0
     tactics: set[str] = set()
     sample_enabled: list[str] = []
+    rules_detail: list[dict[str, Any]] = []
+    truncated = False
 
-    for rule in rules:
+    for index, rule in enumerate(rules):
         kind = str(rule.get("kind") or "")
         props = rule.get("properties") or {}
         if not isinstance(props, dict):
@@ -60,6 +62,20 @@ def summarize_alert_rules(rules: list[dict[str, Any]]) -> dict[str, Any]:
                 tactics.add(str(t))
             if kind.lower() in {"scheduled", "nrt"}:
                 enabled_scheduled += 1
+        if index < 500:
+            techniques = [str(item) for item in (props.get("techniques") or [])]
+            rules_detail.append(
+                {
+                    "query": str(props.get("query") or ""),
+                    "kind": kind,
+                    "enabled": enabled,
+                    "tactics": [str(item) for item in (props.get("tactics") or [])],
+                    "techniques": techniques,
+                    "displayName": str(props.get("displayName") or rule.get("name") or ""),
+                }
+            )
+        else:
+            truncated = True
 
     return {
         "total_rules": total,
@@ -69,6 +85,8 @@ def summarize_alert_rules(rules: list[dict[str, Any]]) -> dict[str, Any]:
         "tactic_count": len(tactics),
         "sample_enabled_rules": sample_enabled,
         "workspace_resource_id": None,
+        "rules_detail": rules_detail,
+        "rules_detail_truncated": truncated,
     }
 
 
@@ -183,6 +201,33 @@ DEMO_SENTINEL_RULES: dict[str, Any] = {
         "resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/"
         "workspaces/demo-sentinel"
     ),
+    "rules_detail": [
+        {
+            "query": "SigninLogs | take 1",
+            "kind": "Scheduled",
+            "enabled": True,
+            "tactics": ["InitialAccess"],
+            "techniques": [],
+            "displayName": "Demo Sign-in spike",
+        },
+        {
+            "query": "SecurityAlert | take 1",
+            "kind": "Scheduled",
+            "enabled": True,
+            "tactics": ["Persistence"],
+            "techniques": [],
+            "displayName": "Demo Rare process",
+        },
+        {
+            "query": "AuditLogs | take 1",
+            "kind": "Scheduled",
+            "enabled": False,
+            "tactics": [],
+            "techniques": [],
+            "displayName": "Demo unused audit",
+        },
+    ],
+    "rules_detail_truncated": False,
 }
 
 DEMO_SENTINEL_UEBA: dict[str, Any] = {

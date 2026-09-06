@@ -292,6 +292,8 @@ def test_selective_arm_operations_allowlist() -> None:
         "arm_sentinel_alert_rules",
         "arm_sentinel_settings",
         "arm_defender_for_cloud_pricings",
+        "la_usage_by_datatype_7d",
+        "arm_log_analytics_tables",
     }
     assert arm_ops == allowed
 

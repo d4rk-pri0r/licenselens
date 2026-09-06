@@ -48,11 +48,13 @@ from licenselens.collectors.runtime_collect_mail import (
 )
 from licenselens.collectors.runtime_collect_sentinel import (
     collect_defender_pricings_runtime,
+    collect_la_usage_runtime,
     collect_sentinel_automation_rules_runtime,
     collect_sentinel_data_connectors_runtime,
     collect_sentinel_rules_runtime,
     collect_sentinel_ueba_runtime,
     collect_sentinel_workspace_runtime,
+    collect_telemetry_expectations_runtime,
 )
 from licenselens.collectors.runtime_envelopes import (
     EvidenceCollectorFn,
@@ -81,6 +83,7 @@ _RUNTIME_DEPENDS: dict[str, tuple[str, ...]] = {
     "admin_consent_request_policy": (),
     "approved_guest_domains": (),
     "break_glass_principal_ids": (),
+    "la_usage_by_table": ("sentinel_workspace",),
 }
 
 _COLLECTORS: dict[str, EvidenceCollectorFn] = {
@@ -99,6 +102,8 @@ _COLLECTORS: dict[str, EvidenceCollectorFn] = {
     "sentinel_data_connectors": collect_sentinel_data_connectors_runtime,
     "sentinel_automation_rules": collect_sentinel_automation_rules_runtime,
     "sentinel_workspace": collect_sentinel_workspace_runtime,
+    "la_usage_by_table": collect_la_usage_runtime,
+    "telemetry_expectations": collect_telemetry_expectations_runtime,
     "defender_for_cloud_pricings": collect_defender_pricings_runtime,
     "purview_dlp": collect_purview_dlp_runtime,
     "purview_ediscovery": collect_purview_ediscovery_runtime,

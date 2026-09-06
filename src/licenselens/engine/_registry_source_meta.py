@@ -184,6 +184,8 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             45,
         ),
         "sentinel_workspace": (Backend.ARM, (), "arm:logAnalytics.workspace", 45),
+        "la_usage_by_table": (Backend.ARM, (), "la:usageByTable", 45),
+        "telemetry_expectations": (Backend.NOOP, (), "catalog:telemetryExpectations", 5),
         "defender_for_cloud_pricings": (
             Backend.ARM,
             (),
@@ -335,6 +337,8 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             ("sentinel_automation_rules",),
         ),
         "sentinel_workspace_collector": (Backend.ARM, (), ("sentinel_workspace",)),
+        "la_usage_collector": (Backend.ARM, (), ("la_usage_by_table",)),
+        "telemetry_expectations_collector": (Backend.NOOP, (), ("telemetry_expectations",)),
         "defender_pricings_collector": (
             Backend.ARM,
             (),

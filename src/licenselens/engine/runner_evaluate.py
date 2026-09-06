@@ -57,6 +57,7 @@ _ERROR_ALIASES = {
     "sentinel_data_connectors": "sentinel_data_connectors_error",
     "sentinel_automation_rules": "sentinel_automation_rules_error",
     "sentinel_workspace": "sentinel_workspace_error",
+    "la_usage_by_table": "la_usage_by_table_error",
     "defender_for_cloud_pricings": "defender_for_cloud_pricings_error",
     "purview_dlp": "purview_dlp_error",
     "auth_methods_bundle": "auth_methods_bundle_error",

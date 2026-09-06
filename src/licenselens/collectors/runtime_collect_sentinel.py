@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from licenselens.cloud_endpoints import UnsupportedCloudError
 from licenselens.collectors.arm import subscription_id_from_resource_id
 from licenselens.collectors.arm_selective import (
     DEMO_DEFENDER_PRICINGS,
@@ -167,3 +168,126 @@ def collect_defender_pricings_runtime(
         return graph_failure(
             key, exc, f"Defender for Cloud plan pricing could not be read: {exc}", ctx
         )
+
+
+_DEMO_LA_USAGE: dict[str, Any] = {
+    "tables": {
+        "SigninLogs": {"total_mb": 8.0, "last_seen": "2026-09-01T00:00:00Z", "rows": 40},
+        "AuditLogs": {"total_mb": 1.5, "last_seen": "2026-09-01T00:00:00Z", "rows": 12},
+        "SecurityAlert": {"total_mb": 0.4, "last_seen": "2026-09-01T00:00:00Z", "rows": 3},
+    },
+    "window_days": 7,
+    "workspace_customer_id": "00000000-0000-0000-0000-000000000000",
+    "truncated": False,
+    "mode": "query",
+    "required_surface_incomplete": False,
+}
+
+_TABLES_API = "2022-10-01"
+
+
+def _usage_payload(
+    tables: dict[str, dict[str, Any]],
+    *,
+    customer_id: str,
+    mode: str,
+    incomplete: bool,
+) -> dict[str, Any]:
+    return {
+        "tables": tables,
+        "window_days": 7,
+        "workspace_customer_id": customer_id,
+        "truncated": False,
+        "mode": mode,
+        "required_surface_incomplete": incomplete,
+    }
+
+
+def _table_list_names(payload: dict[str, Any]) -> list[str]:
+    names: list[str] = []
+    for item in payload.get("value") or []:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name") or "")
+        if not name:
+            props = item.get("properties") or {}
+            schema = props.get("schema") if isinstance(props, dict) else {}
+            if isinstance(schema, dict):
+                name = str(schema.get("name") or "")
+        if name:
+            names.append(name)
+    return names
+
+
+def collect_la_usage_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "la_usage_by_table"
+    if ctx.is_dry_run:
+        return ok(key, dict(_DEMO_LA_USAGE), source="demo")
+    if not ctx.workspace_resource_id:
+        ctx.extras["sentinel_workspace_missing"] = True
+        return unavailable(key, "No Sentinel workspace provided (--workspace-resource-id).")
+    workspace = ctx.extras.get("_sentinel_extended_cache", {}).get("sentinel_workspace")
+    if not isinstance(workspace, dict):
+        from licenselens.engine.planner import EvidenceKey as _EK
+
+        env = _pc.envelopes.get(_EK("sentinel_workspace")) if _pc is not None else None
+        workspace = env.value if env is not None and isinstance(env.value, dict) else {}
+    customer_id = str((workspace or {}).get("customer_id") or "")
+    if not customer_id:
+        return unavailable(key, "Log Analytics workspace customer id was not collected.")
+    try:
+        from licenselens.collectors.log_analytics_query import (
+            USAGE_QUERY_ID,
+            LogAnalyticsQueryClient,
+        )
+
+        with LogAnalyticsQueryClient(ctx.auth) as client:
+            tables = client.run(USAGE_QUERY_ID, workspace_customer_id=customer_id)
+        return ok(
+            key,
+            _usage_payload(tables, customer_id=customer_id, mode="query", incomplete=False),
+            source="la.query",
+        )
+    except UnsupportedCloudError as exc:
+        return unavailable(key, str(exc))
+    except (AuthError, GraphError) as exc:
+        status = getattr(exc, "status_code", None)
+        if status not in {401, 403} and status is not None:
+            return graph_failure(key, exc, f"Log Analytics usage query failed: {exc}", ctx)
+        try:
+            from licenselens.collectors.arm import ArmClient, encode_resource_path
+
+            rid = encode_resource_path(ctx.workspace_resource_id)
+            with ArmClient(ctx.auth) as arm:
+                listed = arm.get(f"{rid}/tables?api-version={_TABLES_API}")
+            names = _table_list_names(listed if isinstance(listed, dict) else {})
+            tables = {name: {"total_mb": 0.0, "last_seen": None, "rows": 0} for name in names}
+            return ok(
+                key,
+                _usage_payload(
+                    tables, customer_id=customer_id, mode="table_list_only", incomplete=True
+                ),
+                source="arm.logAnalytics.tables",
+            )
+        except (AuthError, GraphError) as fallback_exc:
+            return graph_failure(
+                key,
+                fallback_exc,
+                f"Log Analytics usage could not be read: {exc}; "
+                f"table list also failed: {fallback_exc}",
+                ctx,
+            )
+
+
+def collect_telemetry_expectations_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    from licenselens.catalog.telemetry import telemetry_expectations_payload
+
+    return ok(
+        "telemetry_expectations",
+        telemetry_expectations_payload(),
+        source="catalog.telemetry_expectations",
+    )

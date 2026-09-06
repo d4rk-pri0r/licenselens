@@ -70,6 +70,8 @@ def _source_model(source_id: str) -> str:
         "sentinel_data_connectors",
         "sentinel_automation_rules",
         "sentinel_workspace",
+        "la_usage_by_table",
+        "telemetry_expectations",
         "defender_for_cloud_pricings",
         "auth_methods_bundle",
         "applications_bundle",

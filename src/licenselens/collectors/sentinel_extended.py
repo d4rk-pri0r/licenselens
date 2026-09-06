@@ -169,9 +169,11 @@ def summarize_log_analytics_workspace(
     retention = props.get("retentionInDays")
     sku_obj = workspace.get("sku") or {}
     sku = str(sku_obj.get("name") or "") if isinstance(sku_obj, dict) else None
+    customer_id = props.get("customerId")
     return {
         "retention_in_days": int(retention) if isinstance(retention, int) else None,
         "sku": sku or None,
+        "customer_id": str(customer_id) if customer_id else None,
         "workspace_resource_id": normalize_workspace_resource_id(workspace_resource_id),
     }
 
@@ -251,5 +253,6 @@ DEMO_SENTINEL_AUTOMATION_RULES: dict[str, Any] = {
 DEMO_SENTINEL_WORKSPACE: dict[str, Any] = {
     "retention_in_days": 30,
     "sku": "PerGB2018",
+    "customer_id": "00000000-0000-0000-0000-000000000000",
     "workspace_resource_id": _DEMO_WORKSPACE_ID,
 }

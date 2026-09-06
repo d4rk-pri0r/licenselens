@@ -334,6 +334,22 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
             dependencies=("sentinel_workspace",),
             timeout_seconds=45,
         )
+        _register_one(
+            catalog,
+            collector_id="la_usage_collector",
+            backend=Backend.ARM,
+            permissions=(),
+            dependencies=("la_usage_by_table",),
+            timeout_seconds=45,
+        )
+        _register_one(
+            catalog,
+            collector_id="telemetry_expectations_collector",
+            backend=Backend.NOOP,
+            permissions=(),
+            dependencies=("telemetry_expectations",),
+            timeout_seconds=5,
+        )
     finally:
         catalog.exit_module("licenselens.collectors.bindings")
 
