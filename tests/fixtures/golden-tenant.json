@@ -837,11 +837,19 @@
     },
     "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel": {
       "properties": {
-        "retentionInDays": 90
+        "retentionInDays": 90,
+        "customerId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
       },
       "sku": {
         "name": "PerGB2018"
       }
+    },
+    "subscriptions/11111111-2222-3333-4444-555555555555/resourceGroups/golden-rg/providers/Microsoft.OperationalInsights/workspaces/golden-sentinel/tables": {
+      "value": [
+        {
+          "name": "SigninLogs"
+        }
+      ]
     },
     "subscriptions/11111111-2222-3333-4444-555555555555/providers/Microsoft.Security/pricings": {
       "value": [

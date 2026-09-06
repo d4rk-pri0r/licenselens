@@ -27,10 +27,10 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 *Effort is a rough guide, not a quote.*
 
-- **Needs attention** (`gap`): 39
+- **Needs attention** (`gap`): 40
 - **Not in your plan** (`not_licensed`): 6
 - **Looking good** (`ok`): 91
-- **Partly set up** (`partial`): 18
+- **Partly set up** (`partial`): 19
 - **Check pending** (`skipped`): 12
 
 ## What you already pay for
@@ -475,6 +475,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/autolabeling)
 - **Technical id:** `pur-sensitivity-auto-labeling`
 
+### Your security workspace may not be collecting the logs you already pay for
+
+- **Status:** Needs attention
+- **In plain English:** Some protections you already pay for are not sending their main logs into the security workspace.
+- **Suggested next step:** Connect the missing data sources (especially Defender for Endpoint device events) and confirm rows arrive in the last seven days.
+- **Confidence:** High confidence
+- **Data sources:** la:usageByTable, azure.arm.securityInsights
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/connect-data-sources)
+- **Technical id:** `sen-telemetry-ingestion-coverage`
+
 ### Prove your admin-role reviews actually run and repeat
 
 - **Status:** Needs attention
@@ -804,6 +815,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/connect-data-sources)
 - **Technical id:** `sen-data-connectors`
+
+### Confirm Entra diagnostic settings are sending logs to Sentinel
+
+- **Status:** Partly set up
+- **In plain English:** Sign-in or risk logs appear to be arriving, but this is inferred from usage only — confirm the diagnostic-settings blade in Entra.
+- **Suggested next step:** Open Entra diagnostic settings and confirm SignInLogs plus the risk tables stream to this workspace, then re-scan.
+- **Confidence:** Low confidence — verify in portal
+- **Data sources:** la:usageByTable, azure.arm.securityInsights
+- **Limitations:** Inferred from workspace usage only — confirm Entra diagnostic settings (Entra admin center → Diagnostic settings) before treating this as definitive
+- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings)
+- **Technical id:** `sen-entra-diagnostics-routed`
 
 ### Clean up abandoned apps
 

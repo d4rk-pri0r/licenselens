@@ -1385,6 +1385,136 @@
       "mappings": {}
     },
     {
+      "check_id": "sen-telemetry-ingestion-coverage",
+      "title": "Sentinel workspace is not ingesting expected telemetry for owned capabilities",
+      "workload": "sentinel",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://learn.microsoft.com/azure/sentinel/connect-data-sources",
+      "summary": "Owned capabilities have no core tables ingesting in the last 7 days: defender_endpoint_p2.",
+      "evidence": {
+        "capabilities": {
+          "identity_protection": {
+            "core_expected": [
+              "AADUserRiskEvents",
+              "AADRiskyUsers"
+            ],
+            "core_seen": [
+              "AADUserRiskEvents",
+              "AADRiskyUsers"
+            ],
+            "extended_seen": [],
+            "missing_core": []
+          },
+          "conditional_access": {
+            "core_expected": [
+              "SigninLogs"
+            ],
+            "core_seen": [
+              "SigninLogs"
+            ],
+            "extended_seen": [],
+            "missing_core": []
+          },
+          "defender_endpoint_p2": {
+            "core_expected": [
+              "DeviceEvents",
+              "DeviceProcessEvents",
+              "DeviceNetworkEvents",
+              "DeviceLogonEvents"
+            ],
+            "core_seen": [],
+            "extended_seen": [],
+            "missing_core": [
+              "DeviceEvents",
+              "DeviceProcessEvents",
+              "DeviceNetworkEvents",
+              "DeviceLogonEvents"
+            ]
+          },
+          "defender_office_p2": {
+            "core_expected": [
+              "EmailEvents",
+              "EmailUrlInfo",
+              "EmailAttachmentInfo"
+            ],
+            "core_seen": [
+              "EmailEvents",
+              "EmailUrlInfo",
+              "EmailAttachmentInfo"
+            ],
+            "extended_seen": [],
+            "missing_core": []
+          },
+          "defender_identity": {
+            "core_expected": [
+              "IdentityLogonEvents",
+              "IdentityQueryEvents",
+              "IdentityDirectoryEvents"
+            ],
+            "core_seen": [
+              "IdentityLogonEvents",
+              "IdentityQueryEvents",
+              "IdentityDirectoryEvents"
+            ],
+            "extended_seen": [],
+            "missing_core": []
+          },
+          "defender_xdr": {
+            "core_expected": [
+              "SecurityIncident",
+              "SecurityAlert"
+            ],
+            "core_seen": [
+              "SecurityIncident",
+              "SecurityAlert"
+            ],
+            "extended_seen": [],
+            "missing_core": []
+          },
+          "purview_audit": {
+            "core_expected": [
+              "OfficeActivity"
+            ],
+            "core_seen": [
+              "OfficeActivity"
+            ],
+            "extended_seen": [],
+            "missing_core": []
+          }
+        },
+        "mode": "query"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "Enable the Microsoft Sentinel data connectors for each owned capability and verify core tables show rows in Usage over seven days.",
+      "references": [
+        "https://learn.microsoft.com/azure/sentinel/connect-data-sources"
+      ],
+      "customer_title": "Your security workspace may not be collecting the logs you already pay for",
+      "customer_summary": "Some protections you already pay for are not sending their main logs into the security workspace.",
+      "customer_next_step": "Connect the missing data sources (especially Defender for Endpoint device events) and confirm rows arrive in the last seven days.",
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "la:usageByTable",
+        "azure.arm.securityInsights"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {}
+    },
+    {
       "check_id": "id-access-reviews-scope",
       "title": "Access reviews do not cover privileged roles on a recurring, executed schedule",
       "workload": "identity",
@@ -2959,6 +3089,61 @@
       ],
       "limitations": [],
       "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {}
+    },
+    {
+      "check_id": "sen-entra-diagnostics-routed",
+      "title": "Entra ID risk and sign-in tables are not landing in Sentinel",
+      "workload": "sentinel",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings",
+      "summary": "Entra tables are present in workspace usage; confirm diagnostic settings in the Entra admin center (proxy evidence, never fully OK).",
+      "evidence": {
+        "tables_checked": [
+          "SigninLogs",
+          "AADUserRiskEvents",
+          "AADRiskyUsers"
+        ],
+        "present": [
+          "SigninLogs",
+          "AADUserRiskEvents",
+          "AADRiskyUsers"
+        ],
+        "absent": [],
+        "proxy": true,
+        "mode": "query"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "Configure Entra diagnostic settings to send SignInLogs, UserRiskEvents, and RiskyUsers to the Sentinel workspace.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings",
+        "https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id"
+      ],
+      "customer_title": "Confirm Entra diagnostic settings are sending logs to Sentinel",
+      "customer_summary": "Sign-in or risk logs appear to be arriving, but this is inferred from usage only \u2014 confirm the diagnostic-settings blade in Entra.",
+      "customer_next_step": "Open Entra diagnostic settings and confirm SignInLogs plus the risk tables stream to this workspace, then re-scan.",
+      "status_label": "Partly set up",
+      "confidence": "low",
+      "confidence_label": "Low confidence \u2014 verify in portal",
+      "data_sources": [
+        "la:usageByTable",
+        "azure.arm.securityInsights"
+      ],
+      "limitations": [
+        "Inferred from workspace usage only \u2014 confirm Entra diagnostic settings (Entra admin center \u2192 Diagnostic settings) before treating this as definitive."
+      ],
+      "evaluation_mode": "proxy",
       "source_references": [],
       "accepted_risks": [],
       "mappings": {}
@@ -8400,6 +8585,14 @@
       "errors": []
     },
     {
+      "collector": "la_usage_by_table",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "mde_health",
       "status": "success",
       "source": "demo",
@@ -8566,6 +8759,14 @@
       "items_collected": 0,
       "warnings": [],
       "errors": []
+    },
+    {
+      "collector": "telemetry_expectations",
+      "status": "success",
+      "source": "catalog.telemetry_expectations",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
     }
   ],
   "source_references": [],
@@ -8578,7 +8779,7 @@
   "warnings": [],
   "limitations": [
     "Strict proxy mode is ON: Secure Score\u2013based checks (MDI, Purview DLP) never report fully OK and are labeled low confidence. MDO email is off by default (use --allow-email-proxy for a labeled degraded path).",
-    "Proxy-based checks in this report: mdi-sensors-missing, mdo-p2-policies-default, pur-dlp-not-enforced."
+    "Proxy-based checks in this report: mdi-sensors-missing, mdo-p2-policies-default, pur-dlp-not-enforced, sen-entra-diagnostics-routed."
   ],
   "data_sources_used": [
     "DNS TXT resolution (system resolver)",
@@ -8595,6 +8796,7 @@
     "graph.security.incidents",
     "graph.subscribedSkus",
     "graph.subscribedSkus (proxy licensing signal)",
+    "la:usageByTable",
     "mde.api.machines",
     "mde.api.machines.health",
     "microsoft.graph",
@@ -8658,7 +8860,9 @@
         "sen-analytics-rule-coverage",
         "sen-automation-rules",
         "sen-data-connectors",
+        "sen-entra-diagnostics-routed",
         "sen-log-analytics-retention",
+        "sen-telemetry-ingestion-coverage",
         "sen-ueba-not-enabled"
       ]
     },

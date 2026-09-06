@@ -34,9 +34,9 @@ from tests.fake_clients import build_replay_clients, wire_golden_seams
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 
-GOLDEN_TOTAL_FINDINGS = 166
+GOLDEN_TOTAL_FINDINGS = 168
 GOLDEN_COUNTS_BY_STATUS = {
-    "gap": 36,
+    "gap": 38,
     "not_licensed": 5,
     "ok": 91,
     "partial": 22,
@@ -58,6 +58,8 @@ GOLDEN_CHECK_STATUSES = {
     # already declare VirtualMachines Standard, so observing consumption owns
     # defender_for_cloud_servers and this check is no longer not_licensed.
     "az-defender-plan-enabled": FindingStatus.OK,
+    "sen-telemetry-ingestion-coverage": FindingStatus.GAP,
+    "sen-entra-diagnostics-routed": FindingStatus.GAP,
 }
 
 

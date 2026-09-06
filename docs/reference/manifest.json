@@ -1,26 +1,26 @@
 {
   "baseline_row_total": 135,
   "capability_count": 31,
-  "check_count": 166,
+  "check_count": 168,
   "coverage_gap_count": 16,
   "coverage_row_count": 131,
   "coverage_source": "catalog/coverage/scuba-2026-08.yaml",
   "excluded_item_count": 6,
   "flagship_count": 34,
   "generated": {
-    "capabilities.md": "ecc2214546ac33b66dcf8b2537476b56aa6578d77115e2d404e125c75e296b42",
-    "checks.md": "0fcb9a0828a9daea5cd4e72daa85b75b539b045b5f624453cdd49b1b860b478f",
+    "capabilities.md": "dca40e0bd37f4a1df472dfc9a7cec09bc0b4d2611c8c06615524a669c07caaad",
+    "checks.md": "843b1a907540d29cbf7693771aff489633862fda7d81895d4541c889482565f9",
     "coverage.md": "5f2297da9bea71cd283f44fe91275af0ea38dab98c465e3fcbf9199f8e51fdce",
-    "index.md": "4f13606e74438c8ccffa71c0469c898b669f03843d8f12da0c277009ed7122ba",
+    "index.md": "176c07ef7fb49c8a5ff74a424fdadcf1b98da0c628b51166ccc5cf89b4378641",
     "permissions.md": "ee9f9eacb046b235075a2255872b7923da8491abdd792a21eb099fb6b150313b",
     "profiles.md": "9a095e83b755f5486a66d2b93ee76fc871e0908d9095d344c2b30bf00beaa95a",
-    "reference.json": "6e80bbdbf8fa9562737faeed3c7a6558e4ecd9802e003e581ae3dc488f3d2cb8"
+    "reference.json": "46fc9cd1def0b881274538523e4630b8c952772dd970417c9a89cb7047983daa"
   },
   "generator": "scripts/generate_reference_docs.py",
   "package_version": "0.4.0",
   "permission_count": 20,
   "profile_count": 11,
-  "sample_sha256": "8ee7607d62b82f3cb6d3f13e2518f9dcc57f35cc8ab2b7e7df3ac2b31088a0be",
+  "sample_sha256": "e8c14022ac816da127c3a5c776a39af1cf2bd4f32d1eebf77270e31ef91650ae",
   "sample_version": "0.4.0",
   "sources": {
     "catalog/capabilities.yaml": "89526bd9c2cd1946ef30506b145c811e3a9337f26daa687317515b5a9a589200",
@@ -200,7 +200,9 @@
     "checks/sentinel/sen-analytics-rule-coverage.yaml": "1f915e6bf957033db0b552303fd79e8042ae2b83d4ed6f0fb2cfecbaac7016d1",
     "checks/sentinel/sen-automation-rules.yaml": "9aabc6b164c0731f27a74850b6bb6ba6b16a15197e2a2f681bfa8bddc5da2cb4",
     "checks/sentinel/sen-data-connectors.yaml": "5f00b95cbe1572e17c27183a2bbe6c341a786fa22a67cadb5afa69ececa2dbc5",
+    "checks/sentinel/sen-entra-diagnostics-routed.yaml": "f10589928aada988e93373dbce44befd29de737111cf0adf71c3e70ba00b4fe6",
     "checks/sentinel/sen-log-analytics-retention.yaml": "771a473327524cbfcf93890e7e105521046b74fcbc96308c303d04e50afa45e0",
+    "checks/sentinel/sen-telemetry-ingestion-coverage.yaml": "c516cd8b9d7d3fe0f7f1e24e3e5240df8f235c7bf8c0ba94e0045a208b5f87c1",
     "checks/sentinel/sen-ueba-not-enabled.yaml": "2a0aa5e9f4259c4be123db6a87ff7c98cd3b305aa1ce170abdd3d777b926dc8f",
     "docs/permissions.md": "bab188a84a4d14bfe115eca1d93010738f2bda8f7aaa54f5899a5d8a95325cad"
   },
