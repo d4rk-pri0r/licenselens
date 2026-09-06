@@ -35,6 +35,9 @@ class CloudEndpoints:
     arm_resource: str
     mde_resource: str
     mde_supported: bool = True
+    la_query_base: str = ""
+    la_query_scope: str = ""
+    la_query_supported: bool = False
 
     @property
     def graph_scope(self) -> str:
@@ -63,12 +66,18 @@ _ENDPOINTS: Final[Mapping[CloudEnvironment, CloudEndpoints]] = {
         graph_resource="https://graph.microsoft.com",
         arm_resource="https://management.azure.com",
         mde_resource="https://api.securitycenter.microsoft.com",
+        la_query_base="https://api.loganalytics.azure.com",
+        la_query_scope="https://api.loganalytics.io/.default",
+        la_query_supported=True,
     ),
     CloudEnvironment.US_GOV: CloudEndpoints(
         cloud=CloudEnvironment.US_GOV,
         graph_resource="https://graph.microsoft.us",
         arm_resource="https://management.usgovcloudapi.net",
         mde_resource="https://api-gov.securitycenter.microsoft.us",
+        la_query_base="https://api.loganalytics.us",
+        la_query_scope="https://api.loganalytics.us/.default",
+        la_query_supported=True,
     ),
     CloudEnvironment.CHINA: CloudEndpoints(
         cloud=CloudEnvironment.CHINA,

@@ -167,6 +167,21 @@ def test_cloud_endpoints_sovereign_roots() -> None:
     assert graph_base_url(CloudEnvironment.US_GOV).endswith("/v1.0")
 
 
+def test_la_query_endpoints() -> None:
+    public = endpoints_for(CloudEnvironment.PUBLIC)
+    gov = endpoints_for(CloudEnvironment.US_GOV)
+    china = endpoints_for(CloudEnvironment.CHINA)
+
+    assert public.la_query_supported is True
+    assert public.la_query_base == "https://api.loganalytics.azure.com"
+    assert public.la_query_scope == "https://api.loganalytics.io/.default"
+    assert gov.la_query_supported is True
+    assert gov.la_query_base == "https://api.loganalytics.us"
+    assert gov.la_query_scope == "https://api.loganalytics.us/.default"
+    assert china.la_query_supported is False
+    assert china.la_query_base == ""
+
+
 def test_operation_matrix_read_only_and_no_beta_without_preview() -> None:
     ops = iter_operations()
     assert len(ops) >= 20
