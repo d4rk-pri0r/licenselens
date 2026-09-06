@@ -4,12 +4,19 @@ from __future__ import annotations
 
 from licenselens.cloud_endpoints import graph_base_url
 from licenselens.collectors.contracts import EvidenceEnvelope, EvidenceKey
+from licenselens.collectors.device_reconcile import reconcile
+from licenselens.collectors.entra_devices import DEMO_ENTRA_DEVICES, collect_entra_devices
 from licenselens.collectors.intune_policy import (
     DEMO_INTUNE_EVIDENCE_BUNDLE,
     collect_intune_evidence_bundle,
     intune_licensed_units,
 )
-from licenselens.collectors.mde import DEMO_MDE_SUMMARY, mde_licensed_units
+from licenselens.collectors.mde import (
+    DEMO_MDE_INVENTORY,
+    DEMO_MDE_SUMMARY,
+    collect_mde_machines_inventory,
+    mde_licensed_units,
+)
 from licenselens.collectors.mde_health import DEMO_MDE_HEALTH, collect_mde_health_summary
 from licenselens.collectors.pbi_admin import DEMO_PBI_CAPACITY_BUNDLE, collect_pbi_capacity_bundle
 from licenselens.collectors.purview import (
@@ -230,3 +237,54 @@ def collect_xdr_custom_detections_runtime(
             f"Defender XDR custom detection rules could not be read: {exc}",
             ctx,
         )
+
+
+def collect_entra_devices_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "entra_devices"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_ENTRA_DEVICES), source="demo")
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        bundle = collect_entra_devices(ctx.client)
+        return ok(key, bundle, source="graph.devices", items=int(bundle.get("count") or 0))
+    except GraphError as exc:
+        return graph_failure(key, exc, f"Entra devices could not be read: {exc}", ctx)
+
+
+def collect_mde_inventory_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "mde_inventory"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_MDE_INVENTORY), source="demo")
+    try:
+        bundle = collect_mde_machines_inventory(ctx.auth)
+        return ok(key, bundle, source="mde.machines.inventory", items=int(bundle.get("count") or 0))
+    except (AuthError, GraphError) as exc:
+        return graph_failure(
+            key, exc, f"Defender for Endpoint machine inventory could not be read: {exc}", ctx
+        )
+
+
+def collect_device_reconciliation_runtime(
+    ctx: ScanCollectionContext, pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "device_reconciliation"
+    if ctx.is_dry_run:
+        # Demo keeps the licensed-seat leverage path; after-overlay still sets
+        # eligible_devices on mde_summary / intune_bundle directly.
+        return ok(key, {"available": False}, source="demo")
+    entra = envelope_value(pc, "entra_devices") or {}
+    intune = envelope_value(pc, "intune_bundle") or {}
+    mde = envelope_value(pc, "mde_inventory") or {}
+    if not isinstance(entra, dict):
+        entra = {}
+    if not isinstance(intune, dict):
+        intune = {}
+    if not isinstance(mde, dict):
+        mde = {}
+    result = reconcile(entra, intune, mde)
+    return ok(key, result, source="derived.deviceReconciliation")

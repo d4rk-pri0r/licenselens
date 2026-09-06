@@ -304,6 +304,30 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="entra_devices_collector",
+            backend=Backend.GRAPH,
+            permissions=("Device.Read.All",),
+            dependencies=("entra_devices",),
+            timeout_seconds=45,
+        )
+        _register_one(
+            catalog,
+            collector_id="mde_inventory_collector",
+            backend=Backend.MDE,
+            permissions=(),
+            dependencies=("mde_inventory",),
+            timeout_seconds=45,
+        )
+        _register_one(
+            catalog,
+            collector_id="device_reconciliation_collector",
+            backend=Backend.NOOP,
+            permissions=(),
+            dependencies=("device_reconciliation",),
+            timeout_seconds=10,
+        )
+        _register_one(
+            catalog,
             collector_id="sentinel_analytics",
             backend=Backend.ARM,
             permissions=(),

@@ -84,6 +84,14 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             45,
         ),
         "mde_summary": (Backend.MDE, (), "mde:machines.summary", 45),
+        "mde_inventory": (Backend.MDE, (), "mde:machines.inventory", 45),
+        "entra_devices": (
+            Backend.GRAPH,
+            ("Device.Read.All",),
+            "graph:entraDevices",
+            45,
+        ),
+        "device_reconciliation": (Backend.NOOP, (), "derived:deviceReconciliation", 10),
         "intune_bundle": (
             Backend.GRAPH,
             ("DeviceManagementConfiguration.Read.All", "DeviceManagementManagedDevices.Read.All"),
@@ -294,6 +302,13 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
         ),
         "manual_identity": (Backend.NOOP, (), ("break_glass_principal_ids",)),
         "mde_onboarding": (Backend.MDE, (), ("mde_summary",)),
+        "mde_inventory_collector": (Backend.MDE, (), ("mde_inventory",)),
+        "entra_devices_collector": (Backend.GRAPH, ("Device.Read.All",), ("entra_devices",)),
+        "device_reconciliation_collector": (
+            Backend.NOOP,
+            (),
+            ("device_reconciliation",),
+        ),
         "intune_collector": (
             Backend.GRAPH,
             ("DeviceManagementConfiguration.Read.All", "DeviceManagementManagedDevices.Read.All"),

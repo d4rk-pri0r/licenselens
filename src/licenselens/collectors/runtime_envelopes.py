@@ -63,6 +63,9 @@ ERROR_ALIASES: dict[str, str] = {
     "power_data_bundle": "power_data_collect_error",
     "intune_bundle": "intune_bundle_error",
     "mde_health": "mde_health_error",
+    "mde_inventory": "mde_inventory_error",
+    "entra_devices": "entra_devices_error",
+    "device_reconciliation": "device_reconciliation_error",
     "security_alerts_bundle": "security_alerts_bundle_error",
     "xdr_custom_detections": "xdr_custom_detections_error",
 }

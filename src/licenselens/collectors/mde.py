@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
@@ -10,6 +11,7 @@ import httpx
 from licenselens.auth import AuthContext
 from licenselens.cloud_endpoints import CloudEndpoints, UnsupportedCloudError, endpoints_for
 from licenselens.collectors.contracts import CloudEnvironment
+from licenselens.collectors.device_hash import hash_device_label
 from licenselens.errors import AuthError, GraphError
 from licenselens.http_retry import retry_delay, should_retry
 from licenselens.models import SubscribedSku
@@ -204,3 +206,72 @@ DEMO_MDE_SUMMARY: dict[str, Any] = {
     "truncated": False,
     "licensed_units": 100,
 }
+
+DEMO_MDE_INVENTORY: dict[str, Any] = {
+    "machines": [],
+    "count": 0,
+    "truncated": False,
+    "window_days": 30,
+    "filter": "lastSeen gt",
+}
+
+
+def collect_mde_machines_inventory(
+    auth: AuthContext,
+    *,
+    cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+    client: MdeClient | None = None,
+    now: datetime | None = None,
+    max_pages: int = 20,
+) -> dict[str, Any]:
+    """Return hashed MDE machine inventory for devices seen in the last 30 days."""
+    owns = client is None
+    mde = client if client is not None else MdeClient(auth, cloud=cloud)
+    cutoff = (now or datetime.now(UTC)).astimezone(UTC) - timedelta(days=30)
+    filt = f"lastSeen gt {cutoff.strftime('%Y-%m-%d')}Z"
+    try:
+        machines: list[dict[str, Any]] = []
+        pages = 0
+        path = "/machines"
+        params: dict[str, Any] = {
+            "$select": (
+                "id,aadDeviceId,computerDnsName,osPlatform,healthStatus,onboardingStatus,lastSeen"
+            ),
+            "$top": "1000",
+            "$filter": filt,
+        }
+        while pages < max_pages:
+            data = mde.get(path, params=params)
+            value = data.get("value") or []
+            if not isinstance(value, list):
+                break
+            for item in value:
+                if not isinstance(item, dict):
+                    continue
+                machines.append(
+                    {
+                        "id": str(item.get("id") or ""),
+                        "aadDeviceId": str(item.get("aadDeviceId") or ""),
+                        "computerDnsName_hash": hash_device_label(item.get("computerDnsName")),
+                        "osPlatform": item.get("osPlatform"),
+                        "healthStatus": item.get("healthStatus"),
+                        "onboardingStatus": item.get("onboardingStatus"),
+                        "lastSeen": item.get("lastSeen"),
+                    }
+                )
+            nxt = data.get("@odata.nextLink")
+            pages += 1
+            if not nxt or not isinstance(nxt, str):
+                break
+            path = nxt
+            params = {}
+        return {
+            "machines": machines,
+            "count": len(machines),
+            "truncated": pages >= max_pages,
+            "window_days": 30,
+            "filter": filt,
+        }
+    finally:
+        if owns:
+            mde.close()

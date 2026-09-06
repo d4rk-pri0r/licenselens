@@ -84,6 +84,9 @@ def _source_model(source_id: str) -> str:
         "power_data_bundle",
         "intune_bundle",
         "mde_health",
+        "mde_inventory",
+        "entra_devices",
+        "device_reconciliation",
         "security_alerts_bundle",
         "xdr_custom_detections",
     }:

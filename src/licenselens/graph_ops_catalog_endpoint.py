@@ -77,6 +77,15 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             description="Intune managed device inventory (bounded)",
         ),
         op(
+            "entra_devices",
+            "/devices",
+            "graph.entra_devices",
+            ("Device.Read.All",),
+            ("Device.Read.All",),
+            max_pages=30,
+            description="Entra registered devices (bounded)",
+        ),
+        op(
             "intune_atp_onboarding_state",
             "/deviceManagement/advancedThreatProtectionOnboardingStateSummary",
             "graph.intune_atp_onboarding_state",

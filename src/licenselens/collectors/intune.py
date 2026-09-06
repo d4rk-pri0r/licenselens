@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from licenselens.collectors.contracts import EvidenceEnvelope
+from licenselens.collectors.device_hash import hash_device_label
 from licenselens.collectors.graph_collect import SupportsGraphReads, collect_graph_operation
 from licenselens.graph import GraphClient
 
@@ -36,11 +37,25 @@ def collect_intune_configuration_policies(client: GraphClient) -> list[dict[str,
 
 
 def collect_intune_managed_devices(client: GraphClient) -> list[dict[str, Any]]:
-    return client.get_list(
+    rows = client.get_list(
         "/deviceManagement/managedDevices",
-        params={"$select": "id,deviceName,complianceState,operatingSystem,managementAgent"},
+        params={
+            "$select": (
+                "id,deviceName,complianceState,operatingSystem,managementAgent,"
+                "azureADDeviceId,lastSyncDateTime,deviceEnrollmentType,managedDeviceOwnerType"
+            )
+        },
         max_pages=20,
     )
+    hashed: list[dict[str, Any]] = []
+    for item in rows:
+        if not isinstance(item, dict):
+            continue
+        row = dict(item)
+        if "deviceName" in row:
+            row["deviceName_hash"] = hash_device_label(row.pop("deviceName"))
+        hashed.append(row)
+    return hashed
 
 
 def collect_intune_asr_policies(client: GraphClient) -> list[dict[str, Any]]:
@@ -109,9 +124,11 @@ DEMO_INTUNE_BUNDLE: dict[str, Any] = {
     "managed_devices": [
         {
             "id": "dev-1",
-            "deviceName": "LAPTOP-1",
+            "deviceName_hash": "demo-laptop",
+            "azureADDeviceId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
             "complianceState": "compliant",
             "operatingSystem": "Windows",
+            "lastSyncDateTime": "2026-09-01T00:00:00Z",
         }
     ],
     "asr_policies": [{"id": "asr-1", "displayName": "Endpoint security - ASR rules"}],

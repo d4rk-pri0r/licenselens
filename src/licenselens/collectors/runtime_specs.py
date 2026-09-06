@@ -7,8 +7,11 @@ from typing import Any
 
 from licenselens.collectors.contracts import CheckId, CollectorId, EvidenceEnvelope, EvidenceKey
 from licenselens.collectors.runtime_collect_endpoint import (
+    collect_device_reconciliation_runtime,
+    collect_entra_devices_runtime,
     collect_intune_bundle_runtime,
     collect_mde_health_runtime,
+    collect_mde_inventory_runtime,
     collect_mde_summary_runtime,
     collect_pbi_capacity_runtime,
     collect_purview_dlp_runtime,
@@ -85,6 +88,7 @@ _RUNTIME_DEPENDS: dict[str, tuple[str, ...]] = {
     "approved_guest_domains": (),
     "break_glass_principal_ids": (),
     "la_usage_by_table": ("sentinel_workspace",),
+    "device_reconciliation": ("entra_devices", "intune_bundle", "mde_inventory"),
 }
 
 _COLLECTORS: dict[str, EvidenceCollectorFn] = {
@@ -96,6 +100,9 @@ _COLLECTORS: dict[str, EvidenceCollectorFn] = {
     "secure_score_controls": collect_secure_score_controls_runtime,
     "mde_summary": collect_mde_summary_runtime,
     "mde_health": collect_mde_health_runtime,
+    "mde_inventory": collect_mde_inventory_runtime,
+    "entra_devices": collect_entra_devices_runtime,
+    "device_reconciliation": collect_device_reconciliation_runtime,
     "intune_bundle": collect_intune_bundle_runtime,
     "security_alerts_bundle": collect_security_alerts_runtime,
     "xdr_custom_detections": collect_xdr_custom_detections_runtime,
