@@ -69,13 +69,14 @@ the LicenseLens command line when the CLI session already has access.
 See the full matrix (including MDE, Sentinel RBAC, and PowerShell roles) in
 [permissions.md](permissions.md).
 
-**Microsoft Graph (application)** — the 21 permissions LicenseLens expects
+**Microsoft Graph (application)** — the 22 permissions LicenseLens expects
 (`REQUIRED_GRAPH_APP_PERMISSIONS`):
 
 - `AccessReview.Read.All`
 - `Application.Read.All`
 - `AuditLog.Read.All`
 - `DelegatedPermissionGrant.Read.All`
+- `Device.Read.All`
 - `DeviceManagementApps.Read.All`
 - `DeviceManagementConfiguration.Read.All`
 - `DeviceManagementManagedDevices.Read.All`

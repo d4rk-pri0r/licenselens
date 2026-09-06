@@ -113,7 +113,10 @@ provides them:
 - an explicitly supplied customer inventory.
 
 When an authoritative denominator is available it is used and genuine coverage
-is reported. When it is not:
+is reported. WS4-A supplies that denominator from Entra registered devices,
+Intune managed devices (`azureADDeviceId` + last sync), and MDE machines
+(`aadDeviceId` + last seen, onboarded only). Hostnames are hashed in evidence.
+When it is not:
 
 - the assessment is downgraded;
 - the terminology changes from "coverage" to a licensing-leverage signal;

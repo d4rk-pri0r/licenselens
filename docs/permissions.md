@@ -25,6 +25,7 @@ Security License Lens is designed for **read-only** access.
 | `DeviceManagementApps.Read.All` | Intune MAM app-protection policies |
 | `DeviceManagementConfiguration.Read.All` | Intune compliance/configuration/endpoint-security policies |
 | `DeviceManagementManagedDevices.Read.All` | Intune managed device inventory (bounded) |
+| `Device.Read.All` | Entra registered devices (bounded inventory for denominators) |
 | `DlpPolicy.Read.All` | Purview DLP policies + apps (direct, `/security/dataLossPreventionPolicies`) |
 | `eDiscovery.Read.All` | Premium eDiscovery cases (direct, `/security/cases/ediscoveryCases`) |
 

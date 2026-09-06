@@ -64,6 +64,10 @@ The operational limitations page details these; the short, honest version:
 - Sign-in, MDE, and Intune inventories may **truncate** on very large tenants;
   samples are labeled and never presented as the population.
 - License seats are a licensing-leverage signal, never a coverage denominator.
+  When Entra/Intune/MDE inventories join, coverage uses those active
+  populations (`intune_managed_active_30d`, `entra_devices_active_30d`);
+  unmanaged devices and servers outside Intune are not counted. Hostnames are
+  hashed in evidence.
 - Findings are advisory, not a guarantee.
 
 ## Conditional Access effective scope

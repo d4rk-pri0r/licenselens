@@ -70,7 +70,10 @@ Concretely, the engine uses **licensed seats as a licensing-leverage signal,
 never as a coverage denominator**. A `mde-onboard-gap` finding that compares
 onboarded machines to purchased seats is worded as a licensing-leverage
 indicator and capped at `partial`; it is only reported as coverage when an
-authoritative eligible-device inventory is supplied. See
+authoritative eligible-device inventory is supplied. When Entra, Intune, and
+MDE inventories join, the MDE denominator is the Intune-managed active
+population (`intune_managed_active_30d`) and the Intune enrollment denominator
+is Entra devices active in 30 days (`entra_devices_active_30d`). See
 [deployment and coverage](./entitlement-model.md#denominators-licensing-versus-population)
 for how denominators are validated.
 

@@ -11,14 +11,14 @@
     "capabilities.md": "f032145c4fe26603af431b445741b1c5b990fe6c73e8cdd2a3a63eeed204d9a5",
     "checks.md": "6675e3503ddee251526f0fa1e310fb16366a01d41f0f072e7f488ec0647a9007",
     "coverage.md": "5f2297da9bea71cd283f44fe91275af0ea38dab98c465e3fcbf9199f8e51fdce",
-    "index.md": "8ea50a47ae6673321896f2d1acd77a492ca462f25f303e56f5bac7e1a909d88f",
-    "permissions.md": "c28a1e7de259c016f4c10116dae7bcc189f0898984be40e7af1946605726fd48",
+    "index.md": "4272b30ba305b81dc55428fd32a975bbaaa8de769f1a07cf349e50967a83ef86",
+    "permissions.md": "f3ea66a0cf032ab2b7c4a3751cfe7a69b0b8c2aae70a719bf96d4836d57a6fc7",
     "profiles.md": "9a095e83b755f5486a66d2b93ee76fc871e0908d9095d344c2b30bf00beaa95a",
-    "reference.json": "c7fd6854dbee974ab900cd5c530aaf5a22124a0e65e8e5fa232254000856f327"
+    "reference.json": "5e84ce51c235dc79a2eb369398fd35275bd7779f09b73a06d69c660c03ccb8cc"
   },
   "generator": "scripts/generate_reference_docs.py",
   "package_version": "0.4.0",
-  "permission_count": 21,
+  "permission_count": 22,
   "profile_count": 11,
   "sample_sha256": "eb981037f20c3dce553595ac741e33f7470d99511f0d024251effd3b7147910c",
   "sample_version": "0.4.0",
@@ -205,7 +205,7 @@
     "checks/sentinel/sen-rule-telemetry-parity.yaml": "bd353804da30f9bcc7f0174b98286649a8f00394ee319ad588b5c25038328b32",
     "checks/sentinel/sen-telemetry-ingestion-coverage.yaml": "c240c77d13f118a38306e73d65c086c4f149f31e4e45ba717bcb33824b693ef2",
     "checks/sentinel/sen-ueba-not-enabled.yaml": "2a0aa5e9f4259c4be123db6a87ff7c98cd3b305aa1ce170abdd3d777b926dc8f",
-    "docs/permissions.md": "fba60c0f9d54177bd35d9edb858f4a385b9ef7ebc6c168d711f07045753f44e0"
+    "docs/permissions.md": "b9f2d834b7fee4ee6c6b008c78c91af052abbdeddf94ba478f342a99301122f3"
   },
   "untracked_row_count": 4
 }
