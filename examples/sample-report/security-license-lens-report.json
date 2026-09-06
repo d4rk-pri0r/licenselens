@@ -686,7 +686,16 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Tenant-wide delegated consent grants hold no unused high-impact scopes.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "risky_grant_count",
+          "sample"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_risky_delegated_consent"
     },
     {
@@ -738,7 +747,16 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "User consent to applications is restricted so admins review risky permissions.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "permission_grant_policies",
+          "unrestricted"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_user_consent_restricted"
     },
     {
@@ -790,7 +808,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "SMS, voice call, and email one-time codes are disabled.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "configuration_count",
+          "enabled_weak_methods"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_weak_methods_disabled"
     },
     {
@@ -919,7 +946,22 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Device-code sign-ins are blocked by an enforced Conditional Access policy.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "break_glass_principal_count",
+          "enforced_policies",
+          "label",
+          "report_only_policies",
+          "scope_gaps_best",
+          "scoped_policies",
+          "security_defaults_enabled",
+          "universal_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_device_code_block"
     },
     {
@@ -1061,7 +1103,22 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Accounts marked high user risk by Identity Protection are blocked.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "break_glass_principal_count",
+          "enforced_policies",
+          "label",
+          "protected_population",
+          "report_only_policies",
+          "scope_gaps_best",
+          "scoped_policies",
+          "security_defaults_enabled"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_users"
     },
     {
@@ -1249,7 +1306,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Security is alerted the moment Global Administrator is activated.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "ga_notification_rules"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_alert"
     },
     {
@@ -1299,7 +1364,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "A second approver signs off on every Global Administrator activation.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "approval_required_rules",
+          "ga_rule_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_approval"
     },
     {
@@ -1349,7 +1423,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Privileged roles are granted only through PIM eligibility.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "eligible_schedules",
+          "standing_highly_privileged_assignments"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_outside_pam"
     },
     {
@@ -1536,7 +1619,18 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Conditional Access policies replace Security Defaults for MFA and legacy-authentication blocking.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "baseline_protections_active",
+          "conditional_access_customization_unused",
+          "policy_id",
+          "security_defaults_enabled"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_security_defaults_on"
     },
     {
@@ -1580,7 +1674,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Sensitive content is classified automatically through auto-labeling policies.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "absent",
+          "adapter",
+          "auto_labeling",
+          "label_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_auto_labeling"
     },
     {
@@ -1859,7 +1964,19 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Access reviews for privileged roles recur on a schedule and have completed at least one round.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "definition_count",
+          "definitions_with_completed_rounds",
+          "instance_count_by_definition",
+          "privileged_recurring_count",
+          "privileged_scoped_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_scope"
     },
     {
@@ -1912,7 +2029,19 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Periodic access reviews run for privileged roles and guest access.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "definition_count",
+          "definition_ids",
+          "privileged_recurring_count",
+          "privileged_scoped_count",
+          "recurring_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_unused"
     },
     {
@@ -1964,7 +2093,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Risky AI agents are blocked by Conditional Access or identity protection.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "candidate_policies",
+          "manual_fallback"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_ai_agents_risky_block"
     },
     {
@@ -2014,7 +2152,16 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Admin consent requests route to reviewers who monitor the queue.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "is_enabled",
+          "notify_reviewers"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_admin_consent_workflow"
     },
     {
@@ -2071,7 +2218,18 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Application secrets and certificates rotate before expiry.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "already_expired",
+          "expired_count",
+          "expiring_count",
+          "expiring_within_30_days"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_expiring_credentials"
     },
     {
@@ -2119,7 +2277,15 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "App passwords that bypass MFA are blocked for all users.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_password_addition_blocked"
     },
     {
@@ -2168,7 +2334,15 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Only administrators can register applications in the tenant.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allowed_to_create_apps"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_registration_admin_only"
     },
     {
@@ -2220,7 +2394,18 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Authenticator prompts show the application name and sign-in location.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "authenticator_state",
+          "number_matching_enabled",
+          "show_app_name",
+          "show_location"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_authenticator_context"
     },
     {
@@ -2353,7 +2538,22 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Security-information registration happens only from managed devices.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "break_glass_principal_count",
+          "enforced_policies",
+          "label",
+          "report_only_policies",
+          "scope_gaps_best",
+          "scoped_policies",
+          "security_defaults_enabled",
+          "universal_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_registration_managed"
     },
     {
@@ -2482,7 +2682,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Guests hold limited directory access as Guest or Restricted Guest users.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "guest_user_role_id"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_directory_access_limited"
     },
     {
@@ -2531,7 +2739,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Only Guest Inviter role members and admins can invite guests.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allow_invites_from"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_inviter_restricted"
     },
     {
@@ -2580,7 +2796,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Highly privileged role assignments trigger alerts.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "notification_rule_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_privileged_assignment_alert"
     },
     {
@@ -2704,7 +2928,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Automation rules trigger playbooks for high-value alerts.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled_automation_rules",
+          "playbook_automation_rules",
+          "total_automation_rules",
+          "workspace_resource_id"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_automation_rules"
     },
     {
@@ -2749,7 +2984,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Sentinel workspace retention covers at least 90 days for investigations.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "customer_id",
+          "retention_in_days",
+          "sku",
+          "workspace_resource_id"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_log_analytics_retention"
     },
     {
@@ -2796,7 +3042,21 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "UEBA entity behavior analytics is enabled on the Sentinel workspace.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "entity_analytics_enabled",
+          "raw_entity_present",
+          "raw_ueba_present",
+          "setting_names",
+          "ueba_enabled",
+          "ueba_setting_enabled",
+          "workspace_resource_id"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_ueba"
     },
     {
@@ -2847,7 +3107,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Live events are recorded only when the organizer chooses.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies",
+          "weak_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_broadcast_not_always_record"
     },
     {
@@ -2899,7 +3168,19 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Microsoft app installation is limited to agency-approved apps.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "catalog_types",
+          "required_surface",
+          "required_surface_incomplete",
+          "v2_readable",
+          "weak_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_microsoft_apps_governed"
     },
     {
@@ -2958,7 +3239,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Meeting recording is off by default in meeting policies.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies",
+          "weak_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_recording_disabled"
     },
     {
@@ -3012,7 +3302,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "User passwords never expire on verified managed domains.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "expiring_domains",
+          "never_expire_domains"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_password_never_expire"
     },
     {
@@ -3346,7 +3645,22 @@
           "T1059"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every onboarded device reports an active, in the expected state Defender sensor.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "active_healthy",
+          "count_method",
+          "health_status_counts",
+          "healthy_ratio",
+          "impaired_communication",
+          "machines_sampled",
+          "no_sensor_data",
+          "truncated"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_mde_sensor_health"
     },
     {
@@ -3391,7 +3705,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "DLP policies cover Exchange, SharePoint, OneDrive, Teams, and devices.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "covered_workloads",
+          "workloads"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_locations_complete"
     },
     {
@@ -3661,7 +3984,19 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every application has an owner and current credentials.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "app_count",
+          "ownerless_count",
+          "ownerless_sample",
+          "stale_count",
+          "stale_sample"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_ownerless_or_stale"
     },
     {
@@ -3767,7 +4102,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Cross-tenant defaults block unknown external tenants until reviewed.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "inbound_access_type"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_defaults"
     },
     {
@@ -3820,7 +4163,19 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Multi-factor authentication claims from external tenants are not trusted by default.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "inbound_mfa_trust_default",
+          "outbound_mfa_trust_default",
+          "partner_count",
+          "partner_inbound_mfa_trust_count",
+          "partner_outbound_mfa_trust_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_mfa_trust"
     },
     {
@@ -3870,7 +4225,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Privileged users hold fine-grained roles instead of standing Global Admin.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "global_admin_principals",
+          "other_highly_privileged_assignments"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_finer_roles"
     },
     {
@@ -3980,7 +4344,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Alerts fire when other highly privileged roles activate.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "notification_rule_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_other_activation_alert"
     },
     {
@@ -4078,7 +4450,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Custom app installation is limited to agency-approved apps.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "catalog_types",
+          "required_surface",
+          "required_surface_incomplete",
+          "v2_readable"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_custom_apps_governed"
     },
     {
@@ -4127,7 +4510,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Third-party app installation is limited to agency-approved apps.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "catalog_types",
+          "required_surface",
+          "required_surface_incomplete",
+          "v2_readable"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_third_party_apps_governed"
     },
     {
@@ -4167,7 +4561,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "DMARC records include the agency's internal report contact.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "configured",
+          "field"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_agency_contact"
     },
     {
@@ -4207,7 +4610,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "DMARC records include the required federal report contact.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "configured",
+          "field"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_federal_contact"
     },
     {
@@ -4382,7 +4794,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Impersonation protection covers profile-listed partner domains.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "partner_domains"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_partner_domains"
     },
     {
@@ -4421,7 +4841,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "User impersonation protection covers profile-listed sensitive accounts.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "sensitive_users"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_users_protected"
     },
     {
@@ -4462,7 +4890,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Anyone links expire within 30 days of creation.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "sharing_capability"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_expiration"
     },
     {
@@ -4503,7 +4939,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Anyone links grant view-only access to files and folders.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "sharing_capability"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_view"
     },
     {
@@ -4760,7 +5204,17 @@
           "T1059"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "The Intune to Defender for Endpoint connector is active for the expected devices.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "onboarded_device_count",
+          "unhealthy_device_count",
+          "unknown_device_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_mde_connector"
     },
     {
@@ -5009,7 +5463,22 @@
           "T1059"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Managed devices match the expected state, with zero noncompliant devices reported.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "compliance_policy_count",
+          "compliant_devices",
+          "conflict_devices",
+          "error_devices",
+          "in_grace_period_devices",
+          "managed_devices_total",
+          "noncompliant_devices",
+          "unknown_devices"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_compliance_enforcement"
     },
     {
@@ -5061,7 +5530,17 @@
           "T1486"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "App protection policies exist and are assigned to protect managed app data.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "app_protection_policy_count",
+          "assigned_count",
+          "org_wide_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_mam_app_protection"
     },
     {
@@ -5222,7 +5701,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every domain publishes a DMARC record at _dmarc.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dmarc_missing",
+          "domains_checked"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_published"
     },
     {
@@ -5318,7 +5806,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "External mail carries a clear sender warning for users.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "external_sender_rule",
+          "mail_tips_external_tips"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_external_sender_warnings"
     },
     {
@@ -5362,7 +5859,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Automatic forwarding to external domains is blocked except approved partners.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allowed_forwarding_domains",
+          "forwarding_domains",
+          "unapproved_forwarding"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_forwarding_external_disabled"
     },
     {
@@ -5457,7 +5964,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Calendar sharing policies exclude the all-domains scope.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "kind",
+          "shares_with_all_domains"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_calendar_not_all_domains"
     },
     {
@@ -5500,7 +6016,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Contact sharing policies exclude the all-domains scope.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "kind",
+          "shares_with_all_domains"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_contact_not_all_domains"
     },
     {
@@ -5594,7 +6119,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every domain publishes an SPF record that fails unapproved senders.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "domains_checked",
+          "spf_missing"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_spf_published"
     },
     {
@@ -5730,7 +6264,18 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Between two and eight Global Administrator principals exist in the tenant.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "global_admin_assignment_count",
+          "global_admin_principal_count",
+          "max_recommended",
+          "min_recommended"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_count_bounds"
     },
     {
@@ -5956,7 +6501,16 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Protective plans are assigned to at least 85% of enabled member users.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "capabilities",
+          "enabled_member_users"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_assignment.evaluate_protective_plan_assignment"
     },
     {
@@ -5998,7 +6552,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Anti-spam policies keep allowed sender and domain lists empty.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allowed_entries"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_anti_spam_no_allowed_domains"
     },
     {
@@ -6040,7 +6602,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Connection filter policies keep the IP allow list empty.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "ip_allow_list"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_ip_allow"
     },
     {
@@ -6082,7 +6652,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Connection filter policies disable the safe list.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enable_safe_list"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_safe_list"
     },
     {
@@ -6126,7 +6704,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Impersonation protection covers every owned organization domain.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_domains_owned"
     },
     {
@@ -6170,7 +6758,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "The common attachments filter blocks executable attachment types.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_file_filter"
     },
     {
@@ -6214,7 +6812,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Zero-hour auto purge removes delivered malware from inboxes.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_zap"
     },
     {
@@ -6258,7 +6866,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Outbound automatic forwarding is blocked tenant-wide by the outbound spam filter policy.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "forwarding_enabled",
+          "policies",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_outbound_spam_forwarding_block"
     },
     {
@@ -6428,7 +7046,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Attachments blocks detected malware before delivery.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_attachments_block"
     },
     {
@@ -6470,7 +7098,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Attachments scans files in SharePoint, OneDrive, and Teams.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enable_atp_for_spo_teams_odb"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_attachments_spo_teams"
     },
     {
@@ -6515,7 +7151,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Links screens URLs in email, Teams, and Office applications.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "email",
+          "office",
+          "surface",
+          "teams"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_block_list"
     },
     {
@@ -6559,7 +7206,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Links keeps users from clicking through to the original URL.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allow_click_through",
+          "policies",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_through"
     },
     {
@@ -6603,7 +7260,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Links records who clicks rewritten URLs.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_tracking"
     },
     {
@@ -6647,7 +7314,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Links scans link destinations in real time before delivery.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_real_time_scan"
     },
     {
@@ -6695,7 +7372,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Anti-phish safety tips warn users about unusual senders.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled_safety_tips",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_safety_tips_enabled"
     },
     {
@@ -6738,7 +7424,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Spam and phishing messages land in quarantine, not the inbox.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies",
+          "weak_actions"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_spam_phish_not_inbox"
     },
     {
@@ -6786,7 +7481,19 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "No transport rule Bcc's or redirects mail to external domains.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "accepted_domains",
+          "external_forward_rules",
+          "rules",
+          "surface",
+          "unresolved_rules"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_transport_rule_external_forward"
     },
     {
@@ -6829,7 +7536,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Unified audit logging records user and admin activity.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "adapter",
+          "unified_audit_ingestion"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_mdo_unified_audit_enabled"
     },
     {
@@ -6871,7 +7587,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Power BI data export is turned off for the organization.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_export_controls"
     },
     {
@@ -6913,7 +7638,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Publish to web is disabled in Power BI tenant settings.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_publish_to_web_disabled"
     },
     {
@@ -6961,7 +7695,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every environment, including the default, is in the expected state by a DLP policy.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "covered_environments",
+          "dlp_policy_count",
+          "environment_count",
+          "uncovered_environments"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_all_environments"
     },
     {
@@ -7004,7 +7749,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "A DLP policy protects each non-default Power Platform environment.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dlp_policy_count",
+          "non_default_environment_count",
+          "uncovered_nondefault_environments"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_nondefault_environments"
     },
     {
@@ -7047,7 +7802,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Only admins can create Power Platform environments.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_env_creation_admin_only"
     },
     {
@@ -7090,7 +7855,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Only admins can create Power Pages sites.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_pages_creation_admin_only"
     },
     {
@@ -7135,7 +7910,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Tenant isolation uses an explicit cross-tenant allowlist.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allowed_tenants",
+          "isolation_enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_allowlist"
     },
     {
@@ -7177,7 +7962,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Tenant isolation blocks cross-tenant connections with an explicit allowlist.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "isolation_enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_enabled"
     },
     {
@@ -7275,7 +8069,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "DLP rule actions block sharing of sensitive information.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "blocking_rules",
+          "dlp_rules"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_enforcement_block"
     },
     {
@@ -7318,7 +8121,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "DLP user notifications explain blocked actions to users.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dlp_rules",
+          "notifying_rules"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_notifications"
     },
     {
@@ -7362,7 +8174,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "An enforced DLP policy protects agency-defined sensitive information.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dlp_policy_count",
+          "enforced_dlp_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_policy_present"
     },
     {
@@ -7407,7 +8228,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "An enforced DLP policy covers endpoint devices.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dlp_policy_count",
+          "endpoint_dlp_policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_endpoint_dlp"
     },
     {
@@ -7456,7 +8286,19 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "At least one insider risk policy is live; analytics is enabled.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "direct",
+          "policy_count",
+          "policy_names",
+          "proxy",
+          "source"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_insider_risk_readiness"
     },
     {
@@ -7500,7 +8342,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Retention policies govern content across mail and file workloads.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "absent",
+          "adapter",
+          "retention_policies",
+          "retention_rules"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_retention_policy_coverage"
     },
     {
@@ -7602,7 +8455,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "External sharing is limited to organization-approved partner domains.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allowed_domains",
+          "domain_restriction_mode",
+          "sharing_capability"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_domain_restrictions"
     },
     {
@@ -7643,7 +8506,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "OneDrive sharing is limited to existing guests or internal users only.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "sharing_capability"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_onedrive_sharing_limited"
     },
     {
@@ -7684,7 +8555,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "SharePoint sharing is limited to existing guests or internal users only.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "sharing_capability"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_sharing_capability_limited"
     },
     {
@@ -7725,7 +8604,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Unmanaged devices cannot open SharePoint or OneDrive content.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "unmanaged_device_policy"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_unmanaged_device_access"
     },
     {
@@ -7781,7 +8668,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Meeting policies block anonymous users from starting any meeting.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_start_disabled"
     },
     {
@@ -7825,7 +8720,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Teams external access is limited to approved domains only.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allow_federated_users",
+          "allowed_domains"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_external_access_per_domain"
     },
     {
@@ -7868,7 +8772,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Teams guest access is disabled or limited to approved domains.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allow_guest_calling",
+          "allow_guest_chat",
+          "allow_guest_user"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_guest_access_restricted"
     },
     {
@@ -7909,7 +8823,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Unmanaged Teams accounts cannot initiate contact with internal users.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "EnableTeamsConsumerInbound"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_inbound_blocked"
     },
     {
@@ -7959,7 +8881,16 @@
           "T1059"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every compliance policy has a scheduled action for noncompliant devices.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "compliance_policy_count",
+          "policies_with_action"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_noncompliance_action"
     },
     {
@@ -8009,7 +8940,16 @@
           "T1059"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Security baseline profiles are assigned to every managed platform.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "baseline_policy_count",
+          "configuration_policy_count"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_baseline"
     },
     {
@@ -8058,7 +8998,16 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Application certificates expire within 365 days of issuance.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "long_lived_certificate_count",
+          "sample"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_certificate_lifetime"
     },
     {
@@ -8107,7 +9056,16 @@
           "T1098"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Application password credentials expire within 180 days.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "long_lived_password_count",
+          "sample"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_password_lifetime"
     },
     {
@@ -8152,7 +9110,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Mailbox intelligence is enabled on all anti-phish policies.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "mailbox_intelligence_enabled",
+          "mailbox_intelligence_missing",
+          "policies",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_mailbox_intelligence"
     },
     {
@@ -8197,7 +9166,18 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "End users have limited quarantine access and mail is kept long enough.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "full_access_policies",
+          "policies",
+          "retention_days",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_quarantine_policy"
     },
     {
@@ -8240,7 +9220,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Safe Documents protects users who open Office files from the internet.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allow_safe_docs_open",
+          "enable_safe_docs"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_documents"
     },
     {
@@ -8282,7 +9271,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "External user invitations are disabled in Power BI tenant settings.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_external_invite_disabled"
     },
     {
@@ -8324,7 +9322,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Guest access is disabled in Power BI tenant settings.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_guest_access_disabled"
     },
     {
@@ -8366,7 +9373,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Python and R visuals are disabled in Power BI tenant settings.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_python_r_visuals_disabled"
     },
     {
@@ -8408,7 +9424,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Resource key authentication is blocked in Power BI tenant settings.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_resource_key_auth_blocked"
     },
     {
@@ -8450,7 +9475,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Sensitivity labels are enabled so Power BI content inherits classification.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sensitivity_labels_enabled"
     },
     {
@@ -8495,7 +9529,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Service principal API access is disabled or limited to specific security groups.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "security_groups",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_api_restricted"
     },
     {
@@ -8537,7 +9581,16 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Service principals cannot create Power BI profiles.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled",
+          "surface"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_profiles_disabled"
     },
     {
@@ -8580,7 +9633,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Power Apps sharing with everyone is disabled.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_share_with_everyone_disabled"
     },
     {
@@ -8623,7 +9686,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Only admins can create Power Platform trial environments.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "property",
+          "surface",
+          "value"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_trial_creation_admin_only"
     },
     {
@@ -8671,7 +9744,19 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Premium eDiscovery cases exist and legal hold workflows are in use.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "case_count",
+          "case_names",
+          "direct",
+          "proxy",
+          "source"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_ediscovery_readiness"
     },
     {
@@ -8712,7 +9797,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Default sharing links are scoped to specific people only.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "default_link_type"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_specific"
     },
     {
@@ -8753,7 +9846,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Every newly created sharing link defaults to view-only access.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "default_link_permission"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_view"
     },
     {
@@ -8796,7 +9897,17 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Verification-code users reauthenticate within 30 days or fewer.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "email_attestation_reauth_days",
+          "email_attestation_required",
+          "sharing_capability"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_verification_reauth"
     },
     {
@@ -8852,7 +9963,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Anonymous and dial-in callers are held in the meeting lobby.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_lobby"
     },
     {
@@ -8908,7 +10027,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Dial-in callers wait in the meeting lobby.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_dialin_lobby"
     },
     {
@@ -8949,7 +10076,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Teams channel email integration is turned off.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "allow_email_into_channel"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_email_integration_disabled"
     },
     {
@@ -9005,7 +10140,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Meeting policies deny external participants control over shared screens.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_external_control_disabled"
     },
     {
@@ -9046,7 +10189,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Internal users cannot contact unmanaged Teams accounts.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "EnableTeamsConsumerAccess"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_outbound_blocked"
     },
     {
@@ -9101,7 +10252,18 @@
           "T1059"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Defender XDR correlates signals from identity, email, and endpoint into incidents.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "alert_count",
+          "capability_operating",
+          "incident_count",
+          "service_sources"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_xdr_incident_readiness"
     },
     {
@@ -9157,7 +10319,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Internal users are admitted to meetings without waiting in the lobby.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policies"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_internal_auto_admit"
     },
     {
@@ -9194,7 +10364,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "The paid Defender for Cloud plan is enabled on the subscription with continuous export of findings.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "status"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_defender_plan_enabled"
     },
     {
@@ -9299,7 +10477,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "No service principals are currently flagged as risky or compromised.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "status"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_identity_protection_workload"
     },
     {
@@ -9345,7 +10531,15 @@
           "T1078"
         ]
       },
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Entitlement Management access packages are configured for governed access.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "status"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_entitlement_access_packages"
     },
     {
@@ -9384,7 +10578,15 @@
       "source_references": [],
       "accepted_risks": [],
       "mappings": {},
-      "pass_criteria": null,
+      "pass_criteria": {
+        "ok": "Premium capacities are in use and capacity admins stay limited.",
+        "partial": "The expected state is only partly met.",
+        "gap": "The expected state is not met.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "status"
+        ]
+      },
       "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_premium_capacity_governance"
     },
     {

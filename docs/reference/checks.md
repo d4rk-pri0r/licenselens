@@ -188,9 +188,25 @@ direct is unavailable). Per-finding report rows still serialize the observed
 mode (`direct` or `proxy`) when a dynamic check runs. `missing` under
 Evaluator would be rejected by the reference model, so it cannot appear here.
 
-## Flagship pass criteria
+## Pass criteria
 
-Customer-facing wording for each flagship. These strings are also on the finding JSON.
+Customer-facing wording for every check that declares `pass_criteria`.
+These strings also appear on the finding JSON and in the report
+("How this is decided").
+
+### `az-defender-plan-enabled`
+
+- **OK:** The paid Defender for Cloud plan is enabled on the subscription with continuous export of findings.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** status
+
+### `endpoint-compliance-noncompliance-action`
+
+- **OK:** Every compliance policy has a scheduled action for noncompliant devices.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** compliance_policy_count, policies_with_action
 
 ### `endpoint-compliance-policy-assigned`
 
@@ -205,6 +221,20 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Partial:** Some licensed or registered devices are not enrolled.
 - **Gap:** Almost none of the expected devices are enrolled.
 - **Evidence fields:** managed_device_count, licensed_units, truncated
+
+### `endpoint-mde-connector`
+
+- **OK:** The Intune to Defender for Endpoint connector is active for the expected devices.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** onboarded_device_count, unhealthy_device_count, unknown_device_count
+
+### `endpoint-security-baseline`
+
+- **OK:** Security baseline profiles are assigned to every managed platform.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** baseline_policy_count, configuration_policy_count
 
 ### `endpoint-security-policy-coverage`
 
@@ -227,6 +257,20 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** No BitLocker policy is assigned.
 - **Evidence fields:** assigned_count, bitlocker_config_count
 
+### `ep-compliance-enforcement`
+
+- **OK:** Managed devices match the expected state, with zero noncompliant devices reported.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** compliance_policy_count, compliant_devices, conflict_devices, error_devices, in_grace_period_devices, managed_devices_total, noncompliant_devices, unknown_devices
+
+### `ep-mam-app-protection`
+
+- **OK:** App protection policies exist and are assigned to protect managed app data.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** app_protection_policy_count, assigned_count, org_wide_count
+
 ### `ep-tamper-protection`
 
 - **OK:** Tamper protection is configured, assigned, and reported enabled on sampled devices.
@@ -241,12 +285,47 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** DKIM signing is not enabled.
 - **Evidence fields:** disabled_domains, dkim_configs
 
+### `exo-dmarc-agency-contact`
+
+- **OK:** DMARC records include the agency's internal report contact.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** configured, field
+
+### `exo-dmarc-federal-contact`
+
+- **OK:** DMARC records include the required federal report contact.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** configured, field
+
+### `exo-dmarc-published`
+
+- **OK:** Every domain publishes a DMARC record at _dmarc.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** dmarc_missing, domains_checked
+
 ### `exo-dmarc-reject`
 
 - **OK:** Every checked domain publishes a DMARC policy of reject.
 - **Partial:** Some domains publish a weaker DMARC policy.
 - **Gap:** Domains are missing a DMARC reject policy.
 - **Evidence fields:** dmarc_not_reject, domains_checked
+
+### `exo-external-sender-warnings`
+
+- **OK:** External mail carries a clear sender warning for users.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** external_sender_rule, mail_tips_external_tips
+
+### `exo-forwarding-external-disabled`
+
+- **OK:** Automatic forwarding to external domains is blocked except approved partners.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allowed_forwarding_domains, forwarding_domains, unapproved_forwarding
 
 ### `exo-mailbox-audit-enabled`
 
@@ -255,12 +334,124 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Mailbox auditing is disabled organization-wide.
 - **Evidence fields:** audit_disabled
 
+### `exo-sharing-calendar-not-all-domains`
+
+- **OK:** Calendar sharing policies exclude the all-domains scope.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** kind, shares_with_all_domains
+
+### `exo-sharing-contact-not-all-domains`
+
+- **OK:** Contact sharing policies exclude the all-domains scope.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** kind, shares_with_all_domains
+
 ### `exo-smtp-auth-disabled`
 
 - **OK:** SMTP AUTH is disabled organization-wide.
 - **Partial:** SMTP AUTH is still allowed for some mailboxes.
 - **Gap:** SMTP AUTH is enabled organization-wide.
 - **Evidence fields:** smtp_client_authentication_disabled
+
+### `exo-spf-published`
+
+- **OK:** Every domain publishes an SPF record that fails unapproved senders.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** domains_checked, spf_missing
+
+### `id-access-reviews-scope`
+
+- **OK:** Access reviews for privileged roles recur on a schedule and have completed at least one round.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** definition_count, definitions_with_completed_rounds, instance_count_by_definition, privileged_recurring_count, privileged_scoped_count
+
+### `id-access-reviews-unused`
+
+- **OK:** Periodic access reviews run for privileged roles and guest access.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** definition_count, definition_ids, privileged_recurring_count, privileged_scoped_count, recurring_count
+
+### `id-ai-agents-risky-block`
+
+- **OK:** Risky AI agents are blocked by Conditional Access or identity protection.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** candidate_policies, manual_fallback
+
+### `id-app-admin-consent-workflow`
+
+- **OK:** Admin consent requests route to reviewers who monitor the queue.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** is_enabled, notify_reviewers
+
+### `id-app-certificate-lifetime`
+
+- **OK:** Application certificates expire within 365 days of issuance.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** long_lived_certificate_count, sample
+
+### `id-app-expiring-credentials`
+
+- **OK:** Application secrets and certificates rotate before expiry.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** already_expired, expired_count, expiring_count, expiring_within_30_days
+
+### `id-app-ownerless-or-stale`
+
+- **OK:** Every application has an owner and current credentials.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** app_count, ownerless_count, ownerless_sample, stale_count, stale_sample
+
+### `id-app-password-addition-blocked`
+
+- **OK:** App passwords that bypass MFA are blocked for all users.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enforced_policies
+
+### `id-app-password-lifetime`
+
+- **OK:** Application password credentials expire within 180 days.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** long_lived_password_count, sample
+
+### `id-app-registration-admin-only`
+
+- **OK:** Only administrators can register applications in the tenant.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allowed_to_create_apps
+
+### `id-app-risky-delegated-consent`
+
+- **OK:** Tenant-wide delegated consent grants hold no unused high-impact scopes.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** risky_grant_count, sample
+
+### `id-app-user-consent-restricted`
+
+- **OK:** User consent to applications is restricted so admins review risky permissions.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** permission_grant_policies, unrestricted
+
+### `id-auth-authenticator-context`
+
+- **OK:** Authenticator prompts show the application name and sign-in location.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** authenticator_state, number_matching_enabled, show_app_name, show_location
 
 ### `id-auth-methods-migration`
 
@@ -269,6 +460,13 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Authentication methods still live in the legacy policy surface.
 - **Evidence fields:** policy_migration_state
 
+### `id-auth-weak-methods-disabled`
+
+- **OK:** SMS, voice call, and email one-time codes are disabled.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** configuration_count, enabled_weak_methods
+
 ### `id-break-glass-exclusion`
 
 - **OK:** Emergency accounts are declared and every Conditional Access exclusion is justified.
@@ -276,12 +474,26 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Emergency accounts are missing, or Conditional Access exclusions are unexplained.
 - **Evidence fields:** declared_break_glass_principal_count, unjustified_exclusion_count, identified_break_glass_accounts
 
+### `id-ca-device-code-block`
+
+- **OK:** Device-code sign-ins are blocked by an enforced Conditional Access policy.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** break_glass_principal_count, enforced_policies, label, report_only_policies, scope_gaps_best, scoped_policies, security_defaults_enabled, universal_policies
+
 ### `id-ca-high-risk-signins`
 
 - **OK:** Sign-ins marked high risk are blocked for all users on all cloud apps.
 - **Partial:** A high-risk sign-in block exists but is limited in who or what it covers.
 - **Gap:** High-risk sign-ins are not blocked.
 - **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues, protected_population
+
+### `id-ca-high-risk-users`
+
+- **OK:** Accounts marked high user risk by Identity Protection are blocked.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** break_glass_principal_count, enforced_policies, label, protected_population, report_only_policies, scope_gaps_best, scoped_policies, security_defaults_enabled
 
 ### `id-ca-legacy-auth-block`
 
@@ -303,6 +515,13 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Partial:** MFA is required only for some users, some apps, or with extra limits that leave people out.
 - **Gap:** No enforced all-user MFA policy was found.
 - **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-ca-mfa-registration-managed`
+
+- **OK:** Security-information registration happens only from managed devices.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** break_glass_principal_count, enforced_policies, label, report_only_policies, scope_gaps_best, scoped_policies, security_defaults_enabled, universal_policies
 
 ### `id-ca-phishing-resistant-all`
 
@@ -332,12 +551,68 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** No risk-based policy protects workload identities.
 - **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
 
+### `id-cross-tenant-defaults`
+
+- **OK:** Cross-tenant defaults block unknown external tenants until reviewed.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** inbound_access_type
+
+### `id-cross-tenant-mfa-trust`
+
+- **OK:** Multi-factor authentication claims from external tenants are not trusted by default.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** inbound_mfa_trust_default, outbound_mfa_trust_default, partner_count, partner_inbound_mfa_trust_count, partner_outbound_mfa_trust_count
+
 ### `id-dormant-privileged`
 
 - **OK:** Privileged accounts have signed in inside the lookback window.
 - **Partial:** Some privileged accounts could not be verified.
 - **Gap:** Privileged accounts have not signed in inside the lookback window.
 - **Evidence fields:** dormant_privileged_users, active_privileged_users, lookback_days, signin_sample_truncated
+
+### `id-entitlement-access-packages`
+
+- **OK:** Entitlement Management access packages are configured for governed access.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** status
+
+### `id-ga-count-bounds`
+
+- **OK:** Between two and eight Global Administrator principals exist in the tenant.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** global_admin_assignment_count, global_admin_principal_count, max_recommended, min_recommended
+
+### `id-ga-finer-roles`
+
+- **OK:** Privileged users hold fine-grained roles instead of standing Global Admin.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** global_admin_principals, other_highly_privileged_assignments
+
+### `id-guest-directory-access-limited`
+
+- **OK:** Guests hold limited directory access as Guest or Restricted Guest users.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** guest_user_role_id
+
+### `id-guest-inviter-restricted`
+
+- **OK:** Only Guest Inviter role members and admins can invite guests.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allow_invites_from
+
+### `id-identity-protection-workload`
+
+- **OK:** No service principals are currently flagged as risky or compromised.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** status
 
 ### `id-idprotect-off`
 
@@ -353,6 +628,13 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Number matching is not in use.
 - **Evidence fields:** number_matching_state, authenticator_state, number_matching_explicit
 
+### `id-password-never-expire`
+
+- **OK:** User passwords never expire on verified managed domains.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** expiring_domains, never_expire_domains
+
 ### `id-pim-activation-controls`
 
 - **OK:** Privileged-role activation requires justification, an authentication context, and a short time limit.
@@ -360,12 +642,47 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Privileged-role activation is missing justification, an authentication context, or a time cap.
 - **Evidence fields:** justification_required, auth_context_required, activation_duration_capped, policy_count
 
+### `id-pim-ga-activation-alert`
+
+- **OK:** Security is alerted the moment Global Administrator is activated.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** ga_notification_rules
+
+### `id-pim-ga-activation-approval`
+
+- **OK:** A second approver signs off on every Global Administrator activation.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** approval_required_rules, ga_rule_count
+
+### `id-pim-no-outside-pam`
+
+- **OK:** Privileged roles are granted only through PIM eligibility.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** eligible_schedules, standing_highly_privileged_assignments
+
 ### `id-pim-no-permanent-privileged`
 
 - **OK:** Highly privileged roles have no standing active assignments.
 - **Partial:** Some standing assignments remain.
 - **Gap:** Highly privileged roles still have permanent active assignments.
 - **Evidence fields:** standing_highly_privileged_assignments, eligible_schedules
+
+### `id-pim-other-activation-alert`
+
+- **OK:** Alerts fire when other highly privileged roles activate.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** notification_rule_count
+
+### `id-pim-privileged-assignment-alert`
+
+- **OK:** Highly privileged role assignments trigger alerts.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** notification_rule_count
 
 ### `id-pim-unused`
 
@@ -381,12 +698,103 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Privileged accounts are synced from on-premises directories.
 - **Evidence fields:** cloud_only, hybrid_or_synced, privileged_principals_checked
 
+### `id-protective-plan-assignment`
+
+- **OK:** Protective plans are assigned to at least 85% of enabled member users.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** capabilities, enabled_member_users
+
+### `id-security-defaults-on`
+
+- **OK:** Conditional Access policies replace Security Defaults for MFA and legacy-authentication blocking.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** baseline_protections_active, conditional_access_customization_unused, policy_id, security_defaults_enabled
+
 ### `mde-onboard-gap`
 
 - **OK:** Onboarded machines meet the active-device denominator (or the licensed-seat signal when no inventory join is available).
 - **Partial:** Onboarding is below the threshold, or only a licensed-seat leverage signal is available.
 - **Gap:** Almost none of the expected devices are onboarded when an authoritative denominator exists.
 - **Evidence fields:** onboarded_machines, licensed_units, coverage_ratio, truncated
+
+### `mde-sensor-health`
+
+- **OK:** Every onboarded device reports an active, in the expected state Defender sensor.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** active_healthy, count_method, health_status_counts, healthy_ratio, impaired_communication, machines_sampled, no_sensor_data, truncated
+
+### `mdo-anti-spam-no-allowed-domains`
+
+- **OK:** Anti-spam policies keep allowed sender and domain lists empty.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allowed_entries
+
+### `mdo-connection-filter-no-ip-allow`
+
+- **OK:** Connection filter policies keep the IP allow list empty.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** ip_allow_list
+
+### `mdo-connection-filter-no-safe-list`
+
+- **OK:** Connection filter policies disable the safe list.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enable_safe_list
+
+### `mdo-impersonation-domains-owned`
+
+- **OK:** Impersonation protection covers every owned organization domain.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `mdo-impersonation-partner-domains`
+
+- **OK:** Impersonation protection covers profile-listed partner domains.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** partner_domains
+
+### `mdo-impersonation-users-protected`
+
+- **OK:** User impersonation protection covers profile-listed sensitive accounts.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** sensitive_users
+
+### `mdo-mailbox-intelligence`
+
+- **OK:** Mailbox intelligence is enabled on all anti-phish policies.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** mailbox_intelligence_enabled, mailbox_intelligence_missing, policies, surface
+
+### `mdo-malware-file-filter`
+
+- **OK:** The common attachments filter blocks executable attachment types.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `mdo-malware-zap`
+
+- **OK:** Zero-hour auto purge removes delivered malware from inboxes.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `mdo-outbound-spam-forwarding-block`
+
+- **OK:** Outbound automatic forwarding is blocked tenant-wide by the outbound spam filter policy.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** forwarding_enabled, policies, surface
 
 ### `mdo-p2-policies-default`
 
@@ -395,6 +803,216 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Safe Attachments or Safe Links are not protecting recipients.
 - **Evidence fields:** safe_attachments_enabled, safe_links_enabled, preset_enabled, proxy, exchange_direct
 
+### `mdo-quarantine-policy`
+
+- **OK:** End users have limited quarantine access and mail is kept long enough.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** full_access_policies, policies, retention_days, surface
+
+### `mdo-safe-attachments-block`
+
+- **OK:** Safe Attachments blocks detected malware before delivery.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `mdo-safe-attachments-spo-teams`
+
+- **OK:** Safe Attachments scans files in SharePoint, OneDrive, and Teams.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enable_atp_for_spo_teams_odb
+
+### `mdo-safe-documents`
+
+- **OK:** Safe Documents protects users who open Office files from the internet.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allow_safe_docs_open, enable_safe_docs
+
+### `mdo-safe-links-block-list`
+
+- **OK:** Safe Links screens URLs in email, Teams, and Office applications.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** email, office, surface, teams
+
+### `mdo-safe-links-click-through`
+
+- **OK:** Safe Links keeps users from clicking through to the original URL.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allow_click_through, policies, surface
+
+### `mdo-safe-links-click-tracking`
+
+- **OK:** Safe Links records who clicks rewritten URLs.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `mdo-safe-links-real-time-scan`
+
+- **OK:** Safe Links scans link destinations in real time before delivery.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `mdo-safety-tips-enabled`
+
+- **OK:** Anti-phish safety tips warn users about unusual senders.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled_safety_tips, surface
+
+### `mdo-spam-phish-not-inbox`
+
+- **OK:** Spam and phishing messages land in quarantine, not the inbox.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies, weak_actions
+
+### `mdo-transport-rule-external-forward`
+
+- **OK:** No transport rule Bcc's or redirects mail to external domains.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** accepted_domains, external_forward_rules, rules, surface, unresolved_rules
+
+### `mdo-unified-audit-enabled`
+
+- **OK:** Unified audit logging records user and admin activity.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** adapter, unified_audit_ingestion
+
+### `pbi-export-controls`
+
+- **OK:** Power BI data export is turned off for the organization.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-external-invite-disabled`
+
+- **OK:** External user invitations are disabled in Power BI tenant settings.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-guest-access-disabled`
+
+- **OK:** Guest access is disabled in Power BI tenant settings.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-premium-capacity-governance`
+
+- **OK:** Premium capacities are in use and capacity admins stay limited.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** status
+
+### `pbi-publish-to-web-disabled`
+
+- **OK:** Publish to web is disabled in Power BI tenant settings.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-python-r-visuals-disabled`
+
+- **OK:** Python and R visuals are disabled in Power BI tenant settings.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-resource-key-auth-blocked`
+
+- **OK:** Resource key authentication is blocked in Power BI tenant settings.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-sensitivity-labels-enabled`
+
+- **OK:** Sensitivity labels are enabled so Power BI content inherits classification.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pbi-sp-api-restricted`
+
+- **OK:** Service principal API access is disabled or limited to specific security groups.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, security_groups, surface
+
+### `pbi-sp-profiles-disabled`
+
+- **OK:** Service principals cannot create Power BI profiles.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled, surface
+
+### `pp-dlp-all-environments`
+
+- **OK:** Every environment, including the default, is in the expected state by a DLP policy.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** covered_environments, dlp_policy_count, environment_count, uncovered_environments
+
+### `pp-dlp-nondefault-envs`
+
+- **OK:** A DLP policy protects each non-default Power Platform environment.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** dlp_policy_count, non_default_environment_count, uncovered_nondefault_environments
+
+### `pp-env-creation-admin-only`
+
+- **OK:** Only admins can create Power Platform environments.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `pp-pages-creation-admin-only`
+
+- **OK:** Only admins can create Power Pages sites.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `pp-share-with-everyone-disabled`
+
+- **OK:** Power Apps sharing with everyone is disabled.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
+### `pp-tenant-isolation-allowlist`
+
+- **OK:** Tenant isolation uses an explicit cross-tenant allowlist.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allowed_tenants, isolation_enabled, surface
+
+### `pp-tenant-isolation-enabled`
+
+- **OK:** Tenant isolation blocks cross-tenant connections with an explicit allowlist.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** isolation_enabled, surface
+
+### `pp-trial-creation-admin-only`
+
+- **OK:** Only admins can create Power Platform trial environments.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** property, surface, value
+
 ### `pur-default-and-mandatory-labels`
 
 - **OK:** A default sensitivity label is assigned and labeling is required.
@@ -402,12 +1020,75 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** No default label and no mandatory labeling are configured.
 - **Evidence fields:** default_label, mandatory_labeling, label_policies
 
+### `pur-dlp-enforcement-block`
+
+- **OK:** DLP rule actions block sharing of sensitive information.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** blocking_rules, dlp_rules
+
+### `pur-dlp-locations-complete`
+
+- **OK:** DLP policies cover Exchange, SharePoint, OneDrive, Teams, and devices.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** covered_workloads, workloads
+
 ### `pur-dlp-not-enforced`
 
 - **OK:** At least one DLP policy runs in production mode (direct Graph read, or labeled fallback).
 - **Partial:** DLP policies exist but are still in test mode, or only a labeled fallback signal is available.
 - **Gap:** No DLP policy is in production mode.
 - **Evidence fields:** dlp_graph, proxy, source
+
+### `pur-dlp-notifications`
+
+- **OK:** DLP user notifications explain blocked actions to users.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** dlp_rules, notifying_rules
+
+### `pur-dlp-policy-present`
+
+- **OK:** An enforced DLP policy protects agency-defined sensitive information.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** dlp_policy_count, enforced_dlp_policies
+
+### `pur-ediscovery-readiness`
+
+- **OK:** Premium eDiscovery cases exist and legal hold workflows are in use.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** case_count, case_names, direct, proxy, source
+
+### `pur-endpoint-dlp`
+
+- **OK:** An enforced DLP policy covers endpoint devices.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** dlp_policy_count, endpoint_dlp_policies
+
+### `pur-insider-risk-readiness`
+
+- **OK:** At least one insider risk policy is live; analytics is enabled.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** direct, policy_count, policy_names, proxy, source
+
+### `pur-retention-policy-coverage`
+
+- **OK:** Retention policies govern content across mail and file workloads.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** absent, adapter, retention_policies, retention_rules
+
+### `pur-sensitivity-auto-labeling`
+
+- **OK:** Sensitive content is classified automatically through auto-labeling policies.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** absent, adapter, auto_labeling, label_policies
 
 ### `pur-sensitivity-labels-published`
 
@@ -423,12 +1104,26 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Gap:** Too few scheduled analytics rules are enabled.
 - **Evidence fields:** enabled_scheduled_or_nrt, tactic_count, total_rules, workspace_resource_id
 
+### `sen-automation-rules`
+
+- **OK:** Automation rules trigger playbooks for high-value alerts.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** enabled_automation_rules, playbook_automation_rules, total_automation_rules, workspace_resource_id
+
 ### `sen-data-connectors`
 
 - **OK:** Key connectors are connected and at least one table is ingesting.
 - **Partial:** Connectors are connected but Usage shows no ingesting tables, or key connectors are missing.
 - **Gap:** Too few data connectors are connected.
 - **Evidence fields:** connected_connectors, key_connectors_connected, total_connectors, workspace_resource_id
+
+### `sen-log-analytics-retention`
+
+- **OK:** Sentinel workspace retention covers at least 90 days for investigations.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** customer_id, retention_in_days, sku, workspace_resource_id
 
 ### `sen-rule-telemetry-parity`
 
@@ -443,3 +1138,185 @@ Customer-facing wording for each flagship. These strings are also on the finding
 - **Partial:** Some owned capabilities are missing core tables.
 - **Gap:** Owned capabilities are missing their core tables.
 - **Evidence fields:** capabilities, mode
+
+### `sen-ueba-not-enabled`
+
+- **OK:** UEBA entity behavior analytics is enabled on the Sentinel workspace.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** entity_analytics_enabled, raw_entity_present, raw_ueba_present, setting_names, ueba_enabled, ueba_setting_enabled, workspace_resource_id
+
+### `spo-anyone-link-expiration`
+
+- **OK:** Anyone links expire within 30 days of creation.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** sharing_capability
+
+### `spo-anyone-link-view`
+
+- **OK:** Anyone links grant view-only access to files and folders.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** sharing_capability
+
+### `spo-default-link-specific`
+
+- **OK:** Default sharing links are scoped to specific people only.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** default_link_type
+
+### `spo-default-link-view`
+
+- **OK:** Every newly created sharing link defaults to view-only access.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** default_link_permission
+
+### `spo-domain-restrictions`
+
+- **OK:** External sharing is limited to organization-approved partner domains.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allowed_domains, domain_restriction_mode, sharing_capability
+
+### `spo-onedrive-sharing-limited`
+
+- **OK:** OneDrive sharing is limited to existing guests or internal users only.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** sharing_capability
+
+### `spo-sharing-capability-limited`
+
+- **OK:** SharePoint sharing is limited to existing guests or internal users only.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** sharing_capability
+
+### `spo-unmanaged-device-access`
+
+- **OK:** Unmanaged devices cannot open SharePoint or OneDrive content.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** unmanaged_device_policy
+
+### `spo-verification-reauth`
+
+- **OK:** Verification-code users reauthenticate within 30 days or fewer.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** email_attestation_reauth_days, email_attestation_required, sharing_capability
+
+### `teams-anonymous-lobby`
+
+- **OK:** Anonymous and dial-in callers are held in the meeting lobby.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies
+
+### `teams-anonymous-start-disabled`
+
+- **OK:** Meeting policies block anonymous users from starting any meeting.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies
+
+### `teams-broadcast-not-always-record`
+
+- **OK:** Live events are recorded only when the organizer chooses.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies, weak_policies
+
+### `teams-custom-apps-governed`
+
+- **OK:** Custom app installation is limited to agency-approved apps.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** catalog_types, required_surface, required_surface_incomplete, v2_readable
+
+### `teams-dialin-lobby`
+
+- **OK:** Dial-in callers wait in the meeting lobby.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies
+
+### `teams-email-integration-disabled`
+
+- **OK:** Teams channel email integration is turned off.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allow_email_into_channel
+
+### `teams-external-access-per-domain`
+
+- **OK:** Teams external access is limited to approved domains only.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allow_federated_users, allowed_domains
+
+### `teams-external-control-disabled`
+
+- **OK:** Meeting policies deny external participants control over shared screens.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies
+
+### `teams-guest-access-restricted`
+
+- **OK:** Teams guest access is disabled or limited to approved domains.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** allow_guest_calling, allow_guest_chat, allow_guest_user
+
+### `teams-internal-auto-admit`
+
+- **OK:** Internal users are admitted to meetings without waiting in the lobby.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies
+
+### `teams-microsoft-apps-governed`
+
+- **OK:** Microsoft app installation is limited to agency-approved apps.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** catalog_types, required_surface, required_surface_incomplete, v2_readable, weak_policies
+
+### `teams-recording-disabled`
+
+- **OK:** Meeting recording is off by default in meeting policies.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** policies, weak_policies
+
+### `teams-third-party-apps-governed`
+
+- **OK:** Third-party app installation is limited to agency-approved apps.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** catalog_types, required_surface, required_surface_incomplete, v2_readable
+
+### `teams-unmanaged-inbound-blocked`
+
+- **OK:** Unmanaged Teams accounts cannot initiate contact with internal users.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** EnableTeamsConsumerInbound
+
+### `teams-unmanaged-outbound-blocked`
+
+- **OK:** Internal users cannot contact unmanaged Teams accounts.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** EnableTeamsConsumerAccess
+
+### `xdr-incident-readiness`
+
+- **OK:** Defender XDR correlates signals from identity, email, and endpoint into incidents.
+- **Partial:** The expected state is only partly met.
+- **Gap:** The expected state is not met.
+- **Evidence fields:** alert_count, capability_operating, incident_count, service_sources

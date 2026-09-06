@@ -146,6 +146,10 @@ Evaluation logic is deterministic: the same normalized evidence always yields
 the same finding. No LLM determines entitlement, PASS/GAP status, coverage, or
 score.
 
+Every check's pass criteria are printed in the HTML and Markdown reports
+("How this is decided") and in the generated check reference. The evaluator
+that produced the finding is named (`evaluator_ref`) next to the criteria.
+
 ## What LicenseLens will not do
 
 - It will not claim a tenant is "X% secure." The posture figure is scoped to
