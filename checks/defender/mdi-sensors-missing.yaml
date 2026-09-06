@@ -30,3 +30,4 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-for-identity/deploy-defender-identity
 enabled: true
+tier: activation

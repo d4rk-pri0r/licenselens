@@ -28,6 +28,7 @@ mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Alerts fire when other highly privileged roles activate.
   partial: The expected state is only partly met.

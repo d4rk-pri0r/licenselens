@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/settings-policies-reference
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Anonymous and dial-in callers are held in the meeting lobby.

@@ -30,6 +30,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Block legacy authentication clients tenant-wide so outdated sign-in methods cannot bypass modern MFA."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Legacy authentication clients are blocked for all users on all cloud apps.
   partial: The block exists but is limited to some users, some apps, or extra conditions.

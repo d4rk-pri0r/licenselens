@@ -30,6 +30,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive
 enabled: true
+tier: activation
 pass_criteria:
   ok: Sentinel workspace retention covers at least 90 days for investigations.
   partial: The expected state is only partly met.

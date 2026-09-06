@@ -30,6 +30,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Block sign-ins marked high risk by Identity Protection via Conditional Access."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Sign-ins marked high risk are blocked for all users on all cloud apps.
   partial: A high-risk sign-in block exists but is limited in who or what it covers.

@@ -30,3 +30,4 @@ mappings:
   nist: ["AU-6", "AU-12"]
   mitre: ["T1078"]
 enabled: true
+tier: activation

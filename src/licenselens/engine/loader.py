@@ -10,6 +10,7 @@ from licenselens.models import (
     BlastRadius,
     CheckDefinition,
     CheckPack,
+    CheckTier,
     Effort,
     ExposureClass,
     PassCriteria,
@@ -25,6 +26,7 @@ _REQUIRED_METADATA = (
     "blast_radius",
     "pack",
     "exposure_class",
+    "tier",
 )
 
 
@@ -91,7 +93,7 @@ def _validate_required_metadata(raw: dict, path: Path) -> None:
         raise ValueError(
             f"Check {raw.get('id', '?')!r} at {path} is missing required metadata: "
             + ", ".join(missing)
-            + ". Add impact/effort/blast_radius/pack/exposure_class to the YAML."
+            + ". Add impact/effort/blast_radius/pack/exposure_class/tier to the YAML."
         )
 
 
@@ -137,6 +139,7 @@ def load_checks(root: Path | None = None) -> list[CheckDefinition]:
                 flagship=bool(raw.get("flagship", False)),
                 flagship_security_intent=_clean(raw.get("flagship_security_intent")),
                 pass_criteria=_parse_pass_criteria(raw.get("pass_criteria")),
+                tier=CheckTier(str(raw.get("tier") or CheckTier.ACTIVATION).lower()),
             )
         )
     return checks

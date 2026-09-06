@@ -31,6 +31,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security
 enabled: true
+tier: activation
 pass_criteria:
   ok: >-
     The paid Defender for Cloud plan is enabled on the subscription with continuous export of findings.

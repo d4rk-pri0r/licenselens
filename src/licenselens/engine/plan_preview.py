@@ -22,7 +22,7 @@ from licenselens.engine.registry import Backend, default_registry
 from licenselens.engine.runner_collect import select_checks
 from licenselens.engine.runner_findings import eligible
 from licenselens.graph_ops import iter_operations
-from licenselens.models import CheckPack, SubscribedSku, Workload
+from licenselens.models import CheckPack, CheckTier, SubscribedSku, Workload
 from licenselens.schema_contracts import EvaluationMode
 
 NEVER_DO: tuple[str, ...] = (
@@ -126,6 +126,7 @@ def build_plan_preview(
     workloads: list[Workload] | None = None,
     packs: list[CheckPack] | None = None,
     cloud: CloudEnvironment = CloudEnvironment.PUBLIC,
+    tiers: list[CheckTier] | None = None,
 ) -> PlanPreview:
     capabilities = load_capabilities()
     sku_list = list(skus if skus is not None else demo_skus())
@@ -143,7 +144,7 @@ def build_plan_preview(
         )
     )
 
-    checks = select_checks(profile=profile, workloads=workloads)
+    checks = select_checks(profile=profile, workloads=workloads, tiers=tiers)
     if packs:
         pack_set = set(packs)
         checks = [check for check in checks if check.pack in pack_set]

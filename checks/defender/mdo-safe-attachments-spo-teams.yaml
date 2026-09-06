@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/safe-attachments-for-spo-odfb-teams-configure
 enabled: true
+tier: activation
 pass_criteria:
   ok: Safe Attachments scans files in SharePoint, OneDrive, and Teams.
   partial: The expected state is only partly met.

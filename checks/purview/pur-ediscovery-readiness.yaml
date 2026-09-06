@@ -31,6 +31,7 @@ references:
   - https://learn.microsoft.com/purview/ediscovery
   - https://learn.microsoft.com/graph/api/security-casesroot-list-ediscoverycases
 enabled: true
+tier: activation
 pass_criteria:
   ok: Premium eDiscovery cases exist and legal hold workflows are in use.
   partial: The expected state is only partly met.

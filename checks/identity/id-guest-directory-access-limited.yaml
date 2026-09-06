@@ -30,6 +30,7 @@ mappings:
   nist: ["AC-2", "AC-3"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Guests hold limited directory access as Guest or Restricted Guest users.
   partial: The expected state is only partly met.

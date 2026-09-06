@@ -29,6 +29,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/retention
 enabled: true
+tier: activation
 pass_criteria:
   ok: Retention policies govern content across mail and file workloads.
   partial: The expected state is only partly met.

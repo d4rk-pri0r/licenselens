@@ -30,6 +30,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Require phishing-resistant MFA for highly privileged directory roles via Conditional Access."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Privileged directory roles must use phishing-resistant MFA on all cloud apps.
   partial: Privileged MFA exists but is limited to some apps or some roles.

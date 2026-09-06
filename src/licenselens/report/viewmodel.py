@@ -393,6 +393,7 @@ def _finding_entry(finding: Finding) -> dict[str, object]:
         "pass_criteria": (
             finding.pass_criteria.model_dump() if finding.pass_criteria is not None else None
         ),
+        "tier": finding.tier.value,
     }
 
 

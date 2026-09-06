@@ -36,6 +36,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Gate privileged sign-ins with phishing-resistant MFA and block legacy authentication via Conditional Access."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Privileged sign-ins require phishing-resistant MFA and legacy authentication is blocked.
   partial: Privileged MFA or the legacy-auth block is missing, report-only, or limited in scope.

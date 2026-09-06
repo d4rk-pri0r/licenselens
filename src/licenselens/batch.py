@@ -10,6 +10,7 @@ import yaml
 from licenselens.auth import AuthMode, build_auth_context
 from licenselens.cli_scan_config import resolve_scan_profile, write_report_archive
 from licenselens.engine.runner import run_scan
+from licenselens.models import CheckTier
 from licenselens.output import build_report_dir
 from licenselens.report import write_html_report, write_json_report, write_markdown_report
 from licenselens.report.action_plan import write_action_plan
@@ -87,6 +88,7 @@ def run_batch(
     report_archive: bool = False,
     oidc_token: str | None = None,
     export: str | None = None,
+    tiers: list[CheckTier] | None = None,
 ) -> list[dict[str, Any]]:
     """Run scans for each tenant entry; returns summary rows."""
     defaults, tenants = load_tenants_config(config_path)
@@ -146,6 +148,7 @@ def run_batch(
                 discover_workspaces=bool(entry.get("discover_workspaces")),
                 packs=packs,
                 profile=resolved_profile,
+                tiers=tiers,
             )
             out = build_report_dir(
                 output_dir,

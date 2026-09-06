@@ -28,3 +28,4 @@ mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
 enabled: true
+tier: activation

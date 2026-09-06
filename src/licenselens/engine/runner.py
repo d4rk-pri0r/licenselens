@@ -26,6 +26,7 @@ from licenselens.graph import GraphClient
 from licenselens.models import (
     DEFAULT_PACKS,
     CheckPack,
+    CheckTier,
     ExposureClass,
     FindingStatus,
     ScanResult,
@@ -51,6 +52,7 @@ def run_scan(
     scanned_at: datetime | None = None,
     progress: ProgressCallback | None = None,
     demo_scenario: str | None = None,
+    tiers: list[CheckTier] | None = None,
 ) -> ScanResult:
     capabilities = load_capabilities()
     warnings = list(auth.warnings)
@@ -72,6 +74,7 @@ def run_scan(
         tenant_id=auth.tenant_id,
         progress=progress,
         demo_scenario=demo_scenario,
+        tiers=tiers,
     )
     evidence = state.evidence
     evidence["scanned_at"] = scan_time.isoformat()
@@ -205,6 +208,7 @@ def run_scan(
         has_exposed=bool(exposed_ids),
         exposed_check_ids=sorted(set(exposed_ids)),
         collection_summaries=state.collection_summaries,
+        tiers_scanned=[tier.value for tier in (tiers or list(CheckTier))],
     )
     result.detection_realization = build_detection_realization(result)
     return result

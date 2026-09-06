@@ -33,6 +33,7 @@ mappings:
   nist: ["SI-3", "SI-4"]
   mitre: ["T1059"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: >-
     The Intune to Defender for Endpoint connector is active for the expected

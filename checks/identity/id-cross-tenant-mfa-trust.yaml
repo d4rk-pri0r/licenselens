@@ -41,6 +41,7 @@ mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Multi-factor authentication claims from external tenants are not trusted by default.
   partial: The expected state is only partly met.

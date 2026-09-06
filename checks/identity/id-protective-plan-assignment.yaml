@@ -38,6 +38,7 @@ mappings:
 flagship: false
 flagship_security_intent: ""
 enabled: true
+tier: activation
 pass_criteria:
   ok: Protective plans are assigned to at least 85% of enabled member users.
   partial: The expected state is only partly met.

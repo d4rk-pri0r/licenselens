@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/exchange/mail-flow-best-practices/remote-domains/remote-domains
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Automatic forwarding to external domains is blocked except approved partners.
   partial: The expected state is only partly met.

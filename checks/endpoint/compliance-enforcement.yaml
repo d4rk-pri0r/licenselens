@@ -32,6 +32,7 @@ mappings:
   nist: ["CM-6", "SI-2"]
   mitre: ["T1059"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: >-
     Managed devices match the expected state, with zero noncompliant devices

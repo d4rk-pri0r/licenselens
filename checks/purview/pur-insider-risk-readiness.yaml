@@ -31,6 +31,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/insider-risk-management
 enabled: true
+tier: activation
 pass_criteria:
   ok: At least one insider risk policy is live; analytics is enabled.
   partial: The expected state is only partly met.

@@ -143,6 +143,7 @@ def base_finding(
         mappings=dict(check.mappings),
         pass_criteria=check.pass_criteria,
         evaluator_ref=_evaluator_ref(check.id),
+        tier=check.tier,
     )
     finding = apply_quality_policy(finding, strict_proxy=strict_proxy)
     finding.status_label = STATUS_PLAIN_LABELS.get(finding.status.value, finding.status.value)

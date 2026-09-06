@@ -36,6 +36,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Cover managed devices with antivirus, firewall, disk-encryption, and ASR endpoint-security policies."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Antivirus, firewall, disk encryption, and ASR families are all assigned.
   partial: Some endpoint-security families are missing.

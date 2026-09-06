@@ -27,6 +27,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-platform/admin/wp-data-loss-prevention
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Every environment, including the default, is in the expected state by a DLP policy.
   partial: The expected state is only partly met.

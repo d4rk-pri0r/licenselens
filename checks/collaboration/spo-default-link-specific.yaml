@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Default sharing links are scoped to specific people only.

@@ -30,6 +30,7 @@ mappings:
   nist: ["IA-5"]
   mitre: ["T1098"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Application certificates expire within 365 days of issuance.
   partial: The expected state is only partly met.

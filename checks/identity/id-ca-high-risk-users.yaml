@@ -28,6 +28,7 @@ mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Accounts marked high user risk by Identity Protection are blocked.
   partial: The expected state is only partly met.

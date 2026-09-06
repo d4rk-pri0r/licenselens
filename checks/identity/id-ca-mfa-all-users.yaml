@@ -30,6 +30,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Require multi-factor authentication for every user via Conditional Access to prevent password-only sign-in."
 enabled: true
+tier: activation
 pass_criteria:
   ok: An enforced Conditional Access policy requires a second factor for all users across all cloud apps, without risk, location, platform, or client-type limits.
   partial: MFA is required only for some users, some apps, or with extra limits that leave people out.

@@ -26,6 +26,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-security-sensitivity-label-overview
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Sensitivity labels are enabled so Power BI content inherits classification.
   partial: The expected state is only partly met.

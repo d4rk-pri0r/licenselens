@@ -28,6 +28,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-platform/admin/wp-data-loss-prevention
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: A DLP policy protects each non-default Power Platform environment.
   partial: The expected state is only partly met.

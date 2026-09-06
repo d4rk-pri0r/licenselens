@@ -39,6 +39,7 @@ mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Entitlement Management access packages are configured for governed access.
   partial: The expected state is only partly met.

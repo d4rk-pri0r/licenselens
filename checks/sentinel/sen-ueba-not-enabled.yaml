@@ -30,6 +30,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics
 enabled: true
+tier: activation
 pass_criteria:
   ok: UEBA entity behavior analytics is enabled on the Sentinel workspace.
   partial: The expected state is only partly met.

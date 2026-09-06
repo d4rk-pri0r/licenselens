@@ -27,6 +27,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-platform/admin/control-environment-creation
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Only admins can create Power Platform environments.
   partial: The expected state is only partly met.

@@ -28,7 +28,7 @@ from licenselens.engine.profiles import ResolvedProfile
 from licenselens.engine.registry import AssessmentRegistry
 from licenselens.errors import GraphError
 from licenselens.graph import GraphClient, fetch_organization_context
-from licenselens.models import CheckDefinition, SubscribedSku, Workload
+from licenselens.models import CheckDefinition, CheckTier, SubscribedSku, Workload
 from licenselens.schema_contracts import CollectionSummary
 
 
@@ -77,6 +77,7 @@ def select_checks(
     *,
     profile: ResolvedProfile | None,
     workloads: list[Workload] | None,
+    tiers: list[CheckTier] | None = None,
 ) -> list[CheckDefinition]:
     checks = [c for c in load_checks() if c.enabled]
     if profile is not None:
@@ -85,6 +86,9 @@ def select_checks(
     if workloads:
         wanted = set(workloads)
         checks = [c for c in checks if c.workload in wanted]
+    if tiers:
+        wanted_tiers = set(tiers)
+        checks = [c for c in checks if c.tier in wanted_tiers]
     return checks
 
 
@@ -136,9 +140,10 @@ def _run_collection(
     tenant_display_name: str | None,
     progress: ProgressCallback | None = None,
     demo_scenario: str | None = None,
+    tiers: list[CheckTier] | None = None,
 ) -> CollectedScanState:
     owned = resolve_owned_capabilities(capabilities, skus)
-    checks = select_checks(profile=profile, workloads=workloads)
+    checks = select_checks(profile=profile, workloads=workloads, tiers=tiers)
     workspace_resource_id = maybe_discover_workspace(
         auth=auth,
         scan_mode=scan_mode,
@@ -217,6 +222,7 @@ def collect_scan_state(
     tenant_id: str | None,
     progress: ProgressCallback | None = None,
     demo_scenario: str | None = None,
+    tiers: list[CheckTier] | None = None,
 ) -> CollectedScanState:
     """Resolve entitlements and collect evidence for the selected checks."""
     tenant_display_name: str | None = None
@@ -239,6 +245,7 @@ def collect_scan_state(
             tenant_display_name="Demo (synthetic data)",
             progress=progress,
             demo_scenario=demo_scenario,
+            tiers=tiers,
         )
 
     import importlib
@@ -272,4 +279,5 @@ def collect_scan_state(
             tenant_display_name=tenant_display_name,
             progress=progress,
             demo_scenario=demo_scenario,
+            tiers=tiers,
         )

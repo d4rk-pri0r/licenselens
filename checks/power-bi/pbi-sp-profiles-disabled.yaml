@@ -26,6 +26,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-developer
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Service principals cannot create Power BI profiles.
   partial: The expected state is only partly met.

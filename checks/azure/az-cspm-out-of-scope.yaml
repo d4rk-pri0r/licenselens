@@ -31,3 +31,4 @@ remediation: >
 references:
   - https://learn.microsoft.com/azure/defender-for-cloud/secure-score-security-controls
 enabled: true
+tier: activation

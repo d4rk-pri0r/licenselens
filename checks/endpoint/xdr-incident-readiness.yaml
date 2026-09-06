@@ -33,6 +33,7 @@ mappings:
   nist: ["IR-4", "AU-6"]
   mitre: ["T1059"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Defender XDR correlates signals from identity, email, and endpoint into incidents.
   partial: The expected state is only partly met.

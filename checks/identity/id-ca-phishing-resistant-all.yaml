@@ -30,6 +30,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Require phishing-resistant MFA for all users via Conditional Access to defeat phishing of ordinary MFA methods."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Every user must use phishing-resistant MFA on all cloud apps.
   partial: Phishing-resistant MFA applies only to some users or some apps.

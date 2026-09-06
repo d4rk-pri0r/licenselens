@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/settings-policies-reference
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Live events are recorded only when the organizer chooses.

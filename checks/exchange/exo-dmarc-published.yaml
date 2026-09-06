@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Every domain publishes a DMARC record at _dmarc.
   partial: The expected state is only partly met.

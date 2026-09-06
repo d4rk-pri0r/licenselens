@@ -29,6 +29,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks
 enabled: true
+tier: activation
 pass_criteria:
   ok: Automation rules trigger playbooks for high-value alerts.
   partial: The expected state is only partly met.

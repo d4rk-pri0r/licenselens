@@ -30,6 +30,7 @@ mappings:
   nist: ["AC-2", "AC-3"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Only Guest Inviter role members and admins can invite guests.
   partial: The expected state is only partly met.

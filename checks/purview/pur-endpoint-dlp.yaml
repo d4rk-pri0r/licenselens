@@ -28,6 +28,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/endpoint-dlp-learn-about
 enabled: true
+tier: activation
 pass_criteria:
   ok: An enforced DLP policy covers endpoint devices.
   partial: The expected state is only partly met.

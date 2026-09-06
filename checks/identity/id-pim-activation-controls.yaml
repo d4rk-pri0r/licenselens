@@ -45,6 +45,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Require justification, an authentication context, and a short time limit for privileged-role activation."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Privileged-role activation requires justification, an authentication context, and a short time limit.
   partial: Some activation controls are present but not all three.

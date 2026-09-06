@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/exchange/security-and-compliance/mail-flow-rules/mail-flow-rules
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: External mail carries a clear sender warning for users.
   partial: The expected state is only partly met.

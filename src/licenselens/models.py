@@ -30,6 +30,13 @@ class FindingStatus(StrEnum):
     SKIPPED = "skipped"
 
 
+class CheckTier(StrEnum):
+    """Whether a check assesses paid-security activation or base-workload hygiene."""
+
+    ACTIVATION = "activation"
+    HYGIENE = "hygiene"
+
+
 class Confidence(StrEnum):
     HIGH = "high"
     MEDIUM = "medium"
@@ -281,6 +288,8 @@ class CheckDefinition(BaseModel):
     #: Short customer-facing "why it matters" sentence for flagship checks.
     flagship_security_intent: str = ""
     pass_criteria: PassCriteria | None = None
+    #: Required in YAML for enabled checks. Default lets unit-test helpers omit it.
+    tier: CheckTier = CheckTier.ACTIVATION
 
     @property
     def display_customer_title(self) -> str:
@@ -335,6 +344,7 @@ class Finding(BaseModel):
     mappings: dict[str, list[str]] = Field(default_factory=dict)
     pass_criteria: PassCriteria | None = None
     evaluator_ref: str = ""
+    tier: CheckTier = CheckTier.ACTIVATION
 
     @model_validator(mode="after")
     def reject_indirect_high_confidence_ok(self) -> Self:
@@ -473,6 +483,7 @@ class ScanResult(BaseModel):
     has_exposed: bool = False
     exposed_check_ids: list[str] = Field(default_factory=list)
     detection_realization: dict[str, object] | None = None
+    tiers_scanned: list[str] = Field(default_factory=lambda: ["activation", "hygiene"])
 
     @model_validator(mode="after")
     def reject_unsupported_schema_version(self) -> Self:

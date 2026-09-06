@@ -44,6 +44,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Maintain documented break-glass emergency accounts and justify every Conditional Access exclusion."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Emergency accounts are declared and every Conditional Access exclusion is justified.
   partial: Emergency accounts exist, but some exclusions are still unexplained.

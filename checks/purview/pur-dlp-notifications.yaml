@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/dlp-learn-about-dlp
 enabled: true
+tier: activation
 pass_criteria:
   ok: DLP user notifications explain blocked actions to users.
   partial: The expected state is only partly met.

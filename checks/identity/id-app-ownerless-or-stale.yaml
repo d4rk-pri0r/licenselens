@@ -30,6 +30,7 @@ mappings:
   nist: ["AC-2", "IA-5"]
   mitre: ["T1098"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Every application has an owner and current credentials.
   partial: The expected state is only partly met.

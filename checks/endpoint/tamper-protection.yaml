@@ -36,6 +36,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Configure, assign, and prove tamper protection enabled so malware cannot silently disable Defender."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Tamper protection is configured, assigned, and reported enabled on sampled devices.
   partial: A policy exists but some devices still report tamper protection off or unknown.

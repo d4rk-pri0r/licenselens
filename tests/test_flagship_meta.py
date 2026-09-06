@@ -100,7 +100,8 @@ def _write_check(tmp_path: Path, check_id: str, *, references: list[str]) -> Pat
         "{references}\n"
         "flagship: true\n"
         "flagship_security_intent: Intent\n"
-        "enabled: true\n".format(
+        "enabled: true\n"
+        "tier: activation\n".format(
             id=check_id,
             references="".join(f"  - {url}\n" for url in references),
         ),

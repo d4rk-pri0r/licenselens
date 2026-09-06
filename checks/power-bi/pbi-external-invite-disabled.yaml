@@ -26,6 +26,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: External user invitations are disabled in Power BI tenant settings.
   partial: The expected state is only partly met.

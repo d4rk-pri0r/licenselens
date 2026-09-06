@@ -34,6 +34,7 @@ references:
   - https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq
   - https://learn.microsoft.com/rest/api/power-bi/admin
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Premium capacities are in use and capacity admins stay limited.
   partial: The expected state is only partly met.

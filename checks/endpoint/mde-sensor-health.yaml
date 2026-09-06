@@ -34,6 +34,7 @@ mappings:
   nist: ["SI-3", "SI-4"]
   mitre: ["T1059"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Every onboarded device reports an active, in the expected state Defender sensor.
   partial: The expected state is only partly met.

@@ -29,6 +29,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/guest-access
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Teams guest access is disabled or limited to approved domains.

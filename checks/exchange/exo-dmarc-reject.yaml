@@ -27,6 +27,7 @@ references:
 flagship: true
 flagship_security_intent: "Set every domain's DMARC policy to reject so spoofed mail cannot reach inboxes."
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Every checked domain publishes a DMARC policy of reject.
   partial: Some domains publish a weaker DMARC policy.

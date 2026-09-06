@@ -41,6 +41,7 @@ mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: >-
     Conditional Access policies replace Security Defaults for MFA and

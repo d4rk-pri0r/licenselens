@@ -28,6 +28,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/exchange/security-and-compliance/mail-flow-rules/manage-mail-flow-rules
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: No transport rule Bcc's or redirects mail to external domains.
   partial: The expected state is only partly met.

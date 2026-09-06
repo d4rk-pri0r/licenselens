@@ -40,7 +40,7 @@ from licenselens.engine.profiles import ResolvedProfile, load_builtin_profiles
 from licenselens.engine.runner import run_scan
 from licenselens.engine.runner_findings import status_count_rows
 from licenselens.errors import AuthConfigError, AuthError, GraphError, LicenseLensError
-from licenselens.models import CheckDefinition, CheckPack, ScanResult, Workload
+from licenselens.models import CheckDefinition, CheckPack, CheckTier, ScanResult, Workload
 from licenselens.report import (
     write_action_plan,
     write_html_report,
@@ -93,6 +93,12 @@ class AuthModeOption(StrEnum):
     OIDC = "oidc"
 
 
+class TierOption(StrEnum):
+    ACTIVATION = "activation"
+    HYGIENE = "hygiene"
+    ALL = "all"
+
+
 class ExportFormat(StrEnum):
     """G1 action-plan export format (CSV or JSON)."""
 
@@ -110,6 +116,12 @@ def _export_target(fmt: ExportFormat) -> tuple[str, str]:
     if fmt == ExportFormat.JSON:
         return "json", "action-plan.json"
     return "csv", "action-plan.csv"
+
+
+def _tiers_from_option(option: TierOption) -> list[CheckTier] | None:
+    if option is TierOption.ALL:
+        return None
+    return [CheckTier(option.value)]
 
 
 def _to_auth_mode(option: AuthModeOption | None, *, live: bool) -> AuthMode:
@@ -505,6 +517,11 @@ def plan_cmd(
         help="Limit to workload(s).",
     ),
     packs: list[str] | None = typer.Option(None, "--pack", help="Limit to pack(s). Repeatable."),
+    tier: TierOption = typer.Option(
+        TierOption.ALL,
+        "--tier",
+        help="activation | hygiene | all (default all).",
+    ),
 ) -> None:
     """Preview what a scan would collect and evaluate. No writes. Demo is offline."""
     from licenselens.collectors.skus import collect_subscribed_skus_live
@@ -570,6 +587,7 @@ def plan_cmd(
         profile=resolved,
         workloads=workloads,
         packs=pack_enums,
+        tiers=_tiers_from_option(tier),
     )
     text = render_plan_json(preview) if fmt_norm == "json" else render_plan_markdown(preview)
     if output_dir is None:
@@ -921,6 +939,11 @@ def scan_cmd(
             "(default: action-plan/CSV)."
         ),
     ),
+    tier: TierOption = typer.Option(
+        TierOption.ALL,
+        "--tier",
+        help="activation | hygiene | all (default all).",
+    ),
 ) -> None:
     """Run entitlement-aware checks and write a static HTML dashboard.
 
@@ -1024,6 +1047,7 @@ def scan_cmd(
             allow_email_proxy=allow_email_proxy,
             profile=resolved_profile,
             progress=_emit_collection_progress,
+            tiers=_tiers_from_option(tier),
         )
     except (AuthError, GraphError) as exc:
         if wizard.live:
@@ -1081,6 +1105,7 @@ def _run_offline_demo(
     report_archive: bool,
     export_format: ExportFormat | None,
     demo_scenario: str | None = None,
+    tiers: list[CheckTier] | None = None,
 ) -> Path:
     """Run the offline demo scan, write artifacts, and print the summary."""
     auth = build_auth_context(mode=AuthMode.DRY_RUN)
@@ -1090,6 +1115,7 @@ def _run_offline_demo(
         dry_run=True,
         profile=resolved_profile,
         demo_scenario=demo_scenario,
+        tiers=tiers,
     )
     html_path, _json_path, _md_path, archive_path, action_plan_path = _write_scan_artifacts(
         result,
@@ -1177,6 +1203,11 @@ def demo_cmd(
         "--after/--before",
         help="Run the after-remediation demo scenario (shows a gap-closing diff vs the baseline).",
     ),
+    tier: TierOption = typer.Option(
+        TierOption.ALL,
+        "--tier",
+        help="activation | hygiene | all (default all).",
+    ),
 ) -> None:
     """Run the offline demo scan and print the HTML report path."""
     resolved_profile = _resolve_profile_or_exit(
@@ -1190,6 +1221,7 @@ def demo_cmd(
         report_archive=report_archive,
         export_format=export,
         demo_scenario="after" if after else None,
+        tiers=_tiers_from_option(tier),
     )
     if open_browser:
         import webbrowser
@@ -1256,6 +1288,11 @@ def quickstart_cmd(
             "(default: action-plan/CSV)."
         ),
     ),
+    tier: TierOption = typer.Option(
+        TierOption.ALL,
+        "--tier",
+        help="activation | hygiene | all (default all).",
+    ),
 ) -> None:
     """Walk through a read-only scan against your own tenant (no code needed)."""
     from licenselens.cli_prompts import resolve_quickstart_inputs
@@ -1290,6 +1327,7 @@ def quickstart_cmd(
             redaction,
             report_archive=report_archive,
             export_format=export,
+            tiers=_tiers_from_option(tier),
         )
         raise typer.Exit(code=0)
 
@@ -1333,6 +1371,7 @@ def quickstart_cmd(
             dry_run=False,
             workspace_resource_id=None,
             profile=resolved_profile,
+            tiers=_tiers_from_option(tier),
         )
     except (AuthError, GraphError) as exc:
         _print_device_code_rail()
@@ -1499,6 +1538,11 @@ def batch_cmd(
             "Values: action-plan | csv | json."
         ),
     ),
+    tier: TierOption = typer.Option(
+        TierOption.ALL,
+        "--tier",
+        help="activation | hygiene | all (default all).",
+    ),
 ) -> None:
     """Run scans for every tenant listed in a tenants.yaml config."""
     if not config.is_file():
@@ -1518,6 +1562,7 @@ def batch_cmd(
             backends=backend,
             report_archive=report_archive,
             export=export,
+            tiers=_tiers_from_option(tier),
         )
     except (LicenseLensError, OSError, ValueError, ScanConfigError) as exc:
         console.print(f"[red]Batch failed:[/red] {exc}")

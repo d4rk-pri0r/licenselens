@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/settings-policies-reference
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Teams channel email integration is turned off.

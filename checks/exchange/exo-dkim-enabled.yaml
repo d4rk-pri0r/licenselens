@@ -27,6 +27,7 @@ references:
 flagship: true
 flagship_security_intent: "Enable DKIM signing for every accepted domain so unsigned mail is not trusted or spoofed."
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: DKIM signing is enabled for every accepted domain.
   partial: DKIM is enabled for some domains only.

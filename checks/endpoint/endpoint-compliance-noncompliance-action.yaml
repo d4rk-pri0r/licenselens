@@ -32,6 +32,7 @@ mappings:
   nist: ["CM-6", "SI-2"]
   mitre: ["T1059"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Every compliance policy has a scheduled action for noncompliant devices.
   partial: The expected state is only partly met.

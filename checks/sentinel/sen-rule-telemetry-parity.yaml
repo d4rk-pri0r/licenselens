@@ -32,6 +32,7 @@ references:
 flagship: true
 flagship_security_intent: "Confirm enabled analytics rules query tables that actually ingested in the last seven days."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Enabled analytics rules query tables that ingested in the last seven days.
   partial: Too few rules could be evaluated, or some rules watch empty tables.

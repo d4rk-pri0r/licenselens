@@ -32,6 +32,7 @@ mappings:
   nist: ["SC-28", "AC-3"]
   mitre: ["T1040", "T1486"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: App protection policies exist and are assigned to protect managed app data.
   partial: The expected state is only partly met.

@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/audit-log-enable-disable
 enabled: true
+tier: activation
 pass_criteria:
   ok: Unified audit logging records user and admin activity.
   partial: The expected state is only partly met.

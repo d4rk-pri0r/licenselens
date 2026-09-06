@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/manage-external-access
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Internal users cannot contact unmanaged Teams accounts.

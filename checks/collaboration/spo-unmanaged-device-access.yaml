@@ -29,6 +29,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/sharepoint/control-access-from-unmanaged-devices
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Unmanaged devices cannot open SharePoint or OneDrive content.

@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/anti-spam-policies-configure
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: >-
     Anti-spam policies keep allowed sender and domain lists empty.

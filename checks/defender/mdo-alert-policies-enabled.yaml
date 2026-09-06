@@ -25,3 +25,4 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/alert-policies
 enabled: true
+tier: activation

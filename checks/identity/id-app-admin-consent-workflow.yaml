@@ -30,6 +30,7 @@ mappings:
   nist: ["AC-2", "IA-5"]
   mitre: ["T1098"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Admin consent requests route to reviewers who monitor the queue.
   partial: The expected state is only partly met.

@@ -33,6 +33,7 @@ mappings:
   nist: ["CM-6", "SI-2"]
   mitre: ["T1059"]
 enabled: true
+tier: activation
 pass_criteria:
   ok: Security baseline profiles are assigned to every managed platform.
   partial: The expected state is only partly met.

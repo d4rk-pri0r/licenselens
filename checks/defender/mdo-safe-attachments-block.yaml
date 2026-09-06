@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/safe-attachments-policies-configure
 enabled: true
+tier: activation
 pass_criteria:
   ok: Safe Attachments blocks detected malware before delivery.
   partial: The expected state is only partly met.

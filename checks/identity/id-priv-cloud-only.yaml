@@ -30,6 +30,7 @@ mappings:
 flagship: true
 flagship_security_intent: "Keep highly privileged accounts cloud-only and separate from on-premises directories."
 enabled: true
+tier: activation
 pass_criteria:
   ok: Highly privileged accounts are cloud-only.
   partial: Some privileged accounts could not be classified.

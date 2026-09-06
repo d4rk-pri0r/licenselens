@@ -26,6 +26,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-pages/admin/power-pages-site-creation
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Only admins can create Power Pages sites.
   partial: The expected state is only partly met.

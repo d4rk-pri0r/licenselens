@@ -26,6 +26,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-platform/admin/cross-tenant-restrictions
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Tenant isolation blocks cross-tenant connections with an explicit allowlist.
   partial: The expected state is only partly met.

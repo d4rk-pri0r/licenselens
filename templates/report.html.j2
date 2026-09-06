@@ -19,6 +19,14 @@
   {%- set _ = _finding_pairs.append((_rank, loop.index0, _pf, _blk)) -%}
 {%- endfor -%}
 {%- set _finding_pairs = _finding_pairs | sort -%}
+{%- set _tier_counts = namespace(activation=0, hygiene=0) -%}
+{%- for f in _findings -%}
+  {%- if f.tier == 'hygiene' -%}
+    {%- set _tier_counts.hygiene = _tier_counts.hygiene + 1 -%}
+  {%- else -%}
+    {%- set _tier_counts.activation = _tier_counts.activation + 1 -%}
+  {%- endif -%}
+{%- endfor -%}
 {%- set mode_str = exec_copy["scan_mode"].get(result.scan_mode, result.scan_mode) -%}
 {%- if result.auth_mode and result.auth_mode != result.scan_mode -%}
 {%- set mode_str = mode_str ~ ' / ' ~ result.auth_mode -%}
@@ -270,6 +278,7 @@ body.revealed .reveal-target.is-revealed {
 
         {# Stage 2: assessment identity — version, scan time, mode, packs. #}
         <p class="opening-meta opening-stage">Version <code>{{ opening.assessment_identity.version }}</code> <span aria-hidden="true">&middot;</span> <time datetime="{{ opening.scanned_at }}">{{ result.display_scanned_at }}</time> <span aria-hidden="true">&middot;</span> Mode <code>{{ mode_str }}</code>{% if result.packs_scanned %} <span aria-hidden="true">&middot;</span> {{ result.packs_scanned | join(', ') }} priority packs{% endif %}</p>
+        <p class="opening-meta opening-stage">Activation assessment: {{ _tier_counts.activation }} checks · Configuration hygiene (optional): {{ _tier_counts.hygiene }} checks</p>
 
         {# Stage 3 + 4: the dominant metric (count-up) with the radial gauge
            and the operational-distribution segmented bar beside it. #}
@@ -629,7 +638,8 @@ body.revealed .reveal-target.is-revealed {
 
       <div class="explore-list" data-findings-list>
         {%- for _rank, _eidx, f, block in _finding_pairs -%}
-        <details class="explore-row tech" data-engine-idx="{{ _eidx }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}" data-mappings="{{ _mappings_label(f.mappings) }}">
+        {%- if f.tier != 'hygiene' -%}
+        <details class="explore-row tech" data-engine-idx="{{ _eidx }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}" data-tier="{{ f.tier }}" data-mappings="{{ _mappings_label(f.mappings) }}">
           <summary>
             <span class="caret" aria-hidden="true">▸</span>
             {{ prim.status_marker(f.status) }}
@@ -646,8 +656,38 @@ body.revealed .reveal-target.is-revealed {
             {% include "report/v2/_v2_finding_card.html.j2" %}
           </div>
         </details>
+        {%- endif -%}
         {%- endfor -%}
       </div>
+
+      {% if _tier_counts.hygiene %}
+      <details class="tech hygiene-pack" id="section-hygiene">
+        <summary><span class="caret" aria-hidden="true">▸</span> Configuration hygiene (SCuBA-aligned, optional pack)</summary>
+        <div class="tech-body">
+          {%- for _rank, _eidx, f, block in _finding_pairs -%}
+          {%- if f.tier == 'hygiene' -%}
+          <details class="explore-row tech" data-engine-idx="{{ _eidx }}" data-status="{{ f.status }}" data-workload="{{ f.workload }}" data-severity="{{ f.severity }}" data-confidence="{{ f.confidence }}" data-mode="{{ f.evaluation_mode }}" data-pack="{{ f.pack }}" data-effort="{{ f.effort }}" data-check-id="{{ f.check_id }}" data-tier="hygiene" data-mappings="{{ _mappings_label(f.mappings) }}">
+            <summary>
+              <span class="caret" aria-hidden="true">▸</span>
+              {{ prim.status_marker(f.status) }}
+              <h3 class="explore-row__title"><a href="#finding-{{ f.check_id }}">{{ f.title }}</a></h3>
+              <div class="explore-row__meta">
+                {% if f.severity %}<span class="meta-severity">Severity: {{ f.severity | capitalize }}</span>{% endif %}
+                {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
+                <span class="meta-compliance">Compliance: {{ _mappings_label(f.mappings) }}</span>
+                <code>{{ f.check_id }}</code>
+              </div>
+              {% if f.customer_summary or f.summary %}<span class="explore-row__signal">{{ f.customer_summary or f.summary }}</span>{% endif %}
+            </summary>
+            <div class="tech-body">
+              {% include "report/v2/_v2_finding_card.html.j2" %}
+            </div>
+          </details>
+          {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </details>
+      {% endif %}
 
       <p class="empty-state" data-empty-state hidden>No findings to show.</p>
 

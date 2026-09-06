@@ -27,6 +27,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
 enabled: true
+tier: hygiene
 pass_criteria:
   ok: Power BI data export is turned off for the organization.
   partial: The expected state is only partly met.

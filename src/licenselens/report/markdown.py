@@ -50,6 +50,12 @@ def write_markdown_report(
     rollup = result.capability_rollup
     lines.append(f"**{rollup.realized_sentence.rstrip('.')}.**")
     lines.append("")
+    activation_n = sum(1 for finding in result.findings if finding.tier.value != "hygiene")
+    hygiene_n = sum(1 for finding in result.findings if finding.tier.value == "hygiene")
+    lines.append(
+        f"- **Activation assessment:** {activation_n} checks · "
+        f"**Configuration hygiene (optional):** {hygiene_n} checks"
+    )
     lines.append(f"- **Licensed capabilities detected:** {len(result.owned_capabilities)}")
     lines.append(
         f"- **Evaluated capabilities:** {rollup.you_own} "
@@ -155,7 +161,9 @@ def write_markdown_report(
         lines.append("")
 
     lines.extend(["", "## Where you may not be getting the full benefit", ""])
-    for f in result.findings:
+    activation = [f for f in result.findings if f.tier.value != "hygiene"]
+    hygiene = [f for f in result.findings if f.tier.value == "hygiene"]
+    for f in activation:
         label = f.status_label or STATUS_PLAIN_LABELS.get(f.status.value, f.status.value)
         lines.append(f"### {f.display_customer_title}")
         lines.append("")
@@ -185,6 +193,20 @@ def write_markdown_report(
             if f.evaluator_ref:
                 lines.append(f"  - Evaluator: `{f.evaluator_ref}`")
         lines.append("")
+
+    if hygiene:
+        lines.extend(["", "## Configuration hygiene (SCuBA-aligned, optional pack)", ""])
+        for f in hygiene:
+            label = f.status_label or STATUS_PLAIN_LABELS.get(f.status.value, f.status.value)
+            lines.append(f"### {f.display_customer_title}")
+            lines.append("")
+            lines.append(f"- **Status:** {label}")
+            if f.customer_summary:
+                lines.append(f"- **In plain English:** {f.customer_summary}")
+            if f.customer_next_step:
+                lines.append(f"- **Suggested next step:** {f.customer_next_step}")
+            lines.append(f"- **Technical id:** `{f.check_id}`")
+            lines.append("")
 
     lines.extend(
         [

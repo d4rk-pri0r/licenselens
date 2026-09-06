@@ -25,6 +25,7 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/safe-links-policies-configure
 enabled: true
+tier: activation
 pass_criteria:
   ok: Safe Links records who clicks rewritten URLs.
   partial: The expected state is only partly met.
