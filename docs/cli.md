@@ -64,9 +64,10 @@ licenselens plan --live --auth client_secret
 | `--format` | `md` | `md` or `json` |
 | `-o` / `--output-dir` | stdout | Write `plan.md` or `plan.json` |
 | `--auth` | (live: device) | Live auth mode |
-| `--tenant-id` / `--client-id` / `--client-secret` | env | Live credentials |
-| `--profile` | — | Profile id |
-| `--workload` / `--pack` | — | Limit the preview |
+|| `--tenant-id` / `--client-id` / `--client-secret` | env | Live credentials |
+|| `--profile` | — | Profile id |
+|| `--workload` / `--pack` | — | Limit the preview |
+|| `--tier` | `all` | `activation` \| `hygiene` \| `all` |
 
 Exit `0` on success. Exit `2` on auth/config failure in `--live`.
 
@@ -125,9 +126,10 @@ is dry-run; `--live` without credentials exits with a clear error.
 | `--open` / `--no-open` | off | Open the HTML report in a browser |
 | `--profile` | — | **Profile id** (`core`, `identity`, `full`, …). Omit for legacy full scope |
 | `--config` | — | Organization profile YAML overlay (validated before auth) |
-| `--rules` | — | Custom rules YAML (list or `{custom_rules: [...]}`); validated before auth |
-| `--backend` | — | Preferred collection backend(s): `graph`, `arm`, `exchange_online`, `defender`, `secure_score`, `manual` (repeatable) |
-| `--report-archive` / `--no-report-archive` | off | Also write `security-license-lens-report.zip` |
+|| `--rules` | — | Custom rules YAML (list or `{custom_rules: [...]}`); validated before auth |
+|| `--backend` | — | Preferred collection backend(s): `graph`, `arm`, `exchange_online`, `defender`, `secure_score`, `manual` (repeatable) |
+|| `--report-archive` / `--no-report-archive` | off | Also write `security-license-lens-report.zip` |
+|| `--tier` | `all` | `activation` \| `hygiene` \| `all` |
 
 ```bash
 licenselens scan --live --auth client_secret --profile identity -o reports
@@ -150,9 +152,10 @@ Offline demo scan against curated sample data (not a real tenant). Always exits
 | `--profile` | — | Profile id |
 | `--config` | — | Organization profile YAML overlay |
 | `--rules` | — | Custom rules YAML |
-| `--backend` | — | Preferred collection backend(s) (repeatable) |
-| `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
-| `--after` / `--before` | before | Run the after-remediation demo scenario (applies a deterministic overlay to the evidence so a `diff` against the baseline shows closed gaps) |
+|| `--backend` | — | Preferred collection backend(s) (repeatable) |
+|| `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
+|| `--after` / `--before` | before | Run the after-remediation demo scenario (applies a deterministic overlay to the evidence so a `diff` against the baseline shows closed gaps) |
+|| `--tier` | `all` | `activation` \| `hygiene` \| `all` |
 
 ```bash
 licenselens demo -o reports --open
@@ -198,8 +201,9 @@ Runs doctor preflight and confirms before scanning.
 | `--profile` | — | Profile id |
 | `--config` | — | Organization profile YAML overlay |
 | `--rules` | — | Custom rules YAML |
-| `--backend` | — | Preferred collection backend(s) (repeatable) |
-| `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
+|| `--backend` | — | Preferred collection backend(s) (repeatable) |
+|| `--report-archive` / `--no-report-archive` | off | Also write a deterministic offline report ZIP |
+|| `--tier` | `all` | `activation` \| `hygiene` \| `all` |
 
 ```bash
 licenselens quickstart -o reports
@@ -238,7 +242,8 @@ errored, otherwise `0`.
 | `--profile` | — | Default profile for tenants that omit `profile` |
 | `--rules` | — | Default custom rules YAML for the batch |
 | `--backend` | — | Default preferred backend(s) (repeatable) |
-| `--report-archive` / `--no-report-archive` | off | Write a deterministic offline report ZIP per tenant |
+|| `--report-archive` / `--no-report-archive` | off | Write a deterministic offline report ZIP per tenant |
+|| `--tier` | `all` | `activation` \| `hygiene` \| `all` |
 
 ```bash
 licenselens batch tenants.yaml -o reports

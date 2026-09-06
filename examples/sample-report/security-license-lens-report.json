@@ -632,7 +632,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_privileged"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_privileged",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-risky-delegated-consent",
@@ -696,7 +697,8 @@
           "sample"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_risky_delegated_consent"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_risky_delegated_consent",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-user-consent-restricted",
@@ -757,7 +759,8 @@
           "unrestricted"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_user_consent_restricted"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_user_consent_restricted",
+      "tier": "activation"
     },
     {
       "check_id": "id-auth-weak-methods-disabled",
@@ -818,7 +821,8 @@
           "enabled_weak_methods"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_weak_methods_disabled"
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_weak_methods_disabled",
+      "tier": "activation"
     },
     {
       "check_id": "id-break-glass-exclusion",
@@ -888,7 +892,8 @@
           "identified_break_glass_accounts"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_break_glass.evaluate_break_glass_exclusion"
+      "evaluator_ref": "licenselens.evaluators.identity_break_glass.evaluate_break_glass_exclusion",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-device-code-block",
@@ -962,7 +967,8 @@
           "universal_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_device_code_block"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_device_code_block",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-high-risk-signins",
@@ -1040,7 +1046,8 @@
           "protected_population"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_signins"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_signins",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-high-risk-users",
@@ -1119,7 +1126,8 @@
           "security_defaults_enabled"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_users"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_users",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-phishing-resistant-all",
@@ -1191,7 +1199,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_all"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_all",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-activation-controls",
@@ -1258,7 +1267,8 @@
           "policy_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_activation_controls"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_activation_controls",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-ga-activation-alert",
@@ -1315,7 +1325,8 @@
           "ga_notification_rules"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_alert"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_alert",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-ga-activation-approval",
@@ -1374,7 +1385,8 @@
           "ga_rule_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_approval"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_approval",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-no-outside-pam",
@@ -1433,7 +1445,8 @@
           "standing_highly_privileged_assignments"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_outside_pam"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_outside_pam",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-no-permanent-privileged",
@@ -1492,7 +1505,8 @@
           "eligible_schedules"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_permanent_privileged"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_permanent_privileged",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-unused",
@@ -1567,7 +1581,8 @@
           "standing_non_break_glass_assignments"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_privileged.evaluate_pim_unused"
+      "evaluator_ref": "licenselens.evaluators.identity_privileged.evaluate_pim_unused",
+      "tier": "activation"
     },
     {
       "check_id": "id-security-defaults-on",
@@ -1631,7 +1646,8 @@
           "security_defaults_enabled"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_security_defaults_on"
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_security_defaults_on",
+      "tier": "activation"
     },
     {
       "check_id": "pur-sensitivity-auto-labeling",
@@ -1686,7 +1702,8 @@
           "label_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_auto_labeling"
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_auto_labeling",
+      "tier": "activation"
     },
     {
       "check_id": "sen-rule-telemetry-parity",
@@ -1770,7 +1787,8 @@
           "unwatched_tables"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel_parity.evaluate_sen_rule_telemetry_parity"
+      "evaluator_ref": "licenselens.evaluators.sentinel_parity.evaluate_sen_rule_telemetry_parity",
+      "tier": "activation"
     },
     {
       "check_id": "sen-telemetry-ingestion-coverage",
@@ -1911,7 +1929,8 @@
           "mode"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel_telemetry.evaluate_sen_telemetry_ingestion_coverage"
+      "evaluator_ref": "licenselens.evaluators.sentinel_telemetry.evaluate_sen_telemetry_ingestion_coverage",
+      "tier": "activation"
     },
     {
       "check_id": "id-access-reviews-scope",
@@ -1977,7 +1996,8 @@
           "privileged_scoped_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_scope"
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_scope",
+      "tier": "activation"
     },
     {
       "check_id": "id-access-reviews-unused",
@@ -2042,7 +2062,8 @@
           "recurring_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_unused"
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_unused",
+      "tier": "activation"
     },
     {
       "check_id": "id-ai-agents-risky-block",
@@ -2103,7 +2124,8 @@
           "manual_fallback"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_ai_agents_risky_block"
+      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_ai_agents_risky_block",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-admin-consent-workflow",
@@ -2162,7 +2184,8 @@
           "notify_reviewers"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_admin_consent_workflow"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_admin_consent_workflow",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-expiring-credentials",
@@ -2230,7 +2253,8 @@
           "expiring_within_30_days"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_expiring_credentials"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_expiring_credentials",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-password-addition-blocked",
@@ -2286,7 +2310,8 @@
           "enforced_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_password_addition_blocked"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_password_addition_blocked",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-registration-admin-only",
@@ -2343,7 +2368,8 @@
           "allowed_to_create_apps"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_registration_admin_only"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_registration_admin_only",
+      "tier": "activation"
     },
     {
       "check_id": "id-auth-authenticator-context",
@@ -2406,7 +2432,8 @@
           "show_location"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_authenticator_context"
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_authenticator_context",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-managed-devices",
@@ -2479,7 +2506,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_managed_devices"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_managed_devices",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-mfa-registration-managed",
@@ -2554,7 +2582,8 @@
           "universal_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_registration_managed"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_registration_managed",
+      "tier": "activation"
     },
     {
       "check_id": "id-dormant-privileged",
@@ -2634,7 +2663,8 @@
           "signin_sample_truncated"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_privileged.evaluate_dormant_privileged"
+      "evaluator_ref": "licenselens.evaluators.identity_privileged.evaluate_dormant_privileged",
+      "tier": "activation"
     },
     {
       "check_id": "id-guest-directory-access-limited",
@@ -2691,7 +2721,8 @@
           "guest_user_role_id"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_directory_access_limited"
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_directory_access_limited",
+      "tier": "activation"
     },
     {
       "check_id": "id-guest-inviter-restricted",
@@ -2748,7 +2779,8 @@
           "allow_invites_from"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_inviter_restricted"
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_inviter_restricted",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-privileged-assignment-alert",
@@ -2805,7 +2837,8 @@
           "notification_rule_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_privileged_assignment_alert"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_privileged_assignment_alert",
+      "tier": "activation"
     },
     {
       "check_id": "pur-dlp-not-enforced",
@@ -2885,7 +2918,8 @@
           "source"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview.evaluate_purview_dlp"
+      "evaluator_ref": "licenselens.evaluators.purview.evaluate_purview_dlp",
+      "tier": "activation"
     },
     {
       "check_id": "sen-automation-rules",
@@ -2940,7 +2974,8 @@
           "workspace_resource_id"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_automation_rules"
+      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_automation_rules",
+      "tier": "activation"
     },
     {
       "check_id": "sen-log-analytics-retention",
@@ -2996,7 +3031,8 @@
           "workspace_resource_id"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_log_analytics_retention"
+      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_log_analytics_retention",
+      "tier": "activation"
     },
     {
       "check_id": "sen-ueba-not-enabled",
@@ -3057,7 +3093,8 @@
           "workspace_resource_id"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_ueba"
+      "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_ueba",
+      "tier": "activation"
     },
     {
       "check_id": "teams-broadcast-not-always-record",
@@ -3117,7 +3154,8 @@
           "weak_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_broadcast_not_always_record"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_broadcast_not_always_record",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-microsoft-apps-governed",
@@ -3181,7 +3219,8 @@
           "weak_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_microsoft_apps_governed"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_microsoft_apps_governed",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-recording-disabled",
@@ -3249,7 +3288,8 @@
           "weak_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_recording_disabled"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_recording_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "id-password-never-expire",
@@ -3312,7 +3352,8 @@
           "never_expire_domains"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_password_never_expire"
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_password_never_expire",
+      "tier": "activation"
     },
     {
       "check_id": "endpoint-enrollment-coverage",
@@ -3378,7 +3419,8 @@
           "truncated"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_enrollment.evaluate_endpoint_enrollment_coverage"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_enrollment.evaluate_endpoint_enrollment_coverage",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-legacy-auth-block",
@@ -3448,7 +3490,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_legacy_auth_block"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_legacy_auth_block",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-priv-gaps",
@@ -3523,7 +3566,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_priv_gaps"
+      "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_priv_gaps",
+      "tier": "activation"
     },
     {
       "check_id": "mde-onboard-gap",
@@ -3585,7 +3629,8 @@
           "truncated"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.defender_endpoint.evaluate_mde_onboard_gap"
+      "evaluator_ref": "licenselens.evaluators.defender_endpoint.evaluate_mde_onboard_gap",
+      "tier": "activation"
     },
     {
       "check_id": "mde-sensor-health",
@@ -3661,7 +3706,8 @@
           "truncated"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_mde_sensor_health"
+      "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_mde_sensor_health",
+      "tier": "activation"
     },
     {
       "check_id": "pur-dlp-locations-complete",
@@ -3715,7 +3761,8 @@
           "workloads"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_locations_complete"
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_locations_complete",
+      "tier": "activation"
     },
     {
       "check_id": "sen-analytics-rule-coverage",
@@ -3814,7 +3861,8 @@
           "workspace_resource_id"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_analytics_coverage"
+      "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_analytics_coverage",
+      "tier": "activation"
     },
     {
       "check_id": "sen-data-connectors",
@@ -3873,7 +3921,8 @@
           "workspace_resource_id"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_data_connectors"
+      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_data_connectors",
+      "tier": "activation"
     },
     {
       "check_id": "sen-entra-diagnostics-routed",
@@ -3930,7 +3979,8 @@
       "accepted_risks": [],
       "mappings": {},
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.sentinel_telemetry.evaluate_sen_entra_diagnostics_routed"
+      "evaluator_ref": "licenselens.evaluators.sentinel_telemetry.evaluate_sen_entra_diagnostics_routed",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-ownerless-or-stale",
@@ -3997,7 +4047,8 @@
           "stale_sample"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_ownerless_or_stale"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_ownerless_or_stale",
+      "tier": "activation"
     },
     {
       "check_id": "id-auth-methods-migration",
@@ -4054,7 +4105,8 @@
           "policy_migration_state"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_methods_migration"
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_methods_migration",
+      "tier": "activation"
     },
     {
       "check_id": "id-cross-tenant-defaults",
@@ -4111,7 +4163,8 @@
           "inbound_access_type"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_defaults"
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_defaults",
+      "tier": "activation"
     },
     {
       "check_id": "id-cross-tenant-mfa-trust",
@@ -4176,7 +4229,8 @@
           "partner_outbound_mfa_trust_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_mfa_trust"
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_mfa_trust",
+      "tier": "activation"
     },
     {
       "check_id": "id-ga-finer-roles",
@@ -4235,7 +4289,8 @@
           "other_highly_privileged_assignments"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_finer_roles"
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_finer_roles",
+      "tier": "activation"
     },
     {
       "check_id": "id-number-matching",
@@ -4296,7 +4351,8 @@
           "number_matching_explicit"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_number_matching"
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_number_matching",
+      "tier": "activation"
     },
     {
       "check_id": "id-pim-other-activation-alert",
@@ -4353,7 +4409,8 @@
           "notification_rule_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_other_activation_alert"
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_other_activation_alert",
+      "tier": "activation"
     },
     {
       "check_id": "mdi-sensors-missing",
@@ -4402,7 +4459,8 @@
       "accepted_risks": [],
       "mappings": {},
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.defender.evaluate_mdi_sensors"
+      "evaluator_ref": "licenselens.evaluators.defender.evaluate_mdi_sensors",
+      "tier": "activation"
     },
     {
       "check_id": "teams-custom-apps-governed",
@@ -4462,7 +4520,8 @@
           "v2_readable"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_custom_apps_governed"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_custom_apps_governed",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-third-party-apps-governed",
@@ -4522,7 +4581,8 @@
           "v2_readable"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_third_party_apps_governed"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_third_party_apps_governed",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-dmarc-agency-contact",
@@ -4571,7 +4631,8 @@
           "field"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_agency_contact"
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_agency_contact",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-dmarc-federal-contact",
@@ -4620,7 +4681,8 @@
           "field"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_federal_contact"
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_federal_contact",
+      "tier": "hygiene"
     },
     {
       "check_id": "id-logs-to-soc",
@@ -4672,7 +4734,8 @@
         ]
       },
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_logs_to_soc"
+      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_logs_to_soc",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-alert-policies-enabled",
@@ -4714,7 +4777,8 @@
       "accepted_risks": [],
       "mappings": {},
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_alert_policies_manual"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_alert_policies_manual",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-audit-retention",
@@ -4756,7 +4820,8 @@
       "accepted_risks": [],
       "mappings": {},
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_audit_retention_manual"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_audit_retention_manual",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-impersonation-partner-domains",
@@ -4803,7 +4868,8 @@
           "partner_domains"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_partner_domains"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_partner_domains",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-impersonation-users-protected",
@@ -4850,7 +4916,8 @@
           "sensitive_users"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_users_protected"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_users_protected",
+      "tier": "activation"
     },
     {
       "check_id": "spo-anyone-link-expiration",
@@ -4899,7 +4966,8 @@
           "sharing_capability"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_expiration"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_expiration",
+      "tier": "hygiene"
     },
     {
       "check_id": "spo-anyone-link-view",
@@ -4948,7 +5016,8 @@
           "sharing_capability"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_view"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_view",
+      "tier": "hygiene"
     },
     {
       "check_id": "id-guest-invite-domains",
@@ -4999,7 +5068,8 @@
         ]
       },
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_invite_domains"
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_invite_domains",
+      "tier": "activation"
     },
     {
       "check_id": "id-idprotect-notify-high-risk",
@@ -5051,7 +5121,8 @@
         ]
       },
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_idprotect_notify_high_risk"
+      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_idprotect_notify_high_risk",
+      "tier": "activation"
     },
     {
       "check_id": "pur-communication-compliance-readiness",
@@ -5093,7 +5164,8 @@
       "accepted_risks": [],
       "mappings": {},
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.purview_manual.evaluate_pur_communication_compliance_readiness"
+      "evaluator_ref": "licenselens.evaluators.purview_manual.evaluate_pur_communication_compliance_readiness",
+      "tier": "activation"
     },
     {
       "check_id": "endpoint-compliance-policy-assigned",
@@ -5154,7 +5226,8 @@
           "uncovered_platforms"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_policy_assigned"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_policy_assigned",
+      "tier": "activation"
     },
     {
       "check_id": "endpoint-mde-connector",
@@ -5215,7 +5288,8 @@
           "unknown_device_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_mde_connector"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_mde_connector",
+      "tier": "activation"
     },
     {
       "check_id": "endpoint-security-policy-coverage",
@@ -5286,7 +5360,8 @@
           "expected_families"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_policy_coverage"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_policy_coverage",
+      "tier": "activation"
     },
     {
       "check_id": "ep-asr-rules",
@@ -5348,7 +5423,8 @@
           "rules_total"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_asr_rules"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_asr_rules",
+      "tier": "activation"
     },
     {
       "check_id": "ep-bitlocker-policy",
@@ -5408,7 +5484,8 @@
           "bitlocker_config_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_bitlocker_policy"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_bitlocker_policy",
+      "tier": "activation"
     },
     {
       "check_id": "ep-compliance-enforcement",
@@ -5479,7 +5556,8 @@
           "unknown_devices"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_compliance_enforcement"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_compliance_enforcement",
+      "tier": "activation"
     },
     {
       "check_id": "ep-mam-app-protection",
@@ -5541,7 +5619,8 @@
           "org_wide_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_mam_app_protection"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_mam_app_protection",
+      "tier": "activation"
     },
     {
       "check_id": "ep-tamper-protection",
@@ -5606,7 +5685,8 @@
           "sampled_devices"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_tamper_protection"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_tamper_protection",
+      "tier": "activation"
     },
     {
       "check_id": "exo-dkim-enabled",
@@ -5658,7 +5738,8 @@
           "dkim_configs"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dkim.evaluate_exo_dkim_enabled"
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dkim.evaluate_exo_dkim_enabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-dmarc-published",
@@ -5711,7 +5792,8 @@
           "domains_checked"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_published"
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_published",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-dmarc-reject",
@@ -5764,7 +5846,8 @@
           "domains_checked"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_reject"
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_reject",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-external-sender-warnings",
@@ -5816,7 +5899,8 @@
           "mail_tips_external_tips"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_external_sender_warnings"
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_external_sender_warnings",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-forwarding-external-disabled",
@@ -5870,7 +5954,8 @@
           "unapproved_forwarding"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_forwarding_external_disabled"
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_forwarding_external_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-mailbox-audit-enabled",
@@ -5920,7 +6005,8 @@
           "audit_disabled"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_mailbox_audit_enabled"
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_mailbox_audit_enabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-sharing-calendar-not-all-domains",
@@ -5974,7 +6060,8 @@
           "shares_with_all_domains"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_calendar_not_all_domains"
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_calendar_not_all_domains",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-sharing-contact-not-all-domains",
@@ -6026,7 +6113,8 @@
           "shares_with_all_domains"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_contact_not_all_domains"
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_contact_not_all_domains",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-smtp-auth-disabled",
@@ -6076,7 +6164,8 @@
           "smtp_client_authentication_disabled"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_smtp_auth_disabled"
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_smtp_auth_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "exo-spf-published",
@@ -6129,7 +6218,8 @@
           "spf_missing"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_spf_published"
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_spf_published",
+      "tier": "hygiene"
     },
     {
       "check_id": "id-ca-mfa-all-users",
@@ -6213,7 +6303,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_all_users"
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_all_users",
+      "tier": "activation"
     },
     {
       "check_id": "id-ga-count-bounds",
@@ -6276,7 +6367,8 @@
           "min_recommended"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_count_bounds"
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_count_bounds",
+      "tier": "activation"
     },
     {
       "check_id": "id-idprotect-off",
@@ -6350,7 +6442,8 @@
           "protected_population"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_idprotect_off"
+      "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_idprotect_off",
+      "tier": "activation"
     },
     {
       "check_id": "id-priv-cloud-only",
@@ -6413,7 +6506,8 @@
           "privileged_principals_checked"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_priv_cloud_only"
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_priv_cloud_only",
+      "tier": "activation"
     },
     {
       "check_id": "id-protective-plan-assignment",
@@ -6511,7 +6605,8 @@
           "enabled_member_users"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_assignment.evaluate_protective_plan_assignment"
+      "evaluator_ref": "licenselens.evaluators.identity_assignment.evaluate_protective_plan_assignment",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-anti-spam-no-allowed-domains",
@@ -6561,7 +6656,8 @@
           "allowed_entries"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_anti_spam_no_allowed_domains"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_anti_spam_no_allowed_domains",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-connection-filter-no-ip-allow",
@@ -6611,7 +6707,8 @@
           "ip_allow_list"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_ip_allow"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_ip_allow",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-connection-filter-no-safe-list",
@@ -6661,7 +6758,8 @@
           "enable_safe_list"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_safe_list"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_safe_list",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-impersonation-domains-owned",
@@ -6715,7 +6813,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_domains_owned"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_domains_owned",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-malware-file-filter",
@@ -6769,7 +6868,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_file_filter"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_file_filter",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-malware-zap",
@@ -6823,7 +6923,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_zap"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_zap",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-outbound-spam-forwarding-block",
@@ -6877,7 +6978,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_outbound_spam_forwarding_block"
+      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_outbound_spam_forwarding_block",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-p2-policies-default",
@@ -7003,7 +7105,8 @@
           "exchange_direct"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.defender_mdo.evaluate_mdo_p2_policies"
+      "evaluator_ref": "licenselens.evaluators.defender_mdo.evaluate_mdo_p2_policies",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safe-attachments-block",
@@ -7057,7 +7160,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_attachments_block"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_attachments_block",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safe-attachments-spo-teams",
@@ -7107,7 +7211,8 @@
           "enable_atp_for_spo_teams_odb"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_attachments_spo_teams"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_attachments_spo_teams",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safe-links-block-list",
@@ -7163,7 +7268,8 @@
           "teams"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_block_list"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_block_list",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safe-links-click-through",
@@ -7217,7 +7323,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_through"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_through",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safe-links-click-tracking",
@@ -7271,7 +7378,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_tracking"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_tracking",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safe-links-real-time-scan",
@@ -7325,7 +7433,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_real_time_scan"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_real_time_scan",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-safety-tips-enabled",
@@ -7382,7 +7491,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_safety_tips_enabled"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_safety_tips_enabled",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-spam-phish-not-inbox",
@@ -7434,7 +7544,8 @@
           "weak_actions"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_spam_phish_not_inbox"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_spam_phish_not_inbox",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-transport-rule-external-forward",
@@ -7494,7 +7605,8 @@
           "unresolved_rules"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_transport_rule_external_forward"
+      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_transport_rule_external_forward",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-unified-audit-enabled",
@@ -7546,7 +7658,8 @@
           "unified_audit_ingestion"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_mdo_unified_audit_enabled"
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_mdo_unified_audit_enabled",
+      "tier": "activation"
     },
     {
       "check_id": "pbi-export-controls",
@@ -7597,7 +7710,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_export_controls"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_export_controls",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-publish-to-web-disabled",
@@ -7648,7 +7762,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_publish_to_web_disabled"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_publish_to_web_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-dlp-all-environments",
@@ -7707,7 +7822,8 @@
           "uncovered_environments"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_all_environments"
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_all_environments",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-dlp-nondefault-envs",
@@ -7760,7 +7876,8 @@
           "uncovered_nondefault_environments"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_nondefault_environments"
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_nondefault_environments",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-env-creation-admin-only",
@@ -7813,7 +7930,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_env_creation_admin_only"
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_env_creation_admin_only",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-pages-creation-admin-only",
@@ -7866,7 +7984,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_pages_creation_admin_only"
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_pages_creation_admin_only",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-tenant-isolation-allowlist",
@@ -7921,7 +8040,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_allowlist"
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_allowlist",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-tenant-isolation-enabled",
@@ -7972,7 +8092,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_enabled"
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_enabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pur-default-and-mandatory-labels",
@@ -8027,7 +8148,8 @@
           "label_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_default_and_mandatory_labels"
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_default_and_mandatory_labels",
+      "tier": "activation"
     },
     {
       "check_id": "pur-dlp-enforcement-block",
@@ -8079,7 +8201,8 @@
           "dlp_rules"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_enforcement_block"
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_enforcement_block",
+      "tier": "activation"
     },
     {
       "check_id": "pur-dlp-notifications",
@@ -8131,7 +8254,8 @@
           "notifying_rules"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_notifications"
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_notifications",
+      "tier": "activation"
     },
     {
       "check_id": "pur-dlp-policy-present",
@@ -8184,7 +8308,8 @@
           "enforced_dlp_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_policy_present"
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_policy_present",
+      "tier": "activation"
     },
     {
       "check_id": "pur-endpoint-dlp",
@@ -8238,7 +8363,8 @@
           "endpoint_dlp_policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_endpoint_dlp"
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_endpoint_dlp",
+      "tier": "activation"
     },
     {
       "check_id": "pur-insider-risk-readiness",
@@ -8299,7 +8425,8 @@
           "source"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_insider_risk_readiness"
+      "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_insider_risk_readiness",
+      "tier": "activation"
     },
     {
       "check_id": "pur-retention-policy-coverage",
@@ -8354,7 +8481,8 @@
           "retention_rules"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_retention_policy_coverage"
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_retention_policy_coverage",
+      "tier": "activation"
     },
     {
       "check_id": "pur-sensitivity-labels-published",
@@ -8410,7 +8538,8 @@
           "sensitivity_labels"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_labels_published"
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_labels_published",
+      "tier": "activation"
     },
     {
       "check_id": "spo-domain-restrictions",
@@ -8466,7 +8595,8 @@
           "sharing_capability"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_domain_restrictions"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_domain_restrictions",
+      "tier": "hygiene"
     },
     {
       "check_id": "spo-onedrive-sharing-limited",
@@ -8515,7 +8645,8 @@
           "sharing_capability"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_onedrive_sharing_limited"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_onedrive_sharing_limited",
+      "tier": "hygiene"
     },
     {
       "check_id": "spo-sharing-capability-limited",
@@ -8564,7 +8695,8 @@
           "sharing_capability"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_sharing_capability_limited"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_sharing_capability_limited",
+      "tier": "hygiene"
     },
     {
       "check_id": "spo-unmanaged-device-access",
@@ -8613,7 +8745,8 @@
           "unmanaged_device_policy"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_unmanaged_device_access"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_unmanaged_device_access",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-anonymous-start-disabled",
@@ -8677,7 +8810,8 @@
           "policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_start_disabled"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_start_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-external-access-per-domain",
@@ -8730,7 +8864,8 @@
           "allowed_domains"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_external_access_per_domain"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_external_access_per_domain",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-guest-access-restricted",
@@ -8783,7 +8918,8 @@
           "allow_guest_user"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_guest_access_restricted"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_guest_access_restricted",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-unmanaged-inbound-blocked",
@@ -8832,7 +8968,8 @@
           "EnableTeamsConsumerInbound"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_inbound_blocked"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_inbound_blocked",
+      "tier": "hygiene"
     },
     {
       "check_id": "endpoint-compliance-noncompliance-action",
@@ -8891,7 +9028,8 @@
           "policies_with_action"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_noncompliance_action"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_noncompliance_action",
+      "tier": "activation"
     },
     {
       "check_id": "endpoint-security-baseline",
@@ -8950,7 +9088,8 @@
           "configuration_policy_count"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_baseline"
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_baseline",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-certificate-lifetime",
@@ -9008,7 +9147,8 @@
           "sample"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_certificate_lifetime"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_certificate_lifetime",
+      "tier": "activation"
     },
     {
       "check_id": "id-app-password-lifetime",
@@ -9066,7 +9206,8 @@
           "sample"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_password_lifetime"
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_password_lifetime",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-mailbox-intelligence",
@@ -9122,7 +9263,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_mailbox_intelligence"
+      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_mailbox_intelligence",
+      "tier": "activation"
     },
     {
       "check_id": "mdo-quarantine-policy",
@@ -9178,7 +9320,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_quarantine_policy"
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_quarantine_policy",
+      "tier": "hygiene"
     },
     {
       "check_id": "mdo-safe-documents",
@@ -9230,7 +9373,8 @@
           "enable_safe_docs"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_documents"
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_documents",
+      "tier": "activation"
     },
     {
       "check_id": "pbi-external-invite-disabled",
@@ -9281,7 +9425,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_external_invite_disabled"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_external_invite_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-guest-access-disabled",
@@ -9332,7 +9477,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_guest_access_disabled"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_guest_access_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-python-r-visuals-disabled",
@@ -9383,7 +9529,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_python_r_visuals_disabled"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_python_r_visuals_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-resource-key-auth-blocked",
@@ -9434,7 +9581,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_resource_key_auth_blocked"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_resource_key_auth_blocked",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-sensitivity-labels-enabled",
@@ -9485,7 +9633,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sensitivity_labels_enabled"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sensitivity_labels_enabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-sp-api-restricted",
@@ -9540,7 +9689,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_api_restricted"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_api_restricted",
+      "tier": "hygiene"
     },
     {
       "check_id": "pbi-sp-profiles-disabled",
@@ -9591,7 +9741,8 @@
           "surface"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_profiles_disabled"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_profiles_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-share-with-everyone-disabled",
@@ -9644,7 +9795,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_share_with_everyone_disabled"
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_share_with_everyone_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "pp-trial-creation-admin-only",
@@ -9697,7 +9849,8 @@
           "value"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_trial_creation_admin_only"
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_trial_creation_admin_only",
+      "tier": "hygiene"
     },
     {
       "check_id": "pur-ediscovery-readiness",
@@ -9757,7 +9910,8 @@
           "source"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_ediscovery_readiness"
+      "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_ediscovery_readiness",
+      "tier": "activation"
     },
     {
       "check_id": "spo-default-link-specific",
@@ -9806,7 +9960,8 @@
           "default_link_type"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_specific"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_specific",
+      "tier": "hygiene"
     },
     {
       "check_id": "spo-default-link-view",
@@ -9855,7 +10010,8 @@
           "default_link_permission"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_view"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_view",
+      "tier": "hygiene"
     },
     {
       "check_id": "spo-verification-reauth",
@@ -9908,7 +10064,8 @@
           "sharing_capability"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_verification_reauth"
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_verification_reauth",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-anonymous-lobby",
@@ -9972,7 +10129,8 @@
           "policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_lobby"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_lobby",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-dialin-lobby",
@@ -10036,7 +10194,8 @@
           "policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_dialin_lobby"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_dialin_lobby",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-email-integration-disabled",
@@ -10085,7 +10244,8 @@
           "allow_email_into_channel"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_email_integration_disabled"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_email_integration_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-external-control-disabled",
@@ -10149,7 +10309,8 @@
           "policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_external_control_disabled"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_external_control_disabled",
+      "tier": "hygiene"
     },
     {
       "check_id": "teams-unmanaged-outbound-blocked",
@@ -10198,7 +10359,8 @@
           "EnableTeamsConsumerAccess"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_outbound_blocked"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_outbound_blocked",
+      "tier": "hygiene"
     },
     {
       "check_id": "xdr-incident-readiness",
@@ -10264,7 +10426,8 @@
           "service_sources"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_xdr_incident_readiness"
+      "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_xdr_incident_readiness",
+      "tier": "activation"
     },
     {
       "check_id": "teams-internal-auto-admit",
@@ -10328,7 +10491,8 @@
           "policies"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_internal_auto_admit"
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_internal_auto_admit",
+      "tier": "hygiene"
     },
     {
       "check_id": "az-defender-plan-enabled",
@@ -10373,7 +10537,8 @@
           "status"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_defender_plan_enabled"
+      "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_defender_plan_enabled",
+      "tier": "activation"
     },
     {
       "check_id": "id-ca-workload-identity",
@@ -10432,7 +10597,8 @@
           "unjustified_exclusion_issues"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_workload_identity"
+      "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_workload_identity",
+      "tier": "activation"
     },
     {
       "check_id": "id-identity-protection-workload",
@@ -10486,7 +10652,8 @@
           "status"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_identity_protection_workload"
+      "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_identity_protection_workload",
+      "tier": "activation"
     },
     {
       "check_id": "id-entitlement-access-packages",
@@ -10540,7 +10707,8 @@
           "status"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_entitlement_access_packages"
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_entitlement_access_packages",
+      "tier": "activation"
     },
     {
       "check_id": "pbi-premium-capacity-governance",
@@ -10587,7 +10755,8 @@
           "status"
         ]
       },
-      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_premium_capacity_governance"
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_premium_capacity_governance",
+      "tier": "hygiene"
     },
     {
       "check_id": "az-cspm-out-of-scope",
@@ -10624,7 +10793,8 @@
       "accepted_risks": [],
       "mappings": {},
       "pass_criteria": null,
-      "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_cspm_out_of_scope"
+      "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_cspm_out_of_scope",
+      "tier": "activation"
     }
   ],
   "profile_ids": [],
@@ -11681,5 +11851,9 @@
     ],
     "window_days": 7,
     "mode": "query"
-  }
+  },
+  "tiers_scanned": [
+    "activation",
+    "hygiene"
+  ]
 }

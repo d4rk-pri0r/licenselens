@@ -75,6 +75,19 @@ readable via Graph (PowerShell-only). Use `--allow-email-proxy` only if you
 explicitly want a labeled Secure Score degraded path — it never rolls up to
 "fully working".
 
+## Two tiers
+
+Every check is either **activation** or **hygiene**.
+
+- **Activation** assesses paid security products you already own (Entra P2,
+  Conditional Access, Defender, Sentinel, Purview, Intune, Defender for Cloud).
+- **Hygiene** is base-workload configuration (Exchange, EOP, SharePoint,
+  OneDrive, Teams, Power Platform, Power BI). It is optional and SCuBA-aligned.
+
+`--tier activation` (on `scan` / `demo` / `quickstart` / `batch` / `plan`)
+evaluates only activation checks, so the PowerShell bridge is never launched.
+Default is `--tier all`.
+
 ## Exit codes
 
 | Code | Meaning |

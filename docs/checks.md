@@ -32,6 +32,12 @@ Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
 
 Email is a **priority pack**, not a workload directory under `checks/`.
 
+## Tiers
+
+109 checks are **activation** (paid security products). 61 checks are
+**hygiene** (base-workload configuration). See [Two tiers](concepts.md#two-tiers)
+and the classification table in `audit/check-tier-classification.md`.
+
 ## Check anatomy
 
 Each check declares machine fields *and* customer-facing copy:
