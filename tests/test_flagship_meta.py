@@ -53,6 +53,8 @@ EXPECTED_FLAGSHIP_IDS = {
     "mdo-p2-policies-default",
     "sen-analytics-rule-coverage",
     "sen-data-connectors",
+    "sen-telemetry-ingestion-coverage",
+    "sen-rule-telemetry-parity",
     "pur-dlp-not-enforced",
     "pur-default-and-mandatory-labels",
     "pur-sensitivity-labels-published",
@@ -68,7 +70,7 @@ def _catalog_ids() -> set[str]:
     return {str(entry["check_id"]) for entry in data["flagships"]}
 
 
-def test_all_34_flagships_present_in_catalog():
+def test_all_36_flagships_present_in_catalog():
     assert _catalog_ids() == EXPECTED_FLAGSHIP_IDS
 
 

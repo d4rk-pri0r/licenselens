@@ -29,6 +29,6 @@ remediation: >-
   the rule. Confirm every ingesting core table is referenced by a live rule.
 references:
   - https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
-flagship: false
-flagship_security_intent: ""
+flagship: true
+flagship_security_intent: "Confirm enabled analytics rules query tables that actually ingested in the last seven days."
 enabled: true

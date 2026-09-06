@@ -251,6 +251,24 @@ flagships:
   status: draft
   source_url: https://learn.microsoft.com/azure/sentinel/connect-data-sources
   source_type: microsoft_learn
+- check_id: sen-telemetry-ingestion-coverage
+  security_intent: Confirm owned security capabilities send their core tables into
+    the Sentinel workspace.
+  entitlement: microsoft_sentinel
+  evidence_source: la_usage_collector (direct, Log Analytics Usage 7d)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/azure/sentinel/connect-data-sources
+  source_type: microsoft_learn
+- check_id: sen-rule-telemetry-parity
+  security_intent: Confirm enabled analytics rules query tables that actually ingested
+    in the last seven days.
+  entitlement: microsoft_sentinel
+  evidence_source: sentinel_analytics + la_usage_collector (direct)
+  assessment_type: direct
+  status: draft
+  source_url: https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+  source_type: microsoft_learn
 - check_id: pur-dlp-not-enforced
   security_intent: Enforce Purview DLP policies in production so sensitive data cannot
     leak through mail, files, or endpoints.

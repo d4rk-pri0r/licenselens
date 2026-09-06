@@ -29,6 +29,6 @@ remediation: >-
   verify core tables show rows in Usage over seven days.
 references:
   - https://learn.microsoft.com/azure/sentinel/connect-data-sources
-flagship: false
-flagship_security_intent: ""
+flagship: true
+flagship_security_intent: "Confirm owned security capabilities send their core tables into the Sentinel workspace."
 enabled: true

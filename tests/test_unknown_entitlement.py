@@ -183,7 +183,7 @@ def test_docs_describe_consumption_observation() -> None:
         assert "undetermined" in text, rel
     audit = (root / "audit" / "check-semantic-audit.md").read_text(encoding="utf-8")
     assert "Entitlement Dependency: Microsoft Sentinel" not in audit
-    assert audit.count("observed via ARM onboardingStates (0.5)") == 5
+    assert audit.count("observed via ARM onboardingStates (0.5)") == 7
     entitlement_audit = (root / "audit" / "entitlement-audit.md").read_text(encoding="utf-8")
     assert "onboardingStates" in entitlement_audit
     assert "error" in entitlement_audit

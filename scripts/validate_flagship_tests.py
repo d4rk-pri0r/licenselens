@@ -156,6 +156,12 @@ _ALLOWLIST: Final = {
     ),
     "sen-analytics-rule-coverage": frozenset({"pagination/truncation"}),
     "sen-data-connectors": frozenset({"pagination/truncation"}),
+    "sen-telemetry-ingestion-coverage": frozenset(
+        {"pagination/truncation", "api-error", "permission-failure"}
+    ),
+    "sen-rule-telemetry-parity": frozenset(
+        {"pagination/truncation", "api-error", "permission-failure"}
+    ),
     "pur-default-and-mandatory-labels": frozenset({"pagination/truncation"}),
     "pur-sensitivity-labels-published": frozenset({"pagination/truncation"}),
     "exo-mailbox-audit-enabled": frozenset({"pagination/truncation", "permission-failure"}),

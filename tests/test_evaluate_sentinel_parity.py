@@ -140,6 +140,20 @@ def test_registered_as_direct() -> None:
     assert entry.evaluation_mode is EvaluationMode.DIRECT
 
 
+def test_parity_missing_data_is_partial() -> None:
+    result = evaluate_sen_rule_telemetry_parity(
+        _check(),
+        {
+            "la_usage_by_table": {},
+            "sentinel_rules": {},
+            "telemetry_expectations": {},
+            "owned_capabilities": ["conditional_access"],
+        },
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert "sen-rule-telemetry-parity" in _check().id
+
+
 def test_demo_parity_is_gap_named_dead_rule() -> None:
     result = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
     by_id = {f.check_id: f for f in result.findings}

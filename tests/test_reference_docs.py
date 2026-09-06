@@ -227,12 +227,12 @@ def test_reference_flagship_count_matches_check_yaml(mod, gen) -> None:
     flagship_registry = yaml.safe_load((ROOT / "catalog" / "flagships.yaml").read_text("utf-8"))
 
     model_count = sum(1 for check in model.checks if check.flagship)
-    assert model_count == yaml_flagships == len(flagship_registry["flagships"]) == 34
+    assert model_count == yaml_flagships == len(flagship_registry["flagships"]) == 36
 
     manifest = json.loads(gen.reference_files["manifest.json"])
-    assert manifest["flagship_count"] == 34
+    assert manifest["flagship_count"] == 36
 
     checks_md = gen.reference_files["checks.md"]
     assert "| Flagship |" in checks_md  # the new column header
     reference = json.loads(gen.reference_files["reference.json"])
-    assert sum(1 for check in reference["checks"] if check["flagship"]) == 34
+    assert sum(1 for check in reference["checks"] if check["flagship"]) == 36

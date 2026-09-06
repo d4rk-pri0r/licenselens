@@ -354,10 +354,10 @@ def _coverage_data(
 
 
 def test_reference_check_carries_flagship_intent_for_flagships() -> None:
-    # Given: the shipped catalog (34 flagship checks per catalog/flagships.yaml).
+    # Given: the shipped catalog (36 flagship checks per catalog/flagships.yaml).
     model = build_reference_model()
 
     # Then: every flagship row carries a non-empty security intent; the count matches.
     flagship_rows = [check for check in model.checks if check.flagship]
-    assert len(flagship_rows) == 34
+    assert len(flagship_rows) == 36
     assert all(check.flagship_security_intent for check in flagship_rows)
