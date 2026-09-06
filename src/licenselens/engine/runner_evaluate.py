@@ -74,6 +74,7 @@ _ERROR_ALIASES = {
     "intune_bundle": "intune_bundle_error",
     "mde_health": "mde_health_error",
     "security_alerts_bundle": "security_alerts_bundle_error",
+    "xdr_custom_detections": "xdr_custom_detections_error",
 }
 
 

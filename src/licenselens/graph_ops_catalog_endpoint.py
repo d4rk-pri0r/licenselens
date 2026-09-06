@@ -26,6 +26,7 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
         max_pages: int = 30,
         clouds: tuple[CloudEnvironment, ...] = _CG,
         description: str = "",
+        preview: bool = False,
     ) -> GraphOperation:
         return GraphOperation(
             operation_id=operation_id,
@@ -37,6 +38,7 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             supported_clouds=clouds,
             is_collection=is_collection,
             max_pages=max_pages,
+            preview=preview,
             description=description,
         )
 
@@ -196,5 +198,15 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             family=ApiFamily.ARM,
             max_pages=5,
             description="Log Analytics workspace tables list (existence fallback)",
+        ),
+        op(
+            "graph_xdr_detection_rules",
+            "/security/rules/detectionRules",
+            "graph.xdr_custom_detections",
+            ("CustomDetection.Read.All",),
+            ("CustomDetection.Read.All",),
+            preview=True,
+            max_pages=10,
+            description="Defender XDR custom detection rules (Graph beta)",
         ),
     )

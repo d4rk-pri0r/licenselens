@@ -16,6 +16,7 @@ from licenselens.collectors.runtime_collect_endpoint import (
     collect_purview_insider_risk_runtime,
     collect_secure_score_controls_runtime,
     collect_security_alerts_runtime,
+    collect_xdr_custom_detections_runtime,
 )
 from licenselens.collectors.runtime_collect_identity_apps import (
     collect_admin_consent_policy_runtime,
@@ -97,6 +98,7 @@ _COLLECTORS: dict[str, EvidenceCollectorFn] = {
     "mde_health": collect_mde_health_runtime,
     "intune_bundle": collect_intune_bundle_runtime,
     "security_alerts_bundle": collect_security_alerts_runtime,
+    "xdr_custom_detections": collect_xdr_custom_detections_runtime,
     "sentinel_rules": collect_sentinel_rules_runtime,
     "sentinel_ueba": collect_sentinel_ueba_runtime,
     "sentinel_data_connectors": collect_sentinel_data_connectors_runtime,

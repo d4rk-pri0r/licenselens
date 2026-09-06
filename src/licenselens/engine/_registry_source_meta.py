@@ -97,6 +97,12 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             "graph:securityAlertsBundle",
             30,
         ),
+        "xdr_custom_detections": (
+            Backend.GRAPH,
+            ("CustomDetection.Read.All",),
+            "graph:xdrCustomDetections",
+            30,
+        ),
         "pim_policies_bundle": (
             Backend.GRAPH,
             ("RoleManagement.Read.Directory",),
@@ -338,6 +344,11 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
         ),
         "sentinel_workspace_collector": (Backend.ARM, (), ("sentinel_workspace",)),
         "la_usage_collector": (Backend.ARM, (), ("la_usage_by_table",)),
+        "xdr_detections_collector": (
+            Backend.GRAPH,
+            ("CustomDetection.Read.All",),
+            ("xdr_custom_detections",),
+        ),
         "telemetry_expectations_collector": (Backend.NOOP, (), ("telemetry_expectations",)),
         "defender_pricings_collector": (
             Backend.ARM,

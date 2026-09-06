@@ -56,6 +56,7 @@ REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
     "SecurityEvents.Read.All",
     "SecurityIncident.Read.All",
     "User.Read.All",
+    "CustomDetection.Read.All",
 )
 
 # Power BI admin REST application permissions (separate API resource).

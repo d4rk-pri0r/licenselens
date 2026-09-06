@@ -85,6 +85,7 @@ def _source_model(source_id: str) -> str:
         "intune_bundle",
         "mde_health",
         "security_alerts_bundle",
+        "xdr_custom_detections",
     }:
         return "JsonObject"
     if source_id.endswith("_policy") or source_id.endswith("_summary"):

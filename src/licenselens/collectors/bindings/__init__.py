@@ -296,6 +296,14 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="xdr_detections_collector",
+            backend=Backend.GRAPH,
+            permissions=("CustomDetection.Read.All",),
+            dependencies=("xdr_custom_detections",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
             collector_id="sentinel_analytics",
             backend=Backend.ARM,
             permissions=(),

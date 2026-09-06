@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from licenselens.cloud_endpoints import graph_base_url
 from licenselens.collectors.contracts import EvidenceEnvelope, EvidenceKey
 from licenselens.collectors.intune_policy import (
     DEMO_INTUNE_EVIDENCE_BUNDLE,
@@ -33,6 +34,10 @@ from licenselens.collectors.secure_score import (
 from licenselens.collectors.security_alerts import (
     DEMO_SECURITY_ALERTS_BUNDLE,
     collect_security_alerts_bundle,
+)
+from licenselens.collectors.xdr_detections import (
+    DEMO_XDR_CUSTOM_DETECTIONS,
+    collect_xdr_custom_detections,
 )
 from licenselens.engine.collection_context import ScanCollectionContext
 from licenselens.engine.planner import CollectionContext
@@ -185,7 +190,12 @@ def collect_purview_insider_risk_runtime(
 
 def _preview_client(ctx: ScanCollectionContext, base_client: GraphClient) -> GraphClient:
     """Build a preview-enabled Graph client (beta endpoints are otherwise blocked)."""
-    return GraphClient(ctx.auth, cloud=base_client.cloud, allow_preview=True)
+    return GraphClient(
+        ctx.auth,
+        cloud=base_client.cloud,
+        allow_preview=True,
+        base_url=graph_base_url(base_client.cloud, api_version="beta"),
+    )
 
 
 def collect_pbi_capacity_runtime(
@@ -199,3 +209,24 @@ def collect_pbi_capacity_runtime(
         return ok(key, bundle, source="powerbi.admin.rest")
     except (AuthError, GraphError) as exc:
         return graph_failure(key, exc, f"Power BI admin REST could not be read: {exc}", ctx)
+
+
+def collect_xdr_custom_detections_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "xdr_custom_detections"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_XDR_CUSTOM_DETECTIONS), source="demo")
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        preview = _preview_client(ctx, ctx.client)
+        bundle = collect_xdr_custom_detections(preview)
+        return ok(key, bundle, source="graph.beta.security.rules.detectionRules")
+    except GraphError as exc:
+        return graph_failure(
+            key,
+            exc,
+            f"Defender XDR custom detection rules could not be read: {exc}",
+            ctx,
+        )
