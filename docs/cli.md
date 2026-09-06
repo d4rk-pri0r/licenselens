@@ -45,6 +45,31 @@ licenselens checks
 
 No options. Exit `0` even when the catalog is empty.
 
+### `plan`
+
+Preview what a scan would collect and evaluate. Default is offline demo SKUs
+(no tenant contact). `--live` reads organization context and subscribed SKUs
+only (one Graph client), then stops.
+
+```bash
+licenselens plan --demo
+licenselens plan --demo --assume-sku SPE_E5 -o reports --format md
+licenselens plan --live --auth client_secret
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--demo` / `--live` | demo | Offline SKUs, or live SKUs only |
+| `--assume-sku` | — | Offline SKU part number (repeatable). Ignored with `--live` |
+| `--format` | `md` | `md` or `json` |
+| `-o` / `--output-dir` | stdout | Write `plan.md` or `plan.json` |
+| `--auth` | (live: device) | Live auth mode |
+| `--tenant-id` / `--client-id` / `--client-secret` | env | Live credentials |
+| `--profile` | — | Profile id |
+| `--workload` / `--pack` | — | Limit the preview |
+
+Exit `0` on success. Exit `2` on auth/config failure in `--live`.
+
 ### `doctor`
 
 Preflight credentials and core Graph permissions. Optionally probe MDE and

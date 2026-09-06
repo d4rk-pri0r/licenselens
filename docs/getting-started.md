@@ -53,6 +53,7 @@ Optional docs/release helpers (not required for day-to-day use) may be run with
 ```bash
 licenselens version
 licenselens checks
+licenselens plan --demo
 licenselens scan --dry-run -o reports
 # or, in a terminal with no flags: choose "Demo sample data" when prompted
 licenselens scan
@@ -61,6 +62,12 @@ licenselens scan
 Open `reports/security-license-lens-report.html` in a browser. Single-tenant
 `scan` / `demo` / `quickstart` write report files **flat** into `-o` (default
 `reports`).
+
+Preview the execution plan before your first live scan:
+
+```bash
+licenselens plan --demo
+```
 
 ## Interactive scan (prompts)
 

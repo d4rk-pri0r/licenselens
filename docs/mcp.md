@@ -5,7 +5,8 @@ LicenseLens ships a local [Model Context Protocol](https://modelcontextprotocol.
 others — can run a security posture assessment as a tool call and reason over the
 same structured findings the CLI emits.
 
-The server exposes **one tool, `posture.assess`**:
+The server exposes **two tools**: `posture.assess` (run a scan) and
+`plan.preview` (show what a scan would collect, offline by default).
 
 - **Read-only.** It assesses posture; it has no ability to change any tenant
   setting. There are no write verbs anywhere in its interface.
