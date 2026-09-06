@@ -1,0 +1,127 @@
+version: 1
+source_version: "2026-09"
+expectations:
+  - capability_id: identity_protection
+    tables:
+      - name: AADUserRiskEvents
+        tier: core
+        connector_hint: "Entra diagnostic setting: UserRiskEvents"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id
+      - name: AADRiskyUsers
+        tier: core
+        connector_hint: "Entra diagnostic setting: RiskyUsers"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id
+  - capability_id: conditional_access
+    tables:
+      - name: SigninLogs
+        tier: core
+        connector_hint: "Entra diagnostic setting: SignInLogs"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id
+      - name: AADNonInteractiveUserSignInLogs
+        tier: extended
+        connector_hint: "Entra diagnostic setting: NonInteractiveUserSignInLogs"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id
+  - capability_id: defender_endpoint_p2
+    tables:
+      - name: DeviceEvents
+        tier: core
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceProcessEvents
+        tier: core
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceNetworkEvents
+        tier: core
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceLogonEvents
+        tier: core
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceFileEvents
+        tier: extended
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceRegistryEvents
+        tier: extended
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceImageLoadEvents
+        tier: extended
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: DeviceInfo
+        tier: extended
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+  - capability_id: defender_office_p2
+    tables:
+      - name: EmailEvents
+        tier: core
+        connector_hint: "Microsoft Defender for Office 365 connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-office-365
+      - name: EmailUrlInfo
+        tier: core
+        connector_hint: "Microsoft Defender for Office 365 connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-office-365
+      - name: EmailAttachmentInfo
+        tier: core
+        connector_hint: "Microsoft Defender for Office 365 connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-office-365
+      - name: EmailPostDeliveryEvents
+        tier: extended
+        connector_hint: "Microsoft Defender for Office 365 connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-office-365
+      - name: UrlClickEvents
+        tier: extended
+        connector_hint: "Microsoft Defender for Office 365 connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-office-365
+  - capability_id: defender_identity
+    tables:
+      - name: IdentityLogonEvents
+        tier: core
+        connector_hint: "Microsoft Defender for Identity connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-identity
+      - name: IdentityQueryEvents
+        tier: core
+        connector_hint: "Microsoft Defender for Identity connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-identity
+      - name: IdentityDirectoryEvents
+        tier: core
+        connector_hint: "Microsoft Defender for Identity connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-identity
+  - capability_id: defender_xdr
+    tables:
+      - name: SecurityIncident
+        tier: core
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: SecurityAlert
+        tier: core
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: AlertInfo
+        tier: extended
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: AlertEvidence
+        tier: extended
+        connector_hint: "Microsoft Defender XDR connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+  - capability_id: purview_audit
+    tables:
+      - name: OfficeActivity
+        tier: core
+        connector_hint: "Office 365 connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/office-365
+  - capability_id: defender_for_cloud_servers
+    tables:
+      - name: SecurityAlert
+        tier: core
+        connector_hint: "Microsoft Defender for Cloud connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-cloud
+      - name: SecurityRecommendation
+        tier: extended
+        connector_hint: "Microsoft Defender for Cloud connector"
+        source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-for-cloud
