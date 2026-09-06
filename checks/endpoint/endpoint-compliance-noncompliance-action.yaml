@@ -32,3 +32,10 @@ mappings:
   nist: ["CM-6", "SI-2"]
   mitre: ["T1059"]
 enabled: true
+pass_criteria:
+  ok: Every compliance policy has a scheduled action for noncompliant devices.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - compliance_policy_count
+    - policies_with_action

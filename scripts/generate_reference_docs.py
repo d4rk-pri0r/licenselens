@@ -355,29 +355,28 @@ def _render_checks(model: ReferenceModel) -> str:
         "mode (`direct` or `proxy`) when a dynamic check runs. `missing` under",
         "Evaluator would be rejected by the reference model, so it cannot appear here.",
         "",
-        "## Flagship pass criteria",
+        "## Pass criteria",
         "",
-        "Customer-facing wording for each flagship. These strings are also on the finding JSON.",
+        "Customer-facing wording for every check that declares `pass_criteria`.",
+        "These strings also appear on the finding JSON and in the report",
+        '("How this is decided").',
         "",
     ]
     from licenselens.engine.loader import load_checks
 
     by_id = {check.id: check for check in load_checks()}
     for check in model.checks:
-        if not check.flagship:
-            continue
         loaded = by_id.get(check.id)
         criteria = loaded.pass_criteria if loaded is not None else None
+        if criteria is None:
+            continue
         lines.append(f"### `{check.id}`")
         lines.append("")
-        if criteria is None:
-            lines.append("_Missing._")
-        else:
-            lines.append(f"- **OK:** {criteria.ok}")
-            if criteria.partial:
-                lines.append(f"- **Partial:** {criteria.partial}")
-            lines.append(f"- **Gap:** {criteria.gap}")
-            lines.append("- **Evidence fields:** " + (", ".join(criteria.evidence_fields) or "—"))
+        lines.append(f"- **OK:** {criteria.ok}")
+        if criteria.partial:
+            lines.append(f"- **Partial:** {criteria.partial}")
+        lines.append(f"- **Gap:** {criteria.gap}")
+        lines.append("- **Evidence fields:** " + (", ".join(criteria.evidence_fields) or "—"))
         lines.append("")
     return "\n".join(lines)
 

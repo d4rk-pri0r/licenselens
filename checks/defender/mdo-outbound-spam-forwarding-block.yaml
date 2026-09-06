@@ -27,3 +27,11 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/outbound-spam-policies-configure
 enabled: true
+pass_criteria:
+  ok: Outbound automatic forwarding is blocked tenant-wide by the outbound spam filter policy.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - forwarding_enabled
+    - policies
+    - surface

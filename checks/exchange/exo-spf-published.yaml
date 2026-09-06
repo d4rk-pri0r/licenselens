@@ -25,3 +25,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-spf-configure
 enabled: true
+pass_criteria:
+  ok: Every domain publishes an SPF record that fails unapproved senders.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - domains_checked
+    - spf_missing

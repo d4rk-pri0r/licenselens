@@ -34,3 +34,16 @@ mappings:
   nist: ["SI-3", "SI-4"]
   mitre: ["T1059"]
 enabled: true
+pass_criteria:
+  ok: Every onboarded device reports an active, in the expected state Defender sensor.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - active_healthy
+    - count_method
+    - health_status_counts
+    - healthy_ratio
+    - impaired_communication
+    - machines_sampled
+    - no_sensor_data
+    - truncated

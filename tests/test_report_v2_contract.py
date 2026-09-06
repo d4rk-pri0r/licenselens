@@ -549,6 +549,25 @@ def test_consumption_card_shows_observed_resource(tmp_path: Path) -> None:
     assert "Azure resource" in html2  # fallback when the id list is empty
 
 
+def test_how_this_is_decided_renders_for_demo_findings(tmp_path: Path) -> None:
+    from licenselens.auth import AuthContext, AuthMode
+    from licenselens.engine.runner import run_scan
+
+    result = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
+    html = _render(result, tmp_path)
+    assert "How this is decided" in html
+    sample = next(finding for finding in result.findings if finding.pass_criteria is not None)
+    assert sample.pass_criteria is not None
+    assert sample.pass_criteria.ok in html
+    if sample.evaluator_ref:
+        assert sample.evaluator_ref in html
+    md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
+    assert "How this is decided" in md
+    assert sample.pass_criteria.ok in md
+    if sample.evaluator_ref:
+        assert f"`{sample.evaluator_ref}`" in md
+
+
 def test_detection_realization_section_renders(tmp_path: Path) -> None:
     from licenselens.auth import AuthContext, AuthMode
     from licenselens.engine.runner import run_scan

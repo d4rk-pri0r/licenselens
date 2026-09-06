@@ -25,3 +25,12 @@ remediation: >
 references:
   - https://learn.microsoft.com/sharepoint/turn-external-sharing-on-or-off
 enabled: true
+pass_criteria:
+  ok: >-
+    Verification-code users reauthenticate within 30 days or fewer.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - email_attestation_reauth_days
+    - email_attestation_required
+    - sharing_capability

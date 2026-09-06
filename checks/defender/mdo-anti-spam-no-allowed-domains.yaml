@@ -25,3 +25,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/anti-spam-policies-configure
 enabled: true
+pass_criteria:
+  ok: >-
+    Anti-spam policies keep allowed sender and domain lists empty.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - allowed_entries

@@ -28,3 +28,11 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-developer
 enabled: true
+pass_criteria:
+  ok: Service principal API access is disabled or limited to specific security groups.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - enabled
+    - security_groups
+    - surface

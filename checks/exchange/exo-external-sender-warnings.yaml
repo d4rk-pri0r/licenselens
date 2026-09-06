@@ -25,3 +25,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/exchange/security-and-compliance/mail-flow-rules/mail-flow-rules
 enabled: true
+pass_criteria:
+  ok: External mail carries a clear sender warning for users.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - external_sender_rule
+    - mail_tips_external_tips

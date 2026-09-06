@@ -31,3 +31,13 @@ remediation: >
 references:
   - https://learn.microsoft.com/purview/insider-risk-management
 enabled: true
+pass_criteria:
+  ok: At least one insider risk policy is live; analytics is enabled.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - direct
+    - policy_count
+    - policy_names
+    - proxy
+    - source

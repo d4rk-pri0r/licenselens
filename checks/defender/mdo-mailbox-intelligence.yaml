@@ -27,3 +27,12 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/anti-phishing-policies-configure
 enabled: true
+pass_criteria:
+  ok: Mailbox intelligence is enabled on all anti-phish policies.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - mailbox_intelligence_enabled
+    - mailbox_intelligence_missing
+    - policies
+    - surface

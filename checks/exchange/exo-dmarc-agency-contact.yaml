@@ -25,3 +25,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoft-365/security/office-365-security/email-authentication-dmarc-configure
 enabled: true
+pass_criteria:
+  ok: DMARC records include the agency's internal report contact.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - configured
+    - field

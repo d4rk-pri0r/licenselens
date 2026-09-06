@@ -29,3 +29,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/defender-office-365/safe-documents
 enabled: true
+pass_criteria:
+  ok: Safe Documents protects users who open Office files from the internet.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - allow_safe_docs_open
+    - enable_safe_docs

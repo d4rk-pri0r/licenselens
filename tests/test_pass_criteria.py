@@ -1,4 +1,4 @@
-"""WS5-A: pass_criteria on flagships, evaluator_ref, banned-word guard."""
+"""WS5-A/C: pass_criteria on direct checks, evaluator_ref, banned-word guard."""
 
 from __future__ import annotations
 
@@ -28,6 +28,34 @@ _WORD = re.compile(
 )
 
 
+def test_pass_criteria_parsed_on_direct_checks() -> None:
+    from licenselens.engine.registry import default_registry
+    from licenselens.schema_contracts import EvaluationMode
+
+    registry = default_registry()
+    missing: list[str] = []
+    incomplete: list[str] = []
+    no_fields: list[str] = []
+    for check in load_checks():
+        if not check.enabled:
+            continue
+        try:
+            mode = registry.evaluator_for(check.id).evaluation_mode
+        except KeyError:
+            continue
+        if mode is not EvaluationMode.DIRECT:
+            continue
+        if check.pass_criteria is None:
+            missing.append(check.id)
+        elif not check.pass_criteria.ok or not check.pass_criteria.gap:
+            incomplete.append(check.id)
+        elif not check.pass_criteria.evidence_fields:
+            no_fields.append(check.id)
+    assert not missing, missing
+    assert not incomplete, incomplete
+    assert not no_fields, no_fields
+
+
 def test_pass_criteria_parsed_on_flagships() -> None:
     flagships = [check for check in load_checks() if check.flagship]
     assert len(flagships) == 36
@@ -52,13 +80,13 @@ def test_finding_carries_evaluator_ref_for_registered_checks() -> None:
     assert sample.pass_criteria.ok
 
 
-def test_flagship_evidence_fields_subset_on_demo() -> None:
+def test_direct_evidence_fields_subset_on_demo() -> None:
     result = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
     by_id = {finding.check_id: finding for finding in result.findings}
     actionable = {FindingStatus.OK, FindingStatus.PARTIAL, FindingStatus.GAP}
     missing: list[str] = []
     for check in load_checks():
-        if not check.flagship or check.pass_criteria is None:
+        if check.pass_criteria is None:
             continue
         finding = by_id.get(check.id)
         if finding is None or finding.status not in actionable:

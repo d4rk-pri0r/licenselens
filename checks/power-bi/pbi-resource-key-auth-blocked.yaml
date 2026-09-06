@@ -26,3 +26,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-embed-codes
 enabled: true
+pass_criteria:
+  ok: Resource key authentication is blocked in Power BI tenant settings.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - enabled
+    - surface

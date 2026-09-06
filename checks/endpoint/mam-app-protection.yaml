@@ -32,3 +32,11 @@ mappings:
   nist: ["SC-28", "AC-3"]
   mitre: ["T1040", "T1486"]
 enabled: true
+pass_criteria:
+  ok: App protection policies exist and are assigned to protect managed app data.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - app_protection_policy_count
+    - assigned_count
+    - org_wide_count

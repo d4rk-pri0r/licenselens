@@ -42,3 +42,9 @@ mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
 enabled: true
+pass_criteria:
+  ok: No service principals are currently flagged as risky or compromised.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - status

@@ -26,3 +26,11 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-platform/admin/powerapps-powershell
 enabled: true
+pass_criteria:
+  ok: Power Apps sharing with everyone is disabled.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - property
+    - surface
+    - value

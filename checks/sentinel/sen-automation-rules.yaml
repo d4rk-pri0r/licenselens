@@ -29,3 +29,12 @@ remediation: >
 references:
   - https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks
 enabled: true
+pass_criteria:
+  ok: Automation rules trigger playbooks for high-value alerts.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - enabled_automation_rules
+    - playbook_automation_rules
+    - total_automation_rules
+    - workspace_resource_id

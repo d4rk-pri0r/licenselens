@@ -25,3 +25,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/settings-policies-reference
 enabled: true
+pass_criteria:
+  ok: >-
+    Teams channel email integration is turned off.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - allow_email_into_channel

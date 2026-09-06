@@ -41,3 +41,13 @@ mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
 enabled: true
+pass_criteria:
+  ok: Multi-factor authentication claims from external tenants are not trusted by default.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - inbound_mfa_trust_default
+    - outbound_mfa_trust_default
+    - partner_count
+    - partner_inbound_mfa_trust_count
+    - partner_outbound_mfa_trust_count

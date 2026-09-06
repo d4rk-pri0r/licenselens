@@ -128,6 +128,25 @@
             <p><strong>Limitations:</strong> {% if block.evidence.limitations %}{% for limit in block.evidence.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
           </div>
         </details>
+        {% if f.pass_criteria %}
+        <details class="tech how-decided">
+          <summary><span class="caret" aria-hidden="true">▸</span> How this is decided</summary>
+          <div class="tech-body">
+            <p><strong>OK:</strong> {{ f.pass_criteria.ok }}</p>
+            {% if f.pass_criteria.partial %}<p><strong>Partial:</strong> {{ f.pass_criteria.partial }}</p>{% endif %}
+            <p><strong>Gap:</strong> {{ f.pass_criteria.gap }}</p>
+            {% if f.pass_criteria.evidence_fields %}
+            <p><strong>Evidence fields:</strong>
+              {% for field in f.pass_criteria.evidence_fields %}<code>{{ field }}</code>{% if not loop.last %} {% endif %}{% endfor %}
+            </p>
+            {% endif %}
+            {% if f.evaluator_ref %}<p><strong>Evaluator:</strong> <code>{{ f.evaluator_ref }}</code></p>{% endif %}
+            {% if f.evaluation_mode %}<p><strong>Mode:</strong> {{ exec_copy["evaluation_mode"].get(f.evaluation_mode, f.evaluation_mode | replace('_', ' ')) }}</p>{% endif %}
+            {% if f.confidence_label %}<p><strong>Confidence:</strong> {{ f.confidence_label }}</p>{% endif %}
+            <p><strong>Limitations:</strong> {% if f.limitations %}{% for limit in f.limitations %}{{ limit.rstrip('.') }}{% if not loop.last %}; {% endif %}{% endfor %}{% else %}None reported{% endif %}</p>
+          </div>
+        </details>
+        {% endif %}
       </div>
 
       {# The only external URL allowed: the Microsoft admin deep link. #}

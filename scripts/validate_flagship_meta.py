@@ -29,6 +29,8 @@ from typing import Final
 import yaml
 
 from licenselens.engine.loader import load_checks
+from licenselens.engine.registry import default_registry
+from licenselens.schema_contracts import EvaluationMode
 
 _REQUIRED_CATALOG_FIELDS: Final = (
     "security_intent",
@@ -132,8 +134,32 @@ def validate_flagship_meta(
     return violations
 
 
+def validate_direct_pass_criteria(checks_root: Path | None = None) -> list[str]:
+    """Require pass_criteria (ok, gap, evidence_fields) on every enabled DIRECT check."""
+    root = _repo_root()
+    checks_root = checks_root or (root / "checks")
+    registry = default_registry()
+    violations: list[str] = []
+    for check in load_checks(checks_root):
+        if not check.enabled:
+            continue
+        try:
+            mode = registry.evaluator_for(check.id).evaluation_mode
+        except KeyError:
+            continue
+        if mode is not EvaluationMode.DIRECT:
+            continue
+        if check.pass_criteria is None:
+            violations.append(f"missing_pass_criteria:{check.id}")
+        elif not check.pass_criteria.ok or not check.pass_criteria.gap:
+            violations.append(f"incomplete_pass_criteria:{check.id}")
+        elif not check.pass_criteria.evidence_fields:
+            violations.append(f"missing_pass_criteria_evidence_fields:{check.id}")
+    return violations
+
+
 def main() -> int:
-    violations = validate_flagship_meta()
+    violations = validate_flagship_meta() + validate_direct_pass_criteria()
     if violations:
         print("Flagship meta validation FAILED:")
         for message in violations:

@@ -26,3 +26,10 @@ remediation: >
 references:
   - https://learn.microsoft.com/power-bi/enterprise/service-admin-portal-export-sharing
 enabled: true
+pass_criteria:
+  ok: Guest access is disabled in Power BI tenant settings.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - enabled
+    - surface

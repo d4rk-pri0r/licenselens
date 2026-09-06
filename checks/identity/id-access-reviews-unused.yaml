@@ -35,3 +35,13 @@ mappings:
   nist: ["AC-2", "AC-6"]
   mitre: ["T1078"]
 enabled: true
+pass_criteria:
+  ok: Periodic access reviews run for privileged roles and guest access.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - definition_count
+    - definition_ids
+    - privileged_recurring_count
+    - privileged_scoped_count
+    - recurring_count

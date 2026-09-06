@@ -28,3 +28,16 @@ mappings:
   nist: ["AC-2", "IA-2"]
   mitre: ["T1078"]
 enabled: true
+pass_criteria:
+  ok: Accounts marked high user risk by Identity Protection are blocked.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - break_glass_principal_count
+    - enforced_policies
+    - label
+    - protected_population
+    - report_only_policies
+    - scope_gaps_best
+    - scoped_policies
+    - security_defaults_enabled

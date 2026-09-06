@@ -29,3 +29,12 @@ remediation: >
 references:
   - https://learn.microsoft.com/microsoftteams/guest-access
 enabled: true
+pass_criteria:
+  ok: >-
+    Teams guest access is disabled or limited to approved domains.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - allow_guest_calling
+    - allow_guest_chat
+    - allow_guest_user

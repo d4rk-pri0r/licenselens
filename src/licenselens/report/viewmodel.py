@@ -389,6 +389,10 @@ def _finding_entry(finding: Finding) -> dict[str, object]:
         "data_sources": finding.data_sources,
         "limitations": finding.limitations,
         "mappings": finding.mappings,
+        "evaluator_ref": finding.evaluator_ref,
+        "pass_criteria": (
+            finding.pass_criteria.model_dump() if finding.pass_criteria is not None else None
+        ),
     }
 
 

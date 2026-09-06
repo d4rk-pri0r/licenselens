@@ -171,6 +171,19 @@ def write_markdown_report(
         if f.deep_link:
             lines.append(f"- **Admin page:** [Open Microsoft admin page]({f.deep_link})")
         lines.append(f"- **Technical id:** `{f.check_id}`")
+        if f.pass_criteria is not None:
+            lines.append("- **How this is decided:**")
+            lines.append(f"  - OK: {f.pass_criteria.ok}")
+            if f.pass_criteria.partial:
+                lines.append(f"  - Partial: {f.pass_criteria.partial}")
+            lines.append(f"  - Gap: {f.pass_criteria.gap}")
+            if f.pass_criteria.evidence_fields:
+                lines.append(
+                    "  - Evidence fields: "
+                    + ", ".join(f"`{name}`" for name in f.pass_criteria.evidence_fields)
+                )
+            if f.evaluator_ref:
+                lines.append(f"  - Evaluator: `{f.evaluator_ref}`")
         lines.append("")
 
     lines.extend(

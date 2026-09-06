@@ -29,3 +29,16 @@ mappings:
   nist: ["IA-2", "IA-5"]
   mitre: ["T1078"]
 enabled: true
+pass_criteria:
+  ok: Security-information registration happens only from managed devices.
+  partial: The expected state is only partly met.
+  gap: The expected state is not met.
+  evidence_fields:
+    - break_glass_principal_count
+    - enforced_policies
+    - label
+    - report_only_policies
+    - scope_gaps_best
+    - scoped_policies
+    - security_defaults_enabled
+    - universal_policies
