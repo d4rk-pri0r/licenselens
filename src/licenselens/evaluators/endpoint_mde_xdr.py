@@ -102,23 +102,44 @@ def evaluate_xdr_incident_readiness(
     bundle = dict(evidence.get("security_alerts_bundle") or {})
     incidents = int(bundle.get("incident_count") or 0)
     alerts = int(bundle.get("alert_count") or 0)
+    sources: set[str] = set()
+    for alert in bundle.get("alerts") or []:
+        if isinstance(alert, dict) and alert.get("serviceSource"):
+            sources.add(str(alert["serviceSource"]))
     evidence_out = {
         "incident_count": incidents,
         "alert_count": alerts,
+        "service_sources": sorted(sources),
         "capability_operating": bool(incidents or alerts),
     }
-    if incidents or alerts:
+    if len(sources) >= 2:
         return Evaluation(
             status=FindingStatus.OK,
             summary=(
-                f"Defender XDR correlation is operating ({incidents} incident(s), "
-                f"{alerts} alert(s) observed)."
+                f"Defender XDR correlation is operating across {len(sources)} service "
+                f"sources ({incidents} incident(s), {alerts} alert(s) observed)."
             ),
             evidence=evidence_out,
             customer_summary=(
                 "Cross-product incidents are being correlated, so XDR is actively in use."
             ),
             confidence=Confidence.HIGH,
+            data_sources=[_XDR_SOURCE],
+        )
+    if incidents or alerts:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Defender XDR alerts or incidents were observed, but fewer than two "
+                "distinct service sources are present, so cross-product correlation "
+                "is not confirmed."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Some alerts exist, but they do not yet prove identity, email, and "
+                "endpoint signals are being correlated together."
+            ),
+            confidence=Confidence.MEDIUM,
             data_sources=[_XDR_SOURCE],
         )
     return Evaluation(

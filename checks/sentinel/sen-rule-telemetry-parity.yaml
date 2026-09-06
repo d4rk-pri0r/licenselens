@@ -1,0 +1,34 @@
+id: sen-rule-telemetry-parity
+title: Enabled analytics rules reference tables that are not ingesting
+customer_title: Some detection rules watch logs that are not arriving
+customer_summary: >-
+  A detection rule only fires if the tables it queries actually land in the
+  workspace. Rules pointing at empty tables are dark.
+expected_state: Enabled analytics rules query tables that ingested data in the last seven days.
+customer_next_step: >-
+  Turn off or rewrite rules whose tables are empty, and add a live rule for
+  each owned protection that is already sending logs.
+description: >-
+  Compares enabled scheduled/NRT rule table references (and XDR custom
+  detections) against seven-day Usage so dead rules cannot hide behind a
+  high rule count.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+collector: sentinel_analytics
+remediation: >-
+  For each dead rule, either enable the matching data connector or disable
+  the rule. Confirm every ingesting core table is referenced by a live rule.
+references:
+  - https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+flagship: false
+flagship_security_intent: ""
+enabled: true

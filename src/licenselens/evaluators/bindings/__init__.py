@@ -55,6 +55,7 @@ from licenselens.evaluators.bindings.security_suite_spam import register_securit
 from licenselens.evaluators.bindings.security_suite_threat import register_security_suite_threat
 from licenselens.evaluators.bindings.sentinel import register_sentinel
 from licenselens.evaluators.bindings.sentinel_extended import register_sentinel_extended
+from licenselens.evaluators.bindings.sentinel_parity import register_sentinel_parity
 from licenselens.evaluators.bindings.sentinel_telemetry import register_sentinel_telemetry
 
 
@@ -99,4 +100,5 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_security_suite_threat(catalog)
     register_sentinel(catalog)
     register_sentinel_extended(catalog)
+    register_sentinel_parity(catalog)
     register_sentinel_telemetry(catalog)

@@ -303,10 +303,28 @@ def test_mde_sensor_health_empty_is_partial() -> None:
     assert result.status is FindingStatus.PARTIAL
 
 
-def test_xdr_incidents_present_is_ok() -> None:
+def test_xdr_incidents_without_source_diversity_is_partial() -> None:
     result = evaluate_xdr_incident_readiness(
         _check("xdr-incident-readiness"),
         {"security_alerts_bundle": {"incident_count": 3, "alert_count": 0}},
+    )
+    assert result.status is FindingStatus.PARTIAL
+    assert result.status is not FindingStatus.OK
+
+
+def test_xdr_two_service_sources_is_ok() -> None:
+    result = evaluate_xdr_incident_readiness(
+        _check("xdr-incident-readiness"),
+        {
+            "security_alerts_bundle": {
+                "incident_count": 1,
+                "alert_count": 2,
+                "alerts": [
+                    {"serviceSource": "azureAdIdentityProtection"},
+                    {"serviceSource": "microsoftDefenderForEndpoint"},
+                ],
+            }
+        },
     )
     assert result.status is FindingStatus.OK
 

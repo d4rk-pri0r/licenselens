@@ -68,6 +68,24 @@ def evaluate_sen_analytics_coverage(
         )
 
     if enabled >= 10 and tactics >= 3:
+        from licenselens.evaluators.sentinel_parity import dead_rule_ratio_from_evidence
+
+        ratio = dead_rule_ratio_from_evidence(evidence)
+        if ratio is not None and ratio >= 0.25:
+            evidence_out["dead_rule_ratio"] = ratio
+            return Evaluation(
+                status=FindingStatus.PARTIAL,
+                summary=(
+                    f"Sentinel analytics-rule count meets the baseline ({enabled} enabled "
+                    f"scheduled/NRT rule(s) across {tactics} MITRE tactic(s)), but "
+                    f"{ratio:.0%} of evaluable rules reference tables that are not ingesting."
+                ),
+                evidence=evidence_out,
+                customer_summary=(
+                    "Plenty of detection alarms are on, but many of them watch logs that "
+                    "are not arriving."
+                ),
+            )
         return Evaluation(
             status=FindingStatus.OK,
             summary=(

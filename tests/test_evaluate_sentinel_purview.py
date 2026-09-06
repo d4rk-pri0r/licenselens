@@ -18,7 +18,7 @@ def test_sen_analytics_demo_partial():
         {"sentinel_rules": DEMO_SENTINEL_RULES},
     )
     assert result.status == FindingStatus.PARTIAL
-    assert result.evidence["enabled_scheduled_or_nrt"] == 2
+    assert result.evidence["enabled_scheduled_or_nrt"] == 3
 
 
 def test_sen_analytics_ok_dense():
@@ -36,6 +36,55 @@ def test_sen_analytics_ok_dense():
         },
     )
     assert result.status == FindingStatus.OK
+
+
+def test_analytics_ok_blocked_by_dead_rules():
+    rules_detail = [
+        {
+            "query": "SigninLogs | take 1",
+            "kind": "Scheduled",
+            "enabled": True,
+            "tactics": ["InitialAccess"],
+            "displayName": "live",
+        },
+        {
+            "query": "DeviceProcessEvents | take 1",
+            "kind": "Scheduled",
+            "enabled": True,
+            "tactics": ["Execution"],
+            "displayName": "dead-a",
+        },
+        {
+            "query": "DeviceProcessEvents | take 1",
+            "kind": "Scheduled",
+            "enabled": True,
+            "tactics": ["Persistence"],
+            "displayName": "dead-b",
+        },
+    ]
+    result = evaluate_sen_analytics_coverage(
+        _check("sen-analytics-rule-coverage"),
+        {
+            "sentinel_rules": {
+                "total_rules": 40,
+                "enabled_rules": 25,
+                "enabled_scheduled_or_nrt": 22,
+                "tactic_count": 6,
+                "tactics": ["a", "b", "c", "d", "e", "f"],
+                "sample_enabled_rules": [],
+                "rules_detail": rules_detail,
+            },
+            "la_usage_by_table": {
+                "mode": "query",
+                "tables": {
+                    "SigninLogs": {"total_mb": 1.0, "rows": 5},
+                    "DeviceProcessEvents": {"total_mb": 0.0, "rows": 0},
+                },
+            },
+            "telemetry_expectations": {"expectations": []},
+        },
+    )
+    assert result.status == FindingStatus.PARTIAL
 
 
 def test_sen_analytics_missing_workspace_error():

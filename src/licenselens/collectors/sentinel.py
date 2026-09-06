@@ -191,11 +191,15 @@ def collect_sentinel_bundle(
 # Dry-run: thin rule set, UEBA off
 DEMO_SENTINEL_RULES: dict[str, Any] = {
     "total_rules": 3,
-    "enabled_rules": 2,
-    "enabled_scheduled_or_nrt": 2,
-    "tactics": ["InitialAccess", "Persistence"],
-    "tactic_count": 2,
-    "sample_enabled_rules": ["Demo Sign-in spike", "Demo Rare process"],
+    "enabled_rules": 3,
+    "enabled_scheduled_or_nrt": 3,
+    "tactics": ["InitialAccess", "Execution", "Persistence"],
+    "tactic_count": 3,
+    "sample_enabled_rules": [
+        "Demo Sign-in spike",
+        "Demo rare process",
+        "Demo ASIM parser",
+    ],
     "workspace_resource_id": (
         "/subscriptions/00000000-0000-0000-0000-000000000000/"
         "resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/"
@@ -211,20 +215,20 @@ DEMO_SENTINEL_RULES: dict[str, Any] = {
             "displayName": "Demo Sign-in spike",
         },
         {
-            "query": "SecurityAlert | take 1",
+            "query": "DeviceProcessEvents | take 1",
+            "kind": "Scheduled",
+            "enabled": True,
+            "tactics": ["Execution"],
+            "techniques": [],
+            "displayName": "Demo rare process",
+        },
+        {
+            "query": "_Im_Authentication | take 1",
             "kind": "Scheduled",
             "enabled": True,
             "tactics": ["Persistence"],
             "techniques": [],
-            "displayName": "Demo Rare process",
-        },
-        {
-            "query": "AuditLogs | take 1",
-            "kind": "Scheduled",
-            "enabled": False,
-            "tactics": [],
-            "techniques": [],
-            "displayName": "Demo unused audit",
+            "displayName": "Demo ASIM parser",
         },
     ],
     "rules_detail_truncated": False,

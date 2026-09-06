@@ -68,9 +68,16 @@ DEMO_SECURITY_ALERTS_BUNDLE: dict[str, Any] = {
             "severity": "medium",
             "status": "new",
             "serviceSource": "azureAdIdentityProtection",
-        }
+        },
+        {
+            "id": "alert-2",
+            "title": "Demo endpoint alert",
+            "severity": "medium",
+            "status": "new",
+            "serviceSource": "microsoftDefenderForEndpoint",
+        },
     ],
     "incident_count": 1,
-    "alert_count": 1,
+    "alert_count": 2,
     "capability_operating": True,
 }
