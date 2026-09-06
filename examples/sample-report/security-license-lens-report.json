@@ -8873,6 +8873,14 @@
       "errors": []
     },
     {
+      "collector": "mdi_health",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "pbi_capacity_bundle",
       "status": "success",
       "source": "demo",

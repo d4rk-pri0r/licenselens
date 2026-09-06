@@ -9,18 +9,18 @@
   "flagship_count": 36,
   "generated": {
     "capabilities.md": "24cfb1fdc0d5181420aceaefc2ace14a2aa5a8c3d7459c6bfa2e864cd8a1048b",
-    "checks.md": "b3efd205e797e2ed5ef294ef4ab287e9e4964c5e7e520de838438b3ccbad1423",
+    "checks.md": "09557daf42a8c9b0c69c94eab737585f81f3f274b88c42c5b558e1df3bc5c815",
     "coverage.md": "5f2297da9bea71cd283f44fe91275af0ea38dab98c465e3fcbf9199f8e51fdce",
-    "index.md": "ad0b88cff1ebc659d9d999aa225bcaa9459d38408f6952c4f71f99caefbe4501",
-    "permissions.md": "f3ea66a0cf032ab2b7c4a3751cfe7a69b0b8c2aae70a719bf96d4836d57a6fc7",
+    "index.md": "a8655fde09d759ca675b692aa0a4471a846b75541ef858e9637f8612bee9da45",
+    "permissions.md": "3656fbc8bd6caaa9e34eca5376c91ee19e4e6f0f262c23b90308b0f993ee2107",
     "profiles.md": "452bb48842d37989cbbfd95559dd5c2d26c2f244f8b578726a7aa0bef9a87bdb",
-    "reference.json": "931b9f1e237cb1e38ac703c9a3f57b2c15cab36e1d64e00366535b9ebebe3a14"
+    "reference.json": "6a93a8bedca721803b1ee6f7c47016c9180fca61c933f2708bccd7d2872c6f94"
   },
   "generator": "scripts/generate_reference_docs.py",
   "package_version": "0.4.0",
-  "permission_count": 22,
+  "permission_count": 24,
   "profile_count": 11,
-  "sample_sha256": "72de626151b44c0418ff0c07fd97778647ff9fdd8bd27defd4227b7b3e245a32",
+  "sample_sha256": "c6de0e53d5efde19db0ffe9f36cd94f9638d7b5db18021330aa6c1b2b06008ee",
   "sample_version": "0.4.0",
   "sources": {
     "catalog/capabilities.yaml": "89526bd9c2cd1946ef30506b145c811e3a9337f26daa687317515b5a9a589200",
@@ -206,7 +206,7 @@
     "checks/sentinel/sen-rule-telemetry-parity.yaml": "bd353804da30f9bcc7f0174b98286649a8f00394ee319ad588b5c25038328b32",
     "checks/sentinel/sen-telemetry-ingestion-coverage.yaml": "c240c77d13f118a38306e73d65c086c4f149f31e4e45ba717bcb33824b693ef2",
     "checks/sentinel/sen-ueba-not-enabled.yaml": "2a0aa5e9f4259c4be123db6a87ff7c98cd3b305aa1ce170abdd3d777b926dc8f",
-    "docs/permissions.md": "b9f2d834b7fee4ee6c6b008c78c91af052abbdeddf94ba478f342a99301122f3"
+    "docs/permissions.md": "9f17718dc753456372cb5d15e0a5f961295a0bf1c1a32d18dca87f4e3181e98e"
   },
   "untracked_row_count": 4
 }

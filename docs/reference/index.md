@@ -8,7 +8,7 @@ Machine-generated from the todo-5 reference model (package version **0.4.0**).
 | [Checks](checks.md) | 170 |
 | [Capabilities](capabilities.md) | 31 |
 | [Profiles](profiles.md) | 11 |
-| [Graph permissions](permissions.md) | 22 |
+| [Graph permissions](permissions.md) | 24 |
 | [Coverage rows](coverage.md) | 131 |
 | [Untracked baseline rows](coverage.md) | 4 |
 | [Intentionally excluded items](coverage.md) | 6 |

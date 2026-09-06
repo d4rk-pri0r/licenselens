@@ -89,7 +89,7 @@ source file.
 | `id-security-defaults-on` | `graph_security_defaults` | direct | registered | conditional_access | ca_policies, security_defaults_policy | MITRE: T1078; NIST: IA-2, IA-5 | `checks/identity/id-security-defaults-on.yaml` | — |
 | `mde-onboard-gap` | `mde_onboarding` | direct | registered | defender_endpoint_p1, defender_endpoint_p2 | mde_summary | — | `checks/defender/mde-onboard-gap.yaml` | yes |
 | `mde-sensor-health` | `mde_health_collector` | direct | registered | defender_endpoint_p1, defender_endpoint_p2 | mde_health | MITRE: T1059; NIST: SI-3, SI-4 | `checks/endpoint/mde-sensor-health.yaml` | — |
-| `mdi-sensors-missing` | `mdi_sensors` | proxy | registered | defender_identity | secure_score_controls | — | `checks/defender/mdi-sensors-missing.yaml` | — |
+| `mdi-sensors-missing` | `mdi_sensors` | direct_with_proxy_fallback | registered | defender_identity | mdi_health, secure_score_controls | — | `checks/defender/mdi-sensors-missing.yaml` | — |
 | `mdo-alert-policies-enabled` | `noop` | manual | registered | defender_office_p1 | break_glass_principal_ids | — | `checks/defender/mdo-alert-policies-enabled.yaml` | — |
 | `mdo-anti-spam-no-allowed-domains` | `exchange_collector` | direct | registered | exchange_online_protection | exchange_bundle | — | `checks/defender/mdo-anti-spam-no-allowed-domains.yaml` | — |
 | `mdo-audit-retention` | `noop` | manual | registered | purview_audit | break_glass_principal_ids | — | `checks/defender/mdo-audit-retention.yaml` | — |

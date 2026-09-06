@@ -16,6 +16,8 @@ Security License Lens is designed for **read-only** access.
 | `DelegatedPermissionGrant.Read.All` | OAuth2 delegated permission grants |
 | `AuditLog.Read.All` | Sign-in logs (dormant privileged) |
 | `SecurityEvents.Read.All` | Secure Score (MDO / MDI / DLP proxy signals) |
+| `SecurityIdentitiesSensors.Read.All` | Defender for Identity sensors (direct) |
+| `SecurityIdentitiesHealth.Read.All` | Defender for Identity health issues (direct) |
 | `SecurityIncident.Read.All` | Defender XDR incidents (capability operation signal) |
 | `SecurityAlert.Read.All` | Defender XDR alerts_v2 (capability operation signal) |
 | `CustomDetection.Read.All` | Defender XDR custom detection rules (Graph beta `/security/rules/detectionRules`) |

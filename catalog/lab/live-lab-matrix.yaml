@@ -262,10 +262,13 @@ families:
       - SecurityIncident.Read.All
       - SecurityAlert.Read.All
       - SecurityEvents.Read.All
+      - SecurityIdentitiesSensors.Read.All
+      - SecurityIdentitiesHealth.Read.All
     mde_permission:
       - Machine.Read.All
     downgraded_manual: []
-    proxy:
+    proxy: []
+    direct_with_proxy_fallback:
       - mdi-sensors-missing
     proof: tests/test_evaluate_endpoint_wave3.py
     pass_case:
