@@ -170,6 +170,7 @@ PROXY_CHECK_IDS: frozenset[str] = frozenset(
         "mdo-p2-policies-default",
         "mdi-sensors-missing",
         "pur-dlp-not-enforced",
+        "sen-entra-diagnostics-routed",
     }
 )
 

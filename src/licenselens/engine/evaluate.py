@@ -235,6 +235,10 @@ from licenselens.evaluators.sentinel_extended import (
     evaluate_sen_data_connectors,
     evaluate_sen_log_analytics_retention,
 )
+from licenselens.evaluators.sentinel_telemetry import (
+    evaluate_sen_entra_diagnostics_routed,
+    evaluate_sen_telemetry_ingestion_coverage,
+)
 
 __all__ = [
     "Evaluation",
@@ -399,4 +403,6 @@ __all__ = [
     "evaluate_sen_automation_rules",
     "evaluate_sen_data_connectors",
     "evaluate_sen_log_analytics_retention",
+    "evaluate_sen_telemetry_ingestion_coverage",
+    "evaluate_sen_entra_diagnostics_routed",
 ]

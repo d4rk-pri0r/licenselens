@@ -1,0 +1,34 @@
+id: sen-entra-diagnostics-routed
+title: Entra ID risk and sign-in tables are not landing in Sentinel
+customer_title: Confirm Entra diagnostic settings are sending logs to Sentinel
+customer_summary: >-
+  Identity Protection and Conditional Access only feed detections if Entra
+  diagnostic settings route those tables into the workspace.
+expected_state: Entra diagnostic settings route sign-in and risk tables into Sentinel.
+customer_next_step: >-
+  Open Entra diagnostic settings and confirm SignInLogs plus the risk tables
+  stream to this workspace, then re-scan.
+description: >-
+  Proxy check: infers Entra diagnostic routing from seven-day Usage. Never
+  marked fully OK; confirm the blade in Entra.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings
+collector: la_usage_collector
+remediation: >-
+  Configure Entra diagnostic settings to send SignInLogs, UserRiskEvents, and
+  RiskyUsers to the Sentinel workspace.
+references:
+  - https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings
+  - https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id
+flagship: false
+flagship_security_intent: ""
+enabled: true

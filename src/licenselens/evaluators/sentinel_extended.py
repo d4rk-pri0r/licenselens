@@ -91,6 +91,35 @@ def evaluate_sen_data_connectors(
         )
 
     if connected >= 3 and len(key) >= 2:
+        usage = _as_dict(evidence.get("la_usage_by_table"))
+        tables = _as_dict(usage.get("tables"))
+        if usage.get("mode") == "query" and tables:
+            ingesting = False
+            for detail in tables.values():
+                if not isinstance(detail, dict):
+                    continue
+                try:
+                    rows = int(detail.get("rows") or 0)
+                    mb = float(detail.get("total_mb") or 0)
+                except (TypeError, ValueError):
+                    continue
+                if rows > 0 or mb > 0:
+                    ingesting = True
+                    break
+            if not ingesting:
+                evidence_out["usage_empty"] = True
+                return Evaluation(
+                    status=FindingStatus.PARTIAL,
+                    summary=(
+                        f"Sentinel reports {connected} connected connector(s), but "
+                        "seven-day Usage shows no ingesting tables."
+                    ),
+                    evidence=evidence_out,
+                    customer_summary=(
+                        "Connectors are listed as connected, but the workspace is not "
+                        "receiving data."
+                    ),
+                )
         return Evaluation(
             status=FindingStatus.OK,
             summary=(

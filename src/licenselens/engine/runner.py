@@ -74,6 +74,7 @@ def run_scan(
     )
     evidence = state.evidence
     evidence["scanned_at"] = scan_time.isoformat()
+    evidence["owned_capabilities"] = list(state.owned)
     summaries = capability_summaries_for(
         capabilities,
         state.owned,

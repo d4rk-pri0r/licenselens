@@ -35,10 +35,13 @@ def apply_quality_policy(
 
     if is_proxy:
         confidence = Confidence.LOW
-        if "secureScore.controlScores" not in data_sources and not data_sources:
-            data_sources.append("secureScore.controlScores (proxy)")
-        if PROXY_VERIFY_NOTE not in limitations:
-            limitations.append(PROXY_VERIFY_NOTE)
+        # WS3-B Entra diagnostic proxy is inferred from workspace Usage, not
+        # Secure Score. Do not attach the Secure Score verify note or source.
+        if finding.check_id != "sen-entra-diagnostics-routed":
+            if "secureScore.controlScores" not in data_sources and not data_sources:
+                data_sources.append("secureScore.controlScores (proxy)")
+            if PROXY_VERIFY_NOTE not in limitations:
+                limitations.append(PROXY_VERIFY_NOTE)
         if strict_proxy and status == FindingStatus.OK:
             status = FindingStatus.PARTIAL
             summary = (

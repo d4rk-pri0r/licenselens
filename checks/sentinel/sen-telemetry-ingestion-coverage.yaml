@@ -1,0 +1,34 @@
+id: sen-telemetry-ingestion-coverage
+title: Sentinel workspace is not ingesting expected telemetry for owned capabilities
+customer_title: Your security workspace may not be collecting the logs you already pay for
+customer_summary: >-
+  Owned Microsoft security capabilities only help detections if their tables
+  actually land in the workspace. Missing core tables means paid protection is
+  dark.
+expected_state: Core tables for every owned security capability arrive in the workspace.
+customer_next_step: >-
+  Connect the missing data sources (especially Defender for Endpoint device
+  events) and confirm rows arrive in the last seven days.
+description: >-
+  Compares owned capabilities' expected core tables against seven-day Log
+  Analytics Usage so a connected connector cannot hide empty ingestion.
+workload: sentinel
+required_capabilities:
+  - microsoft_sentinel
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: starter
+exposure_class: none
+deep_link: https://learn.microsoft.com/azure/sentinel/connect-data-sources
+collector: la_usage_collector
+remediation: >-
+  Enable the Microsoft Sentinel data connectors for each owned capability and
+  verify core tables show rows in Usage over seven days.
+references:
+  - https://learn.microsoft.com/azure/sentinel/connect-data-sources
+flagship: false
+flagship_security_intent: ""
+enabled: true
