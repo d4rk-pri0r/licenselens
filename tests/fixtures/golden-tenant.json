@@ -370,6 +370,13 @@
             "severity": "medium",
             "status": "new",
             "serviceSource": "azureAdIdentityProtection"
+          },
+          {
+            "id": "alert-2",
+            "title": "Golden endpoint alert",
+            "severity": "medium",
+            "status": "new",
+            "serviceSource": "microsoftDefenderForEndpoint"
           }
         ]
       },

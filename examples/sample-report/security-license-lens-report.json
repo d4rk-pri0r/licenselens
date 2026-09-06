@@ -1385,6 +1385,76 @@
       "mappings": {}
     },
     {
+      "check_id": "sen-rule-telemetry-parity",
+      "title": "Enabled analytics rules reference tables that are not ingesting",
+      "workload": "sentinel",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in",
+      "summary": "1 of 3 evaluable rules reference tables that are not ingesting (ratio 0.33); unwatched core tables: AADRiskyUsers, AADUserRiskEvents, EmailAttachmentInfo, EmailEvents, EmailUrlInfo, IdentityDirectoryEvents, IdentityLogonEvents, IdentityQueryEvents, OfficeActivity, SecurityAlert, SecurityIncident.",
+      "evidence": {
+        "dead_rules": [
+          {
+            "name": "Demo rare process",
+            "missing_tables": [
+              "DeviceProcessEvents"
+            ],
+            "source": "sentinel"
+          }
+        ],
+        "dead_rules_truncated": false,
+        "unwatched_tables": [
+          "AADRiskyUsers",
+          "AADUserRiskEvents",
+          "EmailAttachmentInfo",
+          "EmailEvents",
+          "EmailUrlInfo",
+          "IdentityDirectoryEvents",
+          "IdentityLogonEvents",
+          "IdentityQueryEvents",
+          "OfficeActivity",
+          "SecurityAlert",
+          "SecurityIncident"
+        ],
+        "indeterminate_rules": 0,
+        "live_tactics": [
+          "InitialAccess",
+          "Persistence"
+        ],
+        "evaluable_rules": 3,
+        "dead_rule_ratio": 0.3333333333333333,
+        "mode": "query"
+      },
+      "entitlements_used": [
+        "microsoft_sentinel"
+      ],
+      "remediation": "For each dead rule, either enable the matching data connector or disable the rule. Confirm every ingesting core table is referenced by a live rule.",
+      "references": [
+        "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
+      ],
+      "customer_title": "Some detection rules watch logs that are not arriving",
+      "customer_summary": "Some detection rules watch logs that are not arriving, or expected logs have no live rule.",
+      "customer_next_step": "Turn off or rewrite rules whose tables are empty, and add a live rule for each owned protection that is already sending logs.",
+      "status_label": "Needs attention",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "la:usageByTable",
+        "azure.arm.securityInsights"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {}
+    },
+    {
       "check_id": "sen-telemetry-ingestion-coverage",
       "title": "Sentinel workspace is not ingesting expected telemetry for owned capabilities",
       "workload": "sentinel",
@@ -2978,19 +3048,21 @@
       "pack": "starter",
       "exposure_class": "none",
       "deep_link": "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in",
-      "summary": "Thin Sentinel analytics-rule deployment: 2 enabled scheduled/NRT rule(s), 2 tactic(s) (total rules=3).",
+      "summary": "Thin Sentinel analytics-rule deployment: 3 enabled scheduled/NRT rule(s), 3 tactic(s) (total rules=3).",
       "evidence": {
         "total_rules": 3,
-        "enabled_rules": 2,
-        "enabled_scheduled_or_nrt": 2,
+        "enabled_rules": 3,
+        "enabled_scheduled_or_nrt": 3,
         "tactics": [
           "InitialAccess",
+          "Execution",
           "Persistence"
         ],
-        "tactic_count": 2,
+        "tactic_count": 3,
         "sample_enabled_rules": [
           "Demo Sign-in spike",
-          "Demo Rare process"
+          "Demo rare process",
+          "Demo ASIM parser"
         ],
         "workspace_resource_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel",
         "rules_detail": [
@@ -3005,22 +3077,24 @@
             "displayName": "Demo Sign-in spike"
           },
           {
-            "query": "SecurityAlert | take 1",
+            "query": "DeviceProcessEvents | take 1",
+            "kind": "Scheduled",
+            "enabled": true,
+            "tactics": [
+              "Execution"
+            ],
+            "techniques": [],
+            "displayName": "Demo rare process"
+          },
+          {
+            "query": "_Im_Authentication | take 1",
             "kind": "Scheduled",
             "enabled": true,
             "tactics": [
               "Persistence"
             ],
             "techniques": [],
-            "displayName": "Demo Rare process"
-          },
-          {
-            "query": "AuditLogs | take 1",
-            "kind": "Scheduled",
-            "enabled": false,
-            "tactics": [],
-            "techniques": [],
-            "displayName": "Demo unused audit"
+            "displayName": "Demo ASIM parser"
           }
         ],
         "rules_detail_truncated": false
@@ -8116,10 +8190,14 @@
       "pack": "endpoint",
       "exposure_class": "none",
       "deep_link": "https://security.microsoft.com/incidents",
-      "summary": "Defender XDR correlation is operating (1 incident(s), 1 alert(s) observed).",
+      "summary": "Defender XDR correlation is operating across 2 service sources (1 incident(s), 2 alert(s) observed).",
       "evidence": {
         "incident_count": 1,
-        "alert_count": 1,
+        "alert_count": 2,
+        "service_sources": [
+          "azureAdIdentityProtection",
+          "microsoftDefenderForEndpoint"
+        ],
         "capability_operating": true
       },
       "entitlements_used": [
@@ -8862,6 +8940,7 @@
         "sen-data-connectors",
         "sen-entra-diagnostics-routed",
         "sen-log-analytics-retention",
+        "sen-rule-telemetry-parity",
         "sen-telemetry-ingestion-coverage",
         "sen-ueba-not-enabled"
       ]

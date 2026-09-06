@@ -34,12 +34,12 @@ from tests.fake_clients import build_replay_clients, wire_golden_seams
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 
-GOLDEN_TOTAL_FINDINGS = 168
+GOLDEN_TOTAL_FINDINGS = 169
 GOLDEN_COUNTS_BY_STATUS = {
     "gap": 38,
     "not_licensed": 5,
     "ok": 91,
-    "partial": 22,
+    "partial": 23,
     "skipped": 12,
 }
 GOLDEN_CHECK_STATUSES = {
@@ -60,6 +60,7 @@ GOLDEN_CHECK_STATUSES = {
     "az-defender-plan-enabled": FindingStatus.OK,
     "sen-telemetry-ingestion-coverage": FindingStatus.GAP,
     "sen-entra-diagnostics-routed": FindingStatus.GAP,
+    "sen-rule-telemetry-parity": FindingStatus.PARTIAL,
 }
 
 

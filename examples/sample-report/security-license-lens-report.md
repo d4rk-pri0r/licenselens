@@ -27,7 +27,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 *Effort is a rough guide, not a quote.*
 
-- **Needs attention** (`gap`): 40
+- **Needs attention** (`gap`): 41
 - **Not in your plan** (`not_licensed`): 6
 - **Looking good** (`ok`): 91
 - **Partly set up** (`partial`): 19
@@ -474,6 +474,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/autolabeling)
 - **Technical id:** `pur-sensitivity-auto-labeling`
+
+### Some detection rules watch logs that are not arriving
+
+- **Status:** Needs attention
+- **In plain English:** Some detection rules watch logs that are not arriving, or expected logs have no live rule.
+- **Suggested next step:** Turn off or rewrite rules whose tables are empty, and add a live rule for each owned protection that is already sending logs.
+- **Confidence:** High confidence
+- **Data sources:** la:usageByTable, azure.arm.securityInsights
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/detect-threats-built-in)
+- **Technical id:** `sen-rule-telemetry-parity`
 
 ### Your security workspace may not be collecting the logs you already pay for
 

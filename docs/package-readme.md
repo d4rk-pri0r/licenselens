@@ -106,7 +106,7 @@ licenselens batch tenants.yaml -o reports
 
 ## Full check pack (v0.4.0)
 
-**168 checks** · **31 capabilities** · **11 profiles** · **135** pinned SCuBA coverage rows (131 mapped) · package/sample **0.4.0**
+**169 checks** · **31 capabilities** · **11 profiles** · **135** pinned SCuBA coverage rows (131 mapped) · package/sample **0.4.0**
 
 Checks run as **direct**, **proxy**, **manual** (you confirm), or **dynamic**
 (direct first, Secure Score only if direct is missing). The report still records
