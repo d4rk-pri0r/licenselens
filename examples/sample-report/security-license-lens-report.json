@@ -617,7 +617,22 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Privileged directory roles must use phishing-resistant MFA on all cloud apps.",
+        "partial": "Privileged MFA exists but is limited to some apps or some roles.",
+        "gap": "Privileged roles are not required to use phishing-resistant MFA.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_privileged"
     },
     {
       "check_id": "id-app-risky-delegated-consent",
@@ -670,7 +685,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_risky_delegated_consent"
     },
     {
       "check_id": "id-app-user-consent-restricted",
@@ -720,7 +737,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_user_consent_restricted"
     },
     {
       "check_id": "id-auth-weak-methods-disabled",
@@ -770,7 +789,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_weak_methods_disabled"
     },
     {
       "check_id": "id-break-glass-exclusion",
@@ -828,7 +849,19 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Emergency accounts are declared and every Conditional Access exclusion is justified.",
+        "partial": "Emergency accounts exist, but some exclusions are still unexplained.",
+        "gap": "Emergency accounts are missing, or Conditional Access exclusions are unexplained.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "declared_break_glass_principal_count",
+          "unjustified_exclusion_count",
+          "identified_break_glass_accounts"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_break_glass.evaluate_break_glass_exclusion"
     },
     {
       "check_id": "id-ca-device-code-block",
@@ -885,7 +918,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_device_code_block"
     },
     {
       "check_id": "id-ca-high-risk-signins",
@@ -947,7 +982,23 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Sign-ins marked high risk are blocked for all users on all cloud apps.",
+        "partial": "A high-risk sign-in block exists but is limited in who or what it covers.",
+        "gap": "High-risk sign-ins are not blocked.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues",
+          "protected_population"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_signins"
     },
     {
       "check_id": "id-ca-high-risk-users",
@@ -1009,7 +1060,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_users"
     },
     {
       "check_id": "id-ca-phishing-resistant-all",
@@ -1066,7 +1119,22 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Every user must use phishing-resistant MFA on all cloud apps.",
+        "partial": "Phishing-resistant MFA applies only to some users or some apps.",
+        "gap": "No tenant-wide phishing-resistant MFA policy is enforced.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_all"
     },
     {
       "check_id": "id-pim-activation-controls",
@@ -1120,7 +1188,20 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Privileged-role activation requires justification, an authentication context, and a short time limit.",
+        "partial": "Some activation controls are present but not all three.",
+        "gap": "Privileged-role activation is missing justification, an authentication context, or a time cap.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "justification_required",
+          "auth_context_required",
+          "activation_duration_capped",
+          "policy_count"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_activation_controls"
     },
     {
       "check_id": "id-pim-ga-activation-alert",
@@ -1167,7 +1248,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_alert"
     },
     {
       "check_id": "id-pim-ga-activation-approval",
@@ -1215,7 +1298,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_approval"
     },
     {
       "check_id": "id-pim-no-outside-pam",
@@ -1263,7 +1348,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_outside_pam"
     },
     {
       "check_id": "id-pim-no-permanent-privileged",
@@ -1311,7 +1398,18 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Highly privileged roles have no standing active assignments.",
+        "partial": "Some standing assignments remain.",
+        "gap": "Highly privileged roles still have permanent active assignments.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "standing_highly_privileged_assignments",
+          "eligible_schedules"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_no_permanent_privileged"
     },
     {
       "check_id": "id-pim-unused",
@@ -1374,7 +1472,19 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Privileged access is used through just-in-time activation, not standing roles.",
+        "partial": "PIM is in use but standing privileged assignments remain.",
+        "gap": "Privileged roles are standing assignments rather than just-in-time activation.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "privileged_permanent_assignments",
+          "privileged_eligible_schedules",
+          "standing_non_break_glass_assignments"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_privileged.evaluate_pim_unused"
     },
     {
       "check_id": "id-security-defaults-on",
@@ -1425,7 +1535,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_security_defaults_on"
     },
     {
       "check_id": "pur-sensitivity-auto-labeling",
@@ -1467,7 +1579,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_auto_labeling"
     },
     {
       "check_id": "sen-rule-telemetry-parity",
@@ -1537,7 +1651,21 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Enabled analytics rules query tables that ingested in the last seven days.",
+        "partial": "Too few rules could be evaluated, or some rules watch empty tables.",
+        "gap": "A large share of evaluable rules watch tables that are not arriving.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dead_rule_ratio",
+          "dead_rules",
+          "evaluable_rules",
+          "indeterminate_rules",
+          "unwatched_tables"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.sentinel_parity.evaluate_sen_rule_telemetry_parity"
     },
     {
       "check_id": "sen-telemetry-ingestion-coverage",
@@ -1667,7 +1795,18 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Core tables for owned capabilities ingested in the last seven days.",
+        "partial": "Some owned capabilities are missing core tables.",
+        "gap": "Owned capabilities are missing their core tables.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "capabilities",
+          "mode"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.sentinel_telemetry.evaluate_sen_telemetry_ingestion_coverage"
     },
     {
       "check_id": "id-access-reviews-scope",
@@ -1719,7 +1858,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_scope"
     },
     {
       "check_id": "id-access-reviews-unused",
@@ -1770,7 +1911,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_access_reviews_unused"
     },
     {
       "check_id": "id-ai-agents-risky-block",
@@ -1820,7 +1963,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_ai_agents_risky_block"
     },
     {
       "check_id": "id-app-admin-consent-workflow",
@@ -1868,7 +2013,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_admin_consent_workflow"
     },
     {
       "check_id": "id-app-expiring-credentials",
@@ -1923,7 +2070,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_expiring_credentials"
     },
     {
       "check_id": "id-app-password-addition-blocked",
@@ -1969,7 +2118,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_password_addition_blocked"
     },
     {
       "check_id": "id-app-registration-admin-only",
@@ -2016,7 +2167,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_consent.evaluate_app_registration_admin_only"
     },
     {
       "check_id": "id-auth-authenticator-context",
@@ -2066,7 +2219,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_authenticator_context"
     },
     {
       "check_id": "id-ca-managed-devices",
@@ -2124,7 +2279,22 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Access to cloud apps requires an Intune-marked or hybrid-joined device for all users.",
+        "partial": "A device requirement exists but is limited to some users or some apps.",
+        "gap": "Cloud apps can be reached from unmanaged devices.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_managed_devices"
     },
     {
       "check_id": "id-ca-mfa-registration-managed",
@@ -2182,7 +2352,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_registration_managed"
     },
     {
       "check_id": "id-dormant-privileged",
@@ -2249,7 +2421,20 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Privileged accounts have signed in inside the lookback window.",
+        "partial": "Some privileged accounts could not be verified.",
+        "gap": "Privileged accounts have not signed in inside the lookback window.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dormant_privileged_users",
+          "active_privileged_users",
+          "lookback_days",
+          "signin_sample_truncated"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_privileged.evaluate_dormant_privileged"
     },
     {
       "check_id": "id-guest-directory-access-limited",
@@ -2296,7 +2481,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_directory_access_limited"
     },
     {
       "check_id": "id-guest-inviter-restricted",
@@ -2343,7 +2530,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_inviter_restricted"
     },
     {
       "check_id": "id-pim-privileged-assignment-alert",
@@ -2390,7 +2579,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_privileged_assignment_alert"
     },
     {
       "check_id": "pur-dlp-not-enforced",
@@ -2458,7 +2649,19 @@
       "evaluation_mode": "proxy",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "At least one DLP policy runs in production mode (direct Graph read, or labeled fallback).",
+        "partial": "DLP policies exist but are still in test mode, or only a labeled fallback signal is available.",
+        "gap": "No DLP policy is in production mode.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dlp_graph",
+          "proxy",
+          "source"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.purview.evaluate_purview_dlp"
     },
     {
       "check_id": "sen-automation-rules",
@@ -2500,7 +2703,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_automation_rules"
     },
     {
       "check_id": "sen-log-analytics-retention",
@@ -2543,7 +2748,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_log_analytics_retention"
     },
     {
       "check_id": "sen-ueba-not-enabled",
@@ -2588,7 +2795,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_ueba"
     },
     {
       "check_id": "teams-broadcast-not-always-record",
@@ -2637,7 +2846,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_broadcast_not_always_record"
     },
     {
       "check_id": "teams-microsoft-apps-governed",
@@ -2687,7 +2898,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_microsoft_apps_governed"
     },
     {
       "check_id": "teams-recording-disabled",
@@ -2744,7 +2957,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_recording_disabled"
     },
     {
       "check_id": "id-password-never-expire",
@@ -2796,7 +3011,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_password_never_expire"
     },
     {
       "check_id": "endpoint-enrollment-coverage",
@@ -2850,7 +3067,19 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Managed-device count meets the expected enrollment denominator.",
+        "partial": "Some licensed or registered devices are not enrolled.",
+        "gap": "Almost none of the expected devices are enrolled.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "managed_device_count",
+          "licensed_units",
+          "truncated"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_enrollment.evaluate_endpoint_enrollment_coverage"
     },
     {
       "check_id": "id-ca-legacy-auth-block",
@@ -2905,7 +3134,22 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Legacy authentication clients are blocked for all users on all cloud apps.",
+        "partial": "The block exists but is limited to some users, some apps, or extra conditions.",
+        "gap": "Legacy authentication is still allowed.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_legacy_auth_block"
     },
     {
       "check_id": "id-ca-priv-gaps",
@@ -2967,7 +3211,20 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Privileged sign-ins require phishing-resistant MFA and legacy authentication is blocked.",
+        "partial": "Privileged MFA or the legacy-auth block is missing, report-only, or limited in scope.",
+        "gap": "Privileged accounts can sign in without modern MFA, or legacy authentication is still allowed.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "mfa_covers_privileged",
+          "legacy_block_enforced",
+          "privileged_principal_count",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_priv_gaps"
     },
     {
       "check_id": "mde-onboard-gap",
@@ -3016,7 +3273,20 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Onboarded machines meet the active-device denominator (or the licensed-seat signal when no inventory join is available).",
+        "partial": "Onboarding is below the threshold, or only a licensed-seat leverage signal is available.",
+        "gap": "Almost none of the expected devices are onboarded when an authoritative denominator exists.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "onboarded_machines",
+          "licensed_units",
+          "coverage_ratio",
+          "truncated"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.defender_endpoint.evaluate_mde_onboard_gap"
     },
     {
       "check_id": "mde-sensor-health",
@@ -3075,7 +3345,9 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_mde_sensor_health"
     },
     {
       "check_id": "pur-dlp-locations-complete",
@@ -3118,7 +3390,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_locations_complete"
     },
     {
       "check_id": "sen-analytics-rule-coverage",
@@ -3204,7 +3478,20 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Enough scheduled analytics rules are enabled across several tactics.",
+        "partial": "Some scheduled rules are enabled, but coverage is thin or dead rules block a pass.",
+        "gap": "Too few scheduled analytics rules are enabled.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled_scheduled_or_nrt",
+          "tactic_count",
+          "total_rules",
+          "workspace_resource_id"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.sentinel.evaluate_sen_analytics_coverage"
     },
     {
       "check_id": "sen-data-connectors",
@@ -3250,7 +3537,20 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Key connectors are connected and at least one table is ingesting.",
+        "partial": "Connectors are connected but Usage shows no ingesting tables, or key connectors are missing.",
+        "gap": "Too few data connectors are connected.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "connected_connectors",
+          "key_connectors_connected",
+          "total_connectors",
+          "workspace_resource_id"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.sentinel_extended.evaluate_sen_data_connectors"
     },
     {
       "check_id": "sen-entra-diagnostics-routed",
@@ -3305,7 +3605,9 @@
       "evaluation_mode": "proxy",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.sentinel_telemetry.evaluate_sen_entra_diagnostics_routed"
     },
     {
       "check_id": "id-app-ownerless-or-stale",
@@ -3358,7 +3660,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_ownerless_or_stale"
     },
     {
       "check_id": "id-auth-methods-migration",
@@ -3405,7 +3709,17 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Authentication methods policy migration is finished.",
+        "partial": "Migration is in progress or not finished.",
+        "gap": "Authentication methods still live in the legacy policy surface.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "policy_migration_state"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_methods_migration"
     },
     {
       "check_id": "id-cross-tenant-defaults",
@@ -3452,7 +3766,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_defaults"
     },
     {
       "check_id": "id-cross-tenant-mfa-trust",
@@ -3503,7 +3819,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_cross_tenant_mfa_trust"
     },
     {
       "check_id": "id-ga-finer-roles",
@@ -3551,7 +3869,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_finer_roles"
     },
     {
       "check_id": "id-number-matching",
@@ -3600,7 +3920,19 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Microsoft Authenticator number matching is required.",
+        "partial": "Authenticator is enabled but number matching is not explicitly required.",
+        "gap": "Number matching is not in use.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "number_matching_state",
+          "authenticator_state",
+          "number_matching_explicit"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_auth_methods.evaluate_auth_number_matching"
     },
     {
       "check_id": "id-pim-other-activation-alert",
@@ -3647,7 +3979,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_pim_rules.evaluate_pim_other_activation_alert"
     },
     {
       "check_id": "mdi-sensors-missing",
@@ -3694,7 +4028,9 @@
       "evaluation_mode": "proxy",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.defender.evaluate_mdi_sensors"
     },
     {
       "check_id": "teams-custom-apps-governed",
@@ -3741,7 +4077,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_custom_apps_governed"
     },
     {
       "check_id": "teams-third-party-apps-governed",
@@ -3788,7 +4126,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_apps.evaluate_teams_third_party_apps_governed"
     },
     {
       "check_id": "exo-dmarc-agency-contact",
@@ -3826,7 +4166,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_agency_contact"
     },
     {
       "check_id": "exo-dmarc-federal-contact",
@@ -3864,7 +4206,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_federal_contact"
     },
     {
       "check_id": "id-logs-to-soc",
@@ -3914,7 +4258,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_logs_to_soc"
     },
     {
       "check_id": "mdo-alert-policies-enabled",
@@ -3954,7 +4300,9 @@
       "evaluation_mode": "manual",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_alert_policies_manual"
     },
     {
       "check_id": "mdo-audit-retention",
@@ -3994,7 +4342,9 @@
       "evaluation_mode": "manual",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_audit_retention_manual"
     },
     {
       "check_id": "mdo-impersonation-partner-domains",
@@ -4031,7 +4381,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_partner_domains"
     },
     {
       "check_id": "mdo-impersonation-users-protected",
@@ -4068,7 +4420,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_users_protected"
     },
     {
       "check_id": "spo-anyone-link-expiration",
@@ -4107,7 +4461,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_expiration"
     },
     {
       "check_id": "spo-anyone-link-view",
@@ -4146,7 +4502,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_anyone_link_view"
     },
     {
       "check_id": "id-guest-invite-domains",
@@ -4195,7 +4553,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_guests.evaluate_guest_invite_domains"
     },
     {
       "check_id": "id-idprotect-notify-high-risk",
@@ -4245,7 +4605,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_manual.evaluate_idprotect_notify_high_risk"
     },
     {
       "check_id": "pur-communication-compliance-readiness",
@@ -4285,7 +4647,9 @@
       "evaluation_mode": "manual",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.purview_manual.evaluate_pur_communication_compliance_readiness"
     },
     {
       "check_id": "endpoint-compliance-policy-assigned",
@@ -4334,7 +4698,19 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "At least one compliance policy is assigned.",
+        "partial": "Compliance policies exist but leave some platforms out.",
+        "gap": "No compliance policy is assigned.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "assigned_count",
+          "compliance_policy_count",
+          "uncovered_platforms"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_policy_assigned"
     },
     {
       "check_id": "endpoint-mde-connector",
@@ -4383,7 +4759,9 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_mde_connector"
     },
     {
       "check_id": "endpoint-security-policy-coverage",
@@ -4442,7 +4820,19 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Antivirus, firewall, disk encryption, and ASR families are all assigned.",
+        "partial": "Some endpoint-security families are missing.",
+        "gap": "Managed devices lack the expected endpoint-security families.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "coverage_ratio",
+          "covered_families",
+          "expected_families"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_policy_coverage"
     },
     {
       "check_id": "ep-asr-rules",
@@ -4492,7 +4882,19 @@
           "T1059",
           "T1204"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Attack surface reduction rules are configured and assigned.",
+        "partial": "ASR policies exist but cover few rules or few devices.",
+        "gap": "No ASR policy is assigned.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "assigned_count",
+          "asr_policy_count",
+          "rules_total"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_asr_rules"
     },
     {
       "check_id": "ep-bitlocker-policy",
@@ -4541,7 +4943,18 @@
           "T1486",
           "T1040"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "A BitLocker disk-encryption policy is configured and assigned.",
+        "partial": "A BitLocker policy exists but is not assigned widely.",
+        "gap": "No BitLocker policy is assigned.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "assigned_count",
+          "bitlocker_config_count"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_bitlocker_policy"
     },
     {
       "check_id": "ep-compliance-enforcement",
@@ -4595,7 +5008,9 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_compliance_enforcement"
     },
     {
       "check_id": "ep-mam-app-protection",
@@ -4645,7 +5060,9 @@
           "T1040",
           "T1486"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_mam_app_protection"
     },
     {
       "check_id": "ep-tamper-protection",
@@ -4697,7 +5114,20 @@
         "mitre": [
           "T1562"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Tamper protection is configured, assigned, and reported enabled on sampled devices.",
+        "partial": "A policy exists but some devices still report tamper protection off or unknown.",
+        "gap": "No tamper-protection policy is assigned.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "assigned_count",
+          "tamper_enabled_devices",
+          "tamper_disabled_devices",
+          "sampled_devices"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_tamper_protection"
     },
     {
       "check_id": "exo-dkim-enabled",
@@ -4738,7 +5168,18 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "DKIM signing is enabled for every accepted domain.",
+        "partial": "DKIM is enabled for some domains only.",
+        "gap": "DKIM signing is not enabled.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "disabled_domains",
+          "dkim_configs"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dkim.evaluate_exo_dkim_enabled"
     },
     {
       "check_id": "exo-dmarc-published",
@@ -4780,7 +5221,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_published"
     },
     {
       "check_id": "exo-dmarc-reject",
@@ -4822,7 +5265,18 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Every checked domain publishes a DMARC policy of reject.",
+        "partial": "Some domains publish a weaker DMARC policy.",
+        "gap": "Domains are missing a DMARC reject policy.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "dmarc_not_reject",
+          "domains_checked"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_dmarc_reject"
     },
     {
       "check_id": "exo-external-sender-warnings",
@@ -4863,7 +5317,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_external_sender_warnings"
     },
     {
       "check_id": "exo-forwarding-external-disabled",
@@ -4905,7 +5361,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_forwarding_external_disabled"
     },
     {
       "check_id": "exo-mailbox-audit-enabled",
@@ -4945,7 +5403,17 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Mailbox auditing is enabled organization-wide.",
+        "partial": "Mailbox auditing is on for some mailboxes only.",
+        "gap": "Mailbox auditing is disabled organization-wide.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "audit_disabled"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_mailbox_audit_enabled"
     },
     {
       "check_id": "exo-sharing-calendar-not-all-domains",
@@ -4988,7 +5456,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_calendar_not_all_domains"
     },
     {
       "check_id": "exo-sharing-contact-not-all-domains",
@@ -5029,7 +5499,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_sharing.evaluate_exo_sharing_contact_not_all_domains"
     },
     {
       "check_id": "exo-smtp-auth-disabled",
@@ -5069,7 +5541,17 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "SMTP AUTH is disabled organization-wide.",
+        "partial": "SMTP AUTH is still allowed for some mailboxes.",
+        "gap": "SMTP AUTH is enabled organization-wide.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "smtp_client_authentication_disabled"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.exchange_mailflow_core.evaluate_exo_smtp_auth_disabled"
     },
     {
       "check_id": "exo-spf-published",
@@ -5111,7 +5593,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.exchange_email_auth_dns.evaluate_exo_spf_published"
     },
     {
       "check_id": "id-ca-mfa-all-users",
@@ -5180,7 +5664,22 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "An enforced Conditional Access policy requires a second factor for all users across all cloud apps, without risk, location, platform, or client-type limits.",
+        "partial": "MFA is required only for some users, some apps, or with extra limits that leave people out.",
+        "gap": "No enforced all-user MFA policy was found.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_all_users"
     },
     {
       "check_id": "id-ga-count-bounds",
@@ -5230,7 +5729,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_ga_count_bounds"
     },
     {
       "check_id": "id-idprotect-off",
@@ -5291,7 +5792,20 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "User-risk and sign-in-risk policies are enforced.",
+        "partial": "Only one of the two risk policies is enforced, or both are report-only.",
+        "gap": "Identity Protection risk policies are not enforced.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "user_risk_enforced",
+          "sign_in_risk_enforced",
+          "risk_policy_count",
+          "protected_population"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_idprotect_off"
     },
     {
       "check_id": "id-priv-cloud-only",
@@ -5342,7 +5856,19 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Highly privileged accounts are cloud-only.",
+        "partial": "Some privileged accounts could not be classified.",
+        "gap": "Privileged accounts are synced from on-premises directories.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "cloud_only",
+          "hybrid_or_synced",
+          "privileged_principals_checked"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_privileged_extra.evaluate_priv_cloud_only"
     },
     {
       "check_id": "id-protective-plan-assignment",
@@ -5429,7 +5955,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_assignment.evaluate_protective_plan_assignment"
     },
     {
       "check_id": "mdo-anti-spam-no-allowed-domains",
@@ -5469,7 +5997,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_anti_spam_no_allowed_domains"
     },
     {
       "check_id": "mdo-connection-filter-no-ip-allow",
@@ -5509,7 +6039,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_ip_allow"
     },
     {
       "check_id": "mdo-connection-filter-no-safe-list",
@@ -5549,7 +6081,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_connection_filter_no_safe_list"
     },
     {
       "check_id": "mdo-impersonation-domains-owned",
@@ -5591,7 +6125,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_domains_owned"
     },
     {
       "check_id": "mdo-malware-file-filter",
@@ -5633,7 +6169,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_file_filter"
     },
     {
       "check_id": "mdo-malware-zap",
@@ -5675,7 +6213,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_zap"
     },
     {
       "check_id": "mdo-outbound-spam-forwarding-block",
@@ -5717,7 +6257,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_outbound_spam_forwarding_block"
     },
     {
       "check_id": "mdo-p2-policies-default",
@@ -5829,7 +6371,21 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Safe Attachments and Safe Links run in block mode for recipients (direct Exchange read, or labeled fallback).",
+        "partial": "Email protections exist but are not in block mode for everyone.",
+        "gap": "Safe Attachments or Safe Links are not protecting recipients.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "safe_attachments_enabled",
+          "safe_links_enabled",
+          "preset_enabled",
+          "proxy",
+          "exchange_direct"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.defender_mdo.evaluate_mdo_p2_policies"
     },
     {
       "check_id": "mdo-safe-attachments-block",
@@ -5871,7 +6427,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_attachments_block"
     },
     {
       "check_id": "mdo-safe-attachments-spo-teams",
@@ -5911,7 +6469,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_attachments_spo_teams"
     },
     {
       "check_id": "mdo-safe-links-block-list",
@@ -5954,7 +6514,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_block_list"
     },
     {
       "check_id": "mdo-safe-links-click-through",
@@ -5996,7 +6558,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_through"
     },
     {
       "check_id": "mdo-safe-links-click-tracking",
@@ -6038,7 +6602,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_tracking"
     },
     {
       "check_id": "mdo-safe-links-real-time-scan",
@@ -6080,7 +6646,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_real_time_scan"
     },
     {
       "check_id": "mdo-safety-tips-enabled",
@@ -6126,7 +6694,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_safety_tips_enabled"
     },
     {
       "check_id": "mdo-spam-phish-not-inbox",
@@ -6167,7 +6737,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_spam_phish_not_inbox"
     },
     {
       "check_id": "mdo-transport-rule-external-forward",
@@ -6213,7 +6785,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_transport_rule_external_forward"
     },
     {
       "check_id": "mdo-unified-audit-enabled",
@@ -6254,7 +6828,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_mdo_unified_audit_enabled"
     },
     {
       "check_id": "pbi-export-controls",
@@ -6294,7 +6870,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_export_controls"
     },
     {
       "check_id": "pbi-publish-to-web-disabled",
@@ -6334,7 +6912,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_publish_to_web_disabled"
     },
     {
       "check_id": "pp-dlp-all-environments",
@@ -6380,7 +6960,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_all_environments"
     },
     {
       "check_id": "pp-dlp-nondefault-envs",
@@ -6421,7 +7003,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_dlp_nondefault_environments"
     },
     {
       "check_id": "pp-env-creation-admin-only",
@@ -6462,7 +7046,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_env_creation_admin_only"
     },
     {
       "check_id": "pp-pages-creation-admin-only",
@@ -6503,7 +7089,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_pages_creation_admin_only"
     },
     {
       "check_id": "pp-tenant-isolation-allowlist",
@@ -6546,7 +7134,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_allowlist"
     },
     {
       "check_id": "pp-tenant-isolation-enabled",
@@ -6586,7 +7176,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_env.evaluate_pp_tenant_isolation_enabled"
     },
     {
       "check_id": "pur-default-and-mandatory-labels",
@@ -6629,7 +7221,19 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "A default sensitivity label is assigned and labeling is required.",
+        "partial": "A default label or mandatory labeling is missing.",
+        "gap": "No default label and no mandatory labeling are configured.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "default_label",
+          "mandatory_labeling",
+          "label_policies"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_default_and_mandatory_labels"
     },
     {
       "check_id": "pur-dlp-enforcement-block",
@@ -6670,7 +7274,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_enforcement_block"
     },
     {
       "check_id": "pur-dlp-notifications",
@@ -6711,7 +7317,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_notifications"
     },
     {
       "check_id": "pur-dlp-policy-present",
@@ -6753,7 +7361,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_policy_present"
     },
     {
       "check_id": "pur-endpoint-dlp",
@@ -6796,7 +7406,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_dlp.evaluate_pur_endpoint_dlp"
     },
     {
       "check_id": "pur-insider-risk-readiness",
@@ -6843,7 +7455,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_insider_risk_readiness"
     },
     {
       "check_id": "pur-retention-policy-coverage",
@@ -6885,7 +7499,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_retention_policy_coverage"
     },
     {
       "check_id": "pur-sensitivity-labels-published",
@@ -6929,7 +7545,19 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": {
+        "ok": "Sensitivity labels are published through an enabled label policy.",
+        "partial": "Labels exist but are not published.",
+        "gap": "No sensitivity labels are published.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "published",
+          "published_label_policies",
+          "sensitivity_labels"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_labels_published"
     },
     {
       "check_id": "spo-domain-restrictions",
@@ -6973,7 +7601,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_domain_restrictions"
     },
     {
       "check_id": "spo-onedrive-sharing-limited",
@@ -7012,7 +7642,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_onedrive_sharing_limited"
     },
     {
       "check_id": "spo-sharing-capability-limited",
@@ -7051,7 +7683,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_sharing_capability_limited"
     },
     {
       "check_id": "spo-unmanaged-device-access",
@@ -7090,7 +7724,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing.evaluate_spo_unmanaged_device_access"
     },
     {
       "check_id": "teams-anonymous-start-disabled",
@@ -7144,7 +7780,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_start_disabled"
     },
     {
       "check_id": "teams-external-access-per-domain",
@@ -7186,7 +7824,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_external_access_per_domain"
     },
     {
       "check_id": "teams-guest-access-restricted",
@@ -7227,7 +7867,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_guest_access_restricted"
     },
     {
       "check_id": "teams-unmanaged-inbound-blocked",
@@ -7266,7 +7908,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_inbound_blocked"
     },
     {
       "check_id": "endpoint-compliance-noncompliance-action",
@@ -7314,7 +7958,9 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_noncompliance_action"
     },
     {
       "check_id": "endpoint-security-baseline",
@@ -7362,7 +8008,9 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_baseline"
     },
     {
       "check_id": "id-app-certificate-lifetime",
@@ -7409,7 +8057,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_certificate_lifetime"
     },
     {
       "check_id": "id-app-password-lifetime",
@@ -7456,7 +8106,9 @@
         "mitre": [
           "T1098"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_apps_credentials.evaluate_app_password_lifetime"
     },
     {
       "check_id": "mdo-mailbox-intelligence",
@@ -7499,7 +8151,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.defender_mdo_forward.evaluate_mdo_mailbox_intelligence"
     },
     {
       "check_id": "mdo-quarantine-policy",
@@ -7542,7 +8196,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_quarantine_policy"
     },
     {
       "check_id": "mdo-safe-documents",
@@ -7583,7 +8239,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_documents"
     },
     {
       "check_id": "pbi-external-invite-disabled",
@@ -7623,7 +8281,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_external_invite_disabled"
     },
     {
       "check_id": "pbi-guest-access-disabled",
@@ -7663,7 +8323,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_guest_access_disabled"
     },
     {
       "check_id": "pbi-python-r-visuals-disabled",
@@ -7703,7 +8365,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_python_r_visuals_disabled"
     },
     {
       "check_id": "pbi-resource-key-auth-blocked",
@@ -7743,7 +8407,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_resource_key_auth_blocked"
     },
     {
       "check_id": "pbi-sensitivity-labels-enabled",
@@ -7783,7 +8449,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sensitivity_labels_enabled"
     },
     {
       "check_id": "pbi-sp-api-restricted",
@@ -7826,7 +8494,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_api_restricted"
     },
     {
       "check_id": "pbi-sp-profiles-disabled",
@@ -7866,7 +8536,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_sp_profiles_disabled"
     },
     {
       "check_id": "pp-share-with-everyone-disabled",
@@ -7907,7 +8579,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_share_with_everyone_disabled"
     },
     {
       "check_id": "pp-trial-creation-admin-only",
@@ -7948,7 +8622,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_platform_tenant.evaluate_pp_trial_creation_admin_only"
     },
     {
       "check_id": "pur-ediscovery-readiness",
@@ -7994,7 +8670,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.purview.evaluate_pur_ediscovery_readiness"
     },
     {
       "check_id": "spo-default-link-specific",
@@ -8033,7 +8711,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_specific"
     },
     {
       "check_id": "spo-default-link-view",
@@ -8072,7 +8752,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_default_link_view"
     },
     {
       "check_id": "spo-verification-reauth",
@@ -8113,7 +8795,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_sharing_links.evaluate_spo_verification_reauth"
     },
     {
       "check_id": "teams-anonymous-lobby",
@@ -8167,7 +8851,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_anonymous_lobby"
     },
     {
       "check_id": "teams-dialin-lobby",
@@ -8221,7 +8907,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_dialin_lobby"
     },
     {
       "check_id": "teams-email-integration-disabled",
@@ -8260,7 +8948,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_email_integration_disabled"
     },
     {
       "check_id": "teams-external-control-disabled",
@@ -8314,7 +9004,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_external_control_disabled"
     },
     {
       "check_id": "teams-unmanaged-outbound-blocked",
@@ -8353,7 +9045,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_access.evaluate_teams_unmanaged_outbound_blocked"
     },
     {
       "check_id": "xdr-incident-readiness",
@@ -8406,7 +9100,9 @@
         "mitre": [
           "T1059"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.endpoint_mde_xdr.evaluate_xdr_incident_readiness"
     },
     {
       "check_id": "teams-internal-auto-admit",
@@ -8460,7 +9156,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.collaboration_teams_meeting.evaluate_teams_internal_auto_admit"
     },
     {
       "check_id": "az-defender-plan-enabled",
@@ -8495,7 +9193,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_defender_plan_enabled"
     },
     {
       "check_id": "id-ca-workload-identity",
@@ -8539,7 +9239,22 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": {
+        "ok": "Workload identities have a risk-based Conditional Access policy.",
+        "partial": "A workload-identity policy exists but is report-only or limited in scope.",
+        "gap": "No risk-based policy protects workload identities.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enforced_policies",
+          "universal_policies",
+          "scoped_policies",
+          "scope_gaps_best",
+          "security_defaults_enabled",
+          "unjustified_exclusion_issues"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_workload_identity"
     },
     {
       "check_id": "id-identity-protection-workload",
@@ -8583,7 +9298,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_identity_protection_workload"
     },
     {
       "check_id": "id-entitlement-access-packages",
@@ -8627,7 +9344,9 @@
         "mitre": [
           "T1078"
         ]
-      }
+      },
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.identity_governance.evaluate_entitlement_access_packages"
     },
     {
       "check_id": "pbi-premium-capacity-governance",
@@ -8664,7 +9383,9 @@
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.power_bi.evaluate_pbi_premium_capacity_governance"
     },
     {
       "check_id": "az-cspm-out-of-scope",
@@ -8699,7 +9420,9 @@
       "evaluation_mode": "manual",
       "source_references": [],
       "accepted_risks": [],
-      "mappings": {}
+      "mappings": {},
+      "pass_criteria": null,
+      "evaluator_ref": "licenselens.evaluators.azure_selective.evaluate_az_cspm_out_of_scope"
     }
   ],
   "profile_ids": [],

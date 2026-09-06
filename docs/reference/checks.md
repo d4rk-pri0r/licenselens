@@ -187,3 +187,259 @@ source file.
 direct is unavailable). Per-finding report rows still serialize the observed
 mode (`direct` or `proxy`) when a dynamic check runs. `missing` under
 Evaluator would be rejected by the reference model, so it cannot appear here.
+
+## Flagship pass criteria
+
+Customer-facing wording for each flagship. These strings are also on the finding JSON.
+
+### `endpoint-compliance-policy-assigned`
+
+- **OK:** At least one compliance policy is assigned.
+- **Partial:** Compliance policies exist but leave some platforms out.
+- **Gap:** No compliance policy is assigned.
+- **Evidence fields:** assigned_count, compliance_policy_count, uncovered_platforms
+
+### `endpoint-enrollment-coverage`
+
+- **OK:** Managed-device count meets the expected enrollment denominator.
+- **Partial:** Some licensed or registered devices are not enrolled.
+- **Gap:** Almost none of the expected devices are enrolled.
+- **Evidence fields:** managed_device_count, licensed_units, truncated
+
+### `endpoint-security-policy-coverage`
+
+- **OK:** Antivirus, firewall, disk encryption, and ASR families are all assigned.
+- **Partial:** Some endpoint-security families are missing.
+- **Gap:** Managed devices lack the expected endpoint-security families.
+- **Evidence fields:** coverage_ratio, covered_families, expected_families
+
+### `ep-asr-rules`
+
+- **OK:** Attack surface reduction rules are configured and assigned.
+- **Partial:** ASR policies exist but cover few rules or few devices.
+- **Gap:** No ASR policy is assigned.
+- **Evidence fields:** assigned_count, asr_policy_count, rules_total
+
+### `ep-bitlocker-policy`
+
+- **OK:** A BitLocker disk-encryption policy is configured and assigned.
+- **Partial:** A BitLocker policy exists but is not assigned widely.
+- **Gap:** No BitLocker policy is assigned.
+- **Evidence fields:** assigned_count, bitlocker_config_count
+
+### `ep-tamper-protection`
+
+- **OK:** Tamper protection is configured, assigned, and reported enabled on sampled devices.
+- **Partial:** A policy exists but some devices still report tamper protection off or unknown.
+- **Gap:** No tamper-protection policy is assigned.
+- **Evidence fields:** assigned_count, tamper_enabled_devices, tamper_disabled_devices, sampled_devices
+
+### `exo-dkim-enabled`
+
+- **OK:** DKIM signing is enabled for every accepted domain.
+- **Partial:** DKIM is enabled for some domains only.
+- **Gap:** DKIM signing is not enabled.
+- **Evidence fields:** disabled_domains, dkim_configs
+
+### `exo-dmarc-reject`
+
+- **OK:** Every checked domain publishes a DMARC policy of reject.
+- **Partial:** Some domains publish a weaker DMARC policy.
+- **Gap:** Domains are missing a DMARC reject policy.
+- **Evidence fields:** dmarc_not_reject, domains_checked
+
+### `exo-mailbox-audit-enabled`
+
+- **OK:** Mailbox auditing is enabled organization-wide.
+- **Partial:** Mailbox auditing is on for some mailboxes only.
+- **Gap:** Mailbox auditing is disabled organization-wide.
+- **Evidence fields:** audit_disabled
+
+### `exo-smtp-auth-disabled`
+
+- **OK:** SMTP AUTH is disabled organization-wide.
+- **Partial:** SMTP AUTH is still allowed for some mailboxes.
+- **Gap:** SMTP AUTH is enabled organization-wide.
+- **Evidence fields:** smtp_client_authentication_disabled
+
+### `id-auth-methods-migration`
+
+- **OK:** Authentication methods policy migration is finished.
+- **Partial:** Migration is in progress or not finished.
+- **Gap:** Authentication methods still live in the legacy policy surface.
+- **Evidence fields:** policy_migration_state
+
+### `id-break-glass-exclusion`
+
+- **OK:** Emergency accounts are declared and every Conditional Access exclusion is justified.
+- **Partial:** Emergency accounts exist, but some exclusions are still unexplained.
+- **Gap:** Emergency accounts are missing, or Conditional Access exclusions are unexplained.
+- **Evidence fields:** declared_break_glass_principal_count, unjustified_exclusion_count, identified_break_glass_accounts
+
+### `id-ca-high-risk-signins`
+
+- **OK:** Sign-ins marked high risk are blocked for all users on all cloud apps.
+- **Partial:** A high-risk sign-in block exists but is limited in who or what it covers.
+- **Gap:** High-risk sign-ins are not blocked.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues, protected_population
+
+### `id-ca-legacy-auth-block`
+
+- **OK:** Legacy authentication clients are blocked for all users on all cloud apps.
+- **Partial:** The block exists but is limited to some users, some apps, or extra conditions.
+- **Gap:** Legacy authentication is still allowed.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-ca-managed-devices`
+
+- **OK:** Access to cloud apps requires an Intune-marked or hybrid-joined device for all users.
+- **Partial:** A device requirement exists but is limited to some users or some apps.
+- **Gap:** Cloud apps can be reached from unmanaged devices.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-ca-mfa-all-users`
+
+- **OK:** An enforced Conditional Access policy requires a second factor for all users across all cloud apps, without risk, location, platform, or client-type limits.
+- **Partial:** MFA is required only for some users, some apps, or with extra limits that leave people out.
+- **Gap:** No enforced all-user MFA policy was found.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-ca-phishing-resistant-all`
+
+- **OK:** Every user must use phishing-resistant MFA on all cloud apps.
+- **Partial:** Phishing-resistant MFA applies only to some users or some apps.
+- **Gap:** No tenant-wide phishing-resistant MFA policy is enforced.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-ca-phishing-resistant-privileged`
+
+- **OK:** Privileged directory roles must use phishing-resistant MFA on all cloud apps.
+- **Partial:** Privileged MFA exists but is limited to some apps or some roles.
+- **Gap:** Privileged roles are not required to use phishing-resistant MFA.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-ca-priv-gaps`
+
+- **OK:** Privileged sign-ins require phishing-resistant MFA and legacy authentication is blocked.
+- **Partial:** Privileged MFA or the legacy-auth block is missing, report-only, or limited in scope.
+- **Gap:** Privileged accounts can sign in without modern MFA, or legacy authentication is still allowed.
+- **Evidence fields:** mfa_covers_privileged, legacy_block_enforced, privileged_principal_count, unjustified_exclusion_issues
+
+### `id-ca-workload-identity`
+
+- **OK:** Workload identities have a risk-based Conditional Access policy.
+- **Partial:** A workload-identity policy exists but is report-only or limited in scope.
+- **Gap:** No risk-based policy protects workload identities.
+- **Evidence fields:** enforced_policies, universal_policies, scoped_policies, scope_gaps_best, security_defaults_enabled, unjustified_exclusion_issues
+
+### `id-dormant-privileged`
+
+- **OK:** Privileged accounts have signed in inside the lookback window.
+- **Partial:** Some privileged accounts could not be verified.
+- **Gap:** Privileged accounts have not signed in inside the lookback window.
+- **Evidence fields:** dormant_privileged_users, active_privileged_users, lookback_days, signin_sample_truncated
+
+### `id-idprotect-off`
+
+- **OK:** User-risk and sign-in-risk policies are enforced.
+- **Partial:** Only one of the two risk policies is enforced, or both are report-only.
+- **Gap:** Identity Protection risk policies are not enforced.
+- **Evidence fields:** user_risk_enforced, sign_in_risk_enforced, risk_policy_count, protected_population
+
+### `id-number-matching`
+
+- **OK:** Microsoft Authenticator number matching is required.
+- **Partial:** Authenticator is enabled but number matching is not explicitly required.
+- **Gap:** Number matching is not in use.
+- **Evidence fields:** number_matching_state, authenticator_state, number_matching_explicit
+
+### `id-pim-activation-controls`
+
+- **OK:** Privileged-role activation requires justification, an authentication context, and a short time limit.
+- **Partial:** Some activation controls are present but not all three.
+- **Gap:** Privileged-role activation is missing justification, an authentication context, or a time cap.
+- **Evidence fields:** justification_required, auth_context_required, activation_duration_capped, policy_count
+
+### `id-pim-no-permanent-privileged`
+
+- **OK:** Highly privileged roles have no standing active assignments.
+- **Partial:** Some standing assignments remain.
+- **Gap:** Highly privileged roles still have permanent active assignments.
+- **Evidence fields:** standing_highly_privileged_assignments, eligible_schedules
+
+### `id-pim-unused`
+
+- **OK:** Privileged access is used through just-in-time activation, not standing roles.
+- **Partial:** PIM is in use but standing privileged assignments remain.
+- **Gap:** Privileged roles are standing assignments rather than just-in-time activation.
+- **Evidence fields:** privileged_permanent_assignments, privileged_eligible_schedules, standing_non_break_glass_assignments
+
+### `id-priv-cloud-only`
+
+- **OK:** Highly privileged accounts are cloud-only.
+- **Partial:** Some privileged accounts could not be classified.
+- **Gap:** Privileged accounts are synced from on-premises directories.
+- **Evidence fields:** cloud_only, hybrid_or_synced, privileged_principals_checked
+
+### `mde-onboard-gap`
+
+- **OK:** Onboarded machines meet the active-device denominator (or the licensed-seat signal when no inventory join is available).
+- **Partial:** Onboarding is below the threshold, or only a licensed-seat leverage signal is available.
+- **Gap:** Almost none of the expected devices are onboarded when an authoritative denominator exists.
+- **Evidence fields:** onboarded_machines, licensed_units, coverage_ratio, truncated
+
+### `mdo-p2-policies-default`
+
+- **OK:** Safe Attachments and Safe Links run in block mode for recipients (direct Exchange read, or labeled fallback).
+- **Partial:** Email protections exist but are not in block mode for everyone.
+- **Gap:** Safe Attachments or Safe Links are not protecting recipients.
+- **Evidence fields:** safe_attachments_enabled, safe_links_enabled, preset_enabled, proxy, exchange_direct
+
+### `pur-default-and-mandatory-labels`
+
+- **OK:** A default sensitivity label is assigned and labeling is required.
+- **Partial:** A default label or mandatory labeling is missing.
+- **Gap:** No default label and no mandatory labeling are configured.
+- **Evidence fields:** default_label, mandatory_labeling, label_policies
+
+### `pur-dlp-not-enforced`
+
+- **OK:** At least one DLP policy runs in production mode (direct Graph read, or labeled fallback).
+- **Partial:** DLP policies exist but are still in test mode, or only a labeled fallback signal is available.
+- **Gap:** No DLP policy is in production mode.
+- **Evidence fields:** dlp_graph, proxy, source
+
+### `pur-sensitivity-labels-published`
+
+- **OK:** Sensitivity labels are published through an enabled label policy.
+- **Partial:** Labels exist but are not published.
+- **Gap:** No sensitivity labels are published.
+- **Evidence fields:** published, published_label_policies, sensitivity_labels
+
+### `sen-analytics-rule-coverage`
+
+- **OK:** Enough scheduled analytics rules are enabled across several tactics.
+- **Partial:** Some scheduled rules are enabled, but coverage is thin or dead rules block a pass.
+- **Gap:** Too few scheduled analytics rules are enabled.
+- **Evidence fields:** enabled_scheduled_or_nrt, tactic_count, total_rules, workspace_resource_id
+
+### `sen-data-connectors`
+
+- **OK:** Key connectors are connected and at least one table is ingesting.
+- **Partial:** Connectors are connected but Usage shows no ingesting tables, or key connectors are missing.
+- **Gap:** Too few data connectors are connected.
+- **Evidence fields:** connected_connectors, key_connectors_connected, total_connectors, workspace_resource_id
+
+### `sen-rule-telemetry-parity`
+
+- **OK:** Enabled analytics rules query tables that ingested in the last seven days.
+- **Partial:** Too few rules could be evaluated, or some rules watch empty tables.
+- **Gap:** A large share of evaluable rules watch tables that are not arriving.
+- **Evidence fields:** dead_rule_ratio, dead_rules, evaluable_rules, indeterminate_rules, unwatched_tables
+
+### `sen-telemetry-ingestion-coverage`
+
+- **OK:** Core tables for owned capabilities ingested in the last seven days.
+- **Partial:** Some owned capabilities are missing core tables.
+- **Gap:** Owned capabilities are missing their core tables.
+- **Evidence fields:** capabilities, mode
