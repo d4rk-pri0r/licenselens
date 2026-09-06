@@ -1524,6 +1524,10 @@ footer {
   .report-footer { padding-inline: 16px; }
 }
 
+.detection-realization { margin-block: 24px; }
+.detection-realization-table { width: 100%; }
+.detection-realization .status-gap { color: var(--status-gap); }
+
 /* ==========================================================================
    Single-file renderer layout. The v2 foundation (above) supplies tokens,
    base, type, surfaces, status semantics, the constellation, disclosure,
@@ -1822,6 +1826,208 @@ body.revealed .reveal-target.is-revealed {
       </p>
     </section>
     
+
+    <section id="section-detection-realization" class="reveal-target detection-realization">
+  <p class="micro-label section-kicker">Detection realization</p>
+  <h2>Are detections watching the logs you pay for?</h2>
+  <p class="section-help">
+    Core tables expected for owned protections, whether they arrived in the last
+    seven days, and whether a live analytics rule queries them. This does not
+    measure detection quality or tuning.
+  </p>
+  <div class="table-scroll" data-table-scroll>
+    <table class="detection-realization-table">
+      <caption class="sr-only">Telemetry tables for owned capabilities</caption>
+      <thead>
+        <tr>
+          <th scope="col">Capability</th>
+          <th scope="col">Table</th>
+          <th scope="col">Tier</th>
+          <th scope="col">Arriving?</th>
+          <th scope="col" class="num">Live rules</th>
+          <th scope="col">Connector hint</th>
+        </tr>
+      </thead>
+      <tbody><tr>
+          <td>Smarter sign-in rules</td>
+          <td class="mono">SigninLogs</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">1</td>
+          <td>Entra diagnostic setting: SignInLogs</td>
+        </tr><tr>
+          <td>Smarter sign-in rules</td>
+          <td class="mono">AADNonInteractiveUserSignInLogs</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Entra diagnostic setting: NonInteractiveUserSignInLogs</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceLogonEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceNetworkEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceProcessEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceFileEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceImageLoadEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceInfo</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceRegistryEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Watchdogs on your on-site directory (if you still have one)</td>
+          <td class="mono">IdentityDirectoryEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Identity connector</td>
+        </tr><tr>
+          <td>Watchdogs on your on-site directory (if you still have one)</td>
+          <td class="mono">IdentityLogonEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Identity connector</td>
+        </tr><tr>
+          <td>Watchdogs on your on-site directory (if you still have one)</td>
+          <td class="mono">IdentityQueryEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Identity connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailAttachmentInfo</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailUrlInfo</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailPostDeliveryEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">UrlClickEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">SecurityAlert</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">SecurityIncident</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">AlertEvidence</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">AlertInfo</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Alerts when a sign-in looks suspicious</td>
+          <td class="mono">AADRiskyUsers</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Entra diagnostic setting: RiskyUsers</td>
+        </tr><tr>
+          <td>Alerts when a sign-in looks suspicious</td>
+          <td class="mono">AADUserRiskEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Entra diagnostic setting: UserRiskEvents</td>
+        </tr><tr>
+          <td>A searchable record of important activity</td>
+          <td class="mono">OfficeActivity</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Office 365 connector</td>
+        </tr></tbody>
+    </table>
+  </div><p class="caption">
+    Dead rules (query tables that are not arriving): Demo rare process.
+  </p></section>
 
     
     <section id="section-b" class="reveal-target" style="--reveal-delay: 40ms">

@@ -150,8 +150,8 @@ source file.
 | `sen-data-connectors` | `sentinel_data_connectors_collector` | direct | registered | microsoft_sentinel | sentinel_data_connectors | — | `checks/sentinel/sen-data-connectors.yaml` | yes |
 | `sen-entra-diagnostics-routed` | `la_usage_collector` | proxy | registered | microsoft_sentinel | la_usage_by_table | — | `checks/sentinel/sen-entra-diagnostics-routed.yaml` | — |
 | `sen-log-analytics-retention` | `sentinel_workspace_collector` | direct | registered | log_analytics, microsoft_sentinel | sentinel_workspace | — | `checks/sentinel/sen-log-analytics-retention.yaml` | — |
-| `sen-rule-telemetry-parity` | `sentinel_analytics` | direct | registered | microsoft_sentinel | la_usage_by_table, sentinel_rules, telemetry_expectations | — | `checks/sentinel/sen-rule-telemetry-parity.yaml` | — |
-| `sen-telemetry-ingestion-coverage` | `la_usage_collector` | direct | registered | microsoft_sentinel | la_usage_by_table, telemetry_expectations | — | `checks/sentinel/sen-telemetry-ingestion-coverage.yaml` | — |
+| `sen-rule-telemetry-parity` | `sentinel_analytics` | direct | registered | microsoft_sentinel | la_usage_by_table, sentinel_rules, telemetry_expectations | — | `checks/sentinel/sen-rule-telemetry-parity.yaml` | yes |
+| `sen-telemetry-ingestion-coverage` | `la_usage_collector` | direct | registered | microsoft_sentinel | la_usage_by_table, telemetry_expectations | — | `checks/sentinel/sen-telemetry-ingestion-coverage.yaml` | yes |
 | `sen-ueba-not-enabled` | `sentinel_ueba` | direct | registered | microsoft_sentinel | sentinel_ueba | — | `checks/sentinel/sen-ueba-not-enabled.yaml` | — |
 | `spo-anyone-link-expiration` | `collaboration_collector` | direct | registered | sharepoint_online | collaboration_bundle | — | `checks/collaboration/spo-anyone-link-expiration.yaml` | — |
 | `spo-anyone-link-view` | `collaboration_collector` | direct | registered | sharepoint_online | collaboration_bundle | — | `checks/collaboration/spo-anyone-link-view.yaml` | — |

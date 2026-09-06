@@ -11,7 +11,7 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 | Email (MDO Safe Links / Safe Attachments / presets) | **Nothing via Graph** | Policy config is Exchange Online PowerShell only |
 | MDI sensors | Secure Score proxy only (if opted) | Direct sensor health API in this tool |
 | Purview DLP | Secure Score proxy (+ best-effort) | Full Purview policy surface app-only |
-| Sentinel | ARM analytics rules + UEBA when workspace given | Full content-hub depth |
+| Sentinel | ARM analytics rules + UEBA + 7-day Usage table volume when workspace given | Detection effectiveness, tuning, multi-workspace; parsers (`_Im_` / ASIM) are indeterminate; table-list fallback is existence only |
 
 ## Conditional Access scope
 

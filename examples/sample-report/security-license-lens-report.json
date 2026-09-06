@@ -9322,5 +9322,258 @@
     }
   ],
   "has_exposed": false,
-  "exposed_check_ids": []
+  "exposed_check_ids": [],
+  "detection_realization": {
+    "rows": [
+      {
+        "capability_id": "conditional_access",
+        "capability_name": "Smarter sign-in rules",
+        "table": "SigninLogs",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 1,
+        "connector_hint": "Entra diagnostic setting: SignInLogs"
+      },
+      {
+        "capability_id": "conditional_access",
+        "capability_name": "Smarter sign-in rules",
+        "table": "AADNonInteractiveUserSignInLogs",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Entra diagnostic setting: NonInteractiveUserSignInLogs"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceEvents",
+        "tier": "core",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceLogonEvents",
+        "tier": "core",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceNetworkEvents",
+        "tier": "core",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceProcessEvents",
+        "tier": "core",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceFileEvents",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceImageLoadEvents",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceInfo",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_endpoint_p2",
+        "capability_name": "Deep protection and visibility on PCs and devices",
+        "table": "DeviceRegistryEvents",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_identity",
+        "capability_name": "Watchdogs on your on-site directory (if you still have one)",
+        "table": "IdentityDirectoryEvents",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Identity connector"
+      },
+      {
+        "capability_id": "defender_identity",
+        "capability_name": "Watchdogs on your on-site directory (if you still have one)",
+        "table": "IdentityLogonEvents",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Identity connector"
+      },
+      {
+        "capability_id": "defender_identity",
+        "capability_name": "Watchdogs on your on-site directory (if you still have one)",
+        "table": "IdentityQueryEvents",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Identity connector"
+      },
+      {
+        "capability_id": "defender_office_p2",
+        "capability_name": "Stronger email and file threat protection",
+        "table": "EmailAttachmentInfo",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Office 365 connector"
+      },
+      {
+        "capability_id": "defender_office_p2",
+        "capability_name": "Stronger email and file threat protection",
+        "table": "EmailEvents",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Office 365 connector"
+      },
+      {
+        "capability_id": "defender_office_p2",
+        "capability_name": "Stronger email and file threat protection",
+        "table": "EmailUrlInfo",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Office 365 connector"
+      },
+      {
+        "capability_id": "defender_office_p2",
+        "capability_name": "Stronger email and file threat protection",
+        "table": "EmailPostDeliveryEvents",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Office 365 connector"
+      },
+      {
+        "capability_id": "defender_office_p2",
+        "capability_name": "Stronger email and file threat protection",
+        "table": "UrlClickEvents",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender for Office 365 connector"
+      },
+      {
+        "capability_id": "defender_xdr",
+        "capability_name": "Cross-product incident correlation",
+        "table": "SecurityAlert",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_xdr",
+        "capability_name": "Cross-product incident correlation",
+        "table": "SecurityIncident",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_xdr",
+        "capability_name": "Cross-product incident correlation",
+        "table": "AlertEvidence",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_xdr",
+        "capability_name": "Cross-product incident correlation",
+        "table": "AlertInfo",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": 0,
+        "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "identity_protection",
+        "capability_name": "Alerts when a sign-in looks suspicious",
+        "table": "AADRiskyUsers",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Entra diagnostic setting: RiskyUsers"
+      },
+      {
+        "capability_id": "identity_protection",
+        "capability_name": "Alerts when a sign-in looks suspicious",
+        "table": "AADUserRiskEvents",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Entra diagnostic setting: UserRiskEvents"
+      },
+      {
+        "capability_id": "purview_audit",
+        "capability_name": "A searchable record of important activity",
+        "table": "OfficeActivity",
+        "tier": "core",
+        "ingesting": true,
+        "watched_by": 0,
+        "connector_hint": "Office 365 connector"
+      }
+    ],
+    "dead_rules": [
+      {
+        "name": "Demo rare process",
+        "missing_tables": [
+          "DeviceProcessEvents"
+        ],
+        "source": "sentinel"
+      }
+    ],
+    "unwatched_tables": [
+      "AADRiskyUsers",
+      "AADUserRiskEvents",
+      "EmailAttachmentInfo",
+      "EmailEvents",
+      "EmailUrlInfo",
+      "IdentityDirectoryEvents",
+      "IdentityLogonEvents",
+      "IdentityQueryEvents",
+      "OfficeActivity",
+      "SecurityAlert",
+      "SecurityIncident"
+    ],
+    "window_days": 7,
+    "mode": "query"
+  }
 }

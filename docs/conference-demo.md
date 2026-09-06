@@ -82,7 +82,15 @@ Resolved gaps land on screen. *"Fix one thing, rescan, watch the debt shrink.
 That loop is the whole product."* The `--after` overlay is new in 0.4.0 — see
 [Version honesty on stage](#version-honesty-on-stage) before you present it.
 
-### Beat 6 — Close and QR (11:00–12:00)
+### Beat 6 — The dead rule (10:30–11:15)
+
+Stay on the report. Open **Detection realization** and the finding
+`sen-rule-telemetry-parity`. The demo workspace pays for Defender for Endpoint
+and has a rule named **Demo rare process** that queries `DeviceProcessEvents` —
+a table that is not arriving. *You are paying for the building and leaving a
+detector pointed at an empty room.*
+
+### Beat 7 — Close and QR (11:15–12:00)
 
 "Four commands. Your tenant, your laptop, your data. Hotel room tonight, four
 minutes. No consent screen, no cloud, no AI." The closing QR points at the
@@ -132,7 +140,9 @@ Rehearse from these one-liners. The 10-minute rehearsal recording itself is a
 4. "Thirty-one capabilities you already pay for. Here's the share sitting at
    default."
 5. "Fix one thing, rescan, watch the debt shrink."
-6. "Four commands. Your tenant, your laptop, your data. Hotel room tonight."
+6. "Demo rare process queries DeviceProcessEvents. Those logs are not arriving.
+   Detection realization shows the empty room."
+7. "Four commands. Your tenant, your laptop, your data. Hotel room tonight."
 
 ## Rehearsal checklist (do before the talk)
 
@@ -143,6 +153,8 @@ Rehearse from these one-liners. The 10-minute rehearsal recording itself is a
       evidence → evaluator → finding → why → reference → action.
 - [ ] Practice the Beat 5 payoff: baseline export → `--after` overlay → `diff`
       showing one closed gap.
+- [ ] Walk Detection realization + `sen-rule-telemetry-parity` (Demo rare
+      process / DeviceProcessEvents not arriving).
 - [ ] Confirm no live credentials are on the laptop; confirm `--no-redact` is
       never used in the talk.
 - [ ] Confirm the demo runs with **no network** (airplane mode on) to prove

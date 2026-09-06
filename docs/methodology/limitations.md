@@ -57,6 +57,10 @@ The operational limitations page details these; the short, honest version:
   Azure RBAC; without an Azure scope (or on a denied/failed Azure read) those
   checks report `error` (entitlement undetermined) rather than not-licensed,
   and 404 means genuinely not onboarded.
+- Detection realization measures table arrival and rule-to-table references,
+  not detection effectiveness, tuning, or multi-workspace estates. Parser
+  functions (`_Im_`, ASIM) are indeterminate and never counted as dead rules.
+  The ARM tables-list fallback is existence only.
 - Sign-in, MDE, and Intune inventories may **truncate** on very large tenants;
   samples are labeled and never presented as the population.
 - License seats are a licensing-leverage signal, never a coverage denominator.

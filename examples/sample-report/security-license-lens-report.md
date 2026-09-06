@@ -286,6 +286,41 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Matching service plan(s):** No matching service plan reported
 
 
+## Detection realization
+
+Core tables expected for owned protections, whether they arrived in the last seven days, and whether a live analytics rule queries them.
+
+| Capability | Table | Tier | Arriving? | Live rules | Connector hint |
+|---|---|---|---|---:|---|
+| Smarter sign-in rules | `SigninLogs` | core | Yes | 1 | Entra diagnostic setting: SignInLogs |
+| Smarter sign-in rules | `AADNonInteractiveUserSignInLogs` | extended | No | 0 | Entra diagnostic setting: NonInteractiveUserSignInLogs |
+| Deep protection and visibility on PCs and devices | `DeviceEvents` | core | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceLogonEvents` | core | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceNetworkEvents` | core | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceProcessEvents` | core | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceFileEvents` | extended | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceImageLoadEvents` | extended | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceInfo` | extended | No | 0 | Microsoft Defender XDR connector |
+| Deep protection and visibility on PCs and devices | `DeviceRegistryEvents` | extended | No | 0 | Microsoft Defender XDR connector |
+| Watchdogs on your on-site directory (if you still have one) | `IdentityDirectoryEvents` | core | Yes | 0 | Microsoft Defender for Identity connector |
+| Watchdogs on your on-site directory (if you still have one) | `IdentityLogonEvents` | core | Yes | 0 | Microsoft Defender for Identity connector |
+| Watchdogs on your on-site directory (if you still have one) | `IdentityQueryEvents` | core | Yes | 0 | Microsoft Defender for Identity connector |
+| Stronger email and file threat protection | `EmailAttachmentInfo` | core | Yes | 0 | Microsoft Defender for Office 365 connector |
+| Stronger email and file threat protection | `EmailEvents` | core | Yes | 0 | Microsoft Defender for Office 365 connector |
+| Stronger email and file threat protection | `EmailUrlInfo` | core | Yes | 0 | Microsoft Defender for Office 365 connector |
+| Stronger email and file threat protection | `EmailPostDeliveryEvents` | extended | No | 0 | Microsoft Defender for Office 365 connector |
+| Stronger email and file threat protection | `UrlClickEvents` | extended | No | 0 | Microsoft Defender for Office 365 connector |
+| Cross-product incident correlation | `SecurityAlert` | core | Yes | 0 | Microsoft Defender XDR connector |
+| Cross-product incident correlation | `SecurityIncident` | core | Yes | 0 | Microsoft Defender XDR connector |
+| Cross-product incident correlation | `AlertEvidence` | extended | No | 0 | Microsoft Defender XDR connector |
+| Cross-product incident correlation | `AlertInfo` | extended | No | 0 | Microsoft Defender XDR connector |
+| Alerts when a sign-in looks suspicious | `AADRiskyUsers` | core | Yes | 0 | Entra diagnostic setting: RiskyUsers |
+| Alerts when a sign-in looks suspicious | `AADUserRiskEvents` | core | Yes | 0 | Entra diagnostic setting: UserRiskEvents |
+| A searchable record of important activity | `OfficeActivity` | core | Yes | 0 | Office 365 connector |
+
+Dead rules (query tables that are not arriving): Demo rare process.
+
+
 ## Where you may not be getting the full benefit
 
 ### Require strong sign-in for powerful admin roles

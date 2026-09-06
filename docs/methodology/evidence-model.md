@@ -106,3 +106,27 @@ standards) with its URL and, where recorded, retrieval/verification date. See
 [entitlement-model](./entitlement-model.md#source-of-truth-model) for the
 machine-readable metadata shape and the prohibition on LLM-generated or
 community blog facts becoming authoritative product logic.
+
+## Detection realization: telemetry and rule parity
+
+When a Sentinel workspace is in scope, the report includes a detection-realization
+matrix. It compares owned-capability core tables from the telemetry catalog
+against seven-day Log Analytics Usage, and against table references extracted
+from enabled scheduled/NRT analytics rules (plus XDR custom detections when
+collected).
+
+**Measured**
+
+- Whether expected core tables arrived in the last seven days (`rows > 0` or
+  `total_mb > 0` in query mode; table existence only on the ARM tables-list
+  fallback).
+- Whether a live analytics rule queries each ingesting core table (`watched_by`).
+- Dead rules: enabled rules whose table refs are not ingesting. Parsers
+  (`_Im_`, ASIM) are indeterminate and are never counted dead.
+
+**Not measured**
+
+- Detection effectiveness, tuning quality, alert fidelity, or time-to-respond.
+- Content-hub completeness or multi-workspace estates (one
+  `--workspace-resource-id` per scan).
+- Per-connector collection health beyond Usage `DataType` volume.

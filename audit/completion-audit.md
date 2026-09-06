@@ -20,7 +20,7 @@ states plainly what remains intentionally deferred.
 |---|---|---|---|
 | 3 | Formal methodology (12+ concepts) | `docs/methodology/` suite (assessment-model, evidence-model, scoring, entitlement-model, uncertainty, validation, limitations) | ✅ |
 | 4 | Semantic audit every check | `audit/check-semantic-audit.md` (166 checks, all 12 required fields), corrected against actual code (4 audit misreads fixed) | ✅ |
-| 5 | Flagship checks (25–40) with high standard | `catalog/flagships.yaml` (34 flagships) + `docs/flagships.md` (18-point §25 gate) + `scripts/validate_flagship_meta.py` | ✅ |
+| 5 | Flagship checks (25–40) with high standard | `catalog/flagships.yaml` (36 flagships) + `docs/flagships.md` (18-point §25 gate) + `scripts/validate_flagship_meta.py` | ✅ |
 | 6 | Invalid denominators fixed | `evaluate_mde_onboard_gap` + `endpoint_intune_enrollment` rewritten: license-vs-device is PARTIAL licensing-leverage signal; only authoritative `eligible_devices` yields coverage | ✅ |
 | 7 | Overclaiming language | MDI "largely healthy", Sentinel "coverage looks healthy"/"connectors look healthy" corrected to describe what was measured | ✅ |
 | 11 | Licensing accuracy audit | `audit/entitlement-audit.md`; GUIDs verified vs Microsoft licensing reference; `THREAT_INTELLIGENCE` label + `MDE_LITE` GUID corrected; offline SKU validator | ✅ |
@@ -71,7 +71,7 @@ states plainly what remains intentionally deferred.
 
 - **Certificate-based auth (§16)** — implemented as a first-class mode: `--auth certificate` (PEM/PFX client cert) in `scan`/`doctor`/`discover-workspace` and `batch`, with `AZURE_CLIENT_CERTIFICATE_PATH` / a YAML `certificate:` key. OIDC and certificate are now both supported secret-free unattended options.
 - **Batch activation backlog (§15/§18)** — `licenselens batch --export json|csv|action-plan` now writes a structured per-tenant action plan, closing the "batch lacks backlog export" gap.
-- **Flagship test-class standard (§5)** — every one of the 34 flagship checks now has positive + negative + missing/error test coverage (maturity dashboard measures 34/34, replacing the placeholder zero).
+- **Flagship test-class standard (§5)** — every one of the 36 flagship checks now has positive + negative + missing/error test coverage (maturity dashboard measures 36/36, replacing the placeholder zero).
 
 ## Completion criteria evaluation (§33)
 

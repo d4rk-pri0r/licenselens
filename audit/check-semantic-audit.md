@@ -2689,6 +2689,34 @@ edge cases and FP/FN analysis. Remaining direct low-risk checks receive compact 
 - **Reference Documentation:** `https://learn.microsoft.com/azure/sentinel/identify-threats-with-entity-behavior-analytics`
 - **Validation Status:** not-yet-reviewed
 
+#### `sen-telemetry-ingestion-coverage` — Sentinel telemetry ingestion coverage
+
+- **Current Claim:** Owned-capability core tables arrived in the Sentinel workspace in the last seven days.
+- **Actual Evidence Available:** `la_usage_by_table` (Log Analytics Usage 7d, or ARM tables-list fallback).
+- **Assessment Type:** DIRECT.
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
+- **Known Edge Cases:** (1) Empty in-scope Usage → PARTIAL. (2) Zero core tables for an owned capability → GAP. (3) Table-list fallback never OK. (4) Zero-row query-mode tables are not ingesting.
+- **False Positive Risk:** LOW.
+- **False Negative Risk:** MEDIUM — 7-day window can miss sparse tables; fallback is existence only.
+- **Confidence:** HIGH (query mode) / MEDIUM (table-list fallback).
+- **Required Changes:** None.
+- **Reference Documentation:** `https://learn.microsoft.com/azure/sentinel/connect-data-sources`
+- **Validation Status:** not-yet-reviewed
+
+#### `sen-rule-telemetry-parity` — Sentinel rule ↔ telemetry parity
+
+- **Current Claim:** Enabled analytics rules query tables that ingested in the last seven days; ingesting core tables are watched.
+- **Actual Evidence Available:** `sentinel_analytics.rules_detail` + `la_usage_by_table` + KQL table-ref tokenizer.
+- **Assessment Type:** DIRECT.
+- **Entitlement Dependency:** observed via ARM onboardingStates (0.5).
+- **Known Edge Cases:** (1) Empty query / `union *` / `table()` → indeterminate, never dead. (2) Parsers (`_Im_`, ASIM) never counted as tables. (3) `evaluable < 3` never OK. (4) `dead_ratio >= 0.25` → GAP.
+- **False Positive Risk:** MEDIUM — tokenizer is table-refs only, not a KQL compiler.
+- **False Negative Risk:** MEDIUM — parser-only rules are live; dynamic table() is indeterminate.
+- **Confidence:** MEDIUM.
+- **Required Changes:** None.
+- **Reference Documentation:** `https://learn.microsoft.com/azure/sentinel/detect-threats-built-in`
+- **Validation Status:** not-yet-reviewed
+
 ---
 
 ### Workload: azure (2 checks)
