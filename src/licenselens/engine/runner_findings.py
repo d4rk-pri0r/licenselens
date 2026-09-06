@@ -160,6 +160,54 @@ def not_licensed_finding(
     )
 
 
+def entitlement_unknown_finding(
+    check: CheckDefinition,
+    owned: set[str],
+    unknown_capabilities: list[str],
+    *,
+    strict_proxy: bool = True,
+) -> Finding:
+    """Finding for consumption entitlements the ARM probes could not observe.
+
+    Probe semantics (locked in ``collectors/consumption_entitlements.py``):
+    200 = owned, 404 = not owned, 401/403/network failure = unknown. Unknown
+    never grants ownership (absence of evidence is not evidence of absence)
+    and never reports "not licensed" — the check errors instead.
+
+    Probes:
+      - Sentinel onboardingStates (2024-03-01):
+        https://learn.microsoft.com/rest/api/securityinsights/sentinel-onboarding-states/get?view=rest-securityinsights-2024-03-01
+      - Log Analytics workspace GET (2022-10-01):
+        https://learn.microsoft.com/rest/api/loganalytics/workspaces/get?view=rest-loganalytics-2022-10-01
+      - Defender for Cloud pricings (2024-01-01):
+        https://learn.microsoft.com/rest/api/defenderforcloud/pricings/list?view=rest-defenderforcloud-2024-01-01
+    """
+    caps = ", ".join(unknown_capabilities)
+    return base_finding(
+        check,
+        status=FindingStatus.ERROR,
+        summary=(
+            "Entitlement could not be determined: the Azure read for "
+            f"{caps} was denied, failed, or no Azure scope was supplied."
+        ),
+        owned=owned,
+        customer_summary=(
+            "We could not tell whether you use this Azure capability because the "
+            "Azure read was denied or no Azure scope was supplied."
+        ),
+        customer_next_step=(
+            "Ask IT to grant the Azure read roles described in docs/permissions.md "
+            "(Microsoft Sentinel Reader on the workspace, Security Reader on the "
+            "subscription), then re-run doctor and the scan with "
+            "--workspace-resource-id."
+        ),
+        evidence={"entitlement_unknown": list(unknown_capabilities)},
+        confidence=Confidence.LOW,
+        data_sources=["arm:entitlementObservation"],
+        strict_proxy=strict_proxy,
+    )
+
+
 def skipped_finding(
     check: CheckDefinition, owned: set[str], *, strict_proxy: bool = True
 ) -> Finding:

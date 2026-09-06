@@ -363,6 +363,8 @@ class CapabilitySummary(BaseModel):
     why_it_matters: str = ""
     if_unused: str = ""
     docs_url: str | None = None
+    entitlement_kind: str = "included"
+    observed_resources: list[str] = Field(default_factory=list)
 
 
 class TopMove(BaseModel):

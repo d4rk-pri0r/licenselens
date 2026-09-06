@@ -74,7 +74,13 @@ def run_scan(
     )
     evidence = state.evidence
     evidence["scanned_at"] = scan_time.isoformat()
-    summaries = capability_summaries_for(capabilities, state.owned, state.skus)
+    summaries = capability_summaries_for(
+        capabilities,
+        state.owned,
+        state.skus,
+        observation=state.observation,
+        workspace_resource_id=state.workspace_resource_id,
+    )
 
     email_proxy = allow_email_proxy or (
         profile is not None and profile.profile.backend_preferences.allow_proxy
@@ -87,6 +93,7 @@ def run_scan(
             strict_proxy=strict_proxy,
             allow_email_proxy=email_proxy,
             registry=registry,
+            entitlement_unknown=state.entitlement_unknown,
         )
         for check in state.checks
     ]

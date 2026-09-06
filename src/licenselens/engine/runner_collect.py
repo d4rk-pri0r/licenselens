@@ -8,7 +8,10 @@ from typing import Any
 from licenselens.auth import AuthContext
 from licenselens.catalog.loader import merge_consumption, resolve_owned_capabilities
 from licenselens.collectors.arm import subscription_id_from_resource_id
-from licenselens.collectors.consumption_entitlements import observe_consumption_entitlements
+from licenselens.collectors.consumption_entitlements import (
+    ConsumptionObservation,
+    observe_consumption_entitlements,
+)
 from licenselens.collectors.runtime_envelopes import (
     collection_summaries_from,
     envelopes_to_evidence,
@@ -43,6 +46,8 @@ class CollectedScanState:
     evidence: dict[str, Any]
     collection_summaries: list[CollectionSummary]
     warnings: list[str]
+    entitlement_unknown: frozenset[str] = frozenset()
+    observation: ConsumptionObservation | None = None
 
 
 def profile_collection_extras(profile: ResolvedProfile | None) -> dict[str, Any]:
@@ -192,6 +197,8 @@ def _run_collection(
         evidence=evidence,
         collection_summaries=collection_summaries,
         warnings=warnings,
+        entitlement_unknown=observation.unknown,
+        observation=observation,
     )
 
 

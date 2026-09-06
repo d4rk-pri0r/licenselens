@@ -8,6 +8,7 @@ from licenselens.engine.registry import AssessmentRegistry
 from licenselens.engine.runner_findings import (
     base_finding,
     eligible,
+    entitlement_unknown_finding,
     error_finding,
     from_evaluation,
     not_licensed_finding,
@@ -83,8 +84,14 @@ def evaluate_check(
     strict_proxy: bool = True,
     allow_email_proxy: bool = False,
     registry: AssessmentRegistry | None = None,
+    entitlement_unknown: set[str] | frozenset[str] = frozenset(),
 ) -> Finding:
     if not eligible(check, owned):
+        blocked = set(check.required_capabilities) & set(entitlement_unknown)
+        if blocked:
+            return entitlement_unknown_finding(
+                check, owned, sorted(blocked), strict_proxy=strict_proxy
+            )
         return not_licensed_finding(check, owned, strict_proxy=strict_proxy)
 
     if registry is None:

@@ -222,10 +222,44 @@ def merge_consumption(
     return sorted(set(owned) | set(observation.owned))
 
 
+def _subscription_guid(workspace_resource_id: str | None) -> str | None:
+    """Parse the subscription GUID out of an ARM resource id (catalog-local)."""
+    if not workspace_resource_id:
+        return None
+    marker = "/subscriptions/"
+    if marker not in workspace_resource_id:
+        return None
+    tail = workspace_resource_id.split(marker, 1)[1]
+    return tail.split("/", 1)[0] or None
+
+
+def _observed_arm_ids(
+    cap_id: str,
+    observation: ConsumptionObservation | None,
+    workspace_resource_id: str | None,
+) -> list[str]:
+    """ARM resource ids observed for a consumption-entitled capability.
+
+    Sentinel / Log Analytics surface the workspace resource id; Defender for
+    Cloud surfaces the bare subscription GUID. Never invents an id when the
+    capability was not observed as owned.
+    """
+    if observation is None or cap_id not in observation.owned:
+        return []
+    if cap_id in ("microsoft_sentinel", "log_analytics"):
+        detail = observation.evidence.get(cap_id) or {}
+        ws = detail.get("workspace_resource_id") or workspace_resource_id
+        return [ws] if ws else []
+    sub = _subscription_guid(workspace_resource_id)
+    return [sub] if sub else []
+
+
 def capability_summaries_for(
     capabilities: list[Capability],
     owned_ids: list[str],
     skus: list[SubscribedSku],
+    observation: ConsumptionObservation | None = None,
+    workspace_resource_id: str | None = None,
 ) -> list[CapabilitySummary]:
     """Build plain-language cards for capabilities the tenant owns."""
     by_id = {cap.id: cap for cap in capabilities}
@@ -282,6 +316,8 @@ def capability_summaries_for(
                 why_it_matters=cap.why_it_matters,
                 if_unused=cap.if_unused,
                 docs_url=cap.docs_url,
+                entitlement_kind=cap.entitlement_kind,
+                observed_resources=_observed_arm_ids(cap.id, observation, workspace_resource_id),
             )
         )
     return summaries

@@ -244,6 +244,11 @@ def test_live_scan_empty_skus_minimal_findings(monkeypatch):
     result = _live_results(monkeypatch, fake)
     assert result.scan_mode == "live"
     assert result.capability_rollup.you_own == 0
-    # All findings should be not_licensed
+    # Findings are not_licensed — except consumption-gated checks (sen-*/az-*),
+    # which report error because no Azure scope was supplied (entitlement
+    # unknown, never a false not_licensed).
     for f in result.findings:
-        assert f.status.value == "not_licensed", f"{f.check_id}: {f.status}"
+        if f.check_id.startswith(("sen-", "az-")):
+            assert f.status.value == "error", f"{f.check_id}: {f.status}"
+        else:
+            assert f.status.value == "not_licensed", f"{f.check_id}: {f.status}"
