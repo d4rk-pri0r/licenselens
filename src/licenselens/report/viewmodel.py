@@ -350,6 +350,8 @@ def _capability_entry(
         "matched_service_plans": summary.matched_service_plans,
         "friendly_skus": [friendly_sku_name(name) for name in summary.matched_skus],
         "friendly_plans": [friendly_plan_name(name) for name in summary.matched_service_plans],
+        "entitlement_kind": summary.entitlement_kind,
+        "observed_resources": list(summary.observed_resources),
         "outcome": summary.outcome,
         "why_it_matters": summary.why_it_matters,
         "if_unused": summary.if_unused,

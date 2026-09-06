@@ -101,8 +101,14 @@ def write_markdown_report(
                 lines.append(f"- **Why it matters:** {cap.why_it_matters}")
             if cap.if_unused:
                 lines.append(f"- **If unused:** {cap.if_unused}")
-            sku_text = ", ".join(friendly_sku_name(name) for name in cap.matched_skus)
-            lines.append(f"- **Included through license SKU(s):** {sku_text or 'Not reported'}")
+            if cap.entitlement_kind == "consumption":
+                lines.append(
+                    "- **Observed in Azure:** "
+                    f"{', '.join(cap.observed_resources) or 'Azure resource'}"
+                )
+            else:
+                sku_text = ", ".join(friendly_sku_name(name) for name in cap.matched_skus)
+                lines.append(f"- **Included through license SKU(s):** {sku_text or 'Not reported'}")
             plan_text = ", ".join(friendly_plan_name(name) for name in cap.matched_service_plans)
             lines.append(
                 "- **Matching service plan(s):** "

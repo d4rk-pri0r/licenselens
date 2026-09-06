@@ -22,6 +22,7 @@ from licenselens.config_models import RedactionSettings
 from licenselens.engine.profiles import compose_profile
 from licenselens.models import (
     BlastRadius,
+    CapabilitySummary,
     CheckPack,
     Confidence,
     Effort,
@@ -351,3 +352,60 @@ def test_scan_help_lists_redact_flag() -> None:
     help_text = _ANSI_ESCAPE.sub("", result.stdout or result.output)
     assert "--redact" in help_text
     assert "--no-redact" in help_text
+
+
+# ---------------------------------------------------------------------------
+# ARM resource ids (WS2-B)
+# ---------------------------------------------------------------------------
+
+ARM_SUBSCRIPTION_ID = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+ARM_WORKSPACE_NAME = "lab-sentinel-ws"
+ARM_WORKSPACE_RESOURCE_ID = (
+    f"/subscriptions/{ARM_SUBSCRIPTION_ID}/resourceGroups/rg-arm/"
+    f"providers/Microsoft.OperationalInsights/workspaces/{ARM_WORKSPACE_NAME}"
+)
+
+
+def _arm_hostile_report() -> ScanResult:
+    """Hostile report whose ARM scope is DISTINCT from the tenant id (else tautological)."""
+    result = hostile_report()
+    result.workspace_resource_id = ARM_WORKSPACE_RESOURCE_ID
+    result.capability_summaries = [
+        CapabilitySummary(
+            id="microsoft_sentinel",
+            name="Microsoft Sentinel",
+            plain_name="Sentinel",
+            matched_skus=[],
+            matched_service_plans=[],
+            entitlement_kind="consumption",
+            observed_resources=[ARM_WORKSPACE_RESOURCE_ID],
+        )
+    ]
+    return result
+
+
+def test_arm_resource_ids_redacted(tmp_path: Path) -> None:
+    result = _arm_hostile_report()
+
+    targets = derive_redaction_targets(result)
+    assert ARM_SUBSCRIPTION_ID in targets.subscription_ids
+    assert ARM_WORKSPACE_NAME in targets.workspace_names
+
+    for writer, name in (
+        (write_json_report, "r.json"),
+        (write_html_report, "r.html"),
+    ):
+        text = writer(result, tmp_path / name, redaction=RedactionSettings()).read_text(
+            encoding="utf-8"
+        )
+        assert ARM_SUBSCRIPTION_ID not in text, name
+        assert ARM_WORKSPACE_NAME not in text, name
+        assert text  # JSON must still parse when name == "r.json"
+
+    raw = write_json_report(
+        result, tmp_path / "raw.json", redaction=RedactionSettings(enabled=False)
+    ).read_text(encoding="utf-8")
+    assert ARM_SUBSCRIPTION_ID in raw
+    assert ARM_WORKSPACE_NAME in raw
+    payload = json.loads(raw)
+    assert payload["workspace_resource_id"] == ARM_WORKSPACE_RESOURCE_ID

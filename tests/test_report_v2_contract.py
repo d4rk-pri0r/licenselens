@@ -32,6 +32,7 @@ from licenselens.catalog.expected_states import expected_state_map
 from licenselens.models import (
     BlastRadius,
     CapabilityRollup,
+    CapabilitySummary,
     Finding,
     FindingStatus,
     ScanResult,
@@ -42,6 +43,7 @@ from licenselens.models import (
 from licenselens.paths import templates_dir
 from licenselens.report.bundle import build_report_bundle
 from licenselens.report.html import write_html_report
+from licenselens.report.markdown import write_markdown_report
 from licenselens.report.viewmodel import build_constellation
 from licenselens.schema_contracts import EvaluationMode
 from tests.report_fixtures import (
@@ -505,3 +507,43 @@ def test_provenance_footer_demo_fallback_and_print_css(tmp_path: Path) -> None:
 
     bundle_css = (templates_dir() / "report_app" / "v2" / "app.css").read_text(encoding="utf-8")
     assert "footer { display: none" not in bundle_css, "bundle print stylesheet hides the footer"
+
+
+def test_consumption_card_shows_observed_resource(tmp_path: Path) -> None:
+    """Consumption cards render 'Observed in Azure', never the SKU 'Not reported' line."""
+    result = empty_report()
+    result.capability_summaries = [
+        CapabilitySummary(
+            id="microsoft_sentinel",
+            name="Microsoft Sentinel",
+            plain_name="Sentinel",
+            matched_skus=[],
+            matched_service_plans=[],
+            entitlement_kind="consumption",
+            observed_resources=[
+                "/subscriptions/aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee/"
+                "resourceGroups/rg/providers/Microsoft.OperationalInsights/"
+                "workspaces/lab-sentinel-ws"
+            ],
+        )
+    ]
+    html = _render(result, tmp_path)
+    card = re.search(
+        r'<article class="card"[^>]*data-capability-id="microsoft_sentinel".*?</article>',
+        html,
+        re.DOTALL,
+    )
+    assert card is not None, "consumption capability card missing from B-section"
+    body = card.group(0)
+    assert "Observed in Azure" in body
+    assert "Not reported" not in body  # the License row no longer prints the SKU fallback
+
+    md = write_markdown_report(result, tmp_path / "r.md").read_text(encoding="utf-8")
+    assert "Observed in Azure" in md
+    assert "Included through license SKU(s)" not in md
+
+    empty_card = result.capability_summaries[0].model_copy(update={"observed_resources": []})
+    result.capability_summaries = [empty_card]
+    html2 = _render(result, tmp_path)
+    assert "Observed in Azure" in html2
+    assert "Azure resource" in html2  # fallback when the id list is empty

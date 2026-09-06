@@ -24,10 +24,13 @@
       capabilities := viewmodel.build_sections(result)["B"]
       One entry per capability summary with keys: `id`, `name`, `plain_name`,
       `matched_skus`, `matched_service_plans`, `friendly_skus`,
-      `friendly_plans`, `outcome`, `why_it_matters`, `if_unused`, `docs_url`,
-      `status` (str | None), `status_label`. The raw `matched_*` lists stay
+      `friendly_plans`, `entitlement_kind`, `observed_resources`, `outcome`,
+      `why_it_matters`, `if_unused`, `docs_url`, `status` (str | None),
+      `status_label`. The raw `matched_*` lists stay
       available for tooltips/technical areas; the friendly lists are the
-      primary rendered text.
+      primary rendered text. Consumption-entitled cards (`entitlement_kind ==
+      'consumption'`) render their ARM scope from `observed_resources` instead
+      of the SKU provenance row.
 
   DESIGN_V2.md section 7 binding behavior:
     - Group captions are BUTTONS (brand icon + visible text label): activating
@@ -172,7 +175,11 @@
         {%- endif -%}
         <div class="card-provenance">
           <div><span class="label">Microsoft control</span> <span class="mono">{{ card.name }}</span></div>
+          {%- if card.entitlement_kind == 'consumption' -%}
+          <div><span class="label">Observed in Azure</span> <span class="mono">{{ card.observed_resources | join(', ') or 'Azure resource' }}</span></div>
+          {%- else -%}
           <div><span class="label">License</span> <span title="{{ card.matched_skus | join(', ') }}">{{ card.friendly_skus | join(', ') or 'Not reported' }}</span></div>
+          {%- endif -%}
           <div><span class="label">Service plan</span> <span title="{{ card.matched_service_plans | join(', ') }}">{{ card.friendly_plans | join(', ') or 'No matching service plan reported' }}</span></div>
         </div>
       </div>

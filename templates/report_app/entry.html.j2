@@ -327,7 +327,11 @@
               <p><span class="label">Why it matters</span> {{ card.why_it_matters or 'Not reported' }}</p>
               {% if card.if_unused %}<p><span class="label">If left off</span> {{ card.if_unused }}</p>{% endif %}
               <div class="capability-row__provenance">
+                {% if card.entitlement_kind == 'consumption' %}
+                <div><span class="label">Observed in Azure</span> <span class="mono">{{ card.observed_resources | join(', ') or 'Azure resource' }}</span></div>
+                {% else %}
                 <div><span class="label">License</span> <span title="{{ card.matched_skus | join(', ') }}">{{ card.friendly_skus | join(', ') or 'Not reported' }}</span></div>
+                {% endif %}
                 <div><span class="label">Service plan</span> <span title="{{ card.matched_service_plans | join(', ') }}">{{ card.friendly_plans | join(', ') or 'No matching service plan reported' }}</span></div>
               </div>
             </details>

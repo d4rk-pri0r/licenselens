@@ -41,6 +41,19 @@ _UPN_PATTERN = re.compile(
 _DOMAIN_LEFT_EDGE = r"(?<![A-Za-z0-9_-])"
 _DOMAIN_RIGHT_EDGE = r"(?![A-Za-z0-9_-])"
 
+#: Azure subscription GUID as it appears inside an ARM resource id
+#: (``/subscriptions/<guid>/...``) — in the scan's workspace scope, in
+#: ``observed_resources``, and anywhere evidence embeds an ARM path.
+_SUBSCRIPTION_ID_PATTERN = re.compile(
+    r"/subscriptions/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-"
+    r"[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"
+)
+
+#: Workspace name: the final path segment of a Log Analytics workspace ARM id.
+#: Excludes path separators, quotes, backslashes, and whitespace so a JSON-
+#: serialized id ends the match at the closing quote.
+_WORKSPACE_NAME_PATTERN = re.compile(r"/workspaces/([^/\"'\\\s]+)")
+
 
 @dataclass(frozen=True, slots=True)
 class RedactionTargets:
@@ -48,16 +61,20 @@ class RedactionTargets:
 
     tenant_ids: tuple[str, ...] = ()
     domains: tuple[str, ...] = ()
+    subscription_ids: tuple[str, ...] = ()
+    workspace_names: tuple[str, ...] = ()
 
 
 def derive_redaction_targets(result: ScanResult) -> RedactionTargets:
-    """Harvest the tenant id and the tenant's own domains from a scan result.
+    """Harvest tenant identifiers and ARM scope tokens from a scan result.
 
     The tenant id comes straight from ``result.tenant_id``. Domains are the
     (lower-cased, de-duplicated) domain parts of every UPN-like string in the
     serialized result, so a redacted render cannot leak the tenant's own domain
     through evidence samples or summaries. Third-party domains that never
-    appear as a UPN are left untouched.
+    appear as a UPN are left untouched. ARM scope tokens — subscription GUIDs
+    and workspace names — are harvested from the same serialized dump so an
+    Azure-scoped scan cannot leak its resource identifiers either.
     """
     tenant_ids = (result.tenant_id,) if result.tenant_id else ()
     serialized = json.dumps(result.model_dump(mode="json"), ensure_ascii=True)
@@ -69,7 +86,18 @@ def derive_redaction_targets(result: ScanResult) -> RedactionTargets:
             }
         )
     )
-    return RedactionTargets(tenant_ids=tenant_ids, domains=domains)
+    subscription_ids = tuple(
+        sorted({match.group(1).lower() for match in _SUBSCRIPTION_ID_PATTERN.finditer(serialized)})
+    )
+    workspace_names = tuple(
+        sorted({match.group(1) for match in _WORKSPACE_NAME_PATTERN.finditer(serialized)})
+    )
+    return RedactionTargets(
+        tenant_ids=tenant_ids,
+        domains=domains,
+        subscription_ids=subscription_ids,
+        workspace_names=workspace_names,
+    )
 
 
 def redact_text(
@@ -94,6 +122,20 @@ def redact_text(
         for tenant_id in targets.tenant_ids:
             text = re.sub(
                 re.escape(tenant_id),
+                lambda _match: replacement,
+                text,
+                flags=re.IGNORECASE,
+            )
+        for subscription_id in targets.subscription_ids:
+            text = re.sub(
+                re.escape(subscription_id),
+                lambda _match: replacement,
+                text,
+                flags=re.IGNORECASE,
+            )
+        for workspace_name in targets.workspace_names:
+            text = re.sub(
+                _DOMAIN_LEFT_EDGE + re.escape(workspace_name) + _DOMAIN_RIGHT_EDGE,
                 lambda _match: replacement,
                 text,
                 flags=re.IGNORECASE,
