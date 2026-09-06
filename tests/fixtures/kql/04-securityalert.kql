@@ -1,0 +1,7 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: SecurityAlert
+# Expected parsers: 
+# Expected indeterminate: false
+SecurityAlert | take 1

@@ -1,0 +1,8 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: SigninLogs
+# Expected parsers: 
+# Expected indeterminate: false
+// comment
+SigninLogs | take 1

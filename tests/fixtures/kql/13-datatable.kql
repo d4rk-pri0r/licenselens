@@ -1,0 +1,7 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: 
+# Expected parsers: 
+# Expected indeterminate: false
+datatable(x:string)["a"]

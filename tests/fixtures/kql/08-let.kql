@@ -1,0 +1,7 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: SigninLogs
+# Expected parsers: 
+# Expected indeterminate: false
+let x = SigninLogs; x | where TimeGenerated > ago(1h)

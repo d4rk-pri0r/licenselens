@@ -1,0 +1,7 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: DeviceProcessEvents
+# Expected parsers: 
+# Expected indeterminate: false
+DeviceProcessEvents | take 1

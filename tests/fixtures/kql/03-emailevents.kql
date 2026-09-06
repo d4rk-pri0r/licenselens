@@ -1,0 +1,7 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: EmailEvents
+# Expected parsers: 
+# Expected indeterminate: false
+EmailEvents | take 1

@@ -1,0 +1,7 @@
+# Source: synthetic
+# License: MIT
+# synthetic: true
+# Expected tables: 
+# Expected parsers: _Im_Authentication
+# Expected indeterminate: false
+_Im_Authentication | take 1
