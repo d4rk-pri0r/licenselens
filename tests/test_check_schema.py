@@ -44,7 +44,7 @@ def _validate_mappings(data: dict) -> list[str]:
 def test_all_identity_and_endpoint_checks_have_valid_mappings():
     """Every identity+endpoint check YAML has a well-formed mappings block."""
     yamls = _check_yamls()
-    assert len(yamls) == 65, f"expected 65 identity+endpoint checks, got {len(yamls)}"
+    assert len(yamls) == 66, f"expected 66 identity+endpoint checks, got {len(yamls)}"
     for path in yamls:
         data = yaml.safe_load(path.read_text(encoding="utf-8"))
         errors = _validate_mappings(data)

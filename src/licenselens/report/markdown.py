@@ -109,6 +109,12 @@ def write_markdown_report(
             else:
                 sku_text = ", ".join(friendly_sku_name(name) for name in cap.matched_skus)
                 lines.append(f"- **Included through license SKU(s):** {sku_text or 'Not reported'}")
+                if cap.assigned_users is not None and cap.enabled_users:
+                    prepaid = cap.prepaid_units if cap.prepaid_units is not None else "—"
+                    lines.append(
+                        f"- **Assignment:** Purchased {prepaid} · Assigned to "
+                        f"{cap.assigned_users} of {cap.enabled_users} enabled users"
+                    )
             plan_text = ", ".join(friendly_plan_name(name) for name in cap.matched_service_plans)
             lines.append(
                 "- **Matching service plan(s):** "

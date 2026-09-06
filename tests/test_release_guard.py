@@ -308,7 +308,7 @@ def test_verify_version_tree_checks_docs_coherence_discovering_stale_surface(
         encoding="utf-8",
     )
     (fake / "examples" / "sample-report" / "README.md").write_text(
-        "Deterministic offline sample for package **0.4.0** (169 checks).\n",
+        "Deterministic offline sample for package **0.4.0** (170 checks).\n",
         encoding="utf-8",
     )
     (fake / "docs" / "security.md").write_text("| 0.4.x | Yes (current) |\n", encoding="utf-8")

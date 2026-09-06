@@ -40,7 +40,7 @@ LicenseLens looks at the SKUs in the tenant, maps them to the controls those SKU
 
     ---
 
-    169 checks across identity, email, endpoint, and related workloads.
+    170 checks across identity, email, endpoint, and related workloads.
 
     [:octicons-arrow-right-24: Browse the checks](checks.md)
 

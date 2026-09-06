@@ -1,6 +1,6 @@
 # Sample report (dry-run)
 
-Deterministic offline sample for package **0.4.0** (169 checks).
+Deterministic offline sample for package **0.4.0** (170 checks).
 
 This README is hand-maintained; the version and check count must match the
 current release (see pyproject.toml and the project README).

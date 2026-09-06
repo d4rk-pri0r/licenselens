@@ -1,6 +1,6 @@
 # Checks
 
-Security License Lens ships **169 checks** across ten workload directories.
+Security License Lens ships **170 checks** across ten workload directories.
 Each check is a single YAML file under `checks/<workload>/` and evaluates only
 when its required capabilities are licensed.
 
@@ -15,11 +15,11 @@ here:
 ## Workloads
 
 Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
-169):
+170):
 
 | Workload | Checks | Examples |
 |----------|-------:|----------|
-| identity | 44 | Conditional Access gaps, PIM, dormant privileged accounts |
+| identity | 45 | Conditional Access gaps, PIM, dormant privileged accounts |
 | collaboration | 22 | Teams federation, guest access, external sharing |
 | defender | 21 | Safe Links / Safe Attachments, anti-spam, alert policies |
 | exchange | 12 | SPF/DKIM/DMARC, forwarding, SMTP auth, mailbox audit |

@@ -9,12 +9,12 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 ## At a glance
 
-**Of the security controls associated with the entitlements and assessment scope that could be evaluated, 17% met the defined activation criteria.**
+**Of the security controls associated with the entitlements and assessment scope that could be evaluated, 38% met the defined activation criteria.**
 
 - **Licensed capabilities detected:** 25
-- **Evaluated capabilities:** 6 (priority packs: identity, endpoint)
-- **Fully working:** 1 of 6 evaluated capabilities (17% realized)
-- **Need attention:** 5 of 6 evaluated capabilities
+- **Evaluated capabilities:** 8 (priority packs: identity, endpoint)
+- **Fully working:** 3 of 8 evaluated capabilities (38% realized)
+- **Need attention:** 5 of 8 evaluated capabilities
 
 ### Top things to do first
 
@@ -29,7 +29,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 - **Needs attention** (`gap`): 41
 - **Not in your plan** (`not_licensed`): 6
-- **Looking good** (`ok`): 91
+- **Looking good** (`ok`): 92
 - **Partly set up** (`partial`): 19
 - **Check pending** (`skipped`): 12
 
@@ -53,6 +53,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.
 - **If unused:** You may be paying for advanced device protection on seats that are not fully enrolled.
 - **Included through license SKU(s):** Microsoft 365 E5
+- **Assignment:** Purchased 100 · Assigned to 87 of 100 enabled users
 - **Matching service plan(s):** Microsoft Defender for Endpoint P2
 
 ### Watchdogs on your on-site directory (if you still have one)
@@ -83,6 +84,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.
 - **If unused:** Extra email protections in your license may still be off, in test mode, or only covering a few people.
 - **Included through license SKU(s):** Microsoft 365 E5
+- **Assignment:** Purchased 100 · Assigned to 87 of 100 enabled users
 - **Matching service plan(s):** Microsoft Defender for Office 365 (Plan 2)
 
 ### Cross-product incident correlation
@@ -103,6 +105,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Admin accounts are the keys to your email, files, and business apps. If one is stolen, an attacker can look like a trusted employee.
 - **If unused:** You are paying for stronger admin protections that are not fully turned on yet.
 - **Included through license SKU(s):** Microsoft 365 E5
+- **Assignment:** Purchased 100 · Assigned to 87 of 100 enabled users
 - **Matching service plan(s):** Microsoft Entra ID P2
 
 ### Business email and calendar in the cloud
@@ -133,6 +136,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Attackers often use valid passwords. Risk detection helps catch the session even when the password was correct.
 - **If unused:** Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.
 - **Included through license SKU(s):** Microsoft 365 E5
+- **Assignment:** Purchased 100 · Assigned to 87 of 100 enabled users
 - **Matching service plan(s):** Microsoft Entra ID P2
 
 ### Manage and protect company devices and apps
@@ -223,6 +227,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **Why it matters:** Accidental oversharing is common. Guardrails protect customers and reduce regulatory and reputational harm.
 - **If unused:** Data-protection rules may be missing or still in "test only" mode, so nothing is enforced yet.
 - **Included through license SKU(s):** Microsoft 365 E5
+- **Assignment:** Purchased 100 · Assigned to 87 of 100 enabled users
 - **Matching service plan(s):** Microsoft Purview Information Protection P2
 
 ### Legal hold and investigation search
@@ -396,7 +401,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Suggested next step:** Enforce a Conditional Access policy that blocks high sign-in risk.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled; Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-high-risk-signins`
 
@@ -407,7 +412,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Suggested next step:** Enforce a Conditional Access policy that blocks high user risk for all users.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
+- **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled; Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-high-risk-users`
 
@@ -1342,7 +1347,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Suggested next step:** Turn on risk-based sign-in protection in stages — start by requiring extra verification when Microsoft marks a sign-in as risky.
 - **Confidence:** High confidence
 - **Data sources:** microsoft.graph
-- **Limitations:** None reported
+- **Limitations:** Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-idprotect-off`
 
@@ -1356,6 +1361,17 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-priv-cloud-only`
+
+### Protective plans are assigned to only some users
+
+- **Status:** Looking good
+- **In plain English:** Protective plans are assigned to 87 of 100 users.
+- **Suggested next step:** Assign Entra ID P2, Identity Protection, Defender for Office, Defender for Endpoint, and Purview DLP to the users who should receive those protections.
+- **Confidence:** High confidence
+- **Data sources:** graph.users.$count
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/LicensesMenuBlade/~/Products)
+- **Technical id:** `id-protective-plan-assignment`
 
 ### Remove broad anti-spam allow lists
 

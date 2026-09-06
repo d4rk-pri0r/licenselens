@@ -147,6 +147,13 @@ OPERATIONAL
 A capability being owned only establishes the denominator background for
 whether activating it is worthwhile; it never implies the control is active.
 
+## Tenant-level entitlement vs per-user assignment
+
+Owning a SKU at the tenant does not mean every enabled member user has the
+protective plan assigned. When Graph `$count` is available, capability cards
+show assignment counts (no user objects). `id-protective-plan-assignment`
+compares those counts to enabled member users.
+
 ## Source-of-truth model
 
 Security assertions and entitlement mappings are traceable to authoritative

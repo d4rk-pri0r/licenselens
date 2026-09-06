@@ -179,6 +179,9 @@
           <div><span class="label">Observed in Azure</span> <span class="mono">{{ card.observed_resources | join(', ') or 'Azure resource' }}</span></div>
           {%- else -%}
           <div><span class="label">License</span> <span title="{{ card.matched_skus | join(', ') }}">{{ card.friendly_skus | join(', ') or 'Not reported' }}</span></div>
+          {%- if card.assigned_users is not none and card.enabled_users -%}
+          <div><span class="label">Assignment</span> Purchased {{ card.prepaid_units if card.prepaid_units is not none else '—' }} · Assigned to {{ card.assigned_users }} of {{ card.enabled_users }} enabled users</div>
+          {%- endif -%}
           {%- endif -%}
           <div><span class="label">Service plan</span> <span title="{{ card.matched_service_plans | join(', ') }}">{{ card.friendly_plans | join(', ') or 'No matching service plan reported' }}</span></div>
         </div>

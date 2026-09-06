@@ -52,7 +52,10 @@
       "if_unused": "Your licenses include advanced sign-in rules, but they may still be loose or incomplete.",
       "docs_url": "https://learn.microsoft.com/entra/identity/conditional-access/overview",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "defender_endpoint_p2",
@@ -69,7 +72,10 @@
       "if_unused": "You may be paying for advanced device protection on seats that are not fully enrolled.",
       "docs_url": "https://learn.microsoft.com/defender-endpoint/onboarding",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": 87,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "defender_identity",
@@ -84,7 +90,10 @@
       "if_unused": "Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.",
       "docs_url": "https://learn.microsoft.com/defender-for-identity/deploy-defender-identity",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "defender_office_p1",
@@ -99,7 +108,10 @@
       "if_unused": "Safe content policies may be missing, scoped to pilots, or left in evaluation mode.",
       "docs_url": "https://learn.microsoft.com/defender-office-365/defender-for-office-365",
       "entitlement_kind": "add_on",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "defender_office_p2",
@@ -116,7 +128,10 @@
       "if_unused": "Extra email protections in your license may still be off, in test mode, or only covering a few people.",
       "docs_url": "https://learn.microsoft.com/defender-office-365/preset-security-policies",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": 87,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "defender_xdr",
@@ -134,7 +149,10 @@
       "if_unused": "XDR correlation may be licensed while automated investigation and response stay idle.",
       "docs_url": "https://learn.microsoft.com/defender-xdr/microsoft-365-defender",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "entra_id_p2",
@@ -151,7 +169,10 @@
       "if_unused": "You are paying for stronger admin protections that are not fully turned on yet.",
       "docs_url": "https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": 87,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "exchange_online",
@@ -166,7 +187,10 @@
       "if_unused": "Mailboxes may be licensed while core protection and audit settings stay at weak defaults.",
       "docs_url": "https://learn.microsoft.com/exchange/exchange-online",
       "entitlement_kind": "base",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "exchange_online_protection",
@@ -181,7 +205,10 @@
       "if_unused": "Core anti-spam or anti-malware policies may be off, overly permissive, or unmonitored.",
       "docs_url": "https://learn.microsoft.com/defender-office-365/eop-about",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "identity_protection",
@@ -198,7 +225,10 @@
       "if_unused": "Suspicious-sign-in protection is included in your plan but may not be enforcing anything yet.",
       "docs_url": "https://learn.microsoft.com/entra/id-protection/overview-identity-protection",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": 87,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "intune",
@@ -213,7 +243,10 @@
       "if_unused": "Compliance or configuration profiles may be missing, unassigned, or never enforced.",
       "docs_url": "https://learn.microsoft.com/mem/intune/fundamentals/what-is-intune",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "log_analytics",
@@ -228,7 +261,10 @@
       "entitlement_kind": "consumption",
       "observed_resources": [
         "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
-      ]
+      ],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": null
     },
     {
       "id": "microsoft_sentinel",
@@ -243,7 +279,10 @@
       "entitlement_kind": "consumption",
       "observed_resources": [
         "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel"
-      ]
+      ],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": null
     },
     {
       "id": "onedrive_for_business",
@@ -258,7 +297,10 @@
       "if_unused": "OneDrive sharing or sync controls may lag behind the SharePoint tenant baseline.",
       "docs_url": "https://learn.microsoft.com/onedrive/onedrive-admin",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "power_bi_pro",
@@ -273,7 +315,10 @@
       "if_unused": "Tenant sharing or export settings may still allow broader distribution than intended.",
       "docs_url": "https://learn.microsoft.com/power-bi/enterprise/service-admin-planning",
       "entitlement_kind": "base",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "power_platform",
@@ -288,7 +333,10 @@
       "if_unused": "Environment creation, connector policies, or tenant isolation may still be wide open.",
       "docs_url": "https://learn.microsoft.com/power-platform/admin/admin-documentation",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_audit",
@@ -305,7 +353,10 @@
       "if_unused": "Audit logging may be off, truncated, or never queried after an incident.",
       "docs_url": "https://learn.microsoft.com/purview/audit-solutions-overview",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_communication_compliance",
@@ -320,7 +371,10 @@
       "if_unused": "Communication compliance may be entitled but never scoped to the channels that matter.",
       "docs_url": "https://learn.microsoft.com/purview/communication-compliance",
       "entitlement_kind": "add_on",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_dlp",
@@ -337,7 +391,10 @@
       "if_unused": "Data-protection rules may be missing or still in \"test only\" mode, so nothing is enforced yet.",
       "docs_url": "https://learn.microsoft.com/purview/dlp-learn-about-dlp",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": 87,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_ediscovery",
@@ -355,7 +412,10 @@
       "if_unused": "eDiscovery tools may be licensed while no one can run a defensible case workflow.",
       "docs_url": "https://learn.microsoft.com/purview/ediscovery",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_insider_risk",
@@ -370,7 +430,10 @@
       "if_unused": "Insider risk policies may be unlicensed in practice or never moved past trial defaults.",
       "docs_url": "https://learn.microsoft.com/purview/insider-risk-management",
       "entitlement_kind": "add_on",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_retention",
@@ -385,7 +448,10 @@
       "if_unused": "Retention policies may be absent, so content is either deleted too early or kept indefinitely without a defensible schedule.",
       "docs_url": "https://learn.microsoft.com/purview/retention",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "purview_sensitivity_labels",
@@ -402,7 +468,10 @@
       "if_unused": "Labels may exist but remain unpublished, unused, or never auto-applied.",
       "docs_url": "https://learn.microsoft.com/purview/sensitivity-labels",
       "entitlement_kind": "included",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "sharepoint_online",
@@ -417,7 +486,10 @@
       "if_unused": "Tenant sharing defaults may still allow anyone links or unmanaged access.",
       "docs_url": "https://learn.microsoft.com/sharepoint/introduction",
       "entitlement_kind": "base",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     },
     {
       "id": "teams",
@@ -432,7 +504,10 @@
       "if_unused": "External access, lobby, or app policies may still favor convenience over control.",
       "docs_url": "https://learn.microsoft.com/microsoftteams/teams-overview",
       "entitlement_kind": "base",
-      "observed_resources": []
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
     }
   ],
   "subscribed_skus": [
@@ -835,7 +910,11 @@
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0,
-        "security_defaults_enabled": true
+        "security_defaults_enabled": true,
+        "protected_population": {
+          "assigned_users": 87,
+          "enabled_member_users": 100
+        }
       },
       "entitlements_used": [
         "identity_protection"
@@ -854,7 +933,8 @@
         "microsoft.graph"
       ],
       "limitations": [
-        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled.",
+        "Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100."
       ],
       "evaluation_mode": "direct",
       "source_references": [],
@@ -892,7 +972,11 @@
         "report_only_policies": [],
         "unjustified_exclusion_issues": [],
         "break_glass_principal_count": 0,
-        "security_defaults_enabled": true
+        "security_defaults_enabled": true,
+        "protected_population": {
+          "assigned_users": 87,
+          "enabled_member_users": 100
+        }
       },
       "entitlements_used": [
         "identity_protection"
@@ -911,7 +995,8 @@
         "microsoft.graph"
       ],
       "limitations": [
-        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled."
+        "Security Defaults is on; Conditional Access policies cannot be created until it is disabled.",
+        "Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100."
       ],
       "evaluation_mode": "direct",
       "source_references": [],
@@ -5170,7 +5255,11 @@
           "Demo: Require password change for user risk"
         ],
         "sign_in_risk_report_only": [],
-        "user_risk_report_only": []
+        "user_risk_report_only": [],
+        "protected_population": {
+          "assigned_users": 87,
+          "enabled_member_users": 100
+        }
       },
       "entitlements_used": [
         "identity_protection"
@@ -5188,7 +5277,9 @@
       "data_sources": [
         "microsoft.graph"
       ],
-      "limitations": [],
+      "limitations": [
+        "Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100."
+      ],
       "evaluation_mode": "direct",
       "source_references": [],
       "accepted_risks": [],
@@ -5247,6 +5338,93 @@
         "nist": [
           "AC-2",
           "AC-6"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      }
+    },
+    {
+      "check_id": "id-protective-plan-assignment",
+      "title": "Protective plans are not assigned to most enabled users",
+      "workload": "identity",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IAM/LicensesMenuBlade/~/Products",
+      "summary": "Protective plans are assigned to most enabled member users (lowest share 87% of 100).",
+      "evidence": {
+        "enabled_member_users": 100,
+        "capabilities": [
+          {
+            "capability_id": "entra_id_p2",
+            "assigned_users": 87,
+            "enabled_member_users": 100,
+            "ratio": 0.87,
+            "method": "demo"
+          },
+          {
+            "capability_id": "identity_protection",
+            "assigned_users": 87,
+            "enabled_member_users": 100,
+            "ratio": 0.87,
+            "method": "demo"
+          },
+          {
+            "capability_id": "defender_office_p2",
+            "assigned_users": 87,
+            "enabled_member_users": 100,
+            "ratio": 0.87,
+            "method": "demo"
+          },
+          {
+            "capability_id": "defender_endpoint_p2",
+            "assigned_users": 87,
+            "enabled_member_users": 100,
+            "ratio": 0.87,
+            "method": "demo"
+          },
+          {
+            "capability_id": "purview_dlp",
+            "assigned_users": 87,
+            "enabled_member_users": 100,
+            "ratio": 0.87,
+            "method": "demo"
+          }
+        ]
+      },
+      "entitlements_used": [
+        "entra_id_p2",
+        "identity_protection",
+        "defender_office_p2",
+        "defender_endpoint_p2",
+        "purview_dlp"
+      ],
+      "remediation": "In Entra ID > Licenses, assign the protective plans to the users who should receive them. This check reports assignment counts, not license cost.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/users/licensing-groups-assign"
+      ],
+      "customer_title": "Protective plans are assigned to only some users",
+      "customer_summary": "Protective plans are assigned to 87 of 100 users.",
+      "customer_next_step": "Assign Entra ID P2, Identity Protection, Defender for Office, Defender for Endpoint, and Purview DLP to the users who should receive those protections.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.users.$count"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "CM-8"
         ],
         "mitre": [
           "T1078"
@@ -8671,6 +8849,14 @@
       "errors": []
     },
     {
+      "collector": "license_assignment",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "mde_health",
       "status": "success",
       "source": "demo",
@@ -8874,6 +9060,7 @@
     "graph.security.incidents",
     "graph.subscribedSkus",
     "graph.subscribedSkus (proxy licensing signal)",
+    "graph.users.$count",
     "la:usageByTable",
     "mde.api.machines",
     "mde.api.machines.health",
@@ -8920,12 +9107,12 @@
     }
   ],
   "capability_rollup": {
-    "you_own": 6,
-    "fully_working": 1,
+    "you_own": 8,
+    "fully_working": 3,
     "needs_attention": 4,
     "partly_set_up": 1,
     "not_licensed": 3,
-    "realized_percent": 17
+    "realized_percent": 38
   },
   "capability_outcomes": [
     {
@@ -8956,7 +9143,8 @@
         "id-ca-high-risk-signins",
         "id-ca-high-risk-users",
         "id-idprotect-notify-high-risk",
-        "id-idprotect-off"
+        "id-idprotect-off",
+        "id-protective-plan-assignment"
       ]
     },
     {
@@ -8981,21 +9169,6 @@
         "teams-third-party-apps-governed",
         "teams-unmanaged-inbound-blocked",
         "teams-unmanaged-outbound-blocked"
-      ]
-    },
-    {
-      "id": "purview_dlp",
-      "name": "Microsoft Purview Data Loss Prevention",
-      "plain_name": "Guardrails so sensitive data is harder to leak",
-      "status": "needs_attention",
-      "status_label": "Needs attention",
-      "related_check_ids": [
-        "pur-dlp-enforcement-block",
-        "pur-dlp-locations-complete",
-        "pur-dlp-not-enforced",
-        "pur-dlp-notifications",
-        "pur-dlp-policy-present",
-        "pur-endpoint-dlp"
       ]
     },
     {
@@ -9090,7 +9263,8 @@
         "id-pim-other-activation-alert",
         "id-pim-privileged-assignment-alert",
         "id-pim-unused",
-        "id-priv-cloud-only"
+        "id-priv-cloud-only",
+        "id-protective-plan-assignment"
       ]
     },
     {
@@ -9145,7 +9319,8 @@
         "mde-onboard-gap",
         "ep-asr-rules",
         "mde-sensor-health",
-        "ep-tamper-protection"
+        "ep-tamper-protection",
+        "id-protective-plan-assignment"
       ]
     },
     {
@@ -9168,28 +9343,6 @@
         "mdo-alert-policies-enabled",
         "mdo-malware-file-filter",
         "mdo-malware-zap"
-      ]
-    },
-    {
-      "id": "defender_office_p2",
-      "name": "Microsoft Defender for Office 365 P2",
-      "plain_name": "Stronger email and file threat protection",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
-      "related_check_ids": [
-        "mdo-impersonation-domains-owned",
-        "mdo-impersonation-partner-domains",
-        "mdo-impersonation-users-protected",
-        "mdo-mailbox-intelligence",
-        "mdo-p2-policies-default",
-        "mdo-safe-attachments-block",
-        "mdo-safe-attachments-spo-teams",
-        "mdo-safe-documents",
-        "mdo-safe-links-block-list",
-        "mdo-safe-links-click-through",
-        "mdo-safe-links-click-tracking",
-        "mdo-safe-links-real-time-scan",
-        "mdo-safety-tips-enabled"
       ]
     },
     {
@@ -9256,6 +9409,16 @@
       ]
     },
     {
+      "id": "purview_dlp",
+      "name": "Microsoft Purview Data Loss Prevention",
+      "plain_name": "Guardrails so sensitive data is harder to leak",
+      "status": "fully_working",
+      "status_label": "Fully working",
+      "related_check_ids": [
+        "id-protective-plan-assignment"
+      ]
+    },
+    {
       "id": "purview_ediscovery",
       "name": "Microsoft Purview eDiscovery",
       "plain_name": "Legal hold and investigation search",
@@ -9318,6 +9481,16 @@
         "pbi-sensitivity-labels-enabled",
         "pbi-sp-api-restricted",
         "pbi-sp-profiles-disabled"
+      ]
+    },
+    {
+      "id": "defender_office_p2",
+      "name": "Microsoft Defender for Office 365 P2",
+      "plain_name": "Stronger email and file threat protection",
+      "status": "fully_working",
+      "status_label": "Fully working",
+      "related_check_ids": [
+        "id-protective-plan-assignment"
       ]
     }
   ],
