@@ -34,3 +34,11 @@ mappings:
 flagship: true
 flagship_security_intent: "Define and assign Intune compliance policies so unhealthy devices are flagged and gated from work data."
 enabled: true
+pass_criteria:
+  ok: At least one compliance policy is assigned.
+  partial: Compliance policies exist but leave some platforms out.
+  gap: No compliance policy is assigned.
+  evidence_fields:
+    - assigned_count
+    - compliance_policy_count
+    - uncovered_platforms

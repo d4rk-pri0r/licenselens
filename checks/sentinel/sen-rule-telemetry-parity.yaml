@@ -32,3 +32,13 @@ references:
 flagship: true
 flagship_security_intent: "Confirm enabled analytics rules query tables that actually ingested in the last seven days."
 enabled: true
+pass_criteria:
+  ok: Enabled analytics rules query tables that ingested in the last seven days.
+  partial: Too few rules could be evaluated, or some rules watch empty tables.
+  gap: A large share of evaluable rules watch tables that are not arriving.
+  evidence_fields:
+    - dead_rule_ratio
+    - dead_rules
+    - evaluable_rules
+    - indeterminate_rules
+    - unwatched_tables

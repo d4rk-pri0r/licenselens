@@ -32,3 +32,12 @@ references:
 flagship: true
 flagship_security_intent: "Connect high-value data sources to Sentinel so the security workspace has real signals to correlate."
 enabled: true
+pass_criteria:
+  ok: Key connectors are connected and at least one table is ingesting.
+  partial: Connectors are connected but Usage shows no ingesting tables, or key connectors are missing.
+  gap: Too few data connectors are connected.
+  evidence_fields:
+    - connected_connectors
+    - key_connectors_connected
+    - total_connectors
+    - workspace_resource_id

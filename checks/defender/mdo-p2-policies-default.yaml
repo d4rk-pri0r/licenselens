@@ -32,3 +32,13 @@ references:
 flagship: true
 flagship_security_intent: "Enforce Safe Attachments and Safe Links in block mode for all recipients to stop phishing and malware."
 enabled: true
+pass_criteria:
+  ok: Safe Attachments and Safe Links run in block mode for recipients (direct Exchange read, or labeled fallback).
+  partial: Email protections exist but are not in block mode for everyone.
+  gap: Safe Attachments or Safe Links are not protecting recipients.
+  evidence_fields:
+    - safe_attachments_enabled
+    - safe_links_enabled
+    - preset_enabled
+    - proxy
+    - exchange_direct

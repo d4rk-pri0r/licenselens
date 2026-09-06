@@ -30,3 +30,11 @@ references:
 flagship: true
 flagship_security_intent: "Assign a default sensitivity label and require labeling so unlabeled sensitive content does not leak."
 enabled: true
+pass_criteria:
+  ok: A default sensitivity label is assigned and labeling is required.
+  partial: A default label or mandatory labeling is missing.
+  gap: No default label and no mandatory labeling are configured.
+  evidence_fields:
+    - default_label
+    - mandatory_labeling
+    - label_policies

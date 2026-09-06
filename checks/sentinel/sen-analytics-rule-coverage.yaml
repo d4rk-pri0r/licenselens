@@ -32,3 +32,12 @@ references:
 flagship: true
 flagship_security_intent: "Run enabled Sentinel scheduled analytics rules so SIEM spend produces detection yield."
 enabled: true
+pass_criteria:
+  ok: Enough scheduled analytics rules are enabled across several tactics.
+  partial: Some scheduled rules are enabled, but coverage is thin or dead rules block a pass.
+  gap: Too few scheduled analytics rules are enabled.
+  evidence_fields:
+    - enabled_scheduled_or_nrt
+    - tactic_count
+    - total_rules
+    - workspace_resource_id

@@ -355,7 +355,30 @@ def _render_checks(model: ReferenceModel) -> str:
         "mode (`direct` or `proxy`) when a dynamic check runs. `missing` under",
         "Evaluator would be rejected by the reference model, so it cannot appear here.",
         "",
+        "## Flagship pass criteria",
+        "",
+        "Customer-facing wording for each flagship. These strings are also on the finding JSON.",
+        "",
     ]
+    from licenselens.engine.loader import load_checks
+
+    by_id = {check.id: check for check in load_checks()}
+    for check in model.checks:
+        if not check.flagship:
+            continue
+        loaded = by_id.get(check.id)
+        criteria = loaded.pass_criteria if loaded is not None else None
+        lines.append(f"### `{check.id}`")
+        lines.append("")
+        if criteria is None:
+            lines.append("_Missing._")
+        else:
+            lines.append(f"- **OK:** {criteria.ok}")
+            if criteria.partial:
+                lines.append(f"- **Partial:** {criteria.partial}")
+            lines.append(f"- **Gap:** {criteria.gap}")
+            lines.append("- **Evidence fields:** " + (", ".join(criteria.evidence_fields) or "—"))
+        lines.append("")
     return "\n".join(lines)
 
 

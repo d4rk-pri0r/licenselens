@@ -36,3 +36,11 @@ mappings:
 flagship: true
 flagship_security_intent: "Configure and assign attack surface reduction rules to block ransomware and fileless malware behaviors."
 enabled: true
+pass_criteria:
+  ok: Attack surface reduction rules are configured and assigned.
+  partial: ASR policies exist but cover few rules or few devices.
+  gap: No ASR policy is assigned.
+  evidence_fields:
+    - assigned_count
+    - asr_policy_count
+    - rules_total

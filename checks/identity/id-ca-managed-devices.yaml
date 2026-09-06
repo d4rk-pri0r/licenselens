@@ -31,3 +31,14 @@ mappings:
 flagship: true
 flagship_security_intent: "Require compliant or hybrid-joined managed devices for cloud app access via Conditional Access."
 enabled: true
+pass_criteria:
+  ok: Access to cloud apps requires an Intune-marked or hybrid-joined device for all users.
+  partial: A device requirement exists but is limited to some users or some apps.
+  gap: Cloud apps can be reached from unmanaged devices.
+  evidence_fields:
+    - enforced_policies
+    - universal_policies
+    - scoped_policies
+    - scope_gaps_best
+    - security_defaults_enabled
+    - unjustified_exclusion_issues

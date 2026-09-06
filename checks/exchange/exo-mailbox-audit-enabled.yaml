@@ -27,3 +27,9 @@ references:
 flagship: true
 flagship_security_intent: "Keep mailbox auditing enabled organization-wide so illicit mailbox access is investigable."
 enabled: true
+pass_criteria:
+  ok: Mailbox auditing is enabled organization-wide.
+  partial: Mailbox auditing is on for some mailboxes only.
+  gap: Mailbox auditing is disabled organization-wide.
+  evidence_fields:
+    - audit_disabled

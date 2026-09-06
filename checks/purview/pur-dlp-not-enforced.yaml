@@ -32,3 +32,11 @@ references:
 flagship: true
 flagship_security_intent: "Enforce Purview DLP policies in production so sensitive data cannot leak through mail, files, or endpoints."
 enabled: true
+pass_criteria:
+  ok: At least one DLP policy runs in production mode (direct Graph read, or labeled fallback).
+  partial: DLP policies exist but are still in test mode, or only a labeled fallback signal is available.
+  gap: No DLP policy is in production mode.
+  evidence_fields:
+    - dlp_graph
+    - proxy
+    - source

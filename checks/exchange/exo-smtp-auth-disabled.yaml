@@ -27,3 +27,9 @@ references:
 flagship: true
 flagship_security_intent: "Disable SMTP AUTH organization-wide so basic-auth email submission cannot bypass modern sign-in protections."
 enabled: true
+pass_criteria:
+  ok: SMTP AUTH is disabled organization-wide.
+  partial: SMTP AUTH is still allowed for some mailboxes.
+  gap: SMTP AUTH is enabled organization-wide.
+  evidence_fields:
+    - smtp_client_authentication_disabled

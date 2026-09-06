@@ -35,3 +35,12 @@ mappings:
 flagship: true
 flagship_security_intent: "Enforce Identity Protection user-risk and sign-in-risk policies so risky logins are blocked."
 enabled: true
+pass_criteria:
+  ok: User-risk and sign-in-risk policies are enforced.
+  partial: Only one of the two risk policies is enforced, or both are report-only.
+  gap: Identity Protection risk policies are not enforced.
+  evidence_fields:
+    - user_risk_enforced
+    - sign_in_risk_enforced
+    - risk_policy_count
+    - protected_population

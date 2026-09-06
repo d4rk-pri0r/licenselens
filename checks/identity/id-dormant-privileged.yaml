@@ -35,3 +35,12 @@ mappings:
 flagship: true
 flagship_security_intent: "Disable or move to just-in-time access any privileged accounts that sit unused and become takeover targets."
 enabled: true
+pass_criteria:
+  ok: Privileged accounts have signed in inside the lookback window.
+  partial: Some privileged accounts could not be verified.
+  gap: Privileged accounts have not signed in inside the lookback window.
+  evidence_fields:
+    - dormant_privileged_users
+    - active_privileged_users
+    - lookback_days
+    - signin_sample_truncated

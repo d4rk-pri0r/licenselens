@@ -33,3 +33,12 @@ references:
 flagship: true
 flagship_security_intent: "Onboard licensed devices to Defender for Endpoint so EDR coverage and license value are realized."
 enabled: true
+pass_criteria:
+  ok: Onboarded machines meet the active-device denominator (or the licensed-seat signal when no inventory join is available).
+  partial: Onboarding is below the threshold, or only a licensed-seat leverage signal is available.
+  gap: Almost none of the expected devices are onboarded when an authoritative denominator exists.
+  evidence_fields:
+    - onboarded_machines
+    - licensed_units
+    - coverage_ratio
+    - truncated

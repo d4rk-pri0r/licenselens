@@ -12,6 +12,7 @@ from licenselens.models import (
     CheckPack,
     Effort,
     ExposureClass,
+    PassCriteria,
     Severity,
     ValueImpact,
     Workload,
@@ -49,6 +50,24 @@ def _parse_mappings(raw: object) -> dict[str, list[str]]:
         if cleaned:
             parsed[framework] = cleaned
     return parsed
+
+
+def _parse_pass_criteria(raw: object) -> PassCriteria | None:
+    if not isinstance(raw, dict):
+        return None
+    ok = str(raw.get("ok") or "").strip()
+    gap = str(raw.get("gap") or "").strip()
+    if not ok or not gap:
+        return None
+    fields = raw.get("evidence_fields") or []
+    evidence_fields = [str(item) for item in fields if item] if isinstance(fields, list) else []
+    return PassCriteria(
+        ok=ok,
+        partial=str(raw.get("partial") or "").strip(),
+        gap=gap,
+        error=str(raw.get("error") or PassCriteria.model_fields["error"].default).strip(),
+        evidence_fields=evidence_fields,
+    )
 
 
 def _parse_metadata(raw: dict) -> dict:
@@ -117,6 +136,7 @@ def load_checks(root: Path | None = None) -> list[CheckDefinition]:
                 mappings=_parse_mappings(raw.get("mappings")),
                 flagship=bool(raw.get("flagship", False)),
                 flagship_security_intent=_clean(raw.get("flagship_security_intent")),
+                pass_criteria=_parse_pass_criteria(raw.get("pass_criteria")),
             )
         )
     return checks

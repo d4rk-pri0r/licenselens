@@ -234,6 +234,18 @@ class Capability(BaseModel):
         return frozenset(name.upper() for name in (*self.sku_part_numbers, *self.sku_aliases))
 
 
+class PassCriteria(BaseModel):
+    """Customer-facing pass/fail wording for a check, plus the evidence keys it uses."""
+
+    ok: str
+    partial: str = ""
+    gap: str
+    error: str = (
+        "Evidence could not be collected (permissions, API failure, or missing Azure scope)."
+    )
+    evidence_fields: list[str] = Field(default_factory=list)
+
+
 class CheckDefinition(BaseModel):
     id: str
     title: str
@@ -268,6 +280,7 @@ class CheckDefinition(BaseModel):
     flagship: bool = False
     #: Short customer-facing "why it matters" sentence for flagship checks.
     flagship_security_intent: str = ""
+    pass_criteria: PassCriteria | None = None
 
     @property
     def display_customer_title(self) -> str:
@@ -320,6 +333,8 @@ class Finding(BaseModel):
     accepted_risks: list[AcceptedRiskAnnotation] = Field(default_factory=list)
     #: Optional compliance/attack-surface mappings carried from the check YAML.
     mappings: dict[str, list[str]] = Field(default_factory=dict)
+    pass_criteria: PassCriteria | None = None
+    evaluator_ref: str = ""
 
     @model_validator(mode="after")
     def reject_indirect_high_confidence_ok(self) -> Self:

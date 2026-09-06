@@ -35,3 +35,11 @@ mappings:
 flagship: true
 flagship_security_intent: "Enroll licensed devices into Intune so cloud identity and compliance controls reach every endpoint."
 enabled: true
+pass_criteria:
+  ok: Managed-device count meets the expected enrollment denominator.
+  partial: Some licensed or registered devices are not enrolled.
+  gap: Almost none of the expected devices are enrolled.
+  evidence_fields:
+    - managed_device_count
+    - licensed_units
+    - truncated

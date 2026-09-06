@@ -40,3 +40,11 @@ mappings:
 flagship: true
 flagship_security_intent: "Require Microsoft Authenticator number matching to defeat MFA-fatigue and push-bombing attacks."
 enabled: true
+pass_criteria:
+  ok: Microsoft Authenticator number matching is required.
+  partial: Authenticator is enabled but number matching is not explicitly required.
+  gap: Number matching is not in use.
+  evidence_fields:
+    - number_matching_state
+    - authenticator_state
+    - number_matching_explicit

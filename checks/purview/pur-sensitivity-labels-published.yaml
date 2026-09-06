@@ -31,3 +31,11 @@ references:
 flagship: true
 flagship_security_intent: "Publish sensitivity labels through an enabled label policy so classification and protection reach users."
 enabled: true
+pass_criteria:
+  ok: Sensitivity labels are published through an enabled label policy.
+  partial: Labels exist but are not published.
+  gap: No sensitivity labels are published.
+  evidence_fields:
+    - published
+    - published_label_policies
+    - sensitivity_labels

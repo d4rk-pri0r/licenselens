@@ -68,6 +68,16 @@ def customer_fields(check: CheckDefinition) -> dict[str, str]:
     }
 
 
+def _evaluator_ref(check_id: str) -> str:
+    import importlib
+
+    try:
+        registry = importlib.import_module("licenselens.engine.runner").default_registry()
+        return registry.evaluator_for(check_id).evaluator
+    except KeyError:
+        return ""
+
+
 def finding_evaluation_mode(
     check: CheckDefinition, evidence: dict[str, Any] | None
 ) -> EvaluationMode:
@@ -131,6 +141,8 @@ def base_finding(
         limitations=list(limitations or []),
         evaluation_mode=finding_evaluation_mode(check, evidence),
         mappings=dict(check.mappings),
+        pass_criteria=check.pass_criteria,
+        evaluator_ref=_evaluator_ref(check.id),
     )
     finding = apply_quality_policy(finding, strict_proxy=strict_proxy)
     finding.status_label = STATUS_PLAIN_LABELS.get(finding.status.value, finding.status.value)

@@ -30,3 +30,9 @@ mappings:
 flagship: true
 flagship_security_intent: "Complete the authentication methods policy migration so MFA and SSPR settings live in one place."
 enabled: true
+pass_criteria:
+  ok: Authentication methods policy migration is finished.
+  partial: Migration is in progress or not finished.
+  gap: Authentication methods still live in the legacy policy surface.
+  evidence_fields:
+    - policy_migration_state

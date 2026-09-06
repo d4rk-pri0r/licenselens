@@ -30,3 +30,11 @@ mappings:
 flagship: true
 flagship_security_intent: "Keep highly privileged accounts cloud-only and separate from on-premises directories."
 enabled: true
+pass_criteria:
+  ok: Highly privileged accounts are cloud-only.
+  partial: Some privileged accounts could not be classified.
+  gap: Privileged accounts are synced from on-premises directories.
+  evidence_fields:
+    - cloud_only
+    - hybrid_or_synced
+    - privileged_principals_checked

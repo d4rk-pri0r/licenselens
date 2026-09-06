@@ -42,3 +42,14 @@ mappings:
 flagship: true
 flagship_security_intent: "Protect workload identities (service principals) with risk-based Conditional Access policies."
 enabled: true
+pass_criteria:
+  ok: Workload identities have a risk-based Conditional Access policy.
+  partial: A workload-identity policy exists but is report-only or limited in scope.
+  gap: No risk-based policy protects workload identities.
+  evidence_fields:
+    - enforced_policies
+    - universal_policies
+    - scoped_policies
+    - scope_gaps_best
+    - security_defaults_enabled
+    - unjustified_exclusion_issues

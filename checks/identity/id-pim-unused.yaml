@@ -36,3 +36,11 @@ mappings:
 flagship: true
 flagship_security_intent: "Operationalize privileged access through PIM activation with MFA instead of standing permanent roles."
 enabled: true
+pass_criteria:
+  ok: Privileged access is used through just-in-time activation, not standing roles.
+  partial: PIM is in use but standing privileged assignments remain.
+  gap: Privileged roles are standing assignments rather than just-in-time activation.
+  evidence_fields:
+    - privileged_permanent_assignments
+    - privileged_eligible_schedules
+    - standing_non_break_glass_assignments

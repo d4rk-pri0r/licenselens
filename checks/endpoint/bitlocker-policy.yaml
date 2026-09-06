@@ -34,3 +34,10 @@ mappings:
 flagship: true
 flagship_security_intent: "Configure and assign a BitLocker disk-encryption policy so lost or stolen devices do not leak data."
 enabled: true
+pass_criteria:
+  ok: A BitLocker disk-encryption policy is configured and assigned.
+  partial: A BitLocker policy exists but is not assigned widely.
+  gap: No BitLocker policy is assigned.
+  evidence_fields:
+    - assigned_count
+    - bitlocker_config_count

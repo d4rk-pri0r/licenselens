@@ -30,3 +30,10 @@ mappings:
 flagship: true
 flagship_security_intent: "Remove permanent active assignments for highly privileged roles in favor of just-in-time PIM access."
 enabled: true
+pass_criteria:
+  ok: Highly privileged roles have no standing active assignments.
+  partial: Some standing assignments remain.
+  gap: Highly privileged roles still have permanent active assignments.
+  evidence_fields:
+    - standing_highly_privileged_assignments
+    - eligible_schedules

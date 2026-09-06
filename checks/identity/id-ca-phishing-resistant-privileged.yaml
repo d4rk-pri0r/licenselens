@@ -30,3 +30,14 @@ mappings:
 flagship: true
 flagship_security_intent: "Require phishing-resistant MFA for highly privileged directory roles via Conditional Access."
 enabled: true
+pass_criteria:
+  ok: Privileged directory roles must use phishing-resistant MFA on all cloud apps.
+  partial: Privileged MFA exists but is limited to some apps or some roles.
+  gap: Privileged roles are not required to use phishing-resistant MFA.
+  evidence_fields:
+    - enforced_policies
+    - universal_policies
+    - scoped_policies
+    - scope_gaps_best
+    - security_defaults_enabled
+    - unjustified_exclusion_issues

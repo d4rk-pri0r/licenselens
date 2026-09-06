@@ -32,3 +32,10 @@ references:
 flagship: true
 flagship_security_intent: "Confirm owned security capabilities send their core tables into the Sentinel workspace."
 enabled: true
+pass_criteria:
+  ok: Core tables for owned capabilities ingested in the last seven days.
+  partial: Some owned capabilities are missing core tables.
+  gap: Owned capabilities are missing their core tables.
+  evidence_fields:
+    - capabilities
+    - mode

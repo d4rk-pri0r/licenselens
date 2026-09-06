@@ -45,3 +45,12 @@ mappings:
 flagship: true
 flagship_security_intent: "Require justification, an authentication context, and a short time limit for privileged-role activation."
 enabled: true
+pass_criteria:
+  ok: Privileged-role activation requires justification, an authentication context, and a short time limit.
+  partial: Some activation controls are present but not all three.
+  gap: Privileged-role activation is missing justification, an authentication context, or a time cap.
+  evidence_fields:
+    - justification_required
+    - auth_context_required
+    - activation_duration_capped
+    - policy_count

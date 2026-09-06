@@ -111,6 +111,12 @@ def validate_flagship_meta(
                 violations.append(f"missing_check_field:{check_id}:{field}")
         if not check.references:
             violations.append(f"missing_references:{check_id}")
+        if check.pass_criteria is None:
+            violations.append(f"missing_pass_criteria:{check_id}")
+        elif not check.pass_criteria.ok or not check.pass_criteria.gap:
+            violations.append(f"incomplete_pass_criteria:{check_id}")
+        elif not check.pass_criteria.evidence_fields:
+            violations.append(f"missing_pass_criteria_evidence_fields:{check_id}")
         ref = reference_by_id.get(check_id)
         if ref is None:
             violations.append(f"missing_reference_entry:{check_id}")
