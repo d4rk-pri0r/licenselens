@@ -107,3 +107,31 @@ def test_network_error_is_actionable_and_keeps_raw_detail():
     assert "doctor --live" in text
     assert exc.value.detail and "connection refused" in exc.value.detail
     client.close()
+
+
+def test_request_merges_headers(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: dict[str, str] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.update({k: v for k, v in request.headers.items()})
+        return httpx.Response(200, json={"ok": True}, request=request)
+
+    client = GraphClient(_auth())
+    client._http = httpx.Client(transport=httpx.MockTransport(handler))
+    client.request("GET", "/me", headers={"ConsistencyLevel": "eventual", "Authorization": "steal"})
+    assert seen.get("consistencylevel") == "eventual" or seen.get("ConsistencyLevel") == "eventual"
+    assert "steal" not in seen.get("authorization", "")
+    client.close()
+
+
+def test_get_count_parses_plain_integer() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        assert request.headers.get("consistencylevel") == "eventual" or request.headers.get(
+            "ConsistencyLevel"
+        )
+        return httpx.Response(200, text="87", request=request)
+
+    client = GraphClient(_auth())
+    client._http = httpx.Client(transport=httpx.MockTransport(handler))
+    assert client.get_count("/users/$count") == 87
+    client.close()

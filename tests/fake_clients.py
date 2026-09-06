@@ -192,8 +192,29 @@ class FakeGraphClient:
         *,
         params: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | list[Any]:
+        headers: dict[str, str] | None = None,
+        parse_json: bool = True,
+    ) -> dict[str, Any] | list[Any] | str:
         raise NotImplementedError("Use register_get/register_list/register_post")
+
+    def get_count(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> int:
+        handler = self._find_route(self._get_routes, path)
+        if handler is None:
+            handler = self._find_route(self._list_routes, path)
+        if handler is None:
+            raise GraphError(f"FakeGraphClient: no COUNT route for {path}", status_code=500)
+        payload = handler(path, params)
+        if isinstance(payload, int):
+            return payload
+        if isinstance(payload, dict) and "count" in payload:
+            return int(payload["count"])
+        raise GraphError("Fake COUNT handler must return int or {count: int}", status_code=500)
 
     def _find_route(self, routes: dict[str, PathHandler], path: str) -> PathHandler | None:
         for prefix in sorted(routes, key=len, reverse=True):
@@ -383,6 +404,15 @@ def _graph_client_from_fixture(payload: dict[str, Any], *, allow_preview: bool) 
                 fake.register_get(path, ok(body))
             else:
                 fake.register_post(path, ok(body))
+
+    def _count(_path: str, params: dict[str, Any] | None) -> dict[str, Any]:
+        filt = str((params or {}).get("$filter") or "")
+        if "assignedPlans" in filt or "assignedLicenses" in filt:
+            return {"count": 87}
+        return {"count": 100}
+
+    if fake._find_route(fake._get_routes, "/users/$count") is None:
+        fake.register_get("/users/$count", _count)
     return fake
 
 

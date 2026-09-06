@@ -130,23 +130,30 @@ class GraphClient:
         *,
         params: dict[str, Any] | None = None,
         json_body: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | list[Any]:
+        headers: dict[str, str] | None = None,
+        parse_json: bool = True,
+    ) -> dict[str, Any] | list[Any] | str:
         self._assert_path_allowed(method, path)
         url = path if path.startswith("http") else f"{self._base_url}/{path.lstrip('/')}"
         last_error: Exception | None = None
 
         for attempt in range(self._max_retries + 1):
-            headers = {
+            req_headers = {
                 "Authorization": f"Bearer {self._get_token()}",
                 "Accept": "application/json",
             }
             if json_body is not None:
-                headers["Content-Type"] = "application/json"
+                req_headers["Content-Type"] = "application/json"
+            if headers:
+                for key, value in headers.items():
+                    if key.lower() == "authorization":
+                        continue
+                    req_headers[key] = value
             try:
                 response = self._http.request(
                     method,
                     url,
-                    headers=headers,
+                    headers=req_headers,
                     params=params,
                     json=json_body,
                 )
@@ -181,7 +188,9 @@ class GraphClient:
                 raise self._error_from_response(response)
 
             if response.status_code == 204 or not response.content:
-                return {}
+                return {} if parse_json else ""
+            if not parse_json:
+                return response.text
             data = response.json()
             return data
 
@@ -197,6 +206,24 @@ class GraphClient:
         if not isinstance(data, dict):
             raise GraphError("Expected a JSON object from Graph.")
         return data
+
+    def get_count(
+        self,
+        path: str,
+        *,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> int:
+        """GET an OData `$count` endpoint (text/plain integer)."""
+        extra = {"ConsistencyLevel": "eventual", "Accept": "text/plain"}
+        if headers:
+            extra.update(headers)
+        data = self.request("GET", path, params=params, headers=extra, parse_json=False)
+        text = str(data).strip()
+        try:
+            return int(text)
+        except ValueError as exc:
+            raise GraphError(f"Graph $count did not return an integer: {text[:80]!r}") from exc
 
     def post(
         self,
