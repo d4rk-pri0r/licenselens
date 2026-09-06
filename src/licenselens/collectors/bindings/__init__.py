@@ -241,9 +241,13 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         _register_one(
             catalog,
             collector_id="mdi_sensors",
-            backend=Backend.PROXY,
-            permissions=("SecurityEvents.Read.All",),
-            dependencies=("secure_score_controls",),
+            backend=Backend.GRAPH,
+            permissions=(
+                "SecurityIdentitiesSensors.Read.All",
+                "SecurityIdentitiesHealth.Read.All",
+                "SecurityEvents.Read.All",
+            ),
+            dependencies=("mdi_health", "secure_score_controls"),
             timeout_seconds=30,
         )
         _register_one(

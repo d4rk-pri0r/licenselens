@@ -14,7 +14,7 @@ from tests.fake_clients import FakeGraphClient, FakeMdeClient, ok
 
 def test_device_read_all_required() -> None:
     assert "Device.Read.All" in REQUIRED_GRAPH_APP_PERMISSIONS
-    assert len(REQUIRED_GRAPH_APP_PERMISSIONS) == 22
+    assert len(REQUIRED_GRAPH_APP_PERMISSIONS) == 24
 
 
 def test_entra_devices_hashes_display_name() -> None:

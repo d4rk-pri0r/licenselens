@@ -40,6 +40,7 @@ _OPTIONAL_MISSING = {
     "approved_guest_domains",
     "role_eligibilities",
     "security_defaults_policy",
+    "mdi_health",
 }
 
 _ERROR_ALIASES = {
@@ -73,6 +74,7 @@ _ERROR_ALIASES = {
     "power_data_bundle": "power_data_collect_error",
     "intune_bundle": "intune_bundle_error",
     "mde_health": "mde_health_error",
+    "mdi_health": "mdi_health_error",
     "mde_inventory": "mde_inventory_error",
     "entra_devices": "entra_devices_error",
     "device_reconciliation": "device_reconciliation_error",

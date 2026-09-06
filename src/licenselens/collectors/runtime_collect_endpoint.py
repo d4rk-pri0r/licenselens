@@ -18,6 +18,7 @@ from licenselens.collectors.mde import (
     mde_licensed_units,
 )
 from licenselens.collectors.mde_health import DEMO_MDE_HEALTH, collect_mde_health_summary
+from licenselens.collectors.mdi_health import DEMO_MDI_HEALTH, collect_mdi_health
 from licenselens.collectors.pbi_admin import DEMO_PBI_CAPACITY_BUNDLE, collect_pbi_capacity_bundle
 from licenselens.collectors.purview import (
     DEMO_DLP_BUNDLE,
@@ -288,3 +289,24 @@ def collect_device_reconciliation_runtime(
         mde = {}
     result = reconcile(entra, intune, mde)
     return ok(key, result, source="derived.deviceReconciliation")
+
+
+def collect_mdi_health_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "mdi_health"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_MDI_HEALTH), source="demo")
+    assert ctx.client is not None
+    try:
+        bundle = collect_mdi_health(ctx.client)
+        return ok(
+            key,
+            bundle,
+            source="graph.security.identities",
+            items=int(bundle.get("sensor_count") or 0),
+        )
+    except GraphError as exc:
+        return graph_failure(
+            key, exc, f"Defender for Identity sensors could not be read: {exc}", ctx
+        )

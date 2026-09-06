@@ -141,3 +141,70 @@ def test_mdi_demo_partial_without_controls():
         {"secure_score_controls": controls},
     )
     assert result.status == FindingStatus.PARTIAL
+
+
+def test_mdi_direct_zero_sensors_is_gap() -> None:
+    result = evaluate_mdi_sensors(
+        _check("mdi-sensors-missing"),
+        {
+            "mdi_health": {
+                "direct": True,
+                "sensor_count": 0,
+                "unhealthy_count": 0,
+                "open_health_issues": 0,
+                "sensors": [],
+            }
+        },
+    )
+    assert result.status == FindingStatus.GAP
+    assert result.evidence.get("proxy") is False
+
+
+def test_mdi_direct_unhealthy_is_gap() -> None:
+    result = evaluate_mdi_sensors(
+        _check("mdi-sensors-missing"),
+        {
+            "mdi_health": {
+                "direct": True,
+                "sensor_count": 2,
+                "unhealthy_count": 1,
+                "open_health_issues": 3,
+                "sensors": [],
+            }
+        },
+    )
+    assert result.status == FindingStatus.GAP
+    assert result.evidence.get("proxy") is False
+
+
+def test_mdi_direct_healthy_is_ok() -> None:
+    from licenselens.models import Confidence
+
+    result = evaluate_mdi_sensors(
+        _check("mdi-sensors-missing"),
+        {
+            "mdi_health": {
+                "direct": True,
+                "sensor_count": 2,
+                "unhealthy_count": 0,
+                "open_health_issues": 0,
+                "sensors": [],
+            }
+        },
+    )
+    assert result.status == FindingStatus.OK
+    assert result.evidence.get("proxy") is False
+    assert result.confidence is Confidence.HIGH
+
+
+def test_mdi_fallback_when_direct_false() -> None:
+    controls = extract_control_scores(DEMO_SECURE_SCORE)
+    result = evaluate_mdi_sensors(
+        _check("mdi-sensors-missing"),
+        {
+            "mdi_health": {"direct": False, "sensor_count": 0},
+            "secure_score_controls": controls,
+        },
+    )
+    assert result.status == FindingStatus.PARTIAL
+    assert result.evidence.get("proxy") is True

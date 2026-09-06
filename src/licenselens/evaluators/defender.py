@@ -18,8 +18,70 @@ def evaluate_mdi_sensors(
     check: CheckDefinition,
     evidence: dict[str, Any],
 ) -> Evaluation:
-    """Assess Defender for Identity posture via Secure Score control signals."""
+    """Assess Defender for Identity sensors; Secure Score as fallback proxy."""
     del check
+    health = dict(evidence.get("mdi_health") or {})
+    if health.get("direct"):
+        return _evaluate_mdi_direct(health)
+    return _evaluate_mdi_proxy(evidence)
+
+
+def _evaluate_mdi_direct(health: dict[str, Any]) -> Evaluation:
+    sensor_count = int(health.get("sensor_count") or 0)
+    unhealthy = int(health.get("unhealthy_count") or 0)
+    open_issues = int(health.get("open_health_issues") or 0)
+    evidence_out = {
+        **health,
+        "proxy": False,
+        "direct": True,
+        "source": "graph.security.identities",
+    }
+    direct_meta = dict(
+        confidence=Confidence.HIGH,
+        data_sources=["graph.security.identities.sensors"],
+        limitations=[],
+    )
+    if sensor_count == 0:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary="No Defender for Identity sensors were returned by Graph.",
+            evidence=evidence_out,
+            customer_summary=(
+                "No on-site directory attack sensors were found. If you still run "
+                "domain controllers, install Defender for Identity sensors on each one."
+            ),
+            **direct_meta,
+        )
+    if unhealthy > 0:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary=(
+                f"{unhealthy} of {sensor_count} Defender for Identity sensor(s) are "
+                f"unhealthy; {open_issues} open health issue(s)."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Some directory attack sensors are disconnected or unhealthy. "
+                "Fix sensor health in the Defender portal."
+            ),
+            **direct_meta,
+        )
+    return Evaluation(
+        status=FindingStatus.OK,
+        summary=(
+            f"{sensor_count} Defender for Identity sensor(s) report healthy; "
+            f"{open_issues} open health issue(s)."
+        ),
+        evidence=evidence_out,
+        customer_summary=(
+            "Directory attack sensors report healthy. Open health issues, if any, "
+            "still need a look in the portal."
+        ),
+        **direct_meta,
+    )
+
+
+def _evaluate_mdi_proxy(evidence: dict[str, Any]) -> Evaluation:
     from licenselens.collectors.secure_score import MDI_CONTROL_HINTS, summarize_controls
 
     controls = list(evidence.get("secure_score_controls") or [])

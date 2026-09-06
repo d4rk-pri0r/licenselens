@@ -158,6 +158,22 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             description="MDE machine healthStatus summary",
         ),
         op(
+            "mdi_sensors",
+            "/security/identities/sensors",
+            "graph.mdi_sensors",
+            ("SecurityIdentitiesSensors.Read.All",),
+            ("SecurityIdentitiesSensors.Read.All",),
+            description="Defender for Identity sensors",
+        ),
+        op(
+            "mdi_health_issues",
+            "/security/identities/healthIssues",
+            "graph.mdi_health_issues",
+            ("SecurityIdentitiesHealth.Read.All",),
+            ("SecurityIdentitiesHealth.Read.All",),
+            description="Defender for Identity health issues",
+        ),
+        op(
             "arm_sentinel_alert_rules",
             "{workspace}/providers/Microsoft.SecurityInsights/alertRules",
             "arm.sentinel_alert_rules",

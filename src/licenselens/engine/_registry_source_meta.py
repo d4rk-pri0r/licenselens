@@ -105,6 +105,12 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             45,
         ),
         "mde_health": (Backend.MDE, (), "mde:machines.health", 45),
+        "mdi_health": (
+            Backend.GRAPH,
+            ("SecurityIdentitiesSensors.Read.All", "SecurityIdentitiesHealth.Read.All"),
+            "graph:mdi.health",
+            45,
+        ),
         "security_alerts_bundle": (
             Backend.GRAPH,
             ("SecurityIncident.Read.All", "SecurityAlert.Read.All"),
@@ -332,9 +338,13 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             ("security_alerts_bundle",),
         ),
         "mdi_sensors": (
-            Backend.PROXY,
-            ("SecurityEvents.Read.All",),
-            ("secure_score_controls",),
+            Backend.GRAPH,
+            (
+                "SecurityIdentitiesSensors.Read.All",
+                "SecurityIdentitiesHealth.Read.All",
+                "SecurityEvents.Read.All",
+            ),
+            ("mdi_health", "secure_score_controls"),
         ),
         "purview_dlp_collector": (
             Backend.GRAPH,

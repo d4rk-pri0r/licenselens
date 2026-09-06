@@ -16,9 +16,9 @@ def register_defender(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="mdi-sensors-missing",
             evaluate=evaluate_mdi_sensors,
-            input_models=("secure_score_controls",),
+            input_models=("mdi_health", "secure_score_controls"),
             collector_id="mdi_sensors",
-            evaluation_mode=EvaluationMode.PROXY,
+            evaluation_mode=EvaluationMode.DIRECT_WITH_PROXY_FALLBACK,
             backend=Backend.PROXY,
         )
     finally:
