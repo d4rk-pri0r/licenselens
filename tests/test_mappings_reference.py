@@ -97,5 +97,6 @@ def test_report_renders_mappings_facet_and_em_dash_for_unmapped(tmp_path: Path) 
     assert "data-mappings=" in mapped_row
     assert "NIST: AC-2, IA-2" in mapped_row
     assert "MITRE: T1078" in mapped_row
-    assert "Compliance: MITRE: T1078; NIST: AC-2, IA-2" in html
+    assert "MITRE: T1078; NIST: AC-2, IA-2" in html
+    assert "Compliance:" in html
     assert 'data-mappings="—"' in html

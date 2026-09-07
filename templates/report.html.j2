@@ -90,9 +90,6 @@
 {%- for _fw in mappings.keys() | sort -%}{{ _fw | upper }}: {{ mappings[_fw] | join(', ') }}{% if not loop.last %}; {% endif %}{%- endfor -%}
 {%- else -%}—{%- endif -%}
 {%- endmacro -%}
-{#- Radial gauge geometry: circumference for r=48 (viewBox 120). #}
-{%- set _gauge_c = 301.6 -%}
-{%- set _gauge_offset = _gauge_c * (1 - opening.realized_percent / 100) -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,18 +109,21 @@
    ========================================================================== */
 
 /* Masthead content */
-.logo { display: flex; align-items: center; gap: 12px; padding-block: 16px; }
-.logo-mark { width: 28px; height: 28px; background: var(--accent); flex-shrink: 0; border-radius: 2px; }
-.tagline { margin: 0; color: var(--text-2); font-size: 0.8125rem; }
+.logo { display: flex; align-items: center; gap: 12px; padding-block: 16px 8px; }
+.logo-mark { width: 24px; height: 24px; color: var(--accent); flex-shrink: 0; display: block; }
+.tagline { margin: 4px 0 0; color: var(--text-2); font-size: 0.875rem; }
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
-  padding-block: 8px 16px;
+  align-items: baseline;
+  gap: 4px 0;
+  padding-block: 8px 12px;
   border-block-start: 1px solid var(--border);
+  font-size: 0.8125rem;
+  color: var(--text-2);
 }
 .meta-row { font-size: 0.8125rem; color: var(--text-2); }
-.meta-row code { color: var(--text-1); }
+.meta .sep { padding-inline: 8px; color: var(--text-3); }
 .intro {
   margin-block: 0 16px;
   padding: 12px 16px;
@@ -132,36 +132,24 @@
   border-inline-start: 3px solid var(--state-incomplete);
 }
 
-/* Opening sequence meta line (stage 2). */
-.opening-meta {
-  margin-block: 8px 0;
-  color: var(--text-2);
-  font-size: 0.8125rem;
-}
-.opening-meta code { color: var(--text-1); }
-.opening-tenant-id { color: var(--text-2); }
+.opening-tenant-id { color: var(--text-3); font-size: 0.8125rem; }
 
-/* Stage 7 → single path forward: one restrained action anchor into C. */
-.hero-action { margin-block: 20px 0 4px; }
+/* Stage 6 → single path forward: a text link into C, not a pill. */
+.hero-action { margin-block: 16px 0; }
 .hero-action a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  background: var(--surface-1);
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--accent);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 500;
   line-height: 1.2;
-  text-decoration: none;
+  text-decoration: underline;
 }
-.hero-action a:hover {
-  color: var(--accent-hover);
-  border-color: var(--accent-hover);
-  background: var(--surface-2);
-}
+.hero-action a:hover { color: var(--accent-hover); }
 
 /* Below-fold reveals: B, C, and Findings fade + 6px rise on first entry,
    one-shot
@@ -232,18 +220,31 @@ body.revealed .reveal-target.is-revealed {
 <body>
   <header>
     <div class="logo">
-      <div class="logo-mark" aria-hidden="true"></div>
+      <svg class="logo-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+        <circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
+        <circle cx="10" cy="10" r="2.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M15.2 15.2 21 21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+      </svg>
       <div>
         <h1>Security License Lens</h1>
         <p class="tagline">{{ tagline }}</p>
       </div>
     </div>
-    <div class="meta">
-      <div class="meta-row">Version <code>{{ result.version }}</code></div>
-      <div class="meta-row">Scanned <code>{{ result.display_scanned_at }}</code></div>
-      <div class="meta-row">Mode <code>{{ mode_str }}</code></div>
-      <div class="meta-row">Organization <code>{{ opening.tenant_name }}</code></div>
-    </div>
+    <p class="meta">
+      <span class="meta-row">Version {{ result.version }}</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Scanned <time class="mono" datetime="{{ opening.scanned_at }}">{{ result.display_scanned_at }}</time></span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Mode {{ mode_str }}</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Organization {{ opening.tenant_name }}</span>
+      {%- if result.packs_scanned -%}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">{{ result.packs_scanned | join(', ') }} priority packs</span>
+      {%- endif -%}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Activation assessment: {{ _tier_counts.activation }} · Hygiene {{ _tier_counts.hygiene }}</span>
+    </p>
     {% if result.warnings %}
     <div class="intro">
       <strong>Notes</strong>
@@ -255,7 +256,7 @@ body.revealed .reveal-target.is-revealed {
     </div>
     {% endif %}
     <nav class="toc" aria-label="Sections">
-      <a href="#section-a">Where you stand</a>
+      <a href="#section-a" aria-current="true">Where you stand</a>
       <a href="#section-c">What matters most</a>
       <a href="#section-b">What you're paying for</a>
       <a href="#section-findings">Findings</a>
@@ -264,60 +265,37 @@ body.revealed .reveal-target.is-revealed {
 
   <main>
     {# ======================================================================
-       A - Where you stand: the signature opening sequence (DESIGN_V2 §5A).
-       Hierarchy-first: ONE dominant metric, a supporting stat strip, and the
-       operational-distribution visualization. Not a grid of equal cards.
+       A - Where you stand: DESIGN_V2 §5A. Masthead already named the product
+       and carried scan meta. This section is kicker + h2, tenant line,
+       ONE number, a stat strip, the distribution bar, one sentence, one link.
        ====================================================================== #}
     <section id="section-a" class="hero">
       <p class="micro-label section-kicker">Posture</p>
       <h2>Where you stand</h2>
 
       <div class="opening" data-opening>
-        {# Stage 1: org/tenant identity (binds the masthead source). #}
-        <p class="display-line opening-stage opening-identity">{{ opening.tenant_name }}{% if opening.tenant_id and opening.tenant_id != opening.tenant_name %} <span class="mono opening-tenant-id">{{ opening.tenant_id }}</span>{% endif %} &mdash; {{ opening.assessment_identity.tool_display_name }} assessment</p>
+        <p class="opening-identity opening-stage">{{ opening.tenant_name }}{% if opening.tenant_id and opening.tenant_id != opening.tenant_name %} <span class="mono opening-tenant-id">{{ opening.tenant_id }}</span>{% endif %}</p>
 
-        {# Stage 2: assessment identity — version, scan time, mode, packs. #}
-        <p class="opening-meta opening-stage">Version <code>{{ opening.assessment_identity.version }}</code> <span aria-hidden="true">&middot;</span> <time datetime="{{ opening.scanned_at }}">{{ result.display_scanned_at }}</time> <span aria-hidden="true">&middot;</span> Mode <code>{{ mode_str }}</code>{% if result.packs_scanned %} <span aria-hidden="true">&middot;</span> {{ result.packs_scanned | join(', ') }} priority packs{% endif %}</p>
-        <p class="opening-meta opening-stage">Activation assessment: {{ _tier_counts.activation }} checks · Configuration hygiene (optional): {{ _tier_counts.hygiene }} checks</p>
-
-        {# Stage 3 + 4: the dominant metric (count-up) with the radial gauge
-           and the operational-distribution segmented bar beside it. #}
         <div class="posture">
-          <div class="posture-main">
-            <div class="posture-figure"><span class="posture-digits" data-count-up="{{ _posture.realized_percent }}">{{ _posture.realized_percent }}% realized</span></div>
-            <div class="posture-stat-strip">
-              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.you_own }}</span><span class="label">You own</span></span>
-              <span class="stat-item"><span class="metric-figure-secondary status-ok">{{ _rollup.fully_working }}</span><span class="label">Fully working</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
-              <span class="stat-item"><span class="metric-figure-secondary status-gap">{{ _rollup.needs_attention }}</span><span class="label">Action required</span></span>
-              <span class="stat-item"><span class="metric-figure-secondary status-partial">{{ _rollup.partly_set_up }}</span><span class="label">Incomplete</span></span>
-              <span class="stat-item"><span class="metric-figure-secondary status-not_licensed">{{ _rollup.not_licensed }}</span><span class="label">Not licensed</span></span>
-            </div>
-            <p class="posture-sentence">
-              <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
-              <span aria-hidden="true">&middot;</span>
-              <strong>{{ _rollup.you_own }}</strong> evaluated capabilities
-            </p>
+          <div class="posture-figure">
+            <span class="posture-digits" data-count-up="{{ _posture.realized_percent }}">{{ _posture.realized_percent }}</span><span class="posture-unit">% realized</span>
           </div>
-          <figure class="radial-figure">
-            <svg class="radial-svg" viewBox="0 0 120 120" width="168" height="168" role="img" aria-labelledby="radial-caption" aria-describedby="radial-desc">
-              <circle class="radial-track" cx="60" cy="60" r="48" fill="none" stroke-width="10" />
-              <circle class="radial-arc" cx="60" cy="60" r="48" fill="none" stroke-width="10" stroke-dasharray="{{ _gauge_c }}" stroke-dashoffset="{{ _gauge_offset | round(2) }}" style="--gauge-circumference: {{ _gauge_c }};" />
-            </svg>
-            <figcaption id="radial-caption" class="micro-label">Realized investment</figcaption>
-            <p id="radial-desc" class="radial-print-line">Realized security investment: {{ _posture.realized_percent }}% of {{ _rollup.you_own }} owned, evaluated security controls met the activation criteria.</p>
-            <table class="chart-table">
-              <caption>Realized investment</caption>
-              <tbody>
-                <tr><th scope="row">Fully working capabilities</th><td class="num">{{ _posture.realized_percent }}%</td></tr>
-                <tr><th scope="row">Owned, evaluated capabilities</th><td class="num">{{ _rollup.you_own }}</td></tr>
-              </tbody>
-            </table>
-          </figure>
+          <div class="posture-stat-strip">
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.you_own }}</span><span class="label">You own</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.fully_working }}</span><span class="label">Fully working</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.needs_attention }}</span><span class="label">Action required</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.partly_set_up }}</span><span class="label">Incomplete</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.not_licensed }}</span><span class="label">Not licensed</span></span>
+          </div>
+          <p class="caption posture-sentence">
+            <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
+            <span aria-hidden="true">&middot;</span>
+            <strong>{{ _rollup.you_own }}</strong> evaluated capabilities
+          </p>
         </div>
 
-        {# Stage 4b: the operational distribution fills to its proportions.
-           The role="img" visual layer holds only non-interactive spans; the
-           cross-filter buttons are painted siblings overlaid on top (§9). #}
+        {# Operational distribution. role="img" holds only non-interactive
+           spans; cross-filter buttons are sibling overlays (§9). #}
         <figure class="dist-figure">
           <figcaption id="dist-caption" class="micro-label">Operational distribution</figcaption>
           <div class="dist-layer">
@@ -356,8 +334,6 @@ body.revealed .reveal-target.is-revealed {
           </table>
         </figure>
 
-        {# Stage 5: three labeled distribution items (fourth neutral item
-           when not-licensed counts exist). #}
         <ul class="dist-items">
           {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok'), ('not_licensed', 'not_licensed')] -%}
           {%- if _key != 'not_licensed' or _rollup[_key] -%}
@@ -369,17 +345,8 @@ body.revealed .reveal-target.is-revealed {
           {%- endfor -%}
         </ul>
 
-        {# Stage 6: the most important implication, derived from the rollup. #}
-        {%- if _rollup.you_own > 0 -%}
-        {%- if _rollup.needs_attention > 0 -%}
-        <p class="implication opening-stage">Of the security controls associated with the entitlements and assessment scope that could be evaluated, {{ _posture.realized_percent }}% met the defined activation criteria.</p>
-        {%- else -%}
-        <p class="implication opening-stage">Of the security controls associated with the entitlements and assessment scope that could be evaluated, {{ _posture.realized_percent }}% met the defined activation criteria.</p>
-        {%- endif -%}
-        {%- endif -%}
-        <p class="posture-sentence">{{ _posture.realized_sentence }}</p>
+        <p class="implication opening-stage">{{ _posture.realized_sentence }}</p>
 
-        {# Stage 7 → a single path forward: one restrained link into C. #}
         <p class="hero-action opening-stage">
           <a href="#section-c">View prioritized actions</a>
         </p>
@@ -645,10 +612,8 @@ body.revealed .reveal-target.is-revealed {
             {{ prim.status_marker(f.status) }}
             <h3 class="explore-row__title"><a href="#finding-{{ f.check_id }}">{{ f.title }}</a></h3>
             <div class="explore-row__meta">
-              {% if f.severity %}<span class="meta-severity">Severity: {{ f.severity | capitalize }}</span>{% endif %}
-              {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
-              <span class="meta-compliance">Compliance: {{ _mappings_label(f.mappings) }}</span>
-              <code>{{ f.check_id }}</code>
+              {% if f.severity %}<span class="meta-severity">{{ f.severity | capitalize }}</span>{% endif %}
+              {% if f.workload %}<span>{{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
             </div>
             {% if f.customer_summary or f.summary %}<span class="explore-row__signal">{{ f.customer_summary or f.summary }}</span>{% endif %}
           </summary>
@@ -672,10 +637,8 @@ body.revealed .reveal-target.is-revealed {
               {{ prim.status_marker(f.status) }}
               <h3 class="explore-row__title"><a href="#finding-{{ f.check_id }}">{{ f.title }}</a></h3>
               <div class="explore-row__meta">
-                {% if f.severity %}<span class="meta-severity">Severity: {{ f.severity | capitalize }}</span>{% endif %}
-                {% if f.workload %}<span>Workload: {{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
-                <span class="meta-compliance">Compliance: {{ _mappings_label(f.mappings) }}</span>
-                <code>{{ f.check_id }}</code>
+                {% if f.severity %}<span class="meta-severity">{{ f.severity | capitalize }}</span>{% endif %}
+                {% if f.workload %}<span>{{ _workload_labels.get(f.workload, f.workload | replace('_', ' ') | title) }}</span>{% endif %}
               </div>
               {% if f.customer_summary or f.summary %}<span class="explore-row__signal">{{ f.customer_summary or f.summary }}</span>{% endif %}
             </summary>
@@ -1054,13 +1017,13 @@ body.revealed .reveal-target.is-revealed {
       // ------------------------------------------------------------------
       function handleHash() {
         var hash = window.location.hash;
-        if (!hash) return;
-        if (hash.indexOf('#section-') === 0) {
+        if (hash && hash.indexOf('#section-') === 0) {
+          setNavCurrent(hash.slice(1));
           var section = document.getElementById(hash.slice(1));
           if (section) section.scrollIntoView({ block: 'start' });
           return;
         }
-        if (hash.indexOf('#finding-') === 0) {
+        if (hash && hash.indexOf('#finding-') === 0) {
           var article = document.getElementById(hash.slice(1));
           if (!article) return;
           var row = article.closest('details.explore-row');
@@ -1074,7 +1037,18 @@ body.revealed .reveal-target.is-revealed {
           apply();
           selectFinding(article);
           article.scrollIntoView({ block: 'start' });
+          setNavCurrent('section-findings');
         }
+      }
+
+      function setNavCurrent(sectionId) {
+        document.querySelectorAll('.toc a').forEach(function (a) {
+          if (a.getAttribute('href') === '#' + sectionId) {
+            a.setAttribute('aria-current', 'true');
+          } else {
+            a.removeAttribute('aria-current');
+          }
+        });
       }
 
       // ------------------------------------------------------------------
@@ -1214,6 +1188,12 @@ body.revealed .reveal-target.is-revealed {
 
       window.addEventListener('hashchange', handleHash);
       window.addEventListener('resize', alignChartHits);
+      document.querySelectorAll('.toc a').forEach(function (a) {
+        a.addEventListener('click', function () {
+          var href = a.getAttribute('href') || '';
+          if (href.charAt(0) === '#') setNavCurrent(href.slice(1));
+        });
+      });
 
       // Chart overlay hits live inside the collapsed "Findings at a glance"
       // disclosure; re-align them whenever it opens (a closed disclosure has
@@ -1233,35 +1213,30 @@ body.revealed .reveal-target.is-revealed {
         if (!el) return;
         var target = parseInt(el.getAttribute('data-count-up'), 10);
         if (!isFinite(target)) return;
-        var DURATION = 700, DELAY = 120;
+        var DURATION = 700, DELAY = 80;
         var startTs = null;
-        el.textContent = '0% realized';
+        el.textContent = '0';
         function tick(ts) {
           if (startTs === null) startTs = ts;
           var t = (ts - startTs - DELAY) / DURATION;
           if (t < 0) { requestAnimationFrame(tick); return; }
           t = Math.min(t, 1);
           var eased = 1 - Math.pow(1 - t, 3);
-          el.textContent = Math.round(target * eased) + '% realized';
+          el.textContent = String(Math.round(target * eased));
           if (t < 1) requestAnimationFrame(tick);
-          else el.textContent = target + '% realized';
+          else el.textContent = String(target);
         }
         requestAnimationFrame(tick);
       }
 
       function reveal() {
         if (reduceMotion) {
-          // §11: resolve to the instant final state — no animation, no
-          // neutral hold. `body.instant` lets the foundation's status-color
-          // rule color the constellation immediately, and the posture digits
-          // are pinned to their server-rendered final value (the radial gauge
-          // keeps its server-rendered stroke-dashoffset; this renderer has no
-          // JS that resets it).
+          // §11: instant final state. Digits stay the server-rendered number.
           document.body.classList.add('instant');
           var countUpEl = document.querySelector('[data-count-up]');
           if (countUpEl) {
             var finalValue = parseInt(countUpEl.getAttribute('data-count-up'), 10);
-            if (isFinite(finalValue)) countUpEl.textContent = finalValue + '% realized';
+            if (isFinite(finalValue)) countUpEl.textContent = String(finalValue);
           }
           return;
         }

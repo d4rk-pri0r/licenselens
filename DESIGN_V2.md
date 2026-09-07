@@ -32,6 +32,28 @@
   `prefers-reduced-motion` always; data-dense interfaces want a sans body + mono for
   technical values; hover feedback via color/border, never layout shift.
 
+### Visual critique — what shipped vs what this contract promised (2026-09)
+
+The v2 templates token-completed "SOC Dark" and still read as a broken SOC dashboard.
+The contract itself caused several of the collisions. This subsection is the post-ship
+audit; the patched rules below replace the clauses that produced the mess.
+
+| Failure | What shipped | What the contract had promised / now promises |
+| --- | --- | --- |
+| Three titles before the number | Masthead h1 + kicker POSTURE + h2 + 2rem display line `{tenant} — Security License Lens assessment` + `38% realized` as one run of display type | Masthead is the only product title. Section A is kicker + h2, then a *secondary* tenant line, then **one** hero number |
+| Duplicate implication | Hardcoded "Of the security controls…" plus `realized_sentence` (the same sentence) | Bind `realized_sentence` **once**. Never emit both |
+| Accent painted on the metric | `--accent` on the logo square, the 38%, links, *and* the radial arc | Accent = identity + interaction only. Hero number is `--text-1` |
+| Carded hero | `.hero` used `--grad-hero`, `--shadow-3`, 16px radius — a giant rounded card | Hero is open typographic layout on the canvas: rules + whitespace, not a card |
+| Display line too large | `.display-line` at 2rem wraps and competes with the h1 | Tenant line is `1rem / 500 / --text-2`. The display role is retired |
+| Meta as monospace soup | Version / Mode / Organization wrapped in `<code>` | Mono is reserved for IDs, SKU parts, timestamps, evidence keys, commands |
+| Lonely donut | 168px radial gauge restating the same percent with a "REALIZED INVESTMENT" caption | Drop the donut. The number is the proportion. Keep the distribution bar |
+| Nav chips | Pill links, first-child styled as active, no `aria-current` | Full-width segmented control; active = accent outline + `aria-current` |
+| Status on every numeral | Stat strip colored red/green/amber | Status color on rails, markers, and the distribution bar only |
+| Equal move cards | Three identical 10px cards | Numbered sequence; first item dominant; effort is a quiet pill; action is a text link |
+| Belief wall | Stacked `<p>` slots | 2-column label / value rhythm on expanded findings |
+
+**Contract clauses withdrawn by this audit:** accent-on-posture-figure; hero as a 16px elevated card; 2rem display-line opening; dual implication + `realized_sentence`; radial gauge as a required hero figure; `--shadow-3` "hero only"; wrapping ordinary metadata in `<code>`.
+
 ## 1. Identity and guardrails
 
 **Identity: "SOC Dark".** A cool, near-black blue-grey canvas with a stepped cool
@@ -105,7 +127,7 @@ references tokens.
 | `--text-1` | `#EDF2F7` | Primary ink (cool near-white) |
 | `--text-2` | `#B6C2CF` | Secondary ink (labels, meta, section help) — 10.7:1 on `--canvas` |
 | `--text-3` | `#7D8FA3` | Tertiary ink (captions, placeholders, faint counts) — 5.8:1 on `--canvas` |
-| `--accent` | `#22D3EE` | Cyan identity + interaction (links, focus, selection, posture figure, logo mark) |
+| `--accent` | `#22D3EE` | Cyan identity + interaction (links, focus, selection, active nav). Never the hero metric, never status |
 | `--accent-hover` | `#67E8F9` | Accent hover |
 | `--accent-focus` | `#A5F3FC` | Focus ring |
 | `--accent-print` | `#155E75` | Deep cyan print ink for links and identity figures |
@@ -113,11 +135,9 @@ references tokens.
 | `--state-incomplete` | `#F59E0B` | Incomplete (partial) (≥ 7:1 on `--canvas`; measured 9.0:1) |
 | `--state-ok` | `#22C55E` | Operational (ok) (≥ 6:1 on `--canvas`; measured 8.5:1) |
 | `--state-neutral` | `#94A3B8` | Neutral (not-licensed / skipped) (≥ 5:1 on `--canvas`; measured 7.5:1) |
-| `--grad-hero` | `linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%)` | Pinned cool tonal wash (cool blue-grey tint), hero only |
 | `--grad-raised` | `linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%)` | Pinned cool tonal wash, elevated panes (selected finding, open side panel) |
 | `--shadow-1` | `0 1px 2px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.25)` | Raised controls, open disclosures |
 | `--shadow-2` | `0 2px 6px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35)` | Elevated panes: selected finding, side panel, floating sticky nav |
-| `--shadow-3` | `0 4px 12px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.4)` | Hero only |
 | `--blur-nav` | `blur(8px)` | The single authorized blur (section 10) |
 
 ### 2.2 Print tokens (light inversion)
@@ -138,9 +158,11 @@ Screen is always dark; `@media print` inverts to light ink by swapping to these 
 
 ### 2.3 Usage rules and contrast floors
 
-- **Accent is identity-only.** It colors the logo mark, links (always underlined at
-  default text sizes), focus rings, selection, the posture figure, and the active state of
-  segmented controls. It never colors a semantic status and never colors chart data.
+- **Accent is identity-only.** It colors the logo mark (monochrome lens, not a filled
+  cyan square), links (always underlined at default text sizes), focus rings, selection,
+  and the active state of segmented controls. It never colors the hero metric, a
+  semantic status, or chart data. Hero numerals use `--text-1`; emphasis is weight and
+  size, not hue.
 - **Semantic mapping (locked):** `gap` → `--state-action`; `partial` → `--state-incomplete`;
   `ok` → `--state-ok`; `not_licensed` → `--state-neutral`; `skipped` → `--state-neutral`;
   `error` → `--state-action` (rail + label, screen and print, same as gap).
@@ -155,10 +177,12 @@ Screen is always dark; `@media print` inverts to light ink by swapping to these 
 - **Surface ladder:** `--canvas` → `--surface-1` → `--surface-2` → `--surface-3` →
   `--surface-4`. Every declared token must be consumed by at least one selector; dead
   tokens are a violation.
-- **Gradient policy:** `--grad-hero` and `--grad-raised` are the only gradients in the
-  system. Both are single-hue cool tonal lifts (surface-to-surface); the hero opens on a
-  pinned cool-blue tint (`#1A2330`) that settles into the surface ladder. No other hue
-  shifts, no `color-mix()`, no gradient on text, no gradient on interactive controls.
+- **Gradient policy:** `--grad-raised` is the only gradient in the system — a single-hue
+  cool tonal lift on elevated panes (selected finding, open side panel). The hero is
+  open typographic layout on `--canvas` / `--surface-1` with a hairline `--border`; it
+  does not wash, shadow, or round into a card. No other hue shifts, no `color-mix()`,
+  no gradient on text, no gradient on interactive controls. `--grad-hero` and
+  `--shadow-3` are withdrawn.
 - **Blur policy:** `--blur-nav` is the only blur. It applies to the sticky contextual nav
   only, behind a `@supports (backdrop-filter: blur(1px))` guard with an opaque
   `--surface-3` fallback; disabled in print and forced-colors.
@@ -172,27 +196,29 @@ System-only, offline-safe stacks (locked values).
 | Sans stack | `"Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif` |
 | Mono stack | `ui-monospace, SFMono-Regular, Menlo, Consolas, monospace` |
 
-**Type scale (locked, larger than v1 by mandate):**
+**Type scale (locked):**
 
 | Role | Size / weight / line-height | Notes |
 | --- | --- | --- |
-| Display (signature line) | `2rem / 650 / 1.2` | Hero opening line only; `letter-spacing: -0.01em` |
-| Hero figure (dominant metric) | `3.5rem / 650 / 1.05` | The one dominant metric; `tabular-nums` |
-| Metric figure (secondary) | `1.75rem / 600 / 1.15` | Supporting stats; `tabular-nums` |
-| h1 (masthead) | `2rem / 650 / 1.25` | Exactly one per page; anchors the canvas |
-| Section heading (h2) | `1.25rem / 600 / 1.3` | Sections A–C + Findings |
-| Card / finding title (h3) | `1.06rem / 600 / 1.35` | Finding titles, capability names |
-| Body | `1rem / 400 / 1.6` | Prose (up from v1's 0.95rem) |
-| Body-strong | `1rem / 600 / 1.6` | Lead-ins, belief-slot values |
-| Label | `0.8125rem / 600 / 1.4` | Meta rows, filter labels |
-| Micro-label | `0.75rem / 700 / 1.4` | Section kickers and group captions only; `0.03em` letter-spacing |
-| Tech meta (mono) | `0.8125rem / 400 / 1.5` | Config values, IDs, evidence |
+| Hero figure (dominant metric) | `3.375rem / 650 / 1.0` | The one dominant metric; `tabular-nums`; color `--text-1` |
+| Hero unit ("realized") | `1rem / 500 / 1.2` | Label beside/under the number; `--text-2`; never the same weight as the digits |
+| Metric figure (secondary) | `1.375rem / 600 / 1.15` | Supporting stats; `tabular-nums`; color `--text-1` (never status hue) |
+| h1 (masthead) | `1.625rem / 650 / 1.2` | Exactly one per page; product name only |
+| Tagline | `0.875rem / 400 / 1.4` | Quiet, `--text-2`; never fainter than `--text-2` |
+| Section heading (h2) | `1.1875rem / 600 / 1.3` | Sections A–C + Findings |
+| Card / finding title (h3) | `1rem / 600 / 1.35` | Finding titles, capability names |
+| Tenant line | `1rem / 500 / 1.4` | Secondary text, `--text-2`; not a display heading |
+| Body | `1rem / 400 / 1.55` | Prose, `max-width: 68–72ch` |
+| Body-strong | `1rem / 600 / 1.55` | Lead-ins, belief-slot values |
+| Label / meta | `0.8125rem / 500 / 1.4` | Meta rows, filter labels, title case |
+| Micro-label | `0.75rem / 700 / 1.4` | Section kickers and group captions only; `0.03em` letter-spacing; uppercase |
+| Tech meta (mono) | `0.8125rem / 400 / 1.5` | IDs, SKU parts, timestamps, evidence keys, commands |
 
 **Heading hierarchy (locked):** exactly one `<h1>` ("Security License Lens" in the
 masthead); one `<h2>` per section A–C + Findings; `<h3>` for finding titles, capability
 names, and the B-section "Your security capabilities" / "Owned SKUs (N)" sub-heads. No
-skipped levels. The signature opening line is display text in a `<p>`, **not** a heading,
-so the tree stays `h1 → h2 → h3`.
+skipped levels. The tenant line is a `<p class="opening-identity">`, **not** a heading,
+so the tree stays `h1 → h2 → h3`. The retired `.display-line` role must not reappear.
 
 **Case and personality rules (this is where v1 failed):**
 
@@ -201,33 +227,37 @@ so the tree stays `h1 → h2 → h3`.
   labels, meta keys, and buttons are title case.
 - **Monospace is not the personality.** The mono stack renders *only*: `check_id` values,
   SKU part numbers, service-plan names, timestamps, evidence keys and values, paths,
-  commands, object names, configuration values, and numeric columns. Never headings, never
-  body prose, never status words.
+  commands, object names, and configuration values. Never headings, never body prose,
+  never status words, never "Demo scan", never Mode/Organization labels. Ordinary
+  metadata (version, mode, organization name) is sans — wrap only the timestamp and
+  any GUID/SKU token in `.mono`. Never wrap ordinary metadata in `<code>`.
 - **Numeral rules:** every metric figure sets `font-variant-numeric: tabular-nums`;
   numbers right-align, text left-aligns; long tokens wrap with `overflow-wrap: anywhere`.
-- **Comfortable reading:** body copy is 1rem/1.6 with `max-width: 72ch` on prose blocks;
-  the finding summary and belief slots never run full column width at desktop.
+- **Comfortable reading:** body copy is 1rem/1.55 with `max-width: 68–72ch` on prose
+  blocks; the finding summary and belief slots never run full column width at desktop.
 
 ## 4. Radius, spacing, layout, elevation
 
 - **Base unit: 4px.** Every padding, gap, and inset is a multiple of 4.
 - **Spacing stops:** 4, 8, 12, 16, 20, 24, 32, 48, 64. Canonical values below reflect
   "substantially more negative space" vs v1: section padding `24px 32px`, section gap
-  `24px`, hero padding `32px 40px`, card padding `20px`, finding gap `16px`, page gutters
-  `32px`, grid gaps `16px`/`24px`.
+  `24px`, hero padding `24px 32px` (same as other sections — not a padded card), card
+  padding `20px`, finding gap `16px`, page gutters `32px`, grid gaps `16px`/`24px`.
 - **Radius contract (replaces the 4px ceiling):**
-  - `0px` — tables, finding status rails, masthead, open section boundaries.
+  - `0px` — tables, finding status rails, masthead, hero, open section boundaries.
   - `2px` — inputs, selects, search box, evidence code blocks.
-  - `6px` — buttons, filter chips, status labels, effort labels.
-  - `10px` — cards, capability rows, move items, chart frames, small panes.
-  - `16px` — hero, side panel, selected/elevated panes, constellation group container.
-  - `999px` (pill) — **only** for proportion-based fills: the posture track, the
-    operational-distribution segments, and horizontal chart bars. Never for text-bearing
-    controls, labels, or chips.
+  - `6px` — buttons, filter chips, status labels, effort labels, resting surfaces that
+    are not cards.
+  - `10px` — cards (capabilities, moves, chart frames only), selected/elevated panes,
+    constellation group container, side panel.
+  - `16px` — **withdrawn.** Do not use.
+  - `999px` (pill) — **only** for proportion-based fills: the operational-distribution
+    segments and horizontal chart bars. Never for text-bearing controls, labels, chips,
+    or the section nav.
 - **Elevation is selective.** Shadows communicate *state*, not decoration: `--shadow-1` on
   open disclosures and raised controls; `--shadow-2` on the selected finding, an open side
-  panel, and the sticky nav once it floats; `--shadow-3` on the hero only. A card at rest
-  has no shadow. Depth otherwise comes from the tonal ladder and the two pinned gradients.
+  panel, and the sticky nav once it floats. The hero has **no shadow**. A card at rest
+  has no shadow. Depth otherwise comes from the tonal ladder.
 - **Layout:** desktop 12-column grid, content max-width `1160px`, centered. Breakpoints
   `900px` and `640px`: at 900px the two-column hero collapses to a single column and the
   nav wraps; at 640px gutters halve, the hero figure scales to `2.5rem`, the constellation
@@ -255,43 +285,49 @@ Findings — Priorities sit directly under Posture. Section labels:
 
 ### A. "Where you stand" — the signature opening sequence
 
+**Masthead (above `<main>`, not inside section A).** Mark (24px monochrome lens) +
+product name (`<h1>`) + one quiet tagline. Scan meta — version, scanned time, mode,
+organization — lives **only here**, as a single compact meta row. Never repeat it in
+the hero. Meta is title-case sans; the timestamp may use `.mono`. Never `<code>` for
+mode or organization.
+
 **Hierarchy-first: ONE dominant metric.** Section A is dominated by the posture figure
-(`capability_rollup.realized_percent`, rendered as `<N>% realized` at hero-figure size).
-The supporting numbers — owned, fully working, needs attention, partly set up, not
-licensed — are **secondary statistics that support the dominant metric**, rendered as a
-compact inline stat strip separated by rules and an operational-distribution bar. **It is
+(`capability_rollup.realized_percent`). Digits render at hero-figure size in `--text-1`;
+the word "realized" is a `.posture-unit` label beside/under the number, never the same
+weight. The supporting numbers — owned, fully working, needs attention, partly set up,
+not licensed — are **secondary statistics**, one row, consistent number+label pairs,
+hairline separators, no wrap at 1160px. Numerals stay `--text-1`; status color lives on
+the distribution bar and the labeled items under it, never on the stat numerals. **It is
 explicitly not a grid of six equal metric cards.** Any implementer who ships a
 `grid-template-columns: repeat(auto-fit, minmax(120px, 1fr))` row of equal boxes in section
 A has violated this contract.
 
-**Opening sequence, exact order and copy structure** (all values data-driven from the view
-model — the template contains no literal numbers; `17% realized` and "5 of 6" are
-illustrative sample data only):
+**Desired hero stack, top to bottom (binding):**
 
-1. **Org / tenant identity** — one line: `{tenant_display_name or tenant_id or
-   "demo / dry-run"} — Security License Lens assessment`. Binds the same source as the
-   masthead organization row.
-2. **Assessment identity** — one meta line: version, `display_scanned_at`, mode, and
-   `packs_scanned` priority packs.
-3. **Posture metric count-up** — `realized_percent` counts 0 → N (section 11).
-4. **Posture visualization** — the radial realization gauge draws, and the operational
-   distribution bar fills to its proportions (sections 9 and 11).
-5. **Operational distribution** — three labeled items: `needs_attention` ("Action
-   required"), `partly_set_up` ("Incomplete"), `fully_working` ("Operational"), each with
-   its status marker (glyph + word + color). `not_licensed` may appear as a fourth,
-   neutral item.
-6. **Most important implication** — one sentence bound from the rollup: "Of the security
-   controls associated with the entitlements and assessment scope that could be evaluated,
-   X% met the defined activation criteria" where X = `realized_percent`; when no
-   protections were owned the sentence must read "No assessed protections were owned",
-   derived from the same fields — never a hardcoded string. `realized_sentence` remains
-   the supporting sentence beneath.
-7. **Single path forward** — one restrained "View prioritized actions" anchor linking to
-   section C (an accent-outlined pill, 44px target, never a list of action buttons).
+1. Section kicker (`Posture`) + `<h2>` "Where you stand" only.
+2. Tenant line — secondary text (`1rem / 500 / --text-2`): `{tenant_display_name}`.
+   Do **not** append "— Security License Lens assessment". Do **not** restyle this as a
+   display heading.
+3. ONE dominant metric: digits at hero size + "realized" as the unit label. Count-up
+   0 → N (section 11) updates the digits only.
+4. Compact stat strip (You own / Fully working / Action required / Incomplete / Not
+   licensed). Optional caption under Fully working: "of N prioritized".
+5. Operational distribution — one muted track; segments proportional to counts; every
+   color paired with glyph + word + count. No toy-progress saturation.
+6. Implication sentence **once**, bound to `capability_rollup.realized_sentence`. Never
+   also emit a hardcoded "Of the security controls…" paragraph. Empty second paragraph
+   is a defect.
+7. One "View prioritized actions" text link into section C (accent color, underlined,
+   44px target — not a filled pill).
 
-The hero ends with that single anchor. The v1 exposed/gap rail is intentionally retired
-from the hero: exposure/gap awareness lives in the distribution (stage 4b), the findings
-surface, and the prioritized moves in section C.
+The hero is **not a card**: no `--grad-hero`, no `--shadow-3`, no 16px radius. Canvas +
+a hairline rule + whitespace. The radial / donut gauge is **withdrawn** — it restated
+the number. Keep the distribution bar. A compact "licensed capabilities detected ·
+evaluated capabilities" line may sit under the stat strip as caption, not as a second
+implication.
+
+The v1 exposed/gap rail stays retired from the hero: exposure/gap awareness lives in the
+distribution, the findings surface, and the prioritized moves in section C.
 
 ### B. "What you're paying for"
 
@@ -320,8 +356,9 @@ surface, and the prioritized moves in section C.
   fake button.
 - Order is rank: the model's list order is authoritative; the UI must not re-sort.
 - Each move item is a bounded surface (10px radius, `--surface-2`) but the items are a
-  *numbered sequence*, not equal cards: the first item is visually dominant (larger title,
-  `--shadow-1`).
+  *numbered sequence*, not an equal card stack: the first item is visually dominant
+  (larger title, `--surface-3`, `--shadow-1`). Effort is a quiet pill (`.effort-label`);
+  the action is a text link, not a button. Subsequent items stay quieter.
 
 ### Findings — the merged findings section
 
@@ -336,13 +373,17 @@ one section. The header carries the explorer controls; the body is one collapsed
   above the controls. The renderers re-align/re-render the cross-filter overlay buttons
   when the disclosure opens (a closed disclosure has no layout box, so offsets are
   meaningless until it is visible).
-- **Collapsed row summary:** caret (▸, rotates 90° on open), status marker (glyph + word),
-  the finding title, severity + workload meta, and a one-line signal
-  (`customer_summary`, then `summary`), truncated with an ellipsis. Status is carried by
-  the marker word and the row's 3px left rail — never color-only.
+- **Collapsed row summary:** a table-like scan list — status | title | severity |
+  workload | signal — on one row at 1160px. Caret (▸, rotates 90° on open), status
+  marker (glyph + word), finding title, severity, workload, one-line signal
+  (`customer_summary`, then `summary`) truncated with an ellipsis. Status is carried by
+  the marker word and the row's 3px left rail — never color-only. Pagination /
+  collapsed-by-default must stay honest: the page must not feel 13,000px tall before
+  anyone filters.
 - **Expanded row body:** the full six-slot belief block (the former section D article),
   animated with the same disclosure pattern as section 8 (caret rotate + tech-body fade).
-  The `id="finding-<check_id>"` anchor lives on the belief article.
+  Belief slots use a 2-column label/value rhythm (`.belief-label` | value), not a wall
+  of stacked paragraphs. The `id="finding-<check_id>"` anchor lives on the belief article.
 
 Per-finding belief block (unchanged from the former D contract). Every finding renders as
 a full-width `article` with a 3px left status rail and a header (status marker + title +
@@ -395,14 +436,15 @@ The **selected / focused finding** becomes an elevated surface (`--surface-3`,
 ## 6. Sticky contextual navigation and section-aware state
 
 - **Bundle app only:** a sticky nav (`position: sticky; top: 0`) listing A–C + Findings
-  with the workload nav, rendered as a segmented control (accent-outlined pills on
-  `--surface-1`, 44px targets, `aria-current` pinning the active segment) on `--surface-3`
-  with the `--blur-nav` backdrop blur (section 2.3 guards). Links carry
-  `aria-current="true"` for the section currently in view, updated by an
-  IntersectionObserver scrollspy (no scroll listeners). Keyboard focus into any nav item
-  is visible per section 13.
-- **Single-file renderer:** the same segmented control under the masthead (no sticky
-  behavior, no scrollspy), linking to the four sections with the same anchors and labels.
+  with the workload nav, rendered as a **full-width segmented control** under the
+  masthead (equal flex children, hairline separators, 6px radius, 44px targets) on
+  `--surface-3` with the `--blur-nav` backdrop blur (section 2.3 guards). Active state is
+  an accent outline plus `aria-current="true"` — never "first child is always active",
+  never leftover chips. Updated by an IntersectionObserver scrollspy (no scroll
+  listeners). Keyboard focus into any nav item is visible per section 13.
+- **Single-file renderer:** the same full-width segmented control under the masthead.
+  Without JS, the first section link carries `aria-current="true"`. With JS, hash
+  changes and in-view sections update `aria-current` the same way as the bundle.
 - Workload nav state and section state are the same mechanism: `aria-current` on exactly
   one nav target; `is-active` class is never the only indicator.
 
@@ -466,13 +508,15 @@ place; it never floats over, never covers, never scroll-jumps the page.
 ## 9. Data visualization contract
 
 Every chart answers one question. There are exactly four figures (bundle) / three
-(single-file), plus the two hero visualizations. No default Chart.js-dashboard aesthetic:
-no doughnut libraries, no stacked card walls, no decorative grids.
+(single-file), plus **one** hero visualization (the operational-distribution bar). The
+radial / donut gauge is withdrawn: the hero number already is the proportion. No default
+Chart.js-dashboard aesthetic: no doughnut libraries, no stacked card walls, no decorative
+grids.
 
 | Figure | Question it answers | Form | Data |
 | --- | --- | --- | --- |
-| Posture radial gauge (A) | "How much of my investment is realized?" | Radial arc, realization % — radial is used *because the datum is a single proportion* (mathematically appropriate) | `capability_rollup.realized_percent` |
-| Operational distribution (A) | "How is my posture distributed?" | Segmented horizontal bar: action / incomplete / operational segments proportional to counts; `999px` caps | `you_own`, `fully_working`, `needs_attention`, `partly_set_up`, `not_licensed` |
+| Hero number (A) | "How much of my investment is realized?" | Typography: digits at hero-figure size + "realized" unit. Not a chart. | `capability_rollup.realized_percent` |
+| Operational distribution (A) | "How is my posture distributed?" | Segmented horizontal bar: muted track, action / incomplete / operational / not-licensed segments proportional to counts; `999px` caps; every color paired with glyph + word + count | `you_own`, `fully_working`, `needs_attention`, `partly_set_up`, `not_licensed` |
 | Findings by status (E) | "What kind of shape are my findings in?" | Clean horizontal bars, one per status, status colors | `findings` grouped by `status` |
 | Findings by workload (E) | "Where are the gaps concentrated?" | Horizontal bars with branded icon + label per workload | `findings` grouped by `workload` |
 | Findings by severity (E) | "How bad is it?" | Horizontal bars | `findings` grouped by `severity` |
@@ -486,10 +530,10 @@ no doughnut libraries, no stacked card walls, no decorative grids.
 - **Print:** the sr-only data table becomes visible (styled print table) as the textual
   fallback for every chart; SVG bars render flat with `print-color-adjust: exact`.
 - **Animation:** bars grow to their proportions on first reveal (`transform: scaleX(0→1)`,
-  `transform-origin: inline-start`, GPU-composited); the radial gauge draws via
-  `stroke-dashoffset`; the segmented bar fills left-to-right. Once. Never re-animates on
-  filter changes (filter changes swap values instantly with a ≤150ms color-only
-  transition).
+  `transform-origin: inline-start`, GPU-composited); the segmented bar fills
+  left-to-right. Once. Never re-animates on filter changes (filter changes swap values
+  instantly with a ≤150ms color-only transition). No radial `stroke-dashoffset` draw —
+  there is no gauge.
 - **Chart-to-finding cross-filtering:** a bar (or segment) is a `<button>` inside the
   figure with an accessible name like "Filter findings: Action required"; activating it
   toggles the corresponding facet filter (section 10) and scrolls E's list into view.
@@ -529,14 +573,12 @@ expanding. Everything is server-rendered; animation is an opt-in enhancement (JS
 
 | Stage | Element | Timing |
 | --- | --- | --- |
-| 1 | Org/tenant identity line | fade + 6px rise, `200ms ease-out`, t≈0ms |
-| 2 | Assessment meta line | `200ms ease-out`, delay `60ms` |
-| 3 | Posture metric count-up 0→N | rAF, `700ms ease-out`, delay `120ms`, `tabular-nums`, lands exactly on N |
-| 4a | Radial gauge draw | `stroke-dashoffset` to value, `700ms ease-out`, delay `160ms` |
-| 4b | Distribution bar fill | segments `scaleX(0→1)` left-to-right, `600ms ease-out`, delay `200ms` |
-| 5 | Distribution labels (3–4) | fade + rise, `250ms`, stagger `60ms` |
-| 6 | Implication sentence | fade + rise, `300ms ease-out`, delay `380ms` |
-| 7 | "View prioritized actions" link | fade + rise, `300ms ease-out`, delay `440ms` |
+| 1 | Tenant line | fade + 6px rise, `200ms ease-out`, t≈0ms |
+| 2 | Posture metric count-up 0→N | rAF, `700ms ease-out`, delay `80ms`, `tabular-nums`; updates **digits only**; lands exactly on N |
+| 3 | Distribution bar fill | segments `scaleX(0→1)` left-to-right, `600ms ease-out`, delay `160ms` |
+| 4 | Distribution labels (3–4) | fade + rise, `250ms`, stagger `60ms` |
+| 5 | Implication sentence | fade + rise, `300ms ease-out`, delay `320ms` |
+| 6 | "View prioritized actions" link | fade + rise, `300ms ease-out`, delay `380ms` |
 
 Sequence is data-driven at every stage. Under `prefers-reduced-motion` the final state is
 instant (below).
@@ -556,8 +598,8 @@ instant (below).
 
 **Rules:**
 
-- Only `transform` and `opacity` animate position/appearance (plus `stroke-dashoffset` for
-  the gauge). No layout-property animation (no `height`/`width`/`margin` transitions).
+- Only `transform` and `opacity` animate position/appearance. No layout-property
+  animation (no `height`/`width`/`margin` transitions). No `stroke-dashoffset` gauge.
 - Nothing loops; nothing is ambient; nothing animates continuously while the user scrolls
   or types (one-shot reveals only).
 - **Prohibited, complete list:** bouncing cards; floating icons; perpetual ambient motion;
@@ -670,19 +712,19 @@ bars.
 
 Light inversion via section 2.2 tokens, with these behaviors:
 
-- Both dark surfaces collapse to paper; shadows suppressed everywhere; the two gradients
-  are replaced by flat `--print-hero` / white fills; `--blur-nav` removed (opaque).
-- All ink becomes `--print-ink`; links and identity figures use `--accent-print`; status
-  words use the print state tokens with transparent label backgrounds.
+- Both dark surfaces collapse to paper; shadows suppressed everywhere; `--grad-raised`
+  is replaced by a flat `--print-hero` / white fill; `--blur-nav` removed (opaque).
+- All ink becomes `--print-ink`; links use `--accent-print`; the hero number stays
+  `--print-ink` (never `--accent-print`); status words use the print state tokens with
+  transparent label backgrounds.
 - **Expanded content predictable:** all `<details>` content renders expanded in print
   (`details > *:not(summary) { display: block; }` under `@media print`), so the printed
   artifact contains the complete evidence without interaction.
 - **Visualizations get textual fallbacks:** each chart's data table (sr-only on screen)
-  becomes a visible, styled print table; the radial gauge is replaced by its accessible
-  description line in print.
+  becomes a visible, styled print table. There is no radial gauge to replace.
 - Hero, move items, capability rows, findings, and the constellation stay whole across
-  pages (`break-inside: avoid`); technical chrome (sticky nav, filter bar, pagination,
-  footer) is hidden.
+  pages (`break-inside: avoid`); technical chrome (sticky nav, filter bar, pagination)
+  is hidden. The provenance footer stays.
 - `print-color-adjust: exact` everywhere so status colors and brand marks survive.
 
 ## 16. Performance (several hundred findings)
@@ -695,7 +737,7 @@ Light inversion via section 2.2 tokens, with these behaviors:
 - Optional progressive enhancement: `content-visibility: auto` with
   `contain-intrinsic-size` on finding rows in the Findings section only — never combined
   with `scrollIntoView`-dependent deep links without first removing it from the target.
-- All animations GPU-composited (`transform`/`opacity`/`stroke-dashoffset` only).
+- All animations GPU-composited (`transform`/`opacity` only).
 
 ## 17. Anti-patterns (prohibited, complete list)
 
@@ -722,13 +764,16 @@ status conveyed by color alone.
 - The twelve workload marks render per section 12: inline SVG for the six SVG-vendored
   marks and text-label-only for the six PNG-only marks in the single-file renderer; hashed
   `<img>` for all twelve in the bundle; always beside a visible text label.
-- Radii used are only from the section 4 stops; gradients are only the two pinned tokens;
-  blur is only `--blur-nav` behind its `@supports` guard.
+- Radii used are only from the section 4 stops (`0 / 2 / 6 / 10 / 999`); the only
+  gradient is `--grad-raised`; blur is only `--blur-nav` behind its `@supports` guard.
+  No `--grad-hero`, no `--shadow-3`, no 16px radius.
 - Opening sequence runs once, 500–1000ms total, data-driven at every stage; reduced-motion
   renders the instant final state with zero information loss.
 - One `<h1>`, one `<h2>` per section A–C + Findings, no skipped levels; all charts carry
   role/label/description + sr-only data tables; print expands disclosures and shows
   textual chart fallbacks.
+- First screen at 1280×900 is: who this is (masthead), one number, four-to-five stats,
+  one sentence, one next action. No second title, no duplicate implication, no donut.
 - Screen is dark, print is light; both pass the section 2.3 contrast floors; status is
   never color-only.
 - The templates contain no external URL except the Microsoft admin deep links, no emoji,

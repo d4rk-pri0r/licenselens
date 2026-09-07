@@ -94,7 +94,7 @@ _CONSTELLATION_STATE_JS = """() => {
     const countUp = document.querySelector('[data-count-up]');
     const figure = document.querySelector('.posture-figure[data-realized]');
     let digitsExpected = null;
-    if (countUp) digitsExpected = countUp.getAttribute('data-count-up') + '% realized';
+    if (countUp) digitsExpected = countUp.getAttribute('data-count-up');
     else if (figure) digitsExpected = figure.getAttribute('data-realized');
     return {
         nodeColor: node ? getComputedStyle(node).color : null,
@@ -1142,7 +1142,7 @@ def test_visualizations_have_textual_equivalents(page: Page, tmp_path: Path, ren
         assert visual["name"], f"{renderer}: visualization {index} has no accessible name"
         assert visual["desc"], f"{renderer}: visualization {index} has no accessible description"
 
-    expected_tables = 5 if renderer == "single" else 4
+    expected_tables = 4
     assert len(state["tables"]) == expected_tables, (
         f"{renderer}: expected {expected_tables} chart data tables, got {len(state['tables'])}"
     )
@@ -1158,10 +1158,10 @@ def test_visualizations_have_textual_equivalents(page: Page, tmp_path: Path, ren
 
     # Renderer-specific sr-only descriptions referenced by the visuals.
     if renderer == "single":
-        for key in ("radial", "dist", "status", "workload", "severity"):
+        for key in ("dist", "status", "workload", "severity"):
             assert state["srDescs"][key], f"{renderer}: missing sr-only description {key!r}"
     else:
-        assert state["srDescs"]["gauge"], f"{renderer}: posture gauge sr-only description missing"
+        assert state["srDescs"]["dist"], f"{renderer}: distribution sr-only description missing"
 
 
 @pytest.mark.parametrize("renderer", ["single", "bundle"])
@@ -1213,17 +1213,12 @@ def test_print_emulation_renders_complete_expanded_artifact(
             f"{renderer}: chart data table is not a visible print fallback: {table}"
         )
 
-    # Radial gauge is replaced by its textual line; screen chrome is removed.
+    # No radial / donut gauge: the hero number is the proportion. Screen chrome
+    # is removed; the bundle shows its dedicated print list.
     if renderer == "single":
-        assert state["radialSvg"] == "none", f"{renderer}: radial svg prints"
-        assert state["radialLine"] == "static", (
-            f"{renderer}: radial print line is not the visible fallback"
-        )
+        assert state["radialSvg"] is None, f"{renderer}: withdrawn radial svg still in the DOM"
     else:
-        assert state["gaugeViz"] == "none", f"{renderer}: posture gauge svg prints"
-        assert state["gaugePrint"] == "block", (
-            f"{renderer}: posture gauge print line is not visible"
-        )
+        assert state["gaugeViz"] is None, f"{renderer}: withdrawn posture gauge still in the DOM"
         assert state["printListDisplay"] == "block", (
             f"{renderer}: the dedicated print list is not displayed"
         )

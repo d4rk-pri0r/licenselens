@@ -306,7 +306,6 @@ SOC_DARK_TOKENS = (
     "--state-incomplete: #F59E0B",
     "--state-ok: #22C55E",
     "--state-neutral: #94A3B8",
-    "--grad-hero: linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%)",
     "--grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%)",
 )
 
@@ -341,13 +340,14 @@ def test_no_color_mix_usage(tmp_path: Path) -> None:
 
 
 def test_radii_use_only_declared_stops(tmp_path: Path) -> None:
-    """DESIGN_V2 §4 radius stops: 0/2/6/10/16 and the 999px pill (authorized
-    ONLY for proportion-based fills and constellation node circles). Non-stop
-    radii (4px, 12px) and the undeclared 50% circle must never appear; the
-    pill stop must be present for the authorized fills."""
+    """DESIGN_V2 §4 radius stops: 0/2/6/10 and the 999px pill (authorized
+    ONLY for proportion-based fills and constellation node circles). 16px is
+    withdrawn. Non-stop radii (4px, 12px) and the undeclared 50% circle must
+    never appear; the pill stop must be present for the authorized fills."""
     html = render(comprehensive_report(), tmp_path)
     assert "border-radius: 12px" not in html, "12px radius is not a §4 stop"
     assert "border-radius: 4px" not in html, "4px radius is not a §4 stop"
+    assert "border-radius: 16px" not in html, "16px radius is withdrawn"
     assert "border-radius: 50%" not in html, "50% circle is not a §4 stop (use 999px)"
     assert "border-radius:50%" not in html, "unspaced circular radius must go"
     assert "border-radius: 999px" in html, "pill radius (999px) must authorize proportion fills"

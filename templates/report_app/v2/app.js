@@ -14,7 +14,7 @@
  *
  * DESIGN_V2 responsibilities beyond the server-rendered shell:
  *   - the signature opening choreography (identity -> meta -> posture
- *     count-up 0..N -> radial draw + distribution fill -> implication ->
+ *     count-up 0..N -> distribution fill -> implication ->
  *     top actions), 500-1000ms total, data-driven at every stage, opt-in via
  *     ``body.revealed``; reduced motion renders the instant final state;
  *   - the interactive capability constellation: nodes resolve from neutral
@@ -1395,8 +1395,8 @@
     if (digits) digits.textContent = String(value);
   }
 
-  // Stage 3: posture metric counts 0 -> N, rAF, 700ms ease-out, delay 120ms,
-  // tabular numerals, lands exactly on N.
+  // Stage 2: posture metric counts 0 -> N, rAF, 700ms ease-out, delay 80ms,
+  // tabular numerals, lands exactly on N. Digits only; the unit label is separate.
   function animatePostureCountUp(target) {
     var digits = document.querySelector(".posture-figure .posture-digits");
     if (!digits) return;
@@ -1411,27 +1411,7 @@
     }
     window.setTimeout(function () {
       window.requestAnimationFrame(step);
-    }, 120);
-  }
-
-  // Stage 4a: the radial realization gauge draws via stroke-dashoffset,
-  // 700ms ease-out, delay 160ms. The server-rendered offset is the final
-  // state; the draw starts from the full circumference.
-  function animatePostureGauge() {
-    var arc = document.querySelector("[data-gauge-arc]");
-    if (!arc) return;
-    var r = parseFloat(arc.getAttribute("r"));
-    if (isNaN(r) || r <= 0) return;
-    var percent = posturePercent();
-    if (percent === null) return;
-    var circumference = 2 * Math.PI * r;
-    var clamped = Math.min(Math.max(percent, 0), 100);
-    var target = circumference * (1 - clamped / 100);
-    arc.setAttribute("stroke-dasharray", String(circumference));
-    arc.setAttribute("stroke-dashoffset", String(circumference));
-    void arc.getBoundingClientRect();
-    arc.style.transition = "stroke-dashoffset 700ms ease-out 160ms";
-    arc.setAttribute("stroke-dashoffset", String(target));
+    }, 80);
   }
 
   // -------------------------------------------------------------------------
@@ -1526,7 +1506,6 @@
     document.body.classList.add("revealed");
     var target = posturePercent();
     if (target !== null) animatePostureCountUp(target);
-    animatePostureGauge();
     initSectionReveals();
   }
 

@@ -74,12 +74,11 @@ NEW_DESIGN_TOKENS: tuple[str, ...] = (
     "--state-neutral: #94A3B8",
 )
 
-# v2 signature copy the report must carry (DESIGN_V2.md, section 5A opening
-# identity line "{tenant} — Security License Lens assessment", plus the
-# merged-Findings structure: the collapsed Owned-SKUs disclosure, the
-# capability heading, and the charts-at-a-glance disclosure).
+# v2 signature copy the report must carry (DESIGN_V2.md, section 5A:
+# masthead product name, tenant line, one implication, findings chrome).
 NEW_DESIGN_COPY: tuple[str, ...] = (
-    "Security License Lens assessment",
+    "Where you stand",
+    "View prioritized actions",
     "Owned SKUs (",
     "Your security capabilities",
     "Findings at a glance",

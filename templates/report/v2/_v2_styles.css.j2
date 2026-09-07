@@ -8,18 +8,18 @@
 
    Contract notes enforced here (DESIGN_V2.md section numbers):
      - §2: Every color is a declared token; the only literal hex values in
-       this file live inside the :root block. The two pinned tonal gradients
-       and the single nav blur are tokens, never ad-hoc.
-     - §3: locked type scale (2rem display, 3.5rem hero figure, 1rem body,
-       tabular numerals on every metric figure); mono only for technical
-       values; uppercase only via .micro-label (kickers, group captions).
-     - §4: spacing is a multiple of 4; radius stops 0 / 2 / 6 / 10 / 16 and
+       this file live inside the :root block. The only pinned gradient is
+       --grad-raised; the single nav blur is a token, never ad-hoc.
+     - §3: locked type scale (3.375rem hero figure in --text-1, 1.625rem h1,
+       1rem tenant line, 1rem/1.55 body); mono only for technical values;
+       uppercase only via .micro-label (kickers, group captions).
+     - §4: spacing is a multiple of 4; radius stops 0 / 2 / 6 / 10 and
        999px (pill) — pill ONLY for proportion-based fills and the
-       constellation node circles; elevation is selective (shadows are
-       state); layout uses logical properties only.
+       constellation node circles; 16px withdrawn; elevation is selective
+       (shadows are state); layout uses logical properties only.
      - §11: motion is information design, gated behind body.revealed (JS
-       opt-in). Only transform / opacity / stroke-dashoffset / color-resolve
-       animate; nothing loops; nothing animates on scroll or input.
+       opt-in). Only transform / opacity / color-resolve animate; nothing
+       loops; nothing animates on scroll or input.
        prefers-reduced-motion = instant final state, zero information loss.
      - §13/§14: status is never color-only (glyph + word + color); focus
        rings, target sizes, forced-colors support.
@@ -50,11 +50,9 @@
   --state-incomplete: #F59E0B;
   --state-ok: #22C55E;
   --state-neutral: #94A3B8;
-  --grad-hero: linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%);
   --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
   --shadow-1: 0 1px 2px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.25);
   --shadow-2: 0 2px 6px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
-  --shadow-3: 0 4px 12px rgba(0,0,0,.45), 0 16px 40px rgba(0,0,0,.4);
   --blur-nav: blur(8px);
 
   /* §2.2 Print tokens (light inversion) */
@@ -86,7 +84,7 @@ body {
   color: var(--text-1);
   font-family: var(--font-sans);
   font-size: 1rem; /* §3 body scale, locked */
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 [hidden] { display: none !important; }
@@ -115,36 +113,49 @@ main {
 /* --------------------------------------------------------------------------
    §3. Typography — locked type scale, heading hierarchy h1 -> h2 -> h3.
    -------------------------------------------------------------------------- */
-h1 { font-size: 2rem; font-weight: 650; line-height: 1.25; }
-h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
-h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.35; }
+h1 { font-size: 1.625rem; font-weight: 650; line-height: 1.2; margin: 0; }
+h2 { font-size: 1.1875rem; font-weight: 600; line-height: 1.3; }
+h3 { font-size: 1rem; font-weight: 600; line-height: 1.35; }
 
-/* Display: the signature opening line, a <p> (never a heading). */
-.display-line {
-  margin-block: 0;
-  font-size: 2rem;
-  font-weight: 650;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  color: var(--text-1);
+/* Tenant line: secondary text, never a display heading (§5A). */
+.opening-identity {
+  margin-block: 8px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-2);
 }
 
-/* Hero figure: the ONE dominant metric (§5A). Accent identity color. */
+/* Hero figure: the ONE dominant metric (§5A). Primary ink, never accent. */
 .posture-figure {
-  margin-block: 24px 0;
-  font-size: 3.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-block: 16px 0;
+  color: var(--text-1);
+}
+.posture-digits {
+  font-size: 3.375rem;
   font-weight: 650;
-  line-height: 1.05;
+  line-height: 1.0;
   font-variant-numeric: tabular-nums;
-  color: var(--accent);
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+}
+.posture-unit {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-2);
 }
 
 /* Metric figure (secondary) — supporting stats, always tabular numerals. */
 .metric-figure-secondary {
-  font-size: 1.75rem;
+  font-size: 1.375rem;
   font-weight: 600;
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
+  color: var(--text-1);
 }
 
 /* Label / micro-label / caption roles. */
@@ -168,7 +179,7 @@ h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.35; }
 
 /* Section kicker (micro-label role) and section help copy. */
 .section-kicker { margin-block: 0 4px; }
-.section-help { color: var(--text-2); margin-block: 4px 16px; }
+.section-help { color: var(--text-2); margin-block: 4px 16px; max-width: 72ch; }
 
 /* Technical disclosure inner titles (h3, never headings for the
    disclosure itself). */
@@ -233,13 +244,15 @@ section {
 
 section + section { margin-block-start: 24px; }
 
-/* Hero: pinned tonal wash + hero shadow, 16px radius (§4). */
+/* Hero: open typographic layout on the canvas — rules + whitespace, not a card (§4 / §5A). */
 .hero {
-  background: var(--grad-hero);
-  box-shadow: var(--shadow-3);
-  border-radius: 16px;
-  padding-block: 32px;
-  padding-inline: 40px;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-block-end: 1px solid var(--border);
+  border-radius: 0;
+  padding-block: 24px;
+  padding-inline: 0;
 }
 
 /* Cards at rest have NO shadow (§4). */
@@ -359,7 +372,7 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   gap: 8px;
   padding: 12px;
   border: 1px solid transparent;
-  border-radius: 16px; /* §4: constellation group container */
+  border-radius: 10px; /* §4: constellation group container */
   transition: border-color 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out;
 }
 .constellation-group.is-selected {
@@ -563,79 +576,83 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 .meta-key { color: var(--text-3); }
 .meta-note { color: var(--text-3); font-style: italic; }
 .finding-summary { margin-block: 8px 0; }
-.belief-slot { margin-block: 12px 0; }
+.belief-slot {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 11rem) minmax(0, 1fr);
+  gap: 8px 16px;
+  align-items: start;
+  margin-block: 12px 0;
+}
 .belief-label {
-  display: block;
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--text-2);
-  margin-block-end: 4px;
+  padding-block-start: 2px;
 }
 .belief-slot p { margin: 0; }
+.belief-slot .tech,
+.belief-slot .belief-meta,
+.belief-slot ul { grid-column: 2; }
 .belief-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-block: 8px 0; }
 .evidence-keys { margin: 0; padding-inline-start: 1.2rem; }
 .evidence-keys code { color: var(--text-1); }
 
 /* --------------------------------------------------------------------------
-   §5A / §9. Hero visualizations — radial realization gauge and the
-   operational-distribution segmented bar.
+   §5A / §9. Hero — dominant number + operational-distribution bar.
+   The radial gauge is withdrawn; the number is the proportion.
    -------------------------------------------------------------------------- */
 .posture {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 24px 32px;
-  margin-block-start: 8px;
+  display: block;
+  margin-block-start: 4px;
 }
 
 .posture-stat-strip {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 8px 16px;
-  margin-block-start: 12px;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  margin-block-start: 16px;
+  overflow-x: auto;
 }
-.stat-item { display: inline-flex; align-items: baseline; gap: 6px; }
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 0;
+  padding-inline: 16px;
+}
+.stat-item:first-child { padding-inline-start: 0; }
 .stat-item + .stat-item {
   border-inline-start: 1px solid var(--border);
-  padding-inline-start: 16px;
 }
+.stat-item .caption { font-size: 0.75rem; color: var(--text-3); }
 
-/* Radial gauge: single proportion, drawn via stroke-dashoffset (§11). */
-.radial-figure { margin: 0; text-align: center; }
-.radial-svg { display: block; margin-inline: auto; }
-.radial-track { stroke: var(--surface-4); }
-.radial-arc {
-  stroke: var(--accent);
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: center;
-}
-
-/* Distribution: segments proportional to counts; pill caps authorized for
-   proportion-based fills only (§4). Segments are buttons (§9). */
-.dist-figure { margin-block: 24px 0; }
+/* Distribution: muted track; segments proportional to counts; pill caps
+   authorized for proportion-based fills only (§4). */
+.dist-figure { margin-block: 20px 0; }
 .dist-bar {
   display: flex;
-  height: 12px;
+  height: 8px;
   border-radius: 999px;
   overflow: hidden;
-  background: var(--surface-4);
+  background: var(--surface-3);
 }
 .dist-segment {
   border: none;
-  border-radius: 999px;
-  margin-inline-end: 2px;
+  border-radius: 0;
+  margin-inline-end: 1px;
   min-width: 0;
   min-height: 0;
   padding: 0;
   cursor: pointer;
   background: var(--state-neutral);
   transform-origin: left;
+  opacity: 0.85;
   transition: filter 150ms ease-out;
 }
 .dist-segment:last-child { margin-inline-end: 0; }
-.dist-segment:hover { filter: brightness(1.2); }
+.dist-segment:hover { filter: brightness(1.15); opacity: 1; }
 .dist-segment.status-gap { background: var(--state-action); }
 .dist-segment.status-partial { background: var(--state-incomplete); }
 .dist-segment.status-ok { background: var(--state-ok); }
@@ -651,14 +668,16 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 }
 .dist-item { display: inline-flex; align-items: center; gap: 6px; }
 
-/* Implication + the single action anchor close the opening sequence. */
+/* Implication: realized_sentence once. Action is a text link, not a pill. */
 .implication {
   margin-block: 20px 0;
   font-size: 1rem;
-  font-weight: 600;
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-2);
+  max-width: 72ch;
 }
-.posture-sentence { color: var(--text-2); margin-block: 8px 0; }
+.posture-sentence { color: var(--text-2); margin-block: 8px 0; max-width: 72ch; }
 
 .effort-label {
   display: inline-block;
@@ -773,21 +792,6 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   white-space: nowrap;
 }
 
-/* Radial gauge accessible description: visually hidden on screen, visible
-   in print as the gauge's textual replacement (§9/§15). */
-.radial-print-line {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-
 /* Generic visually-hidden utility (chart descriptions, auxiliary labels). */
 .sr-only {
   position: absolute;
@@ -897,10 +901,10 @@ details.explore-row[data-status="not_licensed"],
 details.explore-row[data-status="skipped"] { border-inline-start-color: var(--state-neutral); }
 
 details.explore-row summary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 12px;
+  display: grid;
+  grid-template-columns: auto auto minmax(12rem, 1fr) auto auto minmax(8rem, 1.4fr);
+  align-items: center;
+  gap: 8px 12px;
   cursor: pointer;
   color: var(--text-1);
   font-weight: 400;
@@ -909,27 +913,25 @@ details.explore-row summary {
 details.explore-row summary .caret { flex: none; color: var(--text-3); }
 details.explore-row summary .status-marker { flex: none; }
 .explore-row__title {
-  display: inline;
+  display: block;
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 600;
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .explore-row__title a { text-decoration: none; color: var(--text-1); }
 .explore-row__title a:hover { text-decoration: underline; }
 .explore-row__meta {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 4px 16px;
-  margin-inline-start: auto;
+  display: contents;
   font-size: 0.8125rem;
   color: var(--text-2);
 }
 .explore-row__meta .meta-severity { font-weight: 600; color: var(--text-1); }
-.explore-row__meta code { color: var(--text-1); }
+.explore-row__meta code { color: var(--text-3); font-size: 0.75rem; }
 .explore-row__signal {
-  flex-basis: 100%;
   min-width: 0;
   margin: 0;
   color: var(--text-2);
@@ -987,37 +989,45 @@ details.explore-row .finding-head h3 { font-size: 1.06rem; }
   font-size: 0.8125rem;
 }
 
-/* Table of contents (single-file §6): a prominent segmented control —
-   the report's primary orientation affordance, not plain links. */
+/* Table of contents (single-file §6): full-width segmented control —
+   equal rhythm, active via accent outline + aria-current. Not leftover chips. */
 .toc {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding-block: 12px 16px;
-  border-block-start: 1px solid var(--border);
+  flex-wrap: nowrap;
+  gap: 0;
+  padding: 0;
+  margin-block: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface-2);
 }
 .toc a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
   min-height: 44px;
-  padding: 8px 14px;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: var(--surface-2);
+  padding: 8px 12px;
+  border: 0;
+  border-inline-end: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
   color: var(--text-2);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
+  text-align: center;
 }
+.toc a:last-child { border-inline-end: 0; }
 .toc a:hover {
-  color: var(--accent-hover);
-  border-color: var(--accent);
-}
-.toc a:first-child {
   color: var(--text-1);
   background: var(--surface-3);
-  border-color: var(--accent);
+}
+.toc a[aria-current="true"] {
+  color: var(--text-1);
+  background: var(--surface-3);
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 
@@ -1055,10 +1065,6 @@ td code { color: var(--text-1); }
   to { opacity: 1; }
 }
 
-@keyframes gauge-draw {
-  from { stroke-dashoffset: var(--gauge-circumference, 0); }
-}
-
 @keyframes bar-fill {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
@@ -1069,29 +1075,23 @@ td code { color: var(--text-1); }
   to { color: var(--resolve-to, var(--state-neutral)); }
 }
 
-/* Opening sequence (§11): stages 1, 2, 5, 6, 7 — fade + 6px rise. */
+/* Opening sequence (§11): tenant → count-up → dist → implication → action. */
 body.revealed .opening-stage {
   opacity: 0;
   animation: rise 200ms ease-out both;
 }
 body.revealed .opening-identity { animation-delay: 0ms; }
-body.revealed .opening-meta { animation-delay: 60ms; }
 body.revealed .dist-item { animation-duration: 250ms; }
-body.revealed .dist-item:nth-child(1) { animation-delay: 260ms; }
-body.revealed .dist-item:nth-child(2) { animation-delay: 320ms; }
-body.revealed .dist-item:nth-child(3) { animation-delay: 380ms; }
-body.revealed .dist-item:nth-child(4) { animation-delay: 440ms; }
-body.revealed .implication { animation-duration: 300ms; animation-delay: 380ms; }
-body.revealed .hero-action { animation-duration: 300ms; animation-delay: 440ms; }
+body.revealed .dist-item:nth-child(1) { animation-delay: 220ms; }
+body.revealed .dist-item:nth-child(2) { animation-delay: 280ms; }
+body.revealed .dist-item:nth-child(3) { animation-delay: 340ms; }
+body.revealed .dist-item:nth-child(4) { animation-delay: 400ms; }
+body.revealed .implication { animation-duration: 300ms; animation-delay: 320ms; }
+body.revealed .hero-action { animation-duration: 300ms; animation-delay: 380ms; }
 
-/* Stage 4a: radial gauge draw (700ms, delay 160ms). */
-body.revealed .radial-arc {
-  animation: gauge-draw 700ms ease-out 160ms both;
-}
-
-/* Stage 4b: distribution segments scaleX left-to-right (600ms, 200ms). */
+/* Distribution segments scaleX left-to-right (600ms, 160ms). */
 body.revealed .dist-segment {
-  animation: bar-fill 600ms ease-out 200ms both;
+  animation: bar-fill 600ms ease-out 160ms both;
 }
 body.revealed .dist-segment:nth-child(2) { animation-delay: 240ms; }
 body.revealed .dist-segment:nth-child(3) { animation-delay: 280ms; }
@@ -1144,8 +1144,8 @@ summary {
 
 /* --------------------------------------------------------------------------
    §11. Reduced motion — the instant final state: duration 0, single
-   iteration, no transform offset ever applied. Posture digits, gauges,
-   bars, nodes, and section reveals appear fully resolved immediately.
+   iteration, no transform offset ever applied. Posture digits, bars,
+   nodes, and section reveals appear fully resolved immediately.
    -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1167,7 +1167,6 @@ summary {
     transform: none !important;
   }
 
-  body.revealed .radial-arc { animation: none !important; }
   details.tech summary .caret { transform: none !important; }
 }
 
@@ -1201,7 +1200,6 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   }
 
   a,
-  .posture-figure,
   .constellation-caption { color: LinkText; }
 
   .status-gap,
@@ -1249,7 +1247,6 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .chart-bar.status-gap,
   .chart-bar.status-partial,
   .chart-bar.status-ok { background: CanvasText; }
-  .radial-arc { stroke: CanvasText; }
   .workload-icon { forced-color-adjust: auto; }
 
   :focus-visible {
@@ -1266,16 +1263,18 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
 @media print {
   html,
   body {
-    background: var(--print-paper) !important;
+    background: var(--print-hero) !important;
     color: var(--print-ink) !important;
   }
+
+  header { background: var(--print-hero) !important; }
 
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* Suppress all shadows; the two gradients flatten. */
+  /* Suppress all shadows; --grad-raised flattens. */
   *,
   *::before,
   *::after { box-shadow: none !important; }
@@ -1296,11 +1295,12 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   }
 
   .hero {
-    background: var(--print-hero) !important;
-    border: 2px solid var(--print-border-strong) !important;
+    background: var(--print-paper) !important;
+    border: 0 !important;
+    border-block-end: 1px solid var(--print-border) !important;
   }
 
-  /* All ink becomes print ink; accent becomes print accent. */
+  /* All ink becomes print ink; links use print accent. Hero number stays ink. */
   h1,
   h2,
   h3,
@@ -1308,15 +1308,15 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   li,
   td,
   th,
-  .display-line,
+  .opening-identity,
   .label,
   .micro-label,
   .caption,
+  .posture-figure,
+  .posture-digits,
   .constellation-label { color: var(--print-ink) !important; }
 
-  a,
-  .posture-figure,
-  .posture-digits { color: var(--accent-print) !important; }
+  a { color: var(--accent-print) !important; }
 
   /* Status labels: transparent backgrounds, contrast-safe print colors. */
   .status-marker,
@@ -1352,8 +1352,6 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .chart-bar.status-gap { background: var(--print-action) !important; }
   .chart-bar.status-partial { background: var(--print-incomplete) !important; }
   .chart-bar.status-ok { background: var(--print-ok) !important; }
-  .radial-arc { stroke: var(--accent-print) !important; }
-  .radial-track { stroke: var(--print-border) !important; }
 
   /* Expanded content predictable: every disclosure renders expanded, and
      every finding the filter may have hidden stays in the artifact. */
@@ -1362,8 +1360,7 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   .explore-row[hidden] { display: block !important; }
 
   /* Visualizations get textual fallbacks: the sr-only data tables become
-     visible styled print tables; the radial gauge is replaced by its
-     description line. */
+     visible styled print tables. There is no radial gauge to replace. */
   .chart-table {
     position: static;
     width: auto;
@@ -1384,19 +1381,6 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
     overflow: visible;
     white-space: normal;
   }
-  .radial-svg { display: none !important; }
-  .radial-print-line {
-    position: static;
-    width: auto;
-    height: auto;
-    margin: 0;
-    overflow: visible;
-    clip: auto;
-    clip-path: none;
-    white-space: normal;
-    border: 0;
-  }
-
   /* Hide technical chrome (nav, filters, pager). The provenance footer
      stays: it is part of the printed provenance record. */
   .toc,
@@ -1424,11 +1408,16 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
    horizontally, tables scroll.
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
-  .posture {
-    grid-template-columns: minmax(0, 1fr);
+  .toc { flex-wrap: wrap; }
+  .toc a { flex: 1 1 40%; border-block-end: 1px solid var(--border); }
+  .posture-stat-strip { flex-wrap: wrap; }
+  .stat-item { flex: 1 1 30%; padding-block: 8px; }
+  .stat-item .caption { display: none; }
+  details.explore-row summary {
+    grid-template-columns: auto auto minmax(0, 1fr);
   }
-  .radial-figure { text-align: start; }
-  .radial-svg { margin-inline: 0; }
+  .explore-row__signal { grid-column: 1 / -1; }
+  .belief-slot { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
@@ -1441,11 +1430,10 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
     padding-inline: 16px;
   }
   .hero {
-    padding-block: 24px;
-    padding-inline: 16px;
+    padding-block: 16px;
+    padding-inline: 0;
   }
-  .posture-figure { font-size: 2.5rem; }
-  .display-line { font-size: 1.5rem; }
+  .posture-digits { font-size: 2.5rem; }
   .constellation {
     /* The field returns to a single-row column flow that scrolls inside
        itself (the §4 affordance language); the legend stays a wrapping

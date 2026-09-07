@@ -300,15 +300,15 @@ def test_posture_percent_is_data_driven_not_hardcoded(tmp_path: Path) -> None:
     result = comprehensive_report()
     html = _render(result, tmp_path)
     percent = result.capability_rollup.realized_percent
-    assert f"{percent}% realized" in html, "posture figure is not bound to realized_percent"
+    assert f'data-count-up="{percent}"' in html, "posture figure is not bound to realized_percent"
+    assert ">realized</span>" in html or "% realized" in html
     unrelated = 17
     if percent != unrelated:
-        assert f"{unrelated}% realized" not in html, (
+        assert f'data-count-up="{unrelated}"' not in html, (
             f"posture literal {unrelated}% leaked when the model says {percent}%"
         )
-    assert "0% realized" in _render(empty_report(), tmp_path), (
-        "empty fixture must render 0% realized"
-    )
+    empty = _render(empty_report(), tmp_path)
+    assert 'data-count-up="0"' in empty, "empty fixture must render 0% realized"
 
 
 # ---------------------------------------------------------------------------

@@ -76,9 +76,10 @@ def test_hero_renders_clean_demo_label(tmp_path: Path) -> None:
     html = html_path.read_text(encoding="utf-8")
     # The hero opening line and the masthead Organization row carry the clean
     # label; the legacy demo string never appears as org identity.
-    assert "Demo (synthetic data) &mdash; Security License Lens assessment" in html
+    assert "Demo (synthetic data)" in html
     assert f"{LEGACY_DEMO_NAME} &mdash;" not in html
-    assert "Organization <code>Demo (synthetic data)</code>" in html
+    assert "Organization Demo (synthetic data)" in html
+    assert "Organization <code>" not in html
     assert ZERO_TENANT_ID not in html
     assert "demo / dry-run" not in html
 

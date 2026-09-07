@@ -11,6 +11,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 **Of the security controls associated with the entitlements and assessment scope that could be evaluated, 38% met the defined activation criteria.**
 
+- **Activation assessment:** 109 checks · **Configuration hygiene (optional):** 61 checks
 - **Licensed capabilities detected:** 25
 - **Evaluated capabilities:** 8 (priority packs: identity, endpoint)
 - **Fully working:** 3 of 8 evaluated capabilities (38% realized)
@@ -338,6 +339,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-phishing-resistant-privileged`
+- **How this is decided:**
+  - OK: Privileged directory roles must use phishing-resistant MFA on all cloud apps.
+  - Partial: Privileged MFA exists but is limited to some apps or some roles.
+  - Gap: Privileged roles are not required to use phishing-resistant MFA.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_privileged`
 
 ### Review apps with broad permissions for everyone
 
@@ -349,6 +356,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-risky-delegated-consent`
+- **How this is decided:**
+  - OK: Tenant-wide delegated consent grants hold no unused high-impact scopes.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `risky_grant_count`, `sample`
+  - Evaluator: `licenselens.evaluators.identity_apps_consent.evaluate_app_risky_delegated_consent`
 
 ### Stop users from approving risky app permissions
 
@@ -360,6 +373,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserSettingsMenuBlade)
 - **Technical id:** `id-app-user-consent-restricted`
+- **How this is decided:**
+  - OK: User consent to applications is restricted so admins review risky permissions.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `permission_grant_policies`, `unrestricted`
+  - Evaluator: `licenselens.evaluators.identity_apps_consent.evaluate_app_user_consent_restricted`
 
 ### Turn off SMS, voice, and email one-time codes
 
@@ -371,6 +390,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade)
 - **Technical id:** `id-auth-weak-methods-disabled`
+- **How this is decided:**
+  - OK: SMS, voice call, and email one-time codes are disabled.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `configuration_count`, `enabled_weak_methods`
+  - Evaluator: `licenselens.evaluators.identity_auth_methods.evaluate_auth_weak_methods_disabled`
 
 ### No documented emergency admin account, or exclusions without a reason
 
@@ -382,6 +407,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** The break-glass account could not be confidently identified from the scanned Global Administrator assignments and eligibilities — verify the emergency access account in the Entra portal before relying on this check
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserManagementMenuBlade/~/AllUsers)
 - **Technical id:** `id-break-glass-exclusion`
+- **How this is decided:**
+  - OK: Emergency accounts are declared and every Conditional Access exclusion is justified.
+  - Partial: Emergency accounts exist, but some exclusions are still unexplained.
+  - Gap: Emergency accounts are missing, or Conditional Access exclusions are unexplained.
+  - Evidence fields: `declared_break_glass_principal_count`, `unjustified_exclusion_count`, `identified_break_glass_accounts`
+  - Evaluator: `licenselens.evaluators.identity_break_glass.evaluate_break_glass_exclusion`
 
 ### Block device-code phishing sign-ins
 
@@ -393,6 +424,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-device-code-block`
+- **How this is decided:**
+  - OK: Device-code sign-ins are blocked by an enforced Conditional Access policy.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `break_glass_principal_count`, `enforced_policies`, `label`, `report_only_policies`, `scope_gaps_best`, `scoped_policies`, `security_defaults_enabled`, `universal_policies`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_device_code_block`
 
 ### Block suspicious high-risk sign-ins
 
@@ -404,6 +441,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled; Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-high-risk-signins`
+- **How this is decided:**
+  - OK: Sign-ins marked high risk are blocked for all users on all cloud apps.
+  - Partial: A high-risk sign-in block exists but is limited in who or what it covers.
+  - Gap: High-risk sign-ins are not blocked.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`, `protected_population`
+  - Evaluator: `licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_signins`
 
 ### Block accounts Microsoft marks as high risk
 
@@ -415,6 +458,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled; Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-high-risk-users`
+- **How this is decided:**
+  - OK: Accounts marked high user risk by Identity Protection are blocked.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `break_glass_principal_count`, `enforced_policies`, `label`, `protected_population`, `report_only_policies`, `scope_gaps_best`, `scoped_policies`, `security_defaults_enabled`
+  - Evaluator: `licenselens.evaluators.identity_ca_risk.evaluate_ca_high_risk_users`
 
 ### Require strong phishing-resistant sign-in for everyone
 
@@ -426,6 +475,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-phishing-resistant-all`
+- **How this is decided:**
+  - OK: Every user must use phishing-resistant MFA on all cloud apps.
+  - Partial: Phishing-resistant MFA applies only to some users or some apps.
+  - Gap: No tenant-wide phishing-resistant MFA policy is enforced.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_phishing_resistant_all`
 
 ### Keep privileged-role activation short, explained, and context-bound
 
@@ -437,6 +492,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/roleSettings)
 - **Technical id:** `id-pim-activation-controls`
+- **How this is decided:**
+  - OK: Privileged-role activation requires justification, an authentication context, and a short time limit.
+  - Partial: Some activation controls are present but not all three.
+  - Gap: Privileged-role activation is missing justification, an authentication context, or a time cap.
+  - Evidence fields: `justification_required`, `auth_context_required`, `activation_duration_capped`, `policy_count`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_activation_controls`
 
 ### Alert when Global Admin is turned on
 
@@ -448,6 +509,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-pim-ga-activation-alert`
+- **How this is decided:**
+  - OK: Security is alerted the moment Global Administrator is activated.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `ga_notification_rules`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_alert`
 
 ### Require approval to turn on Global Admin
 
@@ -459,6 +526,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-pim-ga-activation-approval`
+- **How this is decided:**
+  - OK: A second approver signs off on every Global Administrator activation.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `approval_required_rules`, `ga_rule_count`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_ga_activation_approval`
 
 ### Provision admin access only through just-in-time tools
 
@@ -470,6 +543,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-pim-no-outside-pam`
+- **How this is decided:**
+  - OK: Privileged roles are granted only through PIM eligibility.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `eligible_schedules`, `standing_highly_privileged_assignments`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_no_outside_pam`
 
 ### Remove always-on powerful admin assignments
 
@@ -481,6 +560,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-pim-no-permanent-privileged`
+- **How this is decided:**
+  - OK: Highly privileged roles have no standing active assignments.
+  - Partial: Some standing assignments remain.
+  - Gap: Highly privileged roles still have permanent active assignments.
+  - Evidence fields: `standing_highly_privileged_assignments`, `eligible_schedules`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_no_permanent_privileged`
 
 ### Admin accounts still have "always on" superpowers
 
@@ -492,6 +577,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_AAD_IAM/RoleAssignmentsBlade)
 - **Technical id:** `id-pim-unused`
+- **How this is decided:**
+  - OK: Privileged access is used through just-in-time activation, not standing roles.
+  - Partial: PIM is in use but standing privileged assignments remain.
+  - Gap: Privileged roles are standing assignments rather than just-in-time activation.
+  - Evidence fields: `privileged_permanent_assignments`, `privileged_eligible_schedules`, `standing_non_break_glass_assignments`
+  - Evaluator: `licenselens.evaluators.identity_privileged.evaluate_pim_unused`
 
 ### Move from Security Defaults to customizable sign-in rules
 
@@ -503,6 +594,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ConditionalAccessBlade)
 - **Technical id:** `id-security-defaults-on`
+- **How this is decided:**
+  - OK: Conditional Access policies replace Security Defaults for MFA and legacy-authentication blocking.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `baseline_protections_active`, `conditional_access_customization_unused`, `policy_id`, `security_defaults_enabled`
+  - Evaluator: `licenselens.evaluators.identity_governance.evaluate_security_defaults_on`
 
 ### Turn on auto-labeling for sensitive content
 
@@ -514,6 +611,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/autolabeling)
 - **Technical id:** `pur-sensitivity-auto-labeling`
+- **How this is decided:**
+  - OK: Sensitive content is classified automatically through auto-labeling policies.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `absent`, `adapter`, `auto_labeling`, `label_policies`
+  - Evaluator: `licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_auto_labeling`
 
 ### Some detection rules watch logs that are not arriving
 
@@ -525,6 +628,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/detect-threats-built-in)
 - **Technical id:** `sen-rule-telemetry-parity`
+- **How this is decided:**
+  - OK: Enabled analytics rules query tables that ingested in the last seven days.
+  - Partial: Too few rules could be evaluated, or some rules watch empty tables.
+  - Gap: A large share of evaluable rules watch tables that are not arriving.
+  - Evidence fields: `dead_rule_ratio`, `dead_rules`, `evaluable_rules`, `indeterminate_rules`, `unwatched_tables`
+  - Evaluator: `licenselens.evaluators.sentinel_parity.evaluate_sen_rule_telemetry_parity`
 
 ### Your security workspace may not be collecting the logs you already pay for
 
@@ -536,6 +645,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/connect-data-sources)
 - **Technical id:** `sen-telemetry-ingestion-coverage`
+- **How this is decided:**
+  - OK: Core tables for owned capabilities ingested in the last seven days.
+  - Partial: Some owned capabilities are missing core tables.
+  - Gap: Owned capabilities are missing their core tables.
+  - Evidence fields: `capabilities`, `mode`
+  - Evaluator: `licenselens.evaluators.sentinel_telemetry.evaluate_sen_telemetry_ingestion_coverage`
 
 ### Prove your admin-role reviews actually run and repeat
 
@@ -547,6 +662,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade)
 - **Technical id:** `id-access-reviews-scope`
+- **How this is decided:**
+  - OK: Access reviews for privileged roles recur on a schedule and have completed at least one round.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `definition_count`, `definitions_with_completed_rounds`, `instance_count_by_definition`, `privileged_recurring_count`, `privileged_scoped_count`
+  - Evaluator: `licenselens.evaluators.identity_governance.evaluate_access_reviews_scope`
 
 ### Set up periodic access reviews for admins and guests
 
@@ -558,6 +679,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade)
 - **Technical id:** `id-access-reviews-unused`
+- **How this is decided:**
+  - OK: Periodic access reviews run for privileged roles and guest access.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `definition_count`, `definition_ids`, `privileged_recurring_count`, `privileged_scoped_count`, `recurring_count`
+  - Evaluator: `licenselens.evaluators.identity_governance.evaluate_access_reviews_unused`
 
 ### Block risky AI agents when the control is available
 
@@ -569,6 +696,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** AI agent risk controls vary by cloud and license; treat this as advisory
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ai-agents-risky-block`
+- **How this is decided:**
+  - OK: Risky AI agents are blocked by Conditional Access or identity protection.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `candidate_policies`, `manual_fallback`
+  - Evaluator: `licenselens.evaluators.identity_manual.evaluate_ai_agents_risky_block`
 
 ### Turn on admin approval requests for apps
 
@@ -580,6 +713,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-admin-consent-workflow`
+- **How this is decided:**
+  - OK: Admin consent requests route to reviewers who monitor the queue.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `is_enabled`, `notify_reviewers`
+  - Evaluator: `licenselens.evaluators.identity_apps_consent.evaluate_app_admin_consent_workflow`
 
 ### Rotate expiring app secrets and certificates
 
@@ -591,6 +730,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-expiring-credentials`
+- **How this is decided:**
+  - OK: Application secrets and certificates rotate before expiry.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `already_expired`, `expired_count`, `expiring_count`, `expiring_within_30_days`
+  - Evaluator: `licenselens.evaluators.identity_apps_credentials.evaluate_app_expiring_credentials`
 
 ### Block legacy app passwords
 
@@ -602,6 +747,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-app-password-addition-blocked`
+- **How this is decided:**
+  - OK: App passwords that bypass MFA are blocked for all users.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `enforced_policies`
+  - Evaluator: `licenselens.evaluators.identity_apps_consent.evaluate_app_password_addition_blocked`
 
 ### Stop regular users from creating apps
 
@@ -613,6 +764,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_UsersAndTenants/UserSettingsMenuBlade)
 - **Technical id:** `id-app-registration-admin-only`
+- **How this is decided:**
+  - OK: Only administrators can register applications in the tenant.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `allowed_to_create_apps`
+  - Evaluator: `licenselens.evaluators.identity_apps_consent.evaluate_app_registration_admin_only`
 
 ### Show app and location on Authenticator prompts
 
@@ -624,6 +781,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade)
 - **Technical id:** `id-auth-authenticator-context`
+- **How this is decided:**
+  - OK: Authenticator prompts show the application name and sign-in location.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `authenticator_state`, `number_matching_enabled`, `show_app_name`, `show_location`
+  - Evaluator: `licenselens.evaluators.identity_auth_methods.evaluate_auth_authenticator_context`
 
 ### Require company-managed devices for access
 
@@ -635,6 +798,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-managed-devices`
+- **How this is decided:**
+  - OK: Access to cloud apps requires an Intune-marked or hybrid-joined device for all users.
+  - Partial: A device requirement exists but is limited to some users or some apps.
+  - Gap: Cloud apps can be reached from unmanaged devices.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_managed_devices`
 
 ### Only allow multi-factor setup from managed devices
 
@@ -646,6 +815,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Security Defaults is on; Conditional Access policies cannot be created until it is disabled
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-mfa-registration-managed`
+- **How this is decided:**
+  - OK: Security-information registration happens only from managed devices.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `break_glass_principal_count`, `enforced_policies`, `label`, `report_only_policies`, `scope_gaps_best`, `scoped_policies`, `security_defaults_enabled`, `universal_policies`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_registration_managed`
 
 ### Powerful accounts that nobody uses are still switched on
 
@@ -657,6 +832,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/SignInEventsBlade)
 - **Technical id:** `id-dormant-privileged`
+- **How this is decided:**
+  - OK: Privileged accounts have signed in inside the lookback window.
+  - Partial: Some privileged accounts could not be verified.
+  - Gap: Privileged accounts have not signed in inside the lookback window.
+  - Evidence fields: `dormant_privileged_users`, `active_privileged_users`, `lookback_days`, `signin_sample_truncated`
+  - Evaluator: `licenselens.evaluators.identity_privileged.evaluate_dormant_privileged`
 
 ### Limit what guests can see in your directory
 
@@ -668,6 +849,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade)
 - **Technical id:** `id-guest-directory-access-limited`
+- **How this is decided:**
+  - OK: Guests hold limited directory access as Guest or Restricted Guest users.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `guest_user_role_id`
+  - Evaluator: `licenselens.evaluators.identity_guests.evaluate_guest_directory_access_limited`
 
 ### Stop everyone from inviting external guests
 
@@ -679,6 +866,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade)
 - **Technical id:** `id-guest-inviter-restricted`
+- **How this is decided:**
+  - OK: Only Guest Inviter role members and admins can invite guests.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `allow_invites_from`
+  - Evaluator: `licenselens.evaluators.identity_guests.evaluate_guest_inviter_restricted`
 
 ### Alert when powerful roles are assigned
 
@@ -690,6 +883,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-pim-privileged-assignment-alert`
+- **How this is decided:**
+  - OK: Highly privileged role assignments trigger alerts.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `notification_rule_count`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_privileged_assignment_alert`
 
 ### Guardrails against accidental data leaks may not be active
 
@@ -701,6 +900,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Secure Score proxy — verify DLP enforce mode in Purview portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/policiespage)
 - **Technical id:** `pur-dlp-not-enforced`
+- **How this is decided:**
+  - OK: At least one DLP policy runs in production mode (direct Graph read, or labeled fallback).
+  - Partial: DLP policies exist but are still in test mode, or only a labeled fallback signal is available.
+  - Gap: No DLP policy is in production mode.
+  - Evidence fields: `dlp_graph`, `proxy`, `source`
+  - Evaluator: `licenselens.evaluators.purview.evaluate_purview_dlp`
 
 ### Automate part of the incident response
 
@@ -712,6 +917,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks)
 - **Technical id:** `sen-automation-rules`
+- **How this is decided:**
+  - OK: Automation rules trigger playbooks for high-value alerts.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `enabled_automation_rules`, `playbook_automation_rules`, `total_automation_rules`, `workspace_resource_id`
+  - Evaluator: `licenselens.evaluators.sentinel_extended.evaluate_sen_automation_rules`
 
 ### Keep security logs long enough to investigate
 
@@ -723,6 +934,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive)
 - **Technical id:** `sen-log-analytics-retention`
+- **How this is decided:**
+  - OK: Sentinel workspace retention covers at least 90 days for investigations.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `customer_id`, `retention_in_days`, `sku`, `workspace_resource_id`
+  - Evaluator: `licenselens.evaluators.sentinel_extended.evaluate_sen_log_analytics_retention`
 
 ### Behavior-based detection may still be switched off
 
@@ -734,39 +951,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics)
 - **Technical id:** `sen-ueba-not-enabled`
-
-### Stop live events from always recording
-
-- **Status:** Needs attention
-- **In plain English:** Live events always record. Let organizers choose or disable recording.
-- **Suggested next step:** Set 'Record an event' to organizer can record or never record.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-broadcast-not-always-record`
-
-### Restrict Microsoft apps to approved ones
-
-- **Status:** Needs attention
-- **In plain English:** Some users can install any Microsoft app. Restrict to approved apps.
-- **Suggested next step:** Block all Microsoft apps or allow only approved ones.
-- **Confidence:** Medium confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-microsoft-apps-governed`
-
-### Disable meeting recording by default
-
-- **Status:** Needs attention
-- **In plain English:** Recording is on for some users. Disable it unless explicitly required.
-- **Suggested next step:** Turn off 'Meeting recording' unless a specific group needs it.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-recording-disabled`
+- **How this is decided:**
+  - OK: UEBA entity behavior analytics is enabled on the Sentinel workspace.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `entity_analytics_enabled`, `raw_entity_present`, `raw_ueba_present`, `setting_names`, `ueba_enabled`, `ueba_setting_enabled`, `workspace_resource_id`
+  - Evaluator: `licenselens.evaluators.sentinel.evaluate_sen_ueba`
 
 ### Stop calendar-based password expiration
 
@@ -778,6 +968,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/~/Domains)
 - **Technical id:** `id-password-never-expire`
+- **How this is decided:**
+  - OK: User passwords never expire on verified managed domains.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `expiring_domains`, `never_expire_domains`
+  - Evaluator: `licenselens.evaluators.identity_privileged_extra.evaluate_password_never_expire`
 
 ### Some paid device-management seats may not be enrolled
 
@@ -789,6 +985,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Enrollment is compared against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify eligible devices in the Microsoft Intune admin center; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Devices/DevicesMenu/~/allDevices)
 - **Technical id:** `endpoint-enrollment-coverage`
+- **How this is decided:**
+  - OK: Managed-device count meets the expected enrollment denominator.
+  - Partial: Some licensed or registered devices are not enrolled.
+  - Gap: Almost none of the expected devices are enrolled.
+  - Evidence fields: `managed_device_count`, `licensed_units`, `truncated`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_enrollment.evaluate_endpoint_enrollment_coverage`
 
 ### Block outdated sign-in methods
 
@@ -800,6 +1002,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-legacy-auth-block`
+- **How this is decided:**
+  - OK: Legacy authentication clients are blocked for all users on all cloud apps.
+  - Partial: The block exists but is limited to some users, some apps, or extra conditions.
+  - Gap: Legacy authentication is still allowed.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_legacy_auth_block`
 
 ### Powerful accounts may sign in without strong extra checks
 
@@ -811,6 +1019,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-priv-gaps`
+- **How this is decided:**
+  - OK: Privileged sign-ins require phishing-resistant MFA and legacy authentication is blocked.
+  - Partial: Privileged MFA or the legacy-auth block is missing, report-only, or limited in scope.
+  - Gap: Privileged accounts can sign in without modern MFA, or legacy authentication is still allowed.
+  - Evidence fields: `mfa_covers_privileged`, `legacy_block_enforced`, `privileged_principal_count`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_access.evaluate_ca_priv_gaps`
 
 ### Some PCs may not be enrolled in advanced device protection
 
@@ -822,6 +1036,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Coverage is reported against purchased license seats, not an authoritative device inventory; license counts do not necessarily equal the device population, so this is a licensing-leverage signal, not proven device coverage. Verify actual eligible devices in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/machines)
 - **Technical id:** `mde-onboard-gap`
+- **How this is decided:**
+  - OK: Onboarded machines meet the active-device denominator (or the licensed-seat signal when no inventory join is available).
+  - Partial: Onboarding is below the threshold, or only a licensed-seat leverage signal is available.
+  - Gap: Almost none of the expected devices are onboarded when an authoritative denominator exists.
+  - Evidence fields: `onboarded_machines`, `licensed_units`, `coverage_ratio`, `truncated`
+  - Evaluator: `licenselens.evaluators.defender_endpoint.evaluate_mde_onboard_gap`
 
 ### Some device-protection sensors may be inactive or unhealthy
 
@@ -833,6 +1053,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/machines)
 - **Technical id:** `mde-sensor-health`
+- **How this is decided:**
+  - OK: Every onboarded device reports an active, in the expected state Defender sensor.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `active_healthy`, `count_method`, `health_status_counts`, `healthy_ratio`, `impaired_communication`, `machines_sampled`, `no_sensor_data`, `truncated`
+  - Evaluator: `licenselens.evaluators.endpoint_mde_xdr.evaluate_mde_sensor_health`
 
 ### Apply DLP across Exchange SharePoint OneDrive Teams
 
@@ -844,6 +1070,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
 - **Technical id:** `pur-dlp-locations-complete`
+- **How this is decided:**
+  - OK: DLP policies cover Exchange, SharePoint, OneDrive, Teams, and devices.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `covered_workloads`, `workloads`
+  - Evaluator: `licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_locations_complete`
 
 ### Your security command center may have few alarms turned on
 
@@ -855,6 +1087,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/detect-threats-built-in)
 - **Technical id:** `sen-analytics-rule-coverage`
+- **How this is decided:**
+  - OK: Enough scheduled analytics rules are enabled across several tactics.
+  - Partial: Some scheduled rules are enabled, but coverage is thin or dead rules block a pass.
+  - Gap: Too few scheduled analytics rules are enabled.
+  - Evidence fields: `enabled_scheduled_or_nrt`, `tactic_count`, `total_rules`, `workspace_resource_id`
+  - Evaluator: `licenselens.evaluators.sentinel.evaluate_sen_analytics_coverage`
 
 ### Feed your security command center with real signals
 
@@ -866,6 +1104,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/connect-data-sources)
 - **Technical id:** `sen-data-connectors`
+- **How this is decided:**
+  - OK: Key connectors are connected and at least one table is ingesting.
+  - Partial: Connectors are connected but Usage shows no ingesting tables, or key connectors are missing.
+  - Gap: Too few data connectors are connected.
+  - Evidence fields: `connected_connectors`, `key_connectors_connected`, `total_connectors`, `workspace_resource_id`
+  - Evaluator: `licenselens.evaluators.sentinel_extended.evaluate_sen_data_connectors`
 
 ### Confirm Entra diagnostic settings are sending logs to Sentinel
 
@@ -888,6 +1132,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-ownerless-or-stale`
+- **How this is decided:**
+  - OK: Every application has an owner and current credentials.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `app_count`, `ownerless_count`, `ownerless_sample`, `stale_count`, `stale_sample`
+  - Evaluator: `licenselens.evaluators.identity_apps_credentials.evaluate_app_ownerless_or_stale`
 
 ### Finish consolidating sign-in method settings
 
@@ -899,6 +1149,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade)
 - **Technical id:** `id-auth-methods-migration`
+- **How this is decided:**
+  - OK: Authentication methods policy migration is finished.
+  - Partial: Migration is in progress or not finished.
+  - Gap: Authentication methods still live in the legacy policy surface.
+  - Evidence fields: `policy_migration_state`
+  - Evaluator: `licenselens.evaluators.identity_auth_methods.evaluate_auth_methods_migration`
 
 ### Tighten default access from unknown external tenants
 
@@ -910,6 +1166,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade)
 - **Technical id:** `id-cross-tenant-defaults`
+- **How this is decided:**
+  - OK: Cross-tenant defaults block unknown external tenants until reviewed.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `inbound_access_type`
+  - Evaluator: `licenselens.evaluators.identity_guests.evaluate_cross_tenant_defaults`
 
 ### Do not take other tenants' word for multi-factor auth
 
@@ -921,6 +1183,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/CompanyRelationshipsMenuBlade)
 - **Technical id:** `id-cross-tenant-mfa-trust`
+- **How this is decided:**
+  - OK: Multi-factor authentication claims from external tenants are not trusted by default.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `inbound_mfa_trust_default`, `outbound_mfa_trust_default`, `partner_count`, `partner_inbound_mfa_trust_count`, `partner_outbound_mfa_trust_count`
+  - Evaluator: `licenselens.evaluators.identity_guests.evaluate_cross_tenant_mfa_trust`
 
 ### Use narrower admin roles instead of Global Admin
 
@@ -932,6 +1200,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-ga-finer-roles`
+- **How this is decided:**
+  - OK: Privileged users hold fine-grained roles instead of standing Global Admin.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `global_admin_principals`, `other_highly_privileged_assignments`
+  - Evaluator: `licenselens.evaluators.identity_privileged_extra.evaluate_ga_finer_roles`
 
 ### Make approvals require typing the on-screen number
 
@@ -943,6 +1217,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/AuthenticationMethodsMenuBlade)
 - **Technical id:** `id-number-matching`
+- **How this is decided:**
+  - OK: Microsoft Authenticator number matching is required.
+  - Partial: Authenticator is enabled but number matching is not explicitly required.
+  - Gap: Number matching is not in use.
+  - Evidence fields: `number_matching_state`, `authenticator_state`, `number_matching_explicit`
+  - Evaluator: `licenselens.evaluators.identity_auth_methods.evaluate_auth_number_matching`
 
 ### Alert when other powerful admin roles activate
 
@@ -954,6 +1234,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-pim-other-activation-alert`
+- **How this is decided:**
+  - OK: Alerts fire when other highly privileged roles activate.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `notification_rule_count`
+  - Evaluator: `licenselens.evaluators.identity_pim_rules.evaluate_pim_other_activation_alert`
 
 ### On-site directory servers may lack attack sensors
 
@@ -965,50 +1251,6 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Secure Score proxy — verify MDI sensors in the Defender portal; Based on Microsoft Secure Score signals — confirm the real setting in the Microsoft 365 / security admin portal before treating this as definitive
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/health)
 - **Technical id:** `mdi-sensors-missing`
-
-### Restrict custom apps to approved ones
-
-- **Status:** Partly set up
-- **In plain English:** Custom apps are governed by policy Org-wide app settings could not be confirmed automatically.
-- **Suggested next step:** Block all custom apps or allow only approved ones.
-- **Confidence:** Medium confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-custom-apps-governed`
-
-### Restrict third-party apps to approved ones
-
-- **Status:** Partly set up
-- **In plain English:** Third-party apps are governed by policy Org-wide app settings could not be confirmed automatically.
-- **Suggested next step:** Block all third-party apps or allow only approved ones.
-- **Confidence:** Medium confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** Org-wide app settings (v2) were not readable; only legacy permission policies were evaluated
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-third-party-apps-governed`
-
-### Add your mailbox to DMARC reports
-
-- **Status:** Check pending
-- **In plain English:** Add the contact to your configured settings so this DMARC field can be checked.
-- **Suggested next step:** Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.
-- **Confidence:** Low confidence — verify in portal
-- **Data sources:** Not reported
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/#/Domains)
-- **Technical id:** `exo-dmarc-agency-contact`
-
-### Add the federal DMARC report mailbox when required
-
-- **Status:** Check pending
-- **In plain English:** Add the contact to your configured settings so this DMARC field can be checked.
-- **Suggested next step:** When your configured settings include a federal contact, add it to every DMARC aggregate-report (rua) field.
-- **Confidence:** Low confidence — verify in portal
-- **Data sources:** Not reported
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/#/Domains)
-- **Technical id:** `exo-dmarc-federal-contact`
 
 ### Confirm identity logs reach your security team
 
@@ -1053,6 +1295,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
 - **Technical id:** `mdo-impersonation-partner-domains`
+- **How this is decided:**
+  - OK: Impersonation protection covers profile-listed partner domains.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `partner_domains`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_partner_domains`
 
 ### Protect sensitive accounts from look-alike senders
 
@@ -1064,28 +1312,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
 - **Technical id:** `mdo-impersonation-users-protected`
-
-### Make anyone links expire within 30 days
-
-- **Status:** Check pending
-- **In plain English:** Anyone links are disabled, so link expiration is not required.
-- **Suggested next step:** Require anyone links to expire within 30 days.
-- **Confidence:** Low confidence — verify in portal
-- **Data sources:** Not reported
-- **Limitations:** Anyone links are disabled, so link expiration is not required
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-anyone-link-expiration`
-
-### Make anyone links view-only
-
-- **Status:** Check pending
-- **In plain English:** Anyone links are disabled, so link permissions are not required.
-- **Suggested next step:** Restrict anyone links to view-only for files and folders.
-- **Confidence:** Low confidence — verify in portal
-- **Data sources:** Not reported
-- **Limitations:** Anyone links are disabled, so link permissions are not required
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-anyone-link-view`
+- **How this is decided:**
+  - OK: User impersonation protection covers profile-listed sensitive accounts.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `sensitive_users`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_users_protected`
 
 ### Limit guest invites to approved partner domains
 
@@ -1130,6 +1362,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies)
 - **Technical id:** `endpoint-compliance-policy-assigned`
+- **How this is decided:**
+  - OK: At least one compliance policy is assigned.
+  - Partial: Compliance policies exist but leave some platforms out.
+  - Gap: No compliance policy is assigned.
+  - Evidence fields: `assigned_count`, `compliance_policy_count`, `uncovered_platforms`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_policy_assigned`
 
 ### Devices may not be flowing into advanced protection
 
@@ -1141,6 +1379,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/securitysettings/endpoints/integration)
 - **Technical id:** `endpoint-mde-connector`
+- **How this is decided:**
+  - OK: The Intune to Defender for Endpoint connector is active for the expected devices.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `onboarded_device_count`, `unhealthy_device_count`, `unknown_device_count`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_mde_connector`
 
 ### Core endpoint protections may be partially configured
 
@@ -1152,6 +1396,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview)
 - **Technical id:** `endpoint-security-policy-coverage`
+- **How this is decided:**
+  - OK: Antivirus, firewall, disk encryption, and ASR families are all assigned.
+  - Partial: Some endpoint-security families are missing.
+  - Gap: Managed devices lack the expected endpoint-security families.
+  - Evidence fields: `coverage_ratio`, `covered_families`, `expected_families`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_policy_coverage`
 
 ### Attack surface reduction rules may not be enforced on devices
 
@@ -1163,6 +1413,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview)
 - **Technical id:** `ep-asr-rules`
+- **How this is decided:**
+  - OK: Attack surface reduction rules are configured and assigned.
+  - Partial: ASR policies exist but cover few rules or few devices.
+  - Gap: No ASR policy is assigned.
+  - Evidence fields: `assigned_count`, `asr_policy_count`, `rules_total`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_asr_rules`
 
 ### Device disks may not be encrypted
 
@@ -1174,6 +1430,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/ConfigureDevicesMenu/~/deviceConfiguration)
 - **Technical id:** `ep-bitlocker-policy`
+- **How this is decided:**
+  - OK: A BitLocker disk-encryption policy is configured and assigned.
+  - Partial: A BitLocker policy exists but is not assigned widely.
+  - Gap: No BitLocker policy is assigned.
+  - Evidence fields: `assigned_count`, `bitlocker_config_count`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_bitlocker_policy`
 
 ### Devices may be out of compliance despite policies
 
@@ -1185,6 +1447,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies)
 - **Technical id:** `ep-compliance-enforcement`
+- **How this is decided:**
+  - OK: Managed devices match the expected state, with zero noncompliant devices reported.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `compliance_policy_count`, `compliant_devices`, `conflict_devices`, `error_devices`, `in_grace_period_devices`, `managed_devices_total`, `noncompliant_devices`, `unknown_devices`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_compliance_enforcement`
 
 ### Work data on phones may be unprotected
 
@@ -1196,6 +1464,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/AppProtectionMenu/~/overview)
 - **Technical id:** `ep-mam-app-protection`
+- **How this is decided:**
+  - OK: App protection policies exist and are assigned to protect managed app data.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `app_protection_policy_count`, `assigned_count`, `org_wide_count`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_mam_app_protection`
 
 ### Tamper protection may be off on some devices
 
@@ -1207,116 +1481,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/securitysettings/endpoints/antivirus)
 - **Technical id:** `ep-tamper-protection`
-
-### Turn on DKIM signing for every domain
-
-- **Status:** Looking good
-- **In plain English:** Your domains sign outgoing mail with DKIM.
-- **Suggested next step:** Enable DKIM signing for each accepted domain in Defender.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/authentication?viewid=DKIM)
-- **Technical id:** `exo-dkim-enabled`
-
-### Publish a DMARC record for every domain
-
-- **Status:** Looking good
-- **In plain English:** Your domains publish DMARC records.
-- **Suggested next step:** Publish a DMARC TXT record at _dmarc for each second-level domain.
-- **Confidence:** High confidence
-- **Data sources:** DNS TXT resolution (system resolver)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/#/Domains)
-- **Technical id:** `exo-dmarc-published`
-
-### Set DMARC policy to reject
-
-- **Status:** Looking good
-- **In plain English:** Your domains reject mail that fails authentication.
-- **Suggested next step:** Set p=reject on every domain DMARC record.
-- **Confidence:** High confidence
-- **Data sources:** DNS TXT resolution (system resolver)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/#/Domains)
-- **Technical id:** `exo-dmarc-reject`
-
-### Flag mail that comes from outside
-
-- **Status:** Looking good
-- **In plain English:** Users see a clear flag when mail comes from outside your organization.
-- **Suggested next step:** Enable external sender mail tips or an [External] transport rule.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/transportrules)
-- **Technical id:** `exo-external-sender-warnings`
-
-### Stop automatic email forwarding to outside domains
-
-- **Status:** Looking good
-- **In plain English:** External mail forwarding is locked down.
-- **Suggested next step:** Disable automatic forwarding on remote domains except approved partners.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/remotedomains)
-- **Technical id:** `exo-forwarding-external-disabled`
-
-### Keep mailbox auditing turned on
-
-- **Status:** Looking good
-- **In plain English:** Mailbox access is being recorded for later investigation.
-- **Suggested next step:** Ensure organization mailbox auditing is enabled (AuditDisabled false).
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/)
-- **Technical id:** `exo-mailbox-audit-enabled`
-
-### Limit calendar sharing to approved domains
-
-- **Status:** Looking good
-- **In plain English:** Calendar sharing is limited to approved domains.
-- **Suggested next step:** Remove sharing-with-all-domains from calendar sharing policies.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** Calendar free/busy vs full-detail sharing granularity is not distinguished
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/individualsharing)
-- **Technical id:** `exo-sharing-calendar-not-all-domains`
-
-### Limit contact sharing to approved domains
-
-- **Status:** Looking good
-- **In plain English:** Contact folder sharing is limited to approved domains.
-- **Suggested next step:** Remove sharing-with-all-domains from contact sharing policies.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/individualsharing)
-- **Technical id:** `exo-sharing-contact-not-all-domains`
-
-### Turn off SMTP AUTH for the organization
-
-- **Status:** Looking good
-- **In plain English:** Legacy basic-auth email submission is turned off.
-- **Suggested next step:** Disable SMTP AUTH at the organization level unless a legacy app truly needs it.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/settings)
-- **Technical id:** `exo-smtp-auth-disabled`
-
-### Publish a strict SPF record for every domain
-
-- **Status:** Looking good
-- **In plain English:** Your domains publish strict SPF records.
-- **Suggested next step:** Publish SPF TXT records that end in -all or ~all for each custom domain.
-- **Confidence:** High confidence
-- **Data sources:** DNS TXT resolution (system resolver)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/#/Domains)
-- **Technical id:** `exo-spf-published`
+- **How this is decided:**
+  - OK: Tamper protection is configured, assigned, and reported enabled on sampled devices.
+  - Partial: A policy exists but some devices still report tamper protection off or unknown.
+  - Gap: No tamper-protection policy is assigned.
+  - Evidence fields: `assigned_count`, `tamper_enabled_devices`, `tamper_disabled_devices`, `sampled_devices`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_depth.evaluate_endpoint_tamper_protection`
 
 ### Require multi-factor authentication for everyone
 
@@ -1328,6 +1498,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-mfa-all-users`
+- **How this is decided:**
+  - OK: An enforced Conditional Access policy requires a second factor for all users across all cloud apps, without risk, location, platform, or client-type limits.
+  - Partial: MFA is required only for some users, some apps, or with extra limits that leave people out.
+  - Gap: No enforced all-user MFA policy was found.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_ca_coverage.evaluate_ca_mfa_all_users`
 
 ### Keep Global Admin count between two and eight
 
@@ -1339,6 +1515,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-ga-count-bounds`
+- **How this is decided:**
+  - OK: Between two and eight Global Administrator principals exist in the tenant.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `global_admin_assignment_count`, `global_admin_principal_count`, `max_recommended`, `min_recommended`
+  - Evaluator: `licenselens.evaluators.identity_privileged_extra.evaluate_ga_count_bounds`
 
 ### Risk-based sign-in protection
 
@@ -1350,6 +1532,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Risk-based policies only protect users with an Entra ID P2 plan assigned: 87 of 100
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-idprotect-off`
+- **How this is decided:**
+  - OK: User-risk and sign-in-risk policies are enforced.
+  - Partial: Only one of the two risk policies is enforced, or both are report-only.
+  - Gap: Identity Protection risk policies are not enforced.
+  - Evidence fields: `user_risk_enforced`, `sign_in_risk_enforced`, `risk_policy_count`, `protected_population`
+  - Evaluator: `licenselens.evaluators.identity_risk.evaluate_idprotect_off`
 
 ### Keep powerful admin accounts cloud-only
 
@@ -1361,6 +1549,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://portal.azure.com/#view/Microsoft_Azure_PIMCommon/CommonMenuBlade/~/quickStart)
 - **Technical id:** `id-priv-cloud-only`
+- **How this is decided:**
+  - OK: Highly privileged accounts are cloud-only.
+  - Partial: Some privileged accounts could not be classified.
+  - Gap: Privileged accounts are synced from on-premises directories.
+  - Evidence fields: `cloud_only`, `hybrid_or_synced`, `privileged_principals_checked`
+  - Evaluator: `licenselens.evaluators.identity_privileged_extra.evaluate_priv_cloud_only`
 
 ### Protective plans are assigned to only some users
 
@@ -1372,39 +1566,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/LicensesMenuBlade/~/Products)
 - **Technical id:** `id-protective-plan-assignment`
-
-### Remove broad anti-spam allow lists
-
-- **Status:** Looking good
-- **In plain English:** No broad anti-spam allow lists are configured.
-- **Suggested next step:** Clear AllowedSenders and AllowedSenderDomains from anti-spam policies.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
-- **Technical id:** `mdo-anti-spam-no-allowed-domains`
-
-### Clear the connection filter IP allow list
-
-- **Status:** Looking good
-- **In plain English:** No IP allow list bypasses email filtering.
-- **Suggested next step:** Remove entries from the connection filter IP allow list.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
-- **Technical id:** `mdo-connection-filter-no-ip-allow`
-
-### Turn off the connection filter safe list
-
-- **Status:** Looking good
-- **In plain English:** Safe-list bypass is turned off.
-- **Suggested next step:** Disable EnableSafeList on connection filter policies.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
-- **Technical id:** `mdo-connection-filter-no-safe-list`
+- **How this is decided:**
+  - OK: Protective plans are assigned to at least 85% of enabled member users.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `capabilities`, `enabled_member_users`
+  - Evaluator: `licenselens.evaluators.identity_assignment.evaluate_protective_plan_assignment`
 
 ### Protect your own domains from look-alikes
 
@@ -1416,6 +1583,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
 - **Technical id:** `mdo-impersonation-domains-owned`
+- **How this is decided:**
+  - OK: Impersonation protection covers every owned organization domain.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `property`, `surface`, `value`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_impersonation_domains_owned`
 
 ### Block risky click-to-run attachments
 
@@ -1427,6 +1600,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antimalwarev2)
 - **Technical id:** `mdo-malware-file-filter`
+- **How this is decided:**
+  - OK: The common attachments filter blocks executable attachment types.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `property`, `surface`, `value`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_file_filter`
 
 ### Turn on zero-hour auto purge for malware
 
@@ -1438,17 +1617,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antimalwarev2)
 - **Technical id:** `mdo-malware-zap`
-
-### Block automatic mail forwarding to outside addresses
-
-- **Status:** Looking good
-- **In plain English:** Automatic mail forwarding to outside addresses is blocked.
-- **Suggested next step:** Turn off automatic forwarding in the outbound spam filter policy.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
-- **Technical id:** `mdo-outbound-spam-forwarding-block`
+- **How this is decided:**
+  - OK: Zero-hour auto purge removes delivered malware from inboxes.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `property`, `surface`, `value`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_malware_zap`
 
 ### Turn on Safe Links and Safe Attachments for everyone
 
@@ -1460,6 +1634,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/presetSecurityPolicies)
 - **Technical id:** `mdo-p2-policies-default`
+- **How this is decided:**
+  - OK: Safe Attachments and Safe Links run in block mode for recipients (direct Exchange read, or labeled fallback).
+  - Partial: Email protections exist but are not in block mode for everyone.
+  - Gap: Safe Attachments or Safe Links are not protecting recipients.
+  - Evidence fields: `safe_attachments_enabled`, `safe_links_enabled`, `preset_enabled`, `proxy`, `exchange_direct`
+  - Evaluator: `licenselens.evaluators.defender_mdo.evaluate_mdo_p2_policies`
 
 ### Block malware found by Safe Attachments
 
@@ -1471,6 +1651,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safeattachmentv2)
 - **Technical id:** `mdo-safe-attachments-block`
+- **How this is decided:**
+  - OK: Safe Attachments blocks detected malware before delivery.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `property`, `surface`, `value`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_attachments_block`
 
 ### Scan files in SharePoint OneDrive and Teams
 
@@ -1482,6 +1668,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safeattachmentv2)
 - **Technical id:** `mdo-safe-attachments-spo-teams`
+- **How this is decided:**
+  - OK: Safe Attachments scans files in SharePoint, OneDrive, and Teams.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `enable_atp_for_spo_teams_odb`
+  - Evaluator: `licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_attachments_spo_teams`
 
 ### Screen links in email Teams and Office apps
 
@@ -1493,6 +1685,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safelinksv2)
 - **Technical id:** `mdo-safe-links-block-list`
+- **How this is decided:**
+  - OK: Safe Links screens URLs in email, Teams, and Office applications.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `email`, `office`, `surface`, `teams`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_block_list`
 
 ### Block click-through on rewrapped links
 
@@ -1504,6 +1702,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safelinksv2)
 - **Technical id:** `mdo-safe-links-click-through`
+- **How this is decided:**
+  - OK: Safe Links keeps users from clicking through to the original URL.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `allow_click_through`, `policies`, `surface`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_through`
 
 ### Track clicks on rewritten links
 
@@ -1515,6 +1719,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safelinksv2)
 - **Technical id:** `mdo-safe-links-click-tracking`
+- **How this is decided:**
+  - OK: Safe Links records who clicks rewritten URLs.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `property`, `surface`, `value`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_click_tracking`
 
 ### Scan download links in real time
 
@@ -1526,6 +1736,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safelinksv2)
 - **Technical id:** `mdo-safe-links-real-time-scan`
+- **How this is decided:**
+  - OK: Safe Links scans link destinations in real time before delivery.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `property`, `surface`, `value`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_malware.evaluate_mdo_safe_links_real_time_scan`
 
 ### Show safety tips for unusual senders
 
@@ -1537,28 +1753,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
 - **Technical id:** `mdo-safety-tips-enabled`
-
-### Keep spam and phishing out of inboxes
-
-- **Status:** Looking good
-- **In plain English:** Spam and phishing are kept out of user inboxes.
-- **Suggested next step:** Set spam and phishing actions to quarantine or junk, not inbox delivery.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antispam)
-- **Technical id:** `mdo-spam-phish-not-inbox`
-
-### Remove mail-flow rules that copy mail outside
-
-- **Status:** Looking good
-- **In plain English:** Mail-flow rules do not silently copy or redirect mail outside.
-- **Suggested next step:** Remove or rescope transport rules that redirect or blind-copy mail to external addresses.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.exchange.microsoft.com/#/transportrules)
-- **Technical id:** `mdo-transport-rule-external-forward`
+- **How this is decided:**
+  - OK: Anti-phish safety tips warn users about unusual senders.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `enabled_safety_tips`, `surface`
+  - Evaluator: `licenselens.evaluators.security_suite_threat_impersonation.evaluate_mdo_safety_tips_enabled`
 
 ### Turn on unified audit logging
 
@@ -1570,94 +1770,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/auditlogsearch)
 - **Technical id:** `mdo-unified-audit-enabled`
-
-### Turn off Power BI data export
-
-- **Status:** Looking good
-- **In plain English:** Data export from Power BI is off.
-- **Suggested next step:** Disable data export in the Power BI admin portal tenant settings.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-export-controls`
-
-### Turn off Power BI publish to web
-
-- **Status:** Looking good
-- **In plain English:** Publish to web is off.
-- **Suggested next step:** Disable publish to web in the Power BI admin portal.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-publish-to-web-disabled`
-
-### Apply a DLP policy to every environment
-
-- **Status:** Looking good
-- **In plain English:** Every environment has a DLP policy.
-- **Suggested next step:** Assign a DLP policy that covers every environment, including the default environment.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-dlp-all-environments`
-
-### Apply DLP to every non-default environment
-
-- **Status:** Looking good
-- **In plain English:** Every non-default environment has a DLP policy.
-- **Suggested next step:** Assign a DLP policy to every non-default environment.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-dlp-nondefault-envs`
-
-### Restrict environment creation to admins
-
-- **Status:** Looking good
-- **In plain English:** Environment creation is admin-only.
-- **Suggested next step:** Turn off environment creation by non-admin users in the Power Platform admin center.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-env-creation-admin-only`
-
-### Restrict Power Pages creation to admins
-
-- **Status:** Looking good
-- **In plain English:** Power Pages creation is admin-only.
-- **Suggested next step:** Turn off Power Pages creation by non-admin users in the Power Platform admin center.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-pages-creation-admin-only`
-
-### Configure an explicit tenant isolation allowlist
-
-- **Status:** Looking good
-- **In plain English:** Cross-tenant connections are limited to an explicit allowlist.
-- **Suggested next step:** Enable tenant isolation and define its inbound and outbound allowlist.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-tenant-isolation-allowlist`
-
-### Turn on Power Platform tenant isolation
-
-- **Status:** Looking good
-- **In plain English:** Tenant isolation is enabled.
-- **Suggested next step:** Enable tenant isolation in the Power Platform admin center and review allowlist exceptions.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-tenant-isolation-enabled`
+- **How this is decided:**
+  - OK: Unified audit logging records user and admin activity.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `adapter`, `unified_audit_ingestion`
+  - Evaluator: `licenselens.evaluators.security_suite_dlp.evaluate_mdo_unified_audit_enabled`
 
 ### Require sensitivity labels on new content
 
@@ -1669,6 +1787,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/labelpolicies)
 - **Technical id:** `pur-default-and-mandatory-labels`
+- **How this is decided:**
+  - OK: A default sensitivity label is assigned and labeling is required.
+  - Partial: A default label or mandatory labeling is missing.
+  - Gap: No default label and no mandatory labeling are configured.
+  - Evidence fields: `default_label`, `mandatory_labeling`, `label_policies`
+  - Evaluator: `licenselens.evaluators.purview_governance.evaluate_pur_default_and_mandatory_labels`
 
 ### Block sharing of sensitive information with DLP
 
@@ -1680,6 +1804,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
 - **Technical id:** `pur-dlp-enforcement-block`
+- **How this is decided:**
+  - OK: DLP rule actions block sharing of sensitive information.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `blocking_rules`, `dlp_rules`
+  - Evaluator: `licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_enforcement_block`
 
 ### Notify users when they handle sensitive data
 
@@ -1691,6 +1821,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
 - **Technical id:** `pur-dlp-notifications`
+- **How this is decided:**
+  - OK: DLP user notifications explain blocked actions to users.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `dlp_rules`, `notifying_rules`
+  - Evaluator: `licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_notifications`
 
 ### Create an enforced DLP policy for sensitive data
 
@@ -1702,6 +1838,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Sensitive-information-type coverage (SSN/ITIN/credit card) is not enumerated; verify rule content in the Purview portal
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
 - **Technical id:** `pur-dlp-policy-present`
+- **How this is decided:**
+  - OK: An enforced DLP policy protects agency-defined sensitive information.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `dlp_policy_count`, `enforced_dlp_policies`
+  - Evaluator: `licenselens.evaluators.security_suite_dlp.evaluate_pur_dlp_policy_present`
 
 ### Protect data on endpoint devices
 
@@ -1713,6 +1855,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://compliance.microsoft.com/datalossprevention)
 - **Technical id:** `pur-endpoint-dlp`
+- **How this is decided:**
+  - OK: An enforced DLP policy covers endpoint devices.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `dlp_policy_count`, `endpoint_dlp_policies`
+  - Evaluator: `licenselens.evaluators.security_suite_dlp.evaluate_pur_endpoint_dlp`
 
 ### Confirm insider risk management is set up
 
@@ -1724,6 +1872,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** Analytics state is not exposed by this API; confirm it in the portal
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/insiderriskmgmt)
 - **Technical id:** `pur-insider-risk-readiness`
+- **How this is decided:**
+  - OK: At least one insider risk policy is live; analytics is enabled.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `direct`, `policy_count`, `policy_names`, `proxy`, `source`
+  - Evaluator: `licenselens.evaluators.purview.evaluate_pur_insider_risk_readiness`
 
 ### Apply retention policies to email and files
 
@@ -1735,6 +1889,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/datalifecyclemanagement/retentionpolicies)
 - **Technical id:** `pur-retention-policy-coverage`
+- **How this is decided:**
+  - OK: Retention policies govern content across mail and file workloads.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `absent`, `adapter`, `retention_policies`, `retention_rules`
+  - Evaluator: `licenselens.evaluators.purview_governance.evaluate_pur_retention_policy_coverage`
 
 ### Publish sensitivity labels
 
@@ -1746,94 +1906,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/informationprotection/labelpolicies)
 - **Technical id:** `pur-sensitivity-labels-published`
-
-### Limit external sharing to approved partner domains
-
-- **Status:** Looking good
-- **In plain English:** External sharing is limited to approved partner domains.
-- **Suggested next step:** Turn on domain allowlisting and add only your approved partner domains.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-domain-restrictions`
-
-### Restrict OneDrive sharing to existing guests
-
-- **Status:** Looking good
-- **In plain English:** OneDrive external sharing is restricted.
-- **Suggested next step:** Set OneDrive sharing to existing guests or internal-only.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-onedrive-sharing-limited`
-
-### Restrict SharePoint sharing to existing guests
-
-- **Status:** Looking good
-- **In plain English:** SharePoint external sharing is restricted.
-- **Suggested next step:** Set SharePoint sharing to existing guests or internal-only.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-sharing-capability-limited`
-
-### Block unmanaged devices from SharePoint and OneDrive
-
-- **Status:** Looking good
-- **In plain English:** Unmanaged devices cannot reach SharePoint or OneDrive files.
-- **Suggested next step:** Block access for unmanaged devices on the SharePoint access control page.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-unmanaged-device-access`
-
-### Block anonymous users from starting meetings
-
-- **Status:** Looking good
-- **In plain English:** Anonymous attendees cannot start meetings on their own.
-- **Suggested next step:** Turn off 'Anonymous users and dial-in callers can start a meeting'.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-anonymous-start-disabled`
-
-### Allow external access only for specific domains
-
-- **Status:** Looking good
-- **In plain English:** External access is limited to specific partner domains.
-- **Suggested next step:** Allow only specific external domains, not all.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-external-access-per-domain`
-
-### Restrict who can join teams as a guest
-
-- **Status:** Looking good
-- **In plain English:** External guests cannot be added to teams.
-- **Suggested next step:** Turn off guest access in Teams, or limit guest invitations to approved domains.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com/users/guest-settings)
-- **Technical id:** `teams-guest-access-restricted`
-
-### Block unmanaged users from contacting you first
-
-- **Status:** Looking good
-- **In plain English:** Unmanaged accounts cannot reach your team first.
-- **Suggested next step:** Block inbound contact from unmanaged Teams accounts.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-unmanaged-inbound-blocked`
+- **How this is decided:**
+  - OK: Sensitivity labels are published through an enabled label policy.
+  - Partial: Labels exist but are not published.
+  - Gap: No sensitivity labels are published.
+  - Evidence fields: `published`, `published_label_policies`, `sensitivity_labels`
+  - Evaluator: `licenselens.evaluators.purview_governance.evaluate_pur_sensitivity_labels_published`
 
 ### Nothing may happen when a device falls out of compliance
 
@@ -1845,6 +1923,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_DeviceSettings/DevicesComplianceMenu/~/policies)
 - **Technical id:** `endpoint-compliance-noncompliance-action`
+- **How this is decided:**
+  - OK: Every compliance policy has a scheduled action for noncompliant devices.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `compliance_policy_count`, `policies_with_action`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_compliance.evaluate_endpoint_compliance_noncompliance_action`
 
 ### No security baseline may be applied to devices
 
@@ -1856,6 +1940,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://endpoint.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/overview)
 - **Technical id:** `endpoint-security-baseline`
+- **How this is decided:**
+  - OK: Security baseline profiles are assigned to every managed platform.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `baseline_policy_count`, `configuration_policy_count`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_security_baseline`
 
 ### Shorten long-lived app certificates
 
@@ -1867,6 +1957,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-certificate-lifetime`
+- **How this is decided:**
+  - OK: Application certificates expire within 365 days of issuance.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `long_lived_certificate_count`, `sample`
+  - Evaluator: `licenselens.evaluators.identity_apps_credentials.evaluate_app_certificate_lifetime`
 
 ### Shorten long-lived app secrets
 
@@ -1878,6 +1974,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)
 - **Technical id:** `id-app-password-lifetime`
+- **How this is decided:**
+  - OK: Application password credentials expire within 180 days.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `long_lived_password_count`, `sample`
+  - Evaluator: `licenselens.evaluators.identity_apps_credentials.evaluate_app_password_lifetime`
 
 ### Turn on mailbox intelligence for impersonation detection
 
@@ -1889,17 +1991,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/antiphishing)
 - **Technical id:** `mdo-mailbox-intelligence`
-
-### Restrict quarantine release and keep mail longer
-
-- **Status:** Looking good
-- **In plain English:** Users cannot release quarantined mail without admin review.
-- **Suggested next step:** Restrict end-user quarantine permissions and increase the retention window.
-- **Confidence:** High confidence
-- **Data sources:** Exchange Online PowerShell (powershell.bridge), Security & Compliance PowerShell (scc_compliance)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/quarantinepolicies)
-- **Technical id:** `mdo-quarantine-policy`
+- **How this is decided:**
+  - OK: Mailbox intelligence is enabled on all anti-phish policies.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `mailbox_intelligence_enabled`, `mailbox_intelligence_missing`, `policies`, `surface`
+  - Evaluator: `licenselens.evaluators.defender_mdo_forward.evaluate_mdo_mailbox_intelligence`
 
 ### Scan Office files from untrusted sources
 
@@ -1911,105 +2008,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/safeDocumentsv2)
 - **Technical id:** `mdo-safe-documents`
-
-### Turn off external Power BI invitations
-
-- **Status:** Looking good
-- **In plain English:** External invitations are off.
-- **Suggested next step:** Disable external invitations in the Power BI admin portal.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-external-invite-disabled`
-
-### Turn off Power BI guest access
-
-- **Status:** Looking good
-- **In plain English:** Guest access is off.
-- **Suggested next step:** Disable guest user access in the Power BI admin portal.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-guest-access-disabled`
-
-### Turn off Python and R visuals
-
-- **Status:** Looking good
-- **In plain English:** Python and R visuals are off.
-- **Suggested next step:** Disable Python and R visuals in the Power BI admin portal.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-python-r-visuals-disabled`
-
-### Block Power BI resource key authentication
-
-- **Status:** Looking good
-- **In plain English:** Resource key authentication is blocked.
-- **Suggested next step:** Block resource key authentication in the Power BI admin portal.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-resource-key-auth-blocked`
-
-### Turn on Power BI sensitivity labels
-
-- **Status:** Looking good
-- **In plain English:** Sensitivity labels are applied to Power BI content.
-- **Suggested next step:** Enable sensitivity labels in the Power BI admin portal and publish label policies.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-sensitivity-labels-enabled`
-
-### Restrict Power BI API access for service principals
-
-- **Status:** Looking good
-- **In plain English:** Service principal API access is restricted to allowed groups.
-- **Suggested next step:** Restrict service principal API access to specific security groups or disable it.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-sp-api-restricted`
-
-### Turn off service principal profiles
-
-- **Status:** Looking good
-- **In plain English:** Service principal profiles are off.
-- **Suggested next step:** Disable service principal profile creation in the Power BI admin portal.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/tenantSettings)
-- **Technical id:** `pbi-sp-profiles-disabled`
-
-### Block sharing apps with everyone
-
-- **Status:** Looking good
-- **In plain English:** Share-with-everyone is disabled.
-- **Suggested next step:** Disable share-with-everyone in the Power Platform admin center.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-share-with-everyone-disabled`
-
-### Restrict trial environment creation to admins
-
-- **Status:** Looking good
-- **In plain English:** Trial environment creation is admin-only.
-- **Suggested next step:** Turn off trial environment creation by non-admin users in the Power Platform admin center.
-- **Confidence:** High confidence
-- **Data sources:** Power Platform / Power BI PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.powerplatform.microsoft.com)
-- **Technical id:** `pp-trial-creation-admin-only`
+- **How this is decided:**
+  - OK: Safe Documents protects users who open Office files from the internet.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `allow_safe_docs_open`, `enable_safe_docs`
+  - Evaluator: `licenselens.evaluators.security_suite_spam.evaluate_mdo_safe_documents`
 
 ### Confirm eDiscovery is set up
 
@@ -2021,94 +2025,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://purview.microsoft.com/ediscovery)
 - **Technical id:** `pur-ediscovery-readiness`
-
-### Default new links to specific people
-
-- **Status:** Looking good
-- **In plain English:** New sharing links only reach the specific people you choose.
-- **Suggested next step:** Set the default sharing link type to specific people.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-default-link-specific`
-
-### Default new links to view-only
-
-- **Status:** Looking good
-- **In plain English:** New sharing links are view-only by default.
-- **Suggested next step:** Set the default sharing link permission to view.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-default-link-view`
-
-### Require verification-code reauthentication within 30 days
-
-- **Status:** Looking good
-- **In plain English:** Verification-code access reauthenticates within a safe window.
-- **Suggested next step:** Require verification-code users to reauthenticate within 30 days.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.microsoft.com/sharepoint)
-- **Technical id:** `spo-verification-reauth`
-
-### Hold anonymous and dial-in callers in the lobby
-
-- **Status:** Looking good
-- **In plain English:** Unmanaged attendees wait in the lobby.
-- **Suggested next step:** Keep 'Who can bypass the lobby' away from Everyone.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-anonymous-lobby`
-
-### Keep dial-in callers in the lobby
-
-- **Status:** Looking good
-- **In plain English:** Dial-in callers wait in the lobby.
-- **Suggested next step:** Turn off 'People dialing in can bypass the lobby'.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-dialin-lobby`
-
-### Disable channel email integration
-
-- **Status:** Looking good
-- **In plain English:** Channels cannot receive external email.
-- **Suggested next step:** Turn off 'Users can send emails to a channel email address'.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-email-integration-disabled`
-
-### Block external participants from taking control
-
-- **Status:** Looking good
-- **In plain English:** External attendees cannot take over shared screens.
-- **Suggested next step:** Turn off 'External participants can give or request control'.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-external-control-disabled`
-
-### Block internal users from contacting unmanaged accounts
-
-- **Status:** Looking good
-- **In plain English:** Your team cannot reach unmanaged accounts.
-- **Suggested next step:** Block outbound contact to unmanaged Teams accounts.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-unmanaged-outbound-blocked`
+- **How this is decided:**
+  - OK: Premium eDiscovery cases exist and legal hold workflows are in use.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `case_count`, `case_names`, `direct`, `proxy`, `source`
+  - Evaluator: `licenselens.evaluators.purview.evaluate_pur_ediscovery_readiness`
 
 ### Cross-product incident correlation may not be active
 
@@ -2120,17 +2042,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/incidents)
 - **Technical id:** `xdr-incident-readiness`
-
-### Auto-admit internal users to meetings
-
-- **Status:** Looking good
-- **In plain English:** Your team joins meetings without lobby friction.
-- **Suggested next step:** Set 'Who can bypass the lobby' to People in my org.
-- **Confidence:** High confidence
-- **Data sources:** Microsoft Teams / SharePoint Online PowerShell (powershell.bridge)
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://admin.teams.microsoft.com)
-- **Technical id:** `teams-internal-auto-admit`
+- **How this is decided:**
+  - OK: Defender XDR correlates signals from identity, email, and endpoint into incidents.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `alert_count`, `capability_operating`, `incident_count`, `service_sources`
+  - Evaluator: `licenselens.evaluators.endpoint_mde_xdr.evaluate_xdr_incident_readiness`
 
 ### Turn on Defender for Cloud protection for your subscription
 
@@ -2142,6 +2059,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/defender-for-cloud/enable-enhanced-security)
 - **Technical id:** `az-defender-plan-enabled`
+- **How this is decided:**
+  - OK: The paid Defender for Cloud plan is enabled on the subscription with continuous export of findings.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `status`
+  - Evaluator: `licenselens.evaluators.azure_selective.evaluate_az_defender_plan_enabled`
 
 ### Apps and service accounts are not protected by risk-based sign-in rules
 
@@ -2153,6 +2076,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies)
 - **Technical id:** `id-ca-workload-identity`
+- **How this is decided:**
+  - OK: Workload identities have a risk-based Conditional Access policy.
+  - Partial: A workload-identity policy exists but is report-only or limited in scope.
+  - Gap: No risk-based policy protects workload identities.
+  - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
+  - Evaluator: `licenselens.evaluators.identity_access.evaluate_ca_workload_identity`
 
 ### Confirm no app or automation account is compromised
 
@@ -2164,6 +2093,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IAM/IdentityProtectionMenuBlade/~/WorkloadIdentities)
 - **Technical id:** `id-identity-protection-workload`
+- **How this is decided:**
+  - OK: No service principals are currently flagged as risky or compromised.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `status`
+  - Evaluator: `licenselens.evaluators.identity_risk.evaluate_identity_protection_workload`
 
 ### Access to apps, groups, and Teams is not yet lifecycle-governed
 
@@ -2175,17 +2110,12 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/AccessPackages)
 - **Technical id:** `id-entitlement-access-packages`
-
-### Premium capacity use and capacity admins are checked directly
-
-- **Status:** Not in your plan
-- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
-- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
-- **Confidence:** High confidence
-- **Data sources:** graph.subscribedSkus
-- **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://app.powerbi.com/admin-portal/capacities)
-- **Technical id:** `pbi-premium-capacity-governance`
+- **How this is decided:**
+  - OK: Entitlement Management access packages are configured for governed access.
+  - Partial: The expected state is only partly met.
+  - Gap: The expected state is not met.
+  - Evidence fields: `status`
+  - Evaluator: `licenselens.evaluators.identity_governance.evaluate_entitlement_access_packages`
 
 ### Review Azure resource posture in Defender for Cloud
 
@@ -2197,6 +2127,436 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Limitations:** None reported
 - **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/defender-for-cloud/secure-score-security-controls)
 - **Technical id:** `az-cspm-out-of-scope`
+
+
+## Configuration hygiene (SCuBA-aligned, optional pack)
+
+### Stop live events from always recording
+
+- **Status:** Needs attention
+- **In plain English:** Live events always record. Let organizers choose or disable recording.
+- **Suggested next step:** Set 'Record an event' to organizer can record or never record.
+- **Technical id:** `teams-broadcast-not-always-record`
+
+### Restrict Microsoft apps to approved ones
+
+- **Status:** Needs attention
+- **In plain English:** Some users can install any Microsoft app. Restrict to approved apps.
+- **Suggested next step:** Block all Microsoft apps or allow only approved ones.
+- **Technical id:** `teams-microsoft-apps-governed`
+
+### Disable meeting recording by default
+
+- **Status:** Needs attention
+- **In plain English:** Recording is on for some users. Disable it unless explicitly required.
+- **Suggested next step:** Turn off 'Meeting recording' unless a specific group needs it.
+- **Technical id:** `teams-recording-disabled`
+
+### Restrict custom apps to approved ones
+
+- **Status:** Partly set up
+- **In plain English:** Custom apps are governed by policy Org-wide app settings could not be confirmed automatically.
+- **Suggested next step:** Block all custom apps or allow only approved ones.
+- **Technical id:** `teams-custom-apps-governed`
+
+### Restrict third-party apps to approved ones
+
+- **Status:** Partly set up
+- **In plain English:** Third-party apps are governed by policy Org-wide app settings could not be confirmed automatically.
+- **Suggested next step:** Block all third-party apps or allow only approved ones.
+- **Technical id:** `teams-third-party-apps-governed`
+
+### Add your mailbox to DMARC reports
+
+- **Status:** Check pending
+- **In plain English:** Add the contact to your configured settings so this DMARC field can be checked.
+- **Suggested next step:** Add an internal mailbox to DMARC report recipients (rua/ruf addresses) using the contact from your configured settings.
+- **Technical id:** `exo-dmarc-agency-contact`
+
+### Add the federal DMARC report mailbox when required
+
+- **Status:** Check pending
+- **In plain English:** Add the contact to your configured settings so this DMARC field can be checked.
+- **Suggested next step:** When your configured settings include a federal contact, add it to every DMARC aggregate-report (rua) field.
+- **Technical id:** `exo-dmarc-federal-contact`
+
+### Make anyone links expire within 30 days
+
+- **Status:** Check pending
+- **In plain English:** Anyone links are disabled, so link expiration is not required.
+- **Suggested next step:** Require anyone links to expire within 30 days.
+- **Technical id:** `spo-anyone-link-expiration`
+
+### Make anyone links view-only
+
+- **Status:** Check pending
+- **In plain English:** Anyone links are disabled, so link permissions are not required.
+- **Suggested next step:** Restrict anyone links to view-only for files and folders.
+- **Technical id:** `spo-anyone-link-view`
+
+### Turn on DKIM signing for every domain
+
+- **Status:** Looking good
+- **In plain English:** Your domains sign outgoing mail with DKIM.
+- **Suggested next step:** Enable DKIM signing for each accepted domain in Defender.
+- **Technical id:** `exo-dkim-enabled`
+
+### Publish a DMARC record for every domain
+
+- **Status:** Looking good
+- **In plain English:** Your domains publish DMARC records.
+- **Suggested next step:** Publish a DMARC TXT record at _dmarc for each second-level domain.
+- **Technical id:** `exo-dmarc-published`
+
+### Set DMARC policy to reject
+
+- **Status:** Looking good
+- **In plain English:** Your domains reject mail that fails authentication.
+- **Suggested next step:** Set p=reject on every domain DMARC record.
+- **Technical id:** `exo-dmarc-reject`
+
+### Flag mail that comes from outside
+
+- **Status:** Looking good
+- **In plain English:** Users see a clear flag when mail comes from outside your organization.
+- **Suggested next step:** Enable external sender mail tips or an [External] transport rule.
+- **Technical id:** `exo-external-sender-warnings`
+
+### Stop automatic email forwarding to outside domains
+
+- **Status:** Looking good
+- **In plain English:** External mail forwarding is locked down.
+- **Suggested next step:** Disable automatic forwarding on remote domains except approved partners.
+- **Technical id:** `exo-forwarding-external-disabled`
+
+### Keep mailbox auditing turned on
+
+- **Status:** Looking good
+- **In plain English:** Mailbox access is being recorded for later investigation.
+- **Suggested next step:** Ensure organization mailbox auditing is enabled (AuditDisabled false).
+- **Technical id:** `exo-mailbox-audit-enabled`
+
+### Limit calendar sharing to approved domains
+
+- **Status:** Looking good
+- **In plain English:** Calendar sharing is limited to approved domains.
+- **Suggested next step:** Remove sharing-with-all-domains from calendar sharing policies.
+- **Technical id:** `exo-sharing-calendar-not-all-domains`
+
+### Limit contact sharing to approved domains
+
+- **Status:** Looking good
+- **In plain English:** Contact folder sharing is limited to approved domains.
+- **Suggested next step:** Remove sharing-with-all-domains from contact sharing policies.
+- **Technical id:** `exo-sharing-contact-not-all-domains`
+
+### Turn off SMTP AUTH for the organization
+
+- **Status:** Looking good
+- **In plain English:** Legacy basic-auth email submission is turned off.
+- **Suggested next step:** Disable SMTP AUTH at the organization level unless a legacy app truly needs it.
+- **Technical id:** `exo-smtp-auth-disabled`
+
+### Publish a strict SPF record for every domain
+
+- **Status:** Looking good
+- **In plain English:** Your domains publish strict SPF records.
+- **Suggested next step:** Publish SPF TXT records that end in -all or ~all for each custom domain.
+- **Technical id:** `exo-spf-published`
+
+### Remove broad anti-spam allow lists
+
+- **Status:** Looking good
+- **In plain English:** No broad anti-spam allow lists are configured.
+- **Suggested next step:** Clear AllowedSenders and AllowedSenderDomains from anti-spam policies.
+- **Technical id:** `mdo-anti-spam-no-allowed-domains`
+
+### Clear the connection filter IP allow list
+
+- **Status:** Looking good
+- **In plain English:** No IP allow list bypasses email filtering.
+- **Suggested next step:** Remove entries from the connection filter IP allow list.
+- **Technical id:** `mdo-connection-filter-no-ip-allow`
+
+### Turn off the connection filter safe list
+
+- **Status:** Looking good
+- **In plain English:** Safe-list bypass is turned off.
+- **Suggested next step:** Disable EnableSafeList on connection filter policies.
+- **Technical id:** `mdo-connection-filter-no-safe-list`
+
+### Block automatic mail forwarding to outside addresses
+
+- **Status:** Looking good
+- **In plain English:** Automatic mail forwarding to outside addresses is blocked.
+- **Suggested next step:** Turn off automatic forwarding in the outbound spam filter policy.
+- **Technical id:** `mdo-outbound-spam-forwarding-block`
+
+### Keep spam and phishing out of inboxes
+
+- **Status:** Looking good
+- **In plain English:** Spam and phishing are kept out of user inboxes.
+- **Suggested next step:** Set spam and phishing actions to quarantine or junk, not inbox delivery.
+- **Technical id:** `mdo-spam-phish-not-inbox`
+
+### Remove mail-flow rules that copy mail outside
+
+- **Status:** Looking good
+- **In plain English:** Mail-flow rules do not silently copy or redirect mail outside.
+- **Suggested next step:** Remove or rescope transport rules that redirect or blind-copy mail to external addresses.
+- **Technical id:** `mdo-transport-rule-external-forward`
+
+### Turn off Power BI data export
+
+- **Status:** Looking good
+- **In plain English:** Data export from Power BI is off.
+- **Suggested next step:** Disable data export in the Power BI admin portal tenant settings.
+- **Technical id:** `pbi-export-controls`
+
+### Turn off Power BI publish to web
+
+- **Status:** Looking good
+- **In plain English:** Publish to web is off.
+- **Suggested next step:** Disable publish to web in the Power BI admin portal.
+- **Technical id:** `pbi-publish-to-web-disabled`
+
+### Apply a DLP policy to every environment
+
+- **Status:** Looking good
+- **In plain English:** Every environment has a DLP policy.
+- **Suggested next step:** Assign a DLP policy that covers every environment, including the default environment.
+- **Technical id:** `pp-dlp-all-environments`
+
+### Apply DLP to every non-default environment
+
+- **Status:** Looking good
+- **In plain English:** Every non-default environment has a DLP policy.
+- **Suggested next step:** Assign a DLP policy to every non-default environment.
+- **Technical id:** `pp-dlp-nondefault-envs`
+
+### Restrict environment creation to admins
+
+- **Status:** Looking good
+- **In plain English:** Environment creation is admin-only.
+- **Suggested next step:** Turn off environment creation by non-admin users in the Power Platform admin center.
+- **Technical id:** `pp-env-creation-admin-only`
+
+### Restrict Power Pages creation to admins
+
+- **Status:** Looking good
+- **In plain English:** Power Pages creation is admin-only.
+- **Suggested next step:** Turn off Power Pages creation by non-admin users in the Power Platform admin center.
+- **Technical id:** `pp-pages-creation-admin-only`
+
+### Configure an explicit tenant isolation allowlist
+
+- **Status:** Looking good
+- **In plain English:** Cross-tenant connections are limited to an explicit allowlist.
+- **Suggested next step:** Enable tenant isolation and define its inbound and outbound allowlist.
+- **Technical id:** `pp-tenant-isolation-allowlist`
+
+### Turn on Power Platform tenant isolation
+
+- **Status:** Looking good
+- **In plain English:** Tenant isolation is enabled.
+- **Suggested next step:** Enable tenant isolation in the Power Platform admin center and review allowlist exceptions.
+- **Technical id:** `pp-tenant-isolation-enabled`
+
+### Limit external sharing to approved partner domains
+
+- **Status:** Looking good
+- **In plain English:** External sharing is limited to approved partner domains.
+- **Suggested next step:** Turn on domain allowlisting and add only your approved partner domains.
+- **Technical id:** `spo-domain-restrictions`
+
+### Restrict OneDrive sharing to existing guests
+
+- **Status:** Looking good
+- **In plain English:** OneDrive external sharing is restricted.
+- **Suggested next step:** Set OneDrive sharing to existing guests or internal-only.
+- **Technical id:** `spo-onedrive-sharing-limited`
+
+### Restrict SharePoint sharing to existing guests
+
+- **Status:** Looking good
+- **In plain English:** SharePoint external sharing is restricted.
+- **Suggested next step:** Set SharePoint sharing to existing guests or internal-only.
+- **Technical id:** `spo-sharing-capability-limited`
+
+### Block unmanaged devices from SharePoint and OneDrive
+
+- **Status:** Looking good
+- **In plain English:** Unmanaged devices cannot reach SharePoint or OneDrive files.
+- **Suggested next step:** Block access for unmanaged devices on the SharePoint access control page.
+- **Technical id:** `spo-unmanaged-device-access`
+
+### Block anonymous users from starting meetings
+
+- **Status:** Looking good
+- **In plain English:** Anonymous attendees cannot start meetings on their own.
+- **Suggested next step:** Turn off 'Anonymous users and dial-in callers can start a meeting'.
+- **Technical id:** `teams-anonymous-start-disabled`
+
+### Allow external access only for specific domains
+
+- **Status:** Looking good
+- **In plain English:** External access is limited to specific partner domains.
+- **Suggested next step:** Allow only specific external domains, not all.
+- **Technical id:** `teams-external-access-per-domain`
+
+### Restrict who can join teams as a guest
+
+- **Status:** Looking good
+- **In plain English:** External guests cannot be added to teams.
+- **Suggested next step:** Turn off guest access in Teams, or limit guest invitations to approved domains.
+- **Technical id:** `teams-guest-access-restricted`
+
+### Block unmanaged users from contacting you first
+
+- **Status:** Looking good
+- **In plain English:** Unmanaged accounts cannot reach your team first.
+- **Suggested next step:** Block inbound contact from unmanaged Teams accounts.
+- **Technical id:** `teams-unmanaged-inbound-blocked`
+
+### Restrict quarantine release and keep mail longer
+
+- **Status:** Looking good
+- **In plain English:** Users cannot release quarantined mail without admin review.
+- **Suggested next step:** Restrict end-user quarantine permissions and increase the retention window.
+- **Technical id:** `mdo-quarantine-policy`
+
+### Turn off external Power BI invitations
+
+- **Status:** Looking good
+- **In plain English:** External invitations are off.
+- **Suggested next step:** Disable external invitations in the Power BI admin portal.
+- **Technical id:** `pbi-external-invite-disabled`
+
+### Turn off Power BI guest access
+
+- **Status:** Looking good
+- **In plain English:** Guest access is off.
+- **Suggested next step:** Disable guest user access in the Power BI admin portal.
+- **Technical id:** `pbi-guest-access-disabled`
+
+### Turn off Python and R visuals
+
+- **Status:** Looking good
+- **In plain English:** Python and R visuals are off.
+- **Suggested next step:** Disable Python and R visuals in the Power BI admin portal.
+- **Technical id:** `pbi-python-r-visuals-disabled`
+
+### Block Power BI resource key authentication
+
+- **Status:** Looking good
+- **In plain English:** Resource key authentication is blocked.
+- **Suggested next step:** Block resource key authentication in the Power BI admin portal.
+- **Technical id:** `pbi-resource-key-auth-blocked`
+
+### Turn on Power BI sensitivity labels
+
+- **Status:** Looking good
+- **In plain English:** Sensitivity labels are applied to Power BI content.
+- **Suggested next step:** Enable sensitivity labels in the Power BI admin portal and publish label policies.
+- **Technical id:** `pbi-sensitivity-labels-enabled`
+
+### Restrict Power BI API access for service principals
+
+- **Status:** Looking good
+- **In plain English:** Service principal API access is restricted to allowed groups.
+- **Suggested next step:** Restrict service principal API access to specific security groups or disable it.
+- **Technical id:** `pbi-sp-api-restricted`
+
+### Turn off service principal profiles
+
+- **Status:** Looking good
+- **In plain English:** Service principal profiles are off.
+- **Suggested next step:** Disable service principal profile creation in the Power BI admin portal.
+- **Technical id:** `pbi-sp-profiles-disabled`
+
+### Block sharing apps with everyone
+
+- **Status:** Looking good
+- **In plain English:** Share-with-everyone is disabled.
+- **Suggested next step:** Disable share-with-everyone in the Power Platform admin center.
+- **Technical id:** `pp-share-with-everyone-disabled`
+
+### Restrict trial environment creation to admins
+
+- **Status:** Looking good
+- **In plain English:** Trial environment creation is admin-only.
+- **Suggested next step:** Turn off trial environment creation by non-admin users in the Power Platform admin center.
+- **Technical id:** `pp-trial-creation-admin-only`
+
+### Default new links to specific people
+
+- **Status:** Looking good
+- **In plain English:** New sharing links only reach the specific people you choose.
+- **Suggested next step:** Set the default sharing link type to specific people.
+- **Technical id:** `spo-default-link-specific`
+
+### Default new links to view-only
+
+- **Status:** Looking good
+- **In plain English:** New sharing links are view-only by default.
+- **Suggested next step:** Set the default sharing link permission to view.
+- **Technical id:** `spo-default-link-view`
+
+### Require verification-code reauthentication within 30 days
+
+- **Status:** Looking good
+- **In plain English:** Verification-code access reauthenticates within a safe window.
+- **Suggested next step:** Require verification-code users to reauthenticate within 30 days.
+- **Technical id:** `spo-verification-reauth`
+
+### Hold anonymous and dial-in callers in the lobby
+
+- **Status:** Looking good
+- **In plain English:** Unmanaged attendees wait in the lobby.
+- **Suggested next step:** Keep 'Who can bypass the lobby' away from Everyone.
+- **Technical id:** `teams-anonymous-lobby`
+
+### Keep dial-in callers in the lobby
+
+- **Status:** Looking good
+- **In plain English:** Dial-in callers wait in the lobby.
+- **Suggested next step:** Turn off 'People dialing in can bypass the lobby'.
+- **Technical id:** `teams-dialin-lobby`
+
+### Disable channel email integration
+
+- **Status:** Looking good
+- **In plain English:** Channels cannot receive external email.
+- **Suggested next step:** Turn off 'Users can send emails to a channel email address'.
+- **Technical id:** `teams-email-integration-disabled`
+
+### Block external participants from taking control
+
+- **Status:** Looking good
+- **In plain English:** External attendees cannot take over shared screens.
+- **Suggested next step:** Turn off 'External participants can give or request control'.
+- **Technical id:** `teams-external-control-disabled`
+
+### Block internal users from contacting unmanaged accounts
+
+- **Status:** Looking good
+- **In plain English:** Your team cannot reach unmanaged accounts.
+- **Suggested next step:** Block outbound contact to unmanaged Teams accounts.
+- **Technical id:** `teams-unmanaged-outbound-blocked`
+
+### Auto-admit internal users to meetings
+
+- **Status:** Looking good
+- **In plain English:** Your team joins meetings without lobby friction.
+- **Suggested next step:** Set 'Who can bypass the lobby' to People in my org.
+- **Technical id:** `teams-internal-auto-admit`
+
+### Premium capacity use and capacity admins are checked directly
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Technical id:** `pbi-premium-capacity-governance`
 
 ## Technical details
 

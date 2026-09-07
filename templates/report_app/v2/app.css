@@ -20,12 +20,12 @@
        values, so the cascade never diverges).
      - All directional layout rules use logical properties (border-inline-start,
        margin-inline, padding-inline, text-align: start/end).
-     - Radii only from the section 4 stops: 0 / 2 / 6 / 10 / 16, plus 999px
-       exclusively for proportion-based fills (posture track, distribution
-       segments, chart bars).
-     - Gradients: only --grad-hero and --grad-raised. Blur: only --blur-nav on
-       the sticky nav, behind a @supports guard. Shadows: --shadow-1/2/3 as
-       state only; a card at rest has no shadow.
+     - Radii only from the section 4 stops: 0 / 2 / 6 / 10, plus 999px
+       exclusively for proportion-based fills (distribution segments, chart
+       bars). 16px is withdrawn.
+     - Gradients: only --grad-raised. Blur: only --blur-nav on the sticky
+       nav, behind a @supports guard. Shadows: --shadow-1/2 as state only;
+       a card at rest has no shadow. --grad-hero and --shadow-3 withdrawn.
      - Screen is always dark; only @media print inverts to light ink.
      - Reduced motion collapses to the instant final state with zero
        information loss; forced-colors collapses chrome to system colors.
@@ -38,12 +38,10 @@
    declare yet (values byte-identical to DESIGN_V2 2; safe duplicates).
    -------------------------------------------------------------------------- */
 :root {
-  --grad-hero: linear-gradient(165deg, #1A2330 0%, var(--surface-1) 55%, var(--canvas) 100%);
   --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
   --blur-nav: blur(8px);
   --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.25);
   --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.35);
-  --shadow-3: 0 4px 12px rgba(0, 0, 0, 0.45), 0 16px 40px rgba(0, 0, 0, 0.4);
   /* Translucent twin of --surface-3: the one authorized backdrop-filter
      surface (sticky nav, DESIGN_V2 2.3). Opaque --surface-3 is the fallback. */
   --nav-surface: rgba(33, 42, 53, 0.86);
@@ -59,12 +57,12 @@
    -------------------------------------------------------------------------- */
 body {
   font-size: 1rem;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
-h1 { font-size: 2rem; font-weight: 650; line-height: 1.25; }
-h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.3; }
-h3 { font-size: 1.06rem; font-weight: 600; line-height: 1.35; }
+h1 { font-size: 1.625rem; font-weight: 650; line-height: 1.2; }
+h2 { font-size: 1.1875rem; font-weight: 600; line-height: 1.3; }
+h3 { font-size: 1rem; font-weight: 600; line-height: 1.35; }
 
 /* Prose: comfortable reading, never full column width at desktop. */
 p { max-width: 72ch; }
@@ -155,23 +153,26 @@ header.app-header {
 
 .logo { display: flex; align-items: center; gap: 12px; padding-block: 4px; }
 .logo-mark {
-  width: 28px;
-  height: 28px;
-  background: var(--accent);
-  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
   flex-shrink: 0;
+  display: block;
 }
-.tagline { margin: 0; color: var(--text-2); font-size: 0.8125rem; }
+.tagline { margin: 4px 0 0; color: var(--text-2); font-size: 0.875rem; }
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 20px;
-  padding-block: 0 0 4px;
-  border-block-start: 0;
-  margin-block-start: 4px;
+  align-items: baseline;
+  gap: 4px 0;
+  padding-block: 8px 0;
+  border-block-start: 1px solid var(--border);
+  margin-block-start: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-2);
 }
 .meta-row { font-size: 0.8125rem; color: var(--text-2); }
-.meta-row code { color: var(--text-1); }
+.meta .sep { padding-inline: 8px; color: var(--text-3); }
 .intro {
   max-width: 1160px;
   margin-inline: auto;
@@ -244,29 +245,39 @@ main.app-main {
 
 .app-nav__sections {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface-2);
 }
 
 .app-nav__link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
   min-height: 44px;
-  padding: 8px 16px;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: var(--surface-1);
+  padding: 8px 12px;
+  border: 0;
+  border-inline-end: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
   color: var(--text-2);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
   text-decoration: none;
+  text-align: center;
 }
-.app-nav__link:hover { color: var(--accent-hover); border-color: var(--accent); }
+.app-nav__link:last-child { border-inline-end: 0; }
+.app-nav__link:hover { color: var(--text-1); background: var(--surface-3); }
 .app-nav__link[aria-current="true"] {
-  color: var(--accent);
-  background: var(--surface-2);
-  border-color: var(--accent);
+  color: var(--text-1);
+  background: var(--surface-3);
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
 .app-nav__workloads {
@@ -309,21 +320,20 @@ main.app-main {
    rules, plus the operational-distribution bar. Not a grid of equal cards.
    -------------------------------------------------------------------------- */
 section.hero {
-  background: var(--grad-hero);
-  box-shadow: var(--shadow-3);
-  border-radius: 16px;
-  padding-block: 32px;
-  padding-inline: 40px;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  padding-block: 24px;
+  padding-inline: 32px;
 }
 
-/* Signature opening line: display text in a <p> (never a heading). */
+/* Tenant line: secondary text, never a display heading. */
 .opening-identity {
   margin-block: 8px 0;
-  font-size: 2rem;
-  font-weight: 650;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
-  color: var(--text-1);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-2);
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -331,114 +341,93 @@ section.hero {
 }
 .opening-identity__id { font-size: 0.8125rem; color: var(--text-3); font-weight: 400; }
 
-.opening-meta {
-  margin-block: 8px 0;
-  color: var(--text-2);
-  font-size: 0.8125rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-}
-.opening-meta code { color: var(--text-1); }
-
-/* Two-column hero: figure | supporting stats + distribution (12-column grid). */
-.hero-grid {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 24px;
-  margin-block-start: 20px;
-  align-items: start;
-}
-.hero-figure { grid-column: 1 / 5; min-width: 0; }
-.hero-side { grid-column: 6 / 13; min-width: 0; display: flex; flex-direction: column; gap: 20px; }
-
-/* The ONE dominant metric (DESIGN_V2 5A). */
+/* The ONE dominant metric (DESIGN_V2 5A). Primary ink, never accent. */
 .posture-figure {
-  font-size: 3.5rem;
-  font-weight: 650;
-  line-height: 1.05;
-  font-variant-numeric: tabular-nums;
-  color: var(--accent);
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-block: 16px 0;
+  color: var(--text-1);
   animation: none;
 }
-.posture-digits { animation: none; }
-.posture-unit { font-size: 1.25rem; font-weight: 600; color: var(--text-2); }
-
-.posture-sentence { margin-block: 12px 0; color: var(--text-2); }
-
-/* Radial realization gauge — a single proportion, drawn once. */
-.posture-gauge { margin-block: 20px 0; }
-.posture-gauge__viz { max-width: 132px; }
-.posture-gauge__svg { display: block; width: 100%; height: auto; }
-.posture-gauge__track {
-  fill: none;
-  stroke: var(--surface-3);
-  stroke-width: 8;
+.posture-digits {
+  font-size: 3.375rem;
+  font-weight: 650;
+  line-height: 1.0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  animation: none;
 }
-.posture-gauge__arc {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 8;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: center;
-}
-/* Print: the gauge is replaced by its description line. */
-.posture-gauge__print { display: none; }
+.posture-unit { font-size: 1rem; font-weight: 500; color: var(--text-2); }
+
+.posture-sentence { margin-block: 8px 0; color: var(--text-2); max-width: 72ch; }
 
 /* Supporting stat strip: compact, separated by rules — not cards. */
-.stat-strip {
+.stat-strip,
+.posture-stat-strip {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  margin-block-start: 16px;
+  overflow-x: auto;
 }
+.stat-item,
 .stat {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding-inline-start: 20px;
-  border-inline-start: 1px solid var(--border-strong);
+  min-width: 0;
+  flex: 1 1 0;
+  padding-inline: 16px;
 }
-.stat:first-child { padding-inline-start: 0; border-inline-start: 0; }
-.stat__num {
-  font-size: 1.75rem;
+.stat-item:first-child,
+.stat:first-child { padding-inline-start: 0; }
+.stat-item + .stat-item,
+.stat + .stat {
+  border-inline-start: 1px solid var(--border);
+}
+.stat__num,
+.metric-figure-secondary {
+  font-size: 1.375rem;
   font-weight: 600;
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
   color: var(--text-1);
 }
-.stat.status-ok .stat__num { color: var(--state-ok); }
-.stat.status-gap .stat__num { color: var(--state-action); }
-.stat.status-partial .stat__num { color: var(--state-incomplete); }
-.stat.status-not_licensed .stat__num { color: var(--state-neutral); }
-.stat__label { font-size: 0.8125rem; font-weight: 600; color: var(--text-2); }
+.stat__label { font-size: 0.8125rem; font-weight: 500; color: var(--text-2); }
 
-/* Operational distribution: segmented horizontal bar, 999px caps. */
-.dist-figure { margin: 0; }
+/* Operational distribution: muted track. */
+.dist-figure { margin-block: 20px 0; }
 .dist-bar {
   display: flex;
-  height: 14px;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
+  height: 8px;
+  background: var(--surface-3);
   border-radius: 999px;
   overflow: hidden;
 }
-.dist-seg {
+.dist-seg,
+.dist-segment {
   flex-basis: 0;
   min-width: 0;
   height: 100%;
   transform-origin: inline-start;
+  opacity: 0.85;
 }
-.dist-seg--gap { background: var(--state-action); }
-.dist-seg--partial { background: var(--state-incomplete); }
-.dist-seg--ok { background: var(--state-ok); }
-.dist-seg--not_licensed { background: var(--state-neutral); }
+.dist-seg--gap,
+.dist-segment.status-gap { background: var(--state-action); }
+.dist-seg--partial,
+.dist-segment.status-partial { background: var(--state-incomplete); }
+.dist-seg--ok,
+.dist-segment.status-ok { background: var(--state-ok); }
+.dist-seg--not_licensed,
+.dist-segment.status-not_licensed { background: var(--state-neutral); }
 .dist-seg--empty { flex-grow: 1; background: var(--surface-3); }
 
-/* Three (optionally four) labeled distribution items: glyph + word + count. */
 .dist-items {
   list-style: none;
-  margin: 0;
+  margin-block: 12px 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -451,48 +440,37 @@ section.hero {
   font-size: 0.8125rem;
   font-weight: 600;
 }
-.dist-item.status-gap { color: var(--state-action); }
-.dist-item.status-partial { color: var(--state-incomplete); }
-.dist-item.status-ok { color: var(--state-ok); }
-.dist-item.status-not_licensed { color: var(--state-neutral); }
 .dist-item__count {
   font-variant-numeric: tabular-nums;
   color: var(--text-2);
   font-weight: 400;
 }
 
-/* Most important implication — one sentence bound from the rollup. */
-.opening-implication {
+.opening-implication,
+.implication {
   margin-block: 20px 0;
   font-size: 1rem;
   font-weight: 400;
+  color: var(--text-2);
+  max-width: 72ch;
 }
 .opening-implication p { margin: 0; }
-.opening-implication strong { font-weight: 600; color: var(--text-1); }
 
-/* Stage 7 → single path forward: one restrained link into section C. */
-.hero-action {
-  margin-block: 20px 0 4px;
-}
+.hero-action { margin-block: 16px 0; }
 .hero-action a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 10px 18px;
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  background: var(--surface-1);
+  padding: 0;
+  border: 0;
+  background: none;
   color: var(--accent);
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 500;
   line-height: 1.2;
-  text-decoration: none;
+  text-decoration: underline;
 }
-.hero-action a:hover {
-  color: var(--accent-hover);
-  border-color: var(--accent-hover);
-  background: var(--surface-2);
-}
+.hero-action a:hover { color: var(--accent-hover); }
 
 /* --------------------------------------------------------------------------
    B — "What you're paying for": SKU strip, capability constellation,
@@ -516,7 +494,7 @@ section.hero {
   gap: 16px;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 10px;
   padding: 16px;
   margin-block: 8px 24px;
 }
@@ -1303,9 +1281,6 @@ main section.is-revealed {
   .app-nav__link[aria-current="true"],
   .workload-tab.is-active { color: CanvasText; }
 
-  .posture-gauge__arc { stroke: CanvasText; }
-  .posture-gauge__track { stroke: CanvasText; }
-
   .dist-seg,
   .chart-row__bar,
   .chart-bar { background: CanvasText; fill: CanvasText; }
@@ -1395,15 +1370,9 @@ main section.is-revealed {
   details.tech:not([open]) > :not(summary) { display: block; }
 
   .hero {
-    background: var(--print-hero) !important;
+    background: var(--print-paper) !important;
     box-shadow: none !important;
   }
-
-  .hero-action a { border-color: var(--print-border) !important; }
-
-  /* Radial gauge is replaced by its accessible description line. */
-  .posture-gauge__viz { display: none; }
-  .posture-gauge__print { display: block; color: var(--accent-print) !important; }
 
   /* Segments and brand marks keep their colors on paper. */
   .dist-seg,
@@ -1455,8 +1424,10 @@ main section.is-revealed {
    scrolls horizontally with a visible affordance, tables scroll.
    -------------------------------------------------------------------------- */
 @media (max-width: 900px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-figure, .hero-side { grid-column: 1 / -1; }
+  .app-nav__sections { flex-wrap: wrap; }
+  .stat-strip, .posture-stat-strip { flex-wrap: wrap; }
+  .stat-item, .stat { flex: 1 1 30%; padding-block: 8px; }
+  .stat-item .caption { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -1466,8 +1437,8 @@ main section.is-revealed {
   .app-nav__bar { padding-inline: 16px; }
 
   .app-main__content > section { padding-inline: 16px; }
-  section.hero { padding-block: 24px; padding-inline: 16px; }
-  .posture-figure { font-size: 2.5rem; }
+  section.hero { padding-block: 16px; padding-inline: 16px; }
+  .posture-digits { font-size: 2.5rem; }
 
   .constellation {
     grid-template-columns: none;
