@@ -253,6 +253,16 @@ def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
             },
             "grantControls": {"builtInControls": ["passwordChange"]},
         },
+        {
+            "displayName": "Block legacy authentication",
+            "state": "enabled",
+            "conditions": {
+                "users": {"includeUsers": ["All"], "excludeUsers": []},
+                "applications": {"includeApplications": ["All"]},
+                "clientAppTypes": ["exchangeActiveSync", "other"],
+            },
+            "grantControls": {"builtInControls": ["block"]},
+        },
     ]
     evidence["mde_summary"] = {
         "onboarded_machines": 95,

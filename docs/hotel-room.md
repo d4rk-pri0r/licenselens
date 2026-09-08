@@ -31,12 +31,19 @@ Browser device-code sign-in. Read-only. No LicenseLens account.
 
 ## 4. Fix one thing, then diff
 
+Write the two scans to **different directories**. A second `scan`/`demo`/`quickstart`
+into a directory that already holds report files is diverted to a timestamped
+subdirectory so the first run is not overwritten — but do not rely on that as
+the documented path. Name the folders yourself:
+
 ```bash
-licenselens diff reports/scan-old/security-license-lens-report.json reports/scan-new/security-license-lens-report.json
+licenselens demo -o reports/before
+licenselens demo --after -o reports/after
+licenselens diff reports/before/security-license-lens-report.json reports/after/security-license-lens-report.json
 ```
 
-`quickstart` and `scan` write timestamped folders, so both runs stay on disk.
-Point `diff` at the two JSON files.
+`--after` is a simulated remediated tenant (demo data only). For a live tenant,
+run `quickstart` twice into two directories after you make a real change.
 
 ## What you'll see
 
