@@ -24,8 +24,12 @@ def evaluate_endpoint_enrollment_coverage(
     equal the device population. This evaluator therefore reports the observed
     number of managed devices directly, and only computes genuine
     ``coverage_ratio`` when an authoritative eligible/expected device inventory
-    (``eligible_devices``) is supplied. Without one, the licensed-seat
-    comparison is a proxy licensing-leverage signal that can never reach OK.
+    (``eligible_devices``) is supplied. When device reconciliation supplies the
+    joined population, coverage is ``entra_matched_intune / entra_active`` —
+    Entra-active devices matched as Intune-managed — never the raw, unmatched
+    managed-device count over the reconciliation denominator. Without either,
+    the licensed-seat comparison is a proxy licensing-leverage signal that can
+    never reach OK.
     """
     del check
     bundle = intune_bundle(evidence)
@@ -44,16 +48,28 @@ def evaluate_endpoint_enrollment_coverage(
     eligible = (bundle or {}).get("eligible_devices")
     truncated = bool((bundle or {}).get("truncated")) or bool(recon.get("truncated"))
     denominator_source = None
-    if recon and recon.get("entra_active") is not None and "entra_active" in recon:
+    matched: int | None = None
+    if (
+        recon
+        and recon.get("entra_active") is not None
+        and recon.get("entra_matched_intune") is not None
+    ):
         eligible = recon.get("entra_active")
+        matched = int(recon["entra_matched_intune"])
         denominator_source = "entra_devices_active_30d"
         truncated = bool(recon.get("truncated")) or truncated
     count = len(devices)
+    numerator = count if matched is None else matched
     evidence_out = {
         "managed_device_count": count,
         "licensed_units": licensed,
         "truncated": truncated,
     }
+    if matched is not None:
+        evidence_out["matched_devices"] = matched
+        unmatched = int(recon.get("unmatched_ids") or 0)
+        if unmatched > 0:
+            evidence_out["unmatched_ids"] = unmatched
 
     def _coverage_verdict() -> Evaluation:
         eligible_i = int(eligible)
@@ -76,19 +92,22 @@ def evaluate_endpoint_enrollment_coverage(
                     "reported zero devices; coverage is unresolved."
                 ],
             )
-        ratio = count / eligible_i
+        ratio = numerator / eligible_i
         evidence_out["coverage_ratio"] = ratio
         evidence_out["eligible_devices"] = eligible_i
         if denominator_source:
             evidence_out["denominator_source"] = denominator_source
         conf = Confidence.MEDIUM if truncated else Confidence.HIGH
         limits = ["Intune device inventory pagination was truncated."] if truncated else []
+        population = "eligible Entra device(s)" if matched is not None else "eligible device(s)"
+        verb_ok = "are matched as managed" if matched is not None else "are managed"
+        verb = "matched as managed" if matched is not None else "managed"
         if ratio >= 0.85 and not truncated:
             return Evaluation(
                 status=FindingStatus.OK,
                 summary=(
-                    f"Intune enrollment coverage is high: {count} of {eligible_i} "
-                    f"eligible device(s) managed ({ratio * 100:.0f}%)."
+                    f"Intune enrollment coverage is high: {numerator} of {eligible_i} "
+                    f"{population} {verb_ok} ({ratio * 100:.0f}%)."
                 ),
                 evidence=evidence_out,
                 customer_summary=(
@@ -102,8 +121,8 @@ def evaluate_endpoint_enrollment_coverage(
             return Evaluation(
                 status=FindingStatus.PARTIAL,
                 summary=(
-                    f"Partial Intune enrollment: {count} of {eligible_i} eligible "
-                    f"device(s) managed ({ratio * 100:.0f}%)."
+                    f"Partial Intune enrollment: {numerator} of {eligible_i} {population} "
+                    f"{verb} ({ratio * 100:.0f}%)."
                 ),
                 evidence=evidence_out,
                 customer_summary=(
@@ -117,8 +136,8 @@ def evaluate_endpoint_enrollment_coverage(
         return Evaluation(
             status=FindingStatus.GAP,
             summary=(
-                f"Large Intune enrollment gap: {count} of {eligible_i} eligible "
-                f"device(s) managed ({ratio * 100:.0f}%)."
+                f"Large Intune enrollment gap: {numerator} of {eligible_i} {population} "
+                f"{verb} ({ratio * 100:.0f}%)."
             ),
             evidence=evidence_out,
             customer_summary=(

@@ -19,7 +19,11 @@ def evaluate_mde_onboard_gap(
     does not represent the device population unless Microsoft licensing
     semantics explicitly justify it. LicenseLens therefore:
 
-    - reports the *observed* onboarded machine count as the primary observation;
+    - reports the *observed* onboarded machine count as a raw observation;
+    - when device reconciliation supplies the joined population, computes
+      coverage as ``intune_matched_mde / intune_active`` — Intune-active
+      devices that are matched as onboarded in MDE — never the raw,
+      unmatched onboarded count over the reconciliation denominator;
     - computes genuine ``coverage_ratio`` only when an authoritative eligible
       device inventory (``eligible_devices``) is supplied;
     - otherwise labels the licensed-seat comparison as a *licensing-leverage*
@@ -40,8 +44,14 @@ def evaluate_mde_onboard_gap(
     eligible = summary.get("eligible_devices")
     truncated = bool(summary.get("truncated")) or bool(recon.get("truncated"))
     denominator_source = None
-    if recon and recon.get("intune_active") is not None and "intune_active" in recon:
+    matched: int | None = None
+    if (
+        recon
+        and recon.get("intune_active") is not None
+        and recon.get("intune_matched_mde") is not None
+    ):
         eligible = recon.get("intune_active")
+        matched = int(recon["intune_matched_mde"])
         denominator_source = "intune_managed_active_30d"
         truncated = bool(recon.get("truncated")) or truncated
 
@@ -63,6 +73,21 @@ def evaluate_mde_onboard_gap(
     limits: list[str] = []
     if truncated:
         limits.append("MDE machine inventory pagination was truncated.")
+
+    numerator = onboarded_i
+    population = "eligible device(s)"
+    verb_ok = "are onboarded"
+    verb = "onboarded"
+    if matched is not None:
+        numerator = matched
+        population = "eligible Intune-managed device(s)"
+        verb_ok = "are matched as onboarded"
+        verb = "matched as onboarded"
+        evidence_out["observed_onboarded_total"] = onboarded_i
+        evidence_out["matched_devices"] = matched
+        unmatched = int(recon.get("unmatched_ids") or 0)
+        if unmatched > 0:
+            evidence_out["unmatched_ids"] = unmatched
 
     if eligible is not None:
         eligible_i = int(eligible)
@@ -86,7 +111,7 @@ def evaluate_mde_onboard_gap(
                     "reported zero devices; coverage is unresolved."
                 ],
             )
-        ratio = onboarded_i / eligible_i
+        ratio = numerator / eligible_i
         evidence_out["coverage_ratio"] = ratio
         evidence_out["eligible_devices"] = eligible_i
         if denominator_source:
@@ -99,8 +124,8 @@ def evaluate_mde_onboard_gap(
             return Evaluation(
                 status=FindingStatus.OK,
                 summary=(
-                    f"Defender for Endpoint coverage is high: {onboarded_i} of "
-                    f"{eligible_i} eligible device(s) are onboarded "
+                    f"Defender for Endpoint coverage is high: {numerator} of "
+                    f"{eligible_i} {population} {verb_ok} "
                     f"({ratio * 100:.0f}%)."
                 ),
                 evidence=evidence_out,
@@ -116,8 +141,8 @@ def evaluate_mde_onboard_gap(
             return Evaluation(
                 status=FindingStatus.PARTIAL,
                 summary=(
-                    f"Partial Defender for Endpoint onboarding: {onboarded_i} of "
-                    f"{eligible_i} eligible device(s) onboarded "
+                    f"Partial Defender for Endpoint onboarding: {numerator} of "
+                    f"{eligible_i} {population} {verb} "
                     f"({ratio * 100:.0f}%)."
                     + (" Device count may be truncated." if truncated else "")
                 ),
@@ -133,9 +158,9 @@ def evaluate_mde_onboard_gap(
         return Evaluation(
             status=FindingStatus.GAP,
             summary=(
-                f"Large Defender for Endpoint onboarding gap: {onboarded_i} of "
-                f"{eligible_i} eligible device(s) onboarded ({ratio * 100:.0f}%)."
-                + (" Device count may be truncated." if truncated else "")
+                f"Large Defender for Endpoint onboarding gap: {numerator} of "
+                f"{eligible_i} {population} {verb} "
+                f"({ratio * 100:.0f}%)." + (" Device count may be truncated." if truncated else "")
             ),
             evidence=evidence_out,
             customer_summary=(

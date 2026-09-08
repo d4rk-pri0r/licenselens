@@ -78,9 +78,11 @@ def reconcile(
 
     entra_active: set[str] = set()
     entra_all: set[str] = set()
+    unmatched_ids = 0
     for row in entra_rows:
         did = _guid(row.get("deviceId") or row.get("id"))
         if not did:
+            unmatched_ids += 1
             continue
         entra_all.add(did)
         enabled = row.get("accountEnabled")
@@ -94,6 +96,7 @@ def reconcile(
     for row in intune_rows:
         did = _guid(row.get("azureADDeviceId") or row.get("azureAdDeviceId"))
         if not did:
+            unmatched_ids += 1
             continue
         intune_managed.add(did)
         if _within(row.get("lastSyncDateTime"), cutoff):
@@ -104,11 +107,15 @@ def reconcile(
     for row in mde_rows:
         did = _guid(row.get("aadDeviceId") or row.get("aad_device_id"))
         if not did:
+            unmatched_ids += 1
             continue
         mde_all.add(did)
         onboarded = str(row.get("onboardingStatus") or "") == "Onboarded"
         if onboarded and _within(row.get("lastSeen"), cutoff):
             mde_active.add(did)
+
+    entra_matched_intune = len(entra_active & intune_managed)
+    intune_matched_mde = len(intune_active & mde_active)
 
     intune_not_onboarded, list_trunc_a = _capped(intune_active - mde_active)
     mde_only, list_trunc_b = _capped(mde_active - intune_managed)
@@ -126,8 +133,11 @@ def reconcile(
         "mde_active": len(mde_active),
         "entra_active": len(entra_active),
         "intune_managed": len(intune_managed),
-        "mde_coverage_of_intune": _ratio(len(intune_active & mde_active), len(intune_active)),
-        "intune_coverage_of_entra": _ratio(len(entra_active & intune_managed), len(entra_active)),
+        "intune_matched_mde": intune_matched_mde,
+        "entra_matched_intune": entra_matched_intune,
+        "unmatched_ids": unmatched_ids,
+        "mde_coverage_of_intune": _ratio(intune_matched_mde, len(intune_active)),
+        "intune_coverage_of_entra": _ratio(entra_matched_intune, len(entra_active)),
         "intune_not_onboarded": intune_not_onboarded,
         "mde_only": mde_only,
         "entra_unmanaged": entra_unmanaged,

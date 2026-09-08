@@ -52,6 +52,9 @@ def test_exact_match_join() -> None:
     assert result["intune_active"] == 1
     assert result["mde_active"] == 1
     assert result["entra_active"] == 1
+    assert result["intune_matched_mde"] == 1
+    assert result["entra_matched_intune"] == 1
+    assert result["unmatched_ids"] == 0
     assert result["mde_coverage_of_intune"] == 1.0
     assert result["intune_coverage_of_entra"] == 1.0
     assert result["intune_not_onboarded"] == []
@@ -122,6 +125,7 @@ def test_missing_ids_skipped() -> None:
     assert result["intune_active"] == 0
     assert result["mde_active"] == 0
     assert result["entra_active"] == 0
+    assert result["unmatched_ids"] == 3
 
 
 def test_empty_inventories() -> None:
@@ -140,6 +144,7 @@ def test_intune_not_onboarded() -> None:
     )
     assert result["intune_not_onboarded"] == [GUID]
     assert result["mde_coverage_of_intune"] == 0.0
+    assert result["intune_matched_mde"] == 0
 
 
 def test_mde_only() -> None:
@@ -167,6 +172,7 @@ def test_entra_unmanaged() -> None:
     )
     assert result["entra_unmanaged"] == [GUID]
     assert result["intune_coverage_of_entra"] == 0.0
+    assert result["entra_matched_intune"] == 0
 
 
 def test_truncation_propagates() -> None:
@@ -195,11 +201,18 @@ def test_mde_reconciliation_sets_denominator_source() -> None:
         _mde_check(),
         {
             "mde_summary": {"onboarded_machines": 95, "truncated": False},
-            "device_reconciliation": {"intune_active": 100, "truncated": False},
+            "device_reconciliation": {
+                "intune_active": 100,
+                "intune_matched_mde": 95,
+                "truncated": False,
+            },
         },
     )
     assert result.status is FindingStatus.OK
     assert result.evidence["denominator_source"] == "intune_managed_active_30d"
+    assert result.evidence["matched_devices"] == 95
+    assert result.evidence["observed_onboarded_total"] == 95
+    assert result.evidence["coverage_ratio"] == 0.95
     assert result.confidence is Confidence.HIGH
 
 
@@ -208,7 +221,11 @@ def test_mde_reconciliation_truncated_is_medium() -> None:
         _mde_check(),
         {
             "mde_summary": {"onboarded_machines": 95, "truncated": False},
-            "device_reconciliation": {"intune_active": 100, "truncated": True},
+            "device_reconciliation": {
+                "intune_active": 100,
+                "intune_matched_mde": 95,
+                "truncated": True,
+            },
         },
     )
     assert result.status is FindingStatus.PARTIAL
@@ -237,8 +254,15 @@ def test_enrollment_reconciliation_sets_entra_denominator() -> None:
                 "managed_devices": [{"id": "d1"}],
                 "truncated": False,
             },
-            "device_reconciliation": {"entra_active": 1, "truncated": False},
+            "device_reconciliation": {
+                "entra_active": 1,
+                "entra_matched_intune": 1,
+                "truncated": False,
+            },
         },
     )
     assert result.status is FindingStatus.OK
     assert result.evidence["denominator_source"] == "entra_devices_active_30d"
+    assert result.evidence["matched_devices"] == 1
+    assert result.evidence["managed_device_count"] == 1
+    assert result.evidence["coverage_ratio"] == 1.0
