@@ -170,10 +170,17 @@ def _print_top_card(result) -> None:
     lines = [
         f"Licensed capabilities detected: {len(result.owned_capabilities)}",
         f"Prioritized now ({', '.join(result.packs_scanned)}): {rollup.you_own}",
-        f"Fully working (prioritized): {rollup.fully_working}  "
+        f"Met assessed criteria (prioritized): {rollup.fully_working} of {rollup.you_own}  "
         f"({rollup.realized_percent}% realized)",
         f"Need attention (prioritized): {rollup.needs_attention + rollup.partly_set_up}",
     ]
+    if rollup.assessment_incomplete or rollup.entitlement_unknown:
+        extras = []
+        if rollup.assessment_incomplete:
+            extras.append(f"{rollup.assessment_incomplete} assessment incomplete (not in the %)")
+        if rollup.entitlement_unknown:
+            extras.append(f"{rollup.entitlement_unknown} entitlement unknown")
+        lines.append("Not yet known: " + ", ".join(extras))
     if result.moves:
         lines.append("")
         lines.append("Priority actions:")

@@ -2,12 +2,18 @@
 
 Rules (sealed):
 - `you_own` counts owned capabilities that have at least one related check in
-  the packs being scanned.
+  the packs being scanned AND at least one related finding that is not
+  error/skipped — capabilities whose only related findings are error/skipped
+  are `assessment_incomplete` and stay out of the `% realized` denominator so
+  an incomplete assessment can never look like a completed one.
 - A capability is `needs_attention` if any related check is a gap.
-- Otherwise `partly_set_up` if any related check is partial/error/skipped
-  (proxy-capped checks are already partial via the quality policy).
+- Otherwise `partly_set_up` if any related check is partial — partial means
+  *observed* partial implementation, never an error/skipped stand-in.
+- Otherwise `assessment_incomplete` if any related check is error or skipped.
 - Otherwise `fully_working` if all related checks are ok.
-- `not_licensed` capabilities are excluded from `you_own` (informational only).
+- `not_licensed` = capabilities referenced by in-scope checks that the tenant
+  does not own and whose entitlement is not unknown. `entitlement_unknown` is
+  counted separately and is never folded into `not_licensed`.
 - `% realized` = fully_working / you_own.
 """
 
@@ -34,10 +40,10 @@ def _capability_status(statuses: list[FindingStatus]) -> str | None:
         return None
     if any(s == FindingStatus.GAP for s in statuses):
         return "needs_attention"
-    if any(
-        s in {FindingStatus.PARTIAL, FindingStatus.ERROR, FindingStatus.SKIPPED} for s in statuses
-    ):
+    if any(s == FindingStatus.PARTIAL for s in statuses):
         return "partly_set_up"
+    if any(s in {FindingStatus.ERROR, FindingStatus.SKIPPED} for s in statuses):
+        return "assessment_incomplete"
     if all(s == FindingStatus.OK for s in statuses):
         return "fully_working"
     return None
@@ -49,10 +55,12 @@ def capability_rollup(
     owned_capabilities: list[str],
     capability_summaries: list[CapabilitySummary],
     packs_scanned: list[CheckPack] | list[str] | None,
+    entitlement_unknown: set[str] | frozenset[str] = frozenset(),
 ) -> tuple[CapabilityRollup, list[CapabilityOutcome]]:
     """Return (rollup, per-capability outcomes) for the top card."""
     pack_ids = _pack_values(packs_scanned or [])
     owned = set(owned_capabilities)
+    unknown = set(entitlement_unknown)
     findings_by_check: dict[str, list[Finding]] = {}
     for f in findings:
         findings_by_check.setdefault(f.check_id, []).append(f)
@@ -74,15 +82,18 @@ def capability_rollup(
     rollup = CapabilityRollup()
     outcomes: list[CapabilityOutcome] = []
 
-    # not_licensed: owned-adjacent capabilities referenced by in-scope checks
-    # that the tenant does not own.
+    # not_licensed / entitlement_unknown: capabilities referenced by in-scope
+    # checks that the tenant neither owns nor has an unknown claim on /
+    # whose entitlement could not be determined. Unknown is never
+    # not_licensed.
     referenced = {
         cap_id
         for check in checks
         if check.pack.value in pack_ids
         for cap_id in check.required_capabilities
     }
-    rollup.not_licensed = len(referenced - owned)
+    rollup.entitlement_unknown = len(referenced & unknown)
+    rollup.not_licensed = len(referenced - owned - unknown)
 
     for cap_id in sorted(in_scope_related):
         check_ids = in_scope_related[cap_id]
@@ -94,13 +105,19 @@ def capability_rollup(
         status = _capability_status(statuses)
         if status is None or status == "not_licensed":
             continue
-        rollup.you_own += 1
-        if status == "fully_working":
-            rollup.fully_working += 1
-        elif status == "needs_attention":
-            rollup.needs_attention += 1
+        if status == "assessment_incomplete":
+            # Visible in the outcomes and its own count, but excluded from
+            # you_own so the realized percentage keeps an assessed-only
+            # denominator.
+            rollup.assessment_incomplete += 1
         else:
-            rollup.partly_set_up += 1
+            rollup.you_own += 1
+            if status == "fully_working":
+                rollup.fully_working += 1
+            elif status == "needs_attention":
+                rollup.needs_attention += 1
+            else:
+                rollup.partly_set_up += 1
 
         summary = summary_by_id.get(cap_id)
         outcomes.append(
@@ -146,7 +163,12 @@ def capability_rollup(
     )
     outcomes.sort(
         key=lambda o: (
-            {"needs_attention": 0, "partly_set_up": 1, "fully_working": 2}.get(o.status, 9),
+            {
+                "needs_attention": 0,
+                "partly_set_up": 1,
+                "assessment_incomplete": 2,
+                "fully_working": 3,
+            }.get(o.status, 9),
             o.plain_name.lower(),
         )
     )

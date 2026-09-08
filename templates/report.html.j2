@@ -211,6 +211,8 @@ body.revealed .reveal-target.is-revealed {
 .chart-hit.is-related,
 .dist-hit.is-related { box-shadow: inset 0 0 0 1px var(--accent); }
 .dist-bar .dist-segment { cursor: default; }
+.dist-segment.status-skipped { background: var(--state-neutral); }
+.dist-outside { margin-block-start: 6px; }
 @media print {
   .chart-hits,
   .dist-hits { display: none !important; }
@@ -282,10 +284,12 @@ body.revealed .reveal-target.is-revealed {
           </div>
           <div class="posture-stat-strip">
             <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.you_own }}</span><span class="label">You own</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.fully_working }}</span><span class="label">Fully working</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.fully_working }}</span><span class="label">Met assessed criteria</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
             <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.needs_attention }}</span><span class="label">Action required</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.partly_set_up }}</span><span class="label">Incomplete</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.partly_set_up }}</span><span class="label">Partly set up</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.assessment_incomplete }}</span><span class="label">Assessment incomplete</span><span class="caption">not in the %</span></span>
             <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.not_licensed }}</span><span class="label">Not licensed</span></span>
+            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.entitlement_unknown }}</span><span class="label">Entitlement unknown</span></span>
           </div>
           <p class="caption posture-sentence">
             <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
@@ -294,48 +298,57 @@ body.revealed .reveal-target.is-revealed {
           </p>
         </div>
 
-        {# Operational distribution. role="img" holds only non-interactive
-           spans; cross-filter buttons are sibling overlays (§9). #}
+        {# Operational distribution over OWNED, EVALUATED capabilities only.
+           not_licensed and entitlement_unknown sit in the caption line below
+           the bar — never in the bar itself, so the bar's visual denominator
+           always equals the headline denominator (you_own). role="img" holds
+           only non-interactive spans; cross-filter buttons are sibling
+           overlays (§9). #}
         <figure class="dist-figure">
           <figcaption id="dist-caption" class="micro-label">Operational distribution</figcaption>
           <div class="dist-layer">
             <div class="dist-bar" role="img" aria-labelledby="dist-caption" aria-describedby="dist-desc">
-              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok')] -%}
+              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('assessment_incomplete', 'skipped'), ('fully_working', 'ok')] -%}
               {%- set _count = _rollup[_key] -%}
               {%- if _count -%}
               <span class="dist-segment status-{{ _variant }}" style="flex-grow: {{ _count }}"></span>
               {%- endif -%}
               {%- endfor -%}
-              {%- if _rollup.not_licensed -%}
-              <span class="dist-segment status-not_licensed" style="flex-grow: {{ _rollup.not_licensed }}"></span>
-              {%- endif -%}
             </div>
             <div class="dist-hits" hidden>
-              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok')] -%}
+              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('assessment_incomplete', 'skipped'), ('fully_working', 'ok')] -%}
               {%- set _count = _rollup[_key] -%}
               {%- if _count -%}
               <button type="button" class="dist-hit" aria-label="Filter findings: {{ prim.PRESENTATION.get(_variant, _variant) }} ({{ _count }})" aria-pressed="false" data-chart-toggle="status:{{ _variant }}"></button>
               {%- endif -%}
               {%- endfor -%}
-              {%- if _rollup.not_licensed -%}
-              <button type="button" class="dist-hit" aria-label="Filter findings: Not licensed ({{ _rollup.not_licensed }})" aria-pressed="false" data-chart-toggle="status:not_licensed"></button>
-              {%- endif -%}
             </div>
           </div>
-          <p id="dist-desc" class="sr-only">Distribution of the {{ _rollup.you_own }} owned, evaluated capabilities: {{ _rollup.needs_attention }} action required, {{ _rollup.partly_set_up }} incomplete, {{ _rollup.fully_working }} operational, {{ _rollup.not_licensed }} not licensed.</p>
+          <p id="dist-desc" class="sr-only">Distribution of the {{ _rollup.you_own }} owned, evaluated capabilities: {{ _rollup.needs_attention }} action required, {{ _rollup.partly_set_up }} partly set up, {{ _rollup.assessment_incomplete }} assessment incomplete, {{ _rollup.fully_working }} met assessed criteria.</p>
+          {%- if _rollup.not_licensed or _rollup.entitlement_unknown -%}
+          <p class="caption dist-outside">
+            Outside the bar and the %:
+            {%- if _rollup.not_licensed -%} {{ _rollup.not_licensed }} not licensed{% if _rollup.not_licensed != 1 %}s{% endif %}{%- endif -%}
+            {%- if _rollup.not_licensed and _rollup.entitlement_unknown %} ·{% endif -%}
+            {%- if _rollup.entitlement_unknown -%} {{ _rollup.entitlement_unknown }} entitlement unknown{% if _rollup.entitlement_unknown != 1 %}s{% endif %}{%- endif -%}
+            .
+          </p>
+          {%- endif -%}
           <table class="chart-table">
             <caption>Operational distribution</caption>
             <tbody>
               <tr><th scope="row">Action required</th><td class="num">{{ _rollup.needs_attention }}</td></tr>
-              <tr><th scope="row">Incomplete</th><td class="num">{{ _rollup.partly_set_up }}</td></tr>
-              <tr><th scope="row">Operational</th><td class="num">{{ _rollup.fully_working }}</td></tr>
-              <tr><th scope="row">Not licensed</th><td class="num">{{ _rollup.not_licensed }}</td></tr>
+              <tr><th scope="row">Partly set up</th><td class="num">{{ _rollup.partly_set_up }}</td></tr>
+              <tr><th scope="row">Assessment incomplete (not in the %)</th><td class="num">{{ _rollup.assessment_incomplete }}</td></tr>
+              <tr><th scope="row">Met assessed criteria</th><td class="num">{{ _rollup.fully_working }}</td></tr>
+              <tr><th scope="row">Not licensed (outside the bar)</th><td class="num">{{ _rollup.not_licensed }}</td></tr>
+              <tr><th scope="row">Entitlement unknown (outside the bar)</th><td class="num">{{ _rollup.entitlement_unknown }}</td></tr>
             </tbody>
           </table>
         </figure>
 
         <ul class="dist-items">
-          {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('fully_working', 'ok'), ('not_licensed', 'not_licensed')] -%}
+          {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('assessment_incomplete', 'skipped'), ('fully_working', 'ok'), ('not_licensed', 'not_licensed')] -%}
           {%- if _key != 'not_licensed' or _rollup[_key] -%}
           <li class="dist-item opening-stage">
             {{ prim.status_marker(_variant) }}

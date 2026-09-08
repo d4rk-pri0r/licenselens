@@ -74,18 +74,32 @@ def test_proxy_cap_counts_as_partly_set_up():
     assert outcomes[0].status == "partly_set_up"
 
 
-def test_error_and_skipped_are_partly_set_up():
+def test_error_and_skipped_are_assessment_incomplete():
     checks = [
         _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
         _check("id-b", ["identity_protection"], CheckPack.IDENTITY),
     ]
     findings = [_finding("id-a", FindingStatus.ERROR), _finding("id-b", FindingStatus.SKIPPED)]
-    rollup, _ = capability_rollup(
+    rollup, outcomes = capability_rollup(
         checks, findings, ["conditional_access", "identity_protection"], [], ["identity"]
     )
-    assert rollup.you_own == 2
-    assert rollup.partly_set_up == 2
+    assert rollup.you_own == 0
+    assert rollup.assessment_incomplete == 2
+    assert rollup.partly_set_up == 0
     assert rollup.fully_working == 0
+    assert rollup.realized_percent == 0
+    assert {o.status for o in outcomes} == {"assessment_incomplete"}
+
+
+def test_genuine_partial_is_partly_set_up():
+    """Positive control: only an OBSERVED partial makes partly_set_up."""
+    checks = [_check("id-a", ["conditional_access"], CheckPack.IDENTITY)]
+    findings = [_finding("id-a", FindingStatus.PARTIAL)]
+    rollup, outcomes = capability_rollup(checks, findings, ["conditional_access"], [], ["identity"])
+    assert rollup.you_own == 1
+    assert rollup.partly_set_up == 1
+    assert rollup.assessment_incomplete == 0
+    assert outcomes[0].status == "partly_set_up"
 
 
 def test_realized_percent_is_rounded_fraction():
@@ -112,9 +126,8 @@ def test_realized_percent_is_rounded_fraction():
     assert rollup.fully_working == 2
     assert rollup.realized_percent == 50
     assert (
-        rollup.realized_sentence == "Of the security controls associated with the entitlements and "
-        "assessment scope that could be evaluated, 50% met the defined "
-        "activation criteria."
+        rollup.realized_sentence
+        == "2 of 4 in-scope capabilities met all assessed criteria (50%)."
     )
 
 
@@ -207,15 +220,65 @@ def test_missing_evidence_never_makes_tenant_look_more_secure():
 
 
 def test_error_finding_never_counts_as_ok_or_gap():
-    """§9: an error/unknown result is ``partly_set_up``, never silently pass/fail."""
+    """§9: an error/unknown result is ``assessment_incomplete``, never pass/fail.
+
+    The capability stays visible in the outcomes but is excluded from the
+    ``you_own`` denominator, so an unreadable assessment can neither become a
+    clean pass nor silently disappear from a percentage that then looks
+    complete.
+    """
     checks = [
         _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
     ]
     rollup, outcomes = capability_rollup(
         checks, [_finding("id-a", FindingStatus.ERROR)], ["conditional_access"], [], ["identity"]
     )
-    assert rollup.you_own == 1
-    assert rollup.partly_set_up == 1
+    assert rollup.you_own == 0
+    assert rollup.assessment_incomplete == 1
+    assert rollup.partly_set_up == 0
     assert rollup.fully_working == 0
     assert rollup.needs_attention == 0
-    assert outcomes[0].status == "partly_set_up"
+    assert rollup.realized_percent == 0
+    assert outcomes[0].status == "assessment_incomplete"
+
+
+def test_unknown_entitlement_is_never_not_licensed():
+    """Unknown entitlement is counted separately, never as not_licensed."""
+    checks = [
+        _check("sen-a", ["microsoft_sentinel"], CheckPack.STARTER),
+        _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
+    ]
+    findings = [
+        _finding("sen-a", FindingStatus.ERROR, pack=CheckPack.STARTER),
+        _finding("id-a", FindingStatus.OK),
+    ]
+    rollup, _ = capability_rollup(
+        checks,
+        findings,
+        ["conditional_access"],
+        [],
+        ["identity", "starter"],
+        entitlement_unknown={"microsoft_sentinel"},
+    )
+    assert rollup.entitlement_unknown == 1
+    assert rollup.not_licensed == 0
+    assert rollup.you_own == 1
+    assert rollup.fully_working == 1
+
+
+def test_error_only_capability_excluded_from_denominator_but_visible():
+    """Mixed report: an error-only capability drops out of you_own while an
+    ok capability keeps the ratio honest (1 of 1, not 1 of 2)."""
+    checks = [
+        _check("id-a", ["conditional_access"], CheckPack.IDENTITY),
+        _check("id-b", ["identity_protection"], CheckPack.IDENTITY),
+    ]
+    findings = [_finding("id-a", FindingStatus.OK), _finding("id-b", FindingStatus.ERROR)]
+    rollup, outcomes = capability_rollup(
+        checks, findings, ["conditional_access", "identity_protection"], [], ["identity"]
+    )
+    assert rollup.you_own == 1
+    assert rollup.fully_working == 1
+    assert rollup.assessment_incomplete == 1
+    assert rollup.realized_percent == 100
+    assert {o.status for o in outcomes} == {"fully_working", "assessment_incomplete"}

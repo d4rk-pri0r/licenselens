@@ -138,7 +138,8 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
     assert "Where you stand" in html
     assert "licensed capabilities detected" in html
     assert "evaluated capabilities" in html
-    assert "Fully working" in html
+    assert "Met assessed criteria" in html
+    assert "Fully working" not in html
     assert str(result.capability_rollup.you_own) in html
     assert result.capability_rollup.realized_sentence in html
     assert "Action required" in html

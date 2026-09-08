@@ -62,13 +62,20 @@ def write_markdown_report(
         f"(priority packs: {', '.join(result.packs_scanned) or 'none'})"
     )
     lines.append(
-        f"- **Fully working:** {rollup.fully_working} of {rollup.you_own} evaluated capabilities "
-        f"({rollup.realized_percent}% realized)"
+        f"- **Met assessed criteria:** {rollup.fully_working} of {rollup.you_own} evaluated "
+        f"capabilities ({rollup.realized_percent}% realized)"
     )
+    if rollup.assessment_incomplete:
+        lines.append(
+            f"- **Assessment incomplete:** {rollup.assessment_incomplete} capabilities "
+            "(error or skipped findings only — not counted in the realized %)"
+        )
     lines.append(
         f"- **Need attention:** {rollup.needs_attention + rollup.partly_set_up} "
         f"of {rollup.you_own} evaluated capabilities"
     )
+    if rollup.entitlement_unknown:
+        lines.append(f"- **Entitlement unknown:** {rollup.entitlement_unknown} capabilities")
     if result.has_exposed:
         exposed_titles = [
             finding.display_customer_title
@@ -140,15 +147,23 @@ def write_markdown_report(
             "in the last seven days, and whether a live analytics rule queries them."
         )
         lines.append("")
-        lines.append("| Capability | Table | Tier | Arriving? | Live rules | Connector hint |")
+        lines.append(
+            "| Capability | Table | Tier | Arriving? "
+            "| Live rules (when assessed) | Connector hint |"
+        )
         lines.append("|---|---|---|---|---:|---|")
         for row in rows:
             if not isinstance(row, dict):
                 continue
-            arriving = "Yes" if row.get("ingesting") else "No"
+            if row.get("ingesting") is None:
+                arriving = "Not assessed"
+            else:
+                arriving = "Yes" if row.get("ingesting") else "No"
+            watched = row.get("watched_by")
+            watched_text = "Not assessed" if watched is None else str(watched)
             lines.append(
                 f"| {row.get('capability_name', '')} | `{row.get('table', '')}` | "
-                f"{row.get('tier', '')} | {arriving} | {row.get('watched_by', 0)} | "
+                f"{row.get('tier', '')} | {arriving} | {watched_text} | "
                 f"{row.get('connector_hint', '')} |"
             )
         dead = matrix.get("dead_rules") or []

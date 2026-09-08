@@ -20,7 +20,7 @@
           <th scope="col">Table</th>
           <th scope="col">Tier</th>
           <th scope="col">Arriving?</th>
-          <th scope="col" class="num">Live rules</th>
+          <th scope="col" class="num">Live rules (when assessed)</th>
           <th scope="col">Connector hint</th>
         </tr>
       </thead>
@@ -31,13 +31,21 @@
           <td class="mono">{{ row.table }}</td>
           <td>{{ row.tier }}</td>
           <td>
-            {%- if row.ingesting -%}
+            {%- if row.ingesting is sameas true -%}
             <span class="status-word">Yes</span>
-            {%- else -%}
+            {%- elif row.ingesting is sameas false -%}
             <span class="status-word status-gap">No</span>
+            {%- else -%}
+            <span class="status-word">Not assessed</span>
             {%- endif -%}
           </td>
-          <td class="num">{{ row.watched_by }}</td>
+          <td class="num">
+            {%- if row.watched_by is none -%}
+            <span class="status-word">Not assessed</span>
+            {%- else -%}
+            {{ row.watched_by }}{% if row.watched_by_basis %} <span class="caption">({{ row.watched_by_basis }})</span>{% endif %}
+            {%- endif -%}
+          </td>
           <td>{{ row.connector_hint }}</td>
         </tr>
         {%- endfor -%}

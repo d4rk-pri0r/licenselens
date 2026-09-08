@@ -176,6 +176,7 @@ def run_scan(
         state.owned,
         summaries,
         packs_scanned=pack_scope,
+        entitlement_unknown=state.entitlement_unknown,
     )
     exposed_ids = [
         finding.check_id for finding in findings if finding.exposure_class == ExposureClass.EXPOSED

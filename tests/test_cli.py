@@ -146,7 +146,7 @@ def test_scan_dry_run_prints_top_card(tmp_path: Path):
     assert "Security posture" in result.stdout
     assert "Licensed capabilities detected: 25" in result.stdout
     assert "Prioritized now (identity, endpoint): 8" in result.stdout
-    assert "Fully working (prioritized): 3" in result.stdout
+    assert "Met assessed criteria (prioritized): 3 of 8" in result.stdout
     assert "Need attention (prioritized): 5" in result.stdout
     assert "Priority actions:" in result.stdout
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()

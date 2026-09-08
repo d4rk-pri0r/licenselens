@@ -14,7 +14,16 @@ Locks the view-model contracts over the frozen ``report_fixtures`` inputs:
 from __future__ import annotations
 
 from licenselens.catalog.expected_states import expected_state_map
-from licenselens.models import ExposureClass, FindingStatus, Workload
+from licenselens.models import (
+    CheckPack,
+    ExposureClass,
+    Finding,
+    FindingStatus,
+    ScanResult,
+    Severity,
+    ValueImpact,
+    Workload,
+)
 from licenselens.report.viewmodel import (
     build_action_plan,
     build_belief_block,
@@ -516,3 +525,79 @@ def test_detection_realization_rows() -> None:
     assert device_rows
     assert any(row["ingesting"] is False for row in device_rows)
     assert any(row["table"] == "DeviceProcessEvents" for row in device_rows)
+    # Unknown ingestion evidence must surface as None, never False.
+    assert all(
+        row["ingesting"] is not None or row["watched_by"] is None for row in rows
+    ), "rows without ingestion evidence must not claim ingesting: false"
+
+
+def test_detection_realization_unknowns_are_not_false() -> None:
+    """Missing ingestion evidence and error parity stay unknown, not 'No'/1."""
+    def _detection_finding(check_id: str, status: FindingStatus, evidence: dict) -> Finding:
+        return Finding(
+            check_id=check_id,
+            title=check_id,
+            workload=Workload.SENTINEL,
+            status=status,
+            severity=Severity.MEDIUM,
+            value_impact=ValueImpact.MEDIUM,
+            impact=ValueImpact.MEDIUM,
+            pack=CheckPack.STARTER,
+            summary=f"{check_id}: {status.value}",
+            evidence=evidence,
+        )
+
+    base = {
+        "version": "test",
+        "scanned_at": SCANNED_AT,
+        "owned_capabilities": ["conditional_access"],
+    }
+    no_findings = build_detection_realization(ScanResult(**base))
+    assert no_findings["rows"]
+    assert all(row["ingesting"] is None for row in no_findings["rows"])
+    assert all(row["watched_by"] is None for row in no_findings["rows"])
+
+    ingestion_ok = _detection_finding(
+        "sen-telemetry-ingestion-coverage",
+        FindingStatus.OK,
+        evidence={
+            "capabilities": {
+                "conditional_access": {
+                    "core_seen": ["SigninLogs"],
+                    "extended_seen": [],
+                    "missing_core": [],
+                }
+            }
+        },
+    )
+    parity_error = _detection_finding(
+        "sen-rule-telemetry-parity", FindingStatus.ERROR, evidence={}
+    )
+    errored = build_detection_realization(
+        ScanResult(**base, findings=[ingestion_ok, parity_error])
+    )
+    signin = next(row for row in errored["rows"] if row["table"] == "SigninLogs")
+    assert signin["ingesting"] is True
+    assert signin["watched_by"] is None
+
+    parity_gap = _detection_finding(
+        "sen-rule-telemetry-parity",
+        FindingStatus.GAP,
+        evidence={"unwatched_tables": ["SigninLogs"], "dead_rules": []},
+    )
+    gapped = build_detection_realization(
+        ScanResult(**base, findings=[ingestion_ok, parity_gap])
+    )
+    signin_gap = next(row for row in gapped["rows"] if row["table"] == "SigninLogs")
+    assert signin_gap["watched_by"] == 0
+    assert signin_gap["watched_by_basis"] is None
+
+    parity_ok = _detection_finding(
+        "sen-rule-telemetry-parity", FindingStatus.OK, evidence={}
+    )
+    watched = build_detection_realization(
+        ScanResult(**base, findings=[ingestion_ok, parity_ok])
+    )
+    signin_ok = next(row for row in watched["rows"] if row["table"] == "SigninLogs")
+    assert signin_ok["watched_by"] == 1
+    assert signin_ok["watched_by_basis"] == "parity-not-unwatched"

@@ -410,7 +410,7 @@ def build_sections(
 
     * ``A`` — the posture figure plus the rollup counts (``you_own``,
       ``fully_working``, ``needs_attention``, ``partly_set_up``,
-      ``not_licensed``).
+      ``assessment_incomplete``, ``not_licensed``, ``entitlement_unknown``).
     * ``B`` — one serialized ``CapabilitySummary`` per owned capability, joined
       with its outcome status and carrying ``matched_skus``,
       ``matched_service_plans``, and ``outcome``.
@@ -441,7 +441,9 @@ def build_sections(
                 "fully_working": rollup.fully_working,
                 "needs_attention": rollup.needs_attention,
                 "partly_set_up": rollup.partly_set_up,
+                "assessment_incomplete": rollup.assessment_incomplete,
                 "not_licensed": rollup.not_licensed,
+                "entitlement_unknown": rollup.entitlement_unknown,
             },
         },
         "B": [
@@ -742,21 +744,51 @@ def build_action_plan(result: ScanResult) -> list[dict[str, object]]:
     return rows
 
 
+#: Parity finding statuses under which a live-rule claim is meaningful. A
+#: missing, error, or skipped parity finding asserts nothing about rules.
+_PARITY_ASSESSED: Final[frozenset[str]] = frozenset(
+    {FindingStatus.OK.value, FindingStatus.GAP.value, FindingStatus.PARTIAL.value}
+)
+
+#: Row marker for the bounded "watched" Boolean: the parity evidence names
+#: which ingesting core tables have no live rule (`unwatched_tables`) but
+#: carries no per-table live-rule counts (`evaluable_rules` is
+#: workspace-global), so a per-table count of qualifying rules cannot be
+#: honestly derived — only "not unwatched" can.
+_WATCHED_BASIS_PARITY: Final[str] = "parity-not-unwatched"
+
+
 def build_detection_realization(result: ScanResult) -> dict[str, object]:
     """Owned-capability telemetry matrix for the detection-realization section.
 
-    Reloads the static telemetry catalog (no network). Ingesting / watched_by
-    come from the WS3-B/C finding evidence when those checks ran.
+    Reloads the static telemetry catalog (no network). Ingestion / watched_by
+    come from the WS3-B/C finding evidence when those checks ran, with three
+    explicit unknown states:
+
+    * ``ingesting`` is ``None`` ("Not assessed") when the ingestion finding is
+      missing/error/skipped or carries no evidence for the capability — never
+      a ``False`` stand-in for "no evidence".
+    * ``watched_by`` is an integer only when the parity finding was actually
+      assessed (``ok``/``gap``/``partial``) and the table is ingesting;
+      otherwise ``None`` ("Not assessed").
+    * A watched table that is merely *not listed as unwatched* reports
+      ``watched_by=1`` with ``watched_by_basis="parity-not-unwatched"`` (a
+      bounded Boolean), because the parity evidence has no per-table
+      live-rule counts to count from.
     """
     owned = set(result.owned_capabilities)
     findings_by_id = {f.check_id: f for f in result.findings}
     ingestion = findings_by_id.get("sen-telemetry-ingestion-coverage")
     parity = findings_by_id.get("sen-rule-telemetry-parity")
+    ingestion_assessed = (
+        ingestion is not None and ingestion.status.value not in {"error", "skipped"}
+    )
     ingestion_caps = (
         (ingestion.evidence or {}).get("capabilities") if ingestion is not None else None
     )
     if not isinstance(ingestion_caps, dict):
         ingestion_caps = {}
+    parity_assessed = parity is not None and parity.status.value in _PARITY_ASSESSED
     parity_ev = parity.evidence if parity is not None else {}
     if not isinstance(parity_ev, dict):
         parity_ev = {}
@@ -780,20 +812,28 @@ def build_detection_realization(result: ScanResult) -> dict[str, object]:
         cap_ev = ingestion_caps.get(cap_id) if isinstance(ingestion_caps.get(cap_id), dict) else {}
         core_seen = {str(n) for n in (cap_ev.get("core_seen") or [])}
         extended_seen = {str(n) for n in (cap_ev.get("extended_seen") or [])}
+        has_evidence = (
+            ingestion_assessed
+            and bool(core_seen or extended_seen or cap_ev.get("missing_core") is not None)
+        )
         for table in row.get("tables") or []:
             if not isinstance(table, dict) or not table.get("name"):
                 continue
             name = str(table["name"])
             tier = str(table.get("tier") or "core")
-            if core_seen or extended_seen or cap_ev.get("missing_core") is not None:
+            ingesting: bool | None
+            if has_evidence:
                 ingesting = name in core_seen or name in extended_seen
             else:
-                ingesting = False
-            watched = 0
-            if ingesting and name not in unwatched and parity is not None:
-                watched = 1
-            elif ingesting and name in unwatched:
-                watched = 0
+                ingesting = None
+            watched_by: int | None = None
+            watched_by_basis: str | None = None
+            if ingesting is True and parity_assessed:
+                if name in unwatched:
+                    watched_by = 0
+                else:
+                    watched_by = 1
+                    watched_by_basis = _WATCHED_BASIS_PARITY
             rows.append(
                 {
                     "capability_id": cap_id,
@@ -801,7 +841,8 @@ def build_detection_realization(result: ScanResult) -> dict[str, object]:
                     "table": name,
                     "tier": tier,
                     "ingesting": ingesting,
-                    "watched_by": watched,
+                    "watched_by": watched_by,
+                    "watched_by_basis": watched_by_basis,
                     "connector_hint": str(table.get("connector_hint") or ""),
                 }
             )

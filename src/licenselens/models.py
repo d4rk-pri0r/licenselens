@@ -160,11 +160,14 @@ EXPOSURE_PLAIN_LABELS: dict[str, str] = {
 # Top-card tagline.
 TAGLINE = "Entitlements, controls, and configuration gaps."
 
-# Capability rollup statuses shown on the top card.
+# Capability rollup statuses shown on the top card. `fully_working` keeps its
+# internal key (schema stability) but the user-facing label is honest: the
+# criteria that were *assessed* were met — not a claim the control "works".
 CAPABILITY_STATUS_LABELS: dict[str, str] = {
-    "fully_working": "Fully working",
+    "fully_working": "Met assessed criteria",
     "needs_attention": "Needs attention",
     "partly_set_up": "Partly set up",
+    "assessment_incomplete": "Assessment incomplete",
     "not_licensed": "Not in your plan",
 }
 
@@ -419,23 +422,22 @@ class CapabilityRollup(BaseModel):
     fully_working: int = 0
     needs_attention: int = 0
     partly_set_up: int = 0
+    assessment_incomplete: int = 0
     not_licensed: int = 0
+    entitlement_unknown: int = 0
     realized_percent: int = 0
 
     @property
     def realized_sentence(self) -> str:
-        missing = self.you_own - self.fully_working
         if self.you_own <= 0:
-            return "No assessed protections were owned."
-        if missing <= 0:
+            return "No in-scope capabilities could be evaluated."
+        if self.fully_working >= self.you_own:
             return (
-                "Of the security controls associated with the entitlements and assessment "
-                "scope that could be evaluated, 100% met the defined activation criteria."
+                f"All {self.you_own} in-scope capabilities met all assessed criteria (100%)."
             )
         return (
-            "Of the security controls associated with the entitlements and assessment "
-            f"scope that could be evaluated, {self.realized_percent}% met the defined "
-            "activation criteria."
+            f"{self.fully_working} of {self.you_own} in-scope capabilities met all "
+            f"assessed criteria ({self.realized_percent}%)."
         )
 
 

@@ -126,6 +126,7 @@ exclude_docs: |
   lab-seed-checklist.md
   manual-test-checklist.md
   tenant-provisioning-guide.md
+  work-package-template.md
 
 extra_css:
   - stylesheets/extra.css
