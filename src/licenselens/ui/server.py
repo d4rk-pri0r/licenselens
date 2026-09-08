@@ -80,7 +80,9 @@ class WizardHandler(BaseHTTPRequestHandler):
 
     def _origin_ok(self) -> bool:
         origin = self.headers.get("Origin") or self.headers.get("Referer")
-        if not origin:
+        if not origin or origin.strip().lower() == "null":
+            # Chromium sends Origin: null on same-origin form POST when
+            # Referrer-Policy is no-referrer. Host + CSRF still bind the request.
             return True
         parsed = urlparse(origin)
         if parsed.hostname not in LOOPBACK_HOSTS:

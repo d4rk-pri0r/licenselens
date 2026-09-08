@@ -8,6 +8,8 @@ from http.client import HTTPConnection
 from pathlib import Path
 from urllib.parse import urlencode
 
+import pytest
+
 from licenselens.cli_profile_info import profile_requirement_report
 from licenselens.ui.pages import serve_wizard
 from licenselens.ui.server import WizardHTTPServer
@@ -123,5 +125,77 @@ def test_report_query_path_is_forbidden(tmp_path: Path) -> None:
     try:
         status, _, _ = _get(port, "/report?path=../../etc/passwd")
         assert status in {403, 404}
+    finally:
+        _stop(server)
+
+
+def test_index_serves_real_form_and_button(tmp_path: Path) -> None:
+    server, port = _start(tmp_path)
+    try:
+        status, index, _ = _get(port, "/")
+        assert status == 200
+        assert b"<form" in index
+        assert b"<button" in index
+        assert b"&lt;form" not in index
+        assert b"Run the offline demo" in index
+    finally:
+        _stop(server)
+
+
+def test_hostile_profile_name_is_escaped(tmp_path: Path) -> None:
+    from licenselens.ui.pages import WizardApp
+
+    app = WizardApp(tmp_path)
+    html = app.render(
+        "mode.html",
+        csrf="token",
+        profiles=[
+            {
+                "id": "core",
+                "name": "<img src=x onerror=alert(1)>Collaboration",
+                "checks": 1,
+            }
+        ],
+        default="core",
+        core_summary="<script>alert(1)</script>core covers 0 checks",
+    )
+    text = html.decode("utf-8")
+    assert "<form" in text
+    assert "<button" in text
+    assert "<img src=x onerror=alert(1)>" not in text
+    assert "&lt;img src=x onerror=alert(1)&gt;" in text
+    assert "<script>alert(1)</script>" not in text
+    assert "&lt;script&gt;alert(1)&lt;/script&gt;" in text
+
+
+@pytest.mark.browser
+def test_browser_clicks_demo_button(tmp_path: Path) -> None:
+    """Real browser: the advertised demo button is a real control and yields a report."""
+    from playwright.sync_api import sync_playwright
+
+    server, port = _start(tmp_path)
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch()
+            page = browser.new_page()
+            page.goto(f"http://127.0.0.1:{port}/")
+            assert page.locator("form").count() >= 1
+            assert page.locator("button[type=submit]").count() >= 1
+            page.get_by_role("button", name="Run the offline demo").click()
+            page.wait_for_selector("#status", timeout=15_000)
+            deadline = time.time() + 60
+            report_ok = False
+            body = ""
+            while time.time() < deadline:
+                resp = page.request.get(f"http://127.0.0.1:{port}/report")
+                body = resp.text() if resp.status == 200 else ""
+                if resp.status == 200 and (
+                    "Security License Lens" in body or "licenselens" in body.lower()
+                ):
+                    report_ok = True
+                    break
+                time.sleep(0.4)
+            browser.close()
+            assert report_ok, body[:500]
     finally:
         _stop(server)

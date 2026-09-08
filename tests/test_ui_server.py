@@ -67,6 +67,42 @@ def test_mismatched_origin_post_is_403() -> None:
         _stop(server)
 
 
+def test_null_origin_with_csrf_is_accepted() -> None:
+    """Chromium sends Origin: null under Referrer-Policy: no-referrer."""
+    server, port, _ = _start()
+    try:
+        body = urlencode({"csrf": server.csrf_token})
+        conn = HTTPConnection("127.0.0.1", port, timeout=5)
+        conn.request(
+            "POST",
+            "/stub",
+            body=body,
+            headers={
+                "Host": f"127.0.0.1:{port}",
+                "Origin": "null",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Length": str(len(body)),
+            },
+        )
+        assert conn.getresponse().status == 200
+        conn.close()
+        conn = HTTPConnection("127.0.0.1", port, timeout=5)
+        conn.request(
+            "POST",
+            "/stub",
+            body=urlencode({"csrf": "wrong"}),
+            headers={
+                "Host": f"127.0.0.1:{port}",
+                "Origin": "null",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        )
+        assert conn.getresponse().status == 403
+        conn.close()
+    finally:
+        _stop(server)
+
+
 def test_csrf_required_on_post() -> None:
     server, port, _ = _start()
     try:

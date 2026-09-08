@@ -30,7 +30,7 @@ _ENV = Environment(
 <body>
   <main>
     <h1>LicenseLens</h1>
-    {{ body }}
+    {% include page %}
   </main>
   <script src="/app.js"></script>
 </body>
@@ -139,8 +139,10 @@ class WizardApp:
         self._worker: threading.Thread | None = None
 
     def render(self, name: str, **ctx: Any) -> bytes:
-        body = _ENV.get_template(name).render(**ctx)
-        html = _ENV.get_template("shell.html").render(body=body)
+        # Compose via {% include %} so autoescape runs once. Rendering the
+        # inner template to a string and interpolating it as {{ body }}
+        # double-escapes the markup into visible text (zero real forms).
+        html = _ENV.get_template("shell.html").render(page=name, **ctx)
         return html.encode("utf-8")
 
     def attach(self, server: WizardHTTPServer) -> None:
