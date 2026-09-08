@@ -64,23 +64,27 @@ API limitations
 unexpected edge cases
 ```
 
-From these it computes summary metrics:
+From these it computes summary metrics. Unique-check breadth (how many distinct
+checks have been reviewed) is separate from per-assessment observations (the
+same check in two runs is two observations). The rejection share is
+`rejected / (confirmed + rejected)` observations; with no adjudicated
+observations it is unmeasured, never zero. Unresolved annotations are excluded.
+This share is **not** a statistical false-positive rate.
 
 ```text
 total evaluated findings
-human-confirmed findings
-rejected findings
-reclassified findings
-manual-only findings
-unknown findings
-false-positive rate
+human-confirmed findings (unique checks)
+rejected findings (unique checks)
+confirmed / rejected observations (per run)
+rejected share (or unmeasured)
+reclassified / manual-only / unknown findings
 false-negative discoveries
 ```
 
-**No validation numbers are invented.** The framework defaults these metrics to
-zero until real validation is recorded. Until a tenant run is actually recorded,
-the maturity dashboard reports "no validated tenant runs" rather than a made-up
-figure.
+**No validation numbers are invented.** Integer counts default to zero;
+`rejected_share` defaults to unmeasured until a confirmed or rejected
+observation is recorded. Until a tenant run is actually recorded, the maturity
+dashboard reports "no validated tenant runs" rather than a made-up figure.
 
 ## Validation status recording
 

@@ -78,18 +78,30 @@ deterministic).
 
 ## Summary metrics
 
-From the recorded records, LicenseLens computes:
+From the recorded records, LicenseLens computes two kinds of count that must
+not be mixed, plus a rejection share that is unmeasured until something has
+been adjudicated:
 
 | Metric | Meaning |
 |--------|---------|
-| `total_evaluated_findings` | sum of `raw_finding_count` across records |
-| `human_confirmed_findings` | distinct confirmed check_ids (deduped) |
-| `rejected_findings` | distinct rejected check_ids (deduped) |
-| `reclassified_findings` | distinct reclassified check_ids (deduped) |
-| `manual_only_findings` | distinct manual-only check_ids (deduped) |
-| `unknown_findings` | distinct unknown check_ids (deduped) |
-| `false_negative_discoveries` | distinct false-negative check_ids (deduped) |
-| `false_positive_rate` | `rejected / confirmed`, or `0.0` when confirmed is zero |
-| `validated_tenant_runs` | number of recorded tenant runs |
+| `total_evaluated_findings` | sum of `raw_finding_count` across distinct records |
+| `human_confirmed_findings` | unique-check breadth: distinct confirmed check_ids |
+| `rejected_findings` | unique-check breadth: distinct rejected check_ids |
+| `reclassified_findings` | distinct reclassified check_ids |
+| `manual_only_findings` | distinct manual-only check_ids |
+| `unknown_findings` | distinct unknown check_ids |
+| `false_negative_discoveries` | distinct false-negative check_ids |
+| `unique_checks_reviewed` | distinct check_ids with a confirmed or rejected annotation |
+| `confirmed_observations` | per-run confirmed (check, record) pairs |
+| `rejected_observations` | per-run rejected (check, record) pairs |
+| `adjudicated_observations` | confirmed + rejected observations |
+| `rejected_share` | `rejected_observations / adjudicated_observations`, or unmeasured (`null`) when nothing has been adjudicated |
+| `false_positive_rate` | **alias of `rejected_share`**, kept so older dashboard consumers do not break. This is **not** a statistical false-positive rate (that would need a ground-truth negative denominator and a sampling design these records do not contain) |
+| `validated_tenant_runs` | distinct recorded runs (`record_id` de-duplicated) |
+| `duplicate_records_ignored` | later copies of the same `record_id` |
 
-All counts start at zero and only rise when real validation is recorded.
+All integer counts start at zero. `rejected_share` / `false_positive_rate`
+start as unmeasured, never as `0.0`. Unresolved annotations (unknown,
+reclassified, manual-only) are excluded from the share. Two rejected and zero
+confirmed observations is 100%, not zero; two rejected and one confirmed is
+approximately 66.7%.

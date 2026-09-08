@@ -95,6 +95,98 @@ test.
 - Reports are redacted by default; still treat JSON/ZIP artifacts as sensitive.
 - Never commit customer tokens, `.env` files, live reports, or unredacted
   exports.
-- Real-tenant validation results are recorded only in sanitized form; the
-  validation framework defaults every metric to zero until real review is
-  recorded.
+- Real-tenant validation results are recorded only in sanitized form. Integer
+  counts default to zero; the rejection share is unmeasured until a confirmed
+  or rejected observation exists. See [validation recording](validation-recording.md).
+
+## Pilot packet (2026-09-07)
+
+This is a recruitment and measurement packet, not a completed pilot. Do not
+send invitations without the owner's authorization. Do not treat agent
+reenactment as a completed human gate.
+
+### Selected flagship set (8)
+
+Repaired endpoint, entitlement, and Conditional Access claims, plus already-working
+scoped-CA cases:
+
+1. `endpoint-enrollment-coverage` — Entra ∩ Intune matched population
+2. `mde-onboard-gap` — Intune ∩ MDE matched population
+3. `id-ca-mfa-all-users` — scoped-CA regression (already passing negative/control)
+4. `id-ca-legacy-auth-block` — Security Defaults / legacy-auth interaction
+5. `id-ca-priv-gaps` — privileged MFA + legacy
+6. `id-protective-plan-assignment` — mixed assignment, not "E5 so every user"
+7. `sen-telemetry-ingestion-coverage` — unknown vs measured-absent ingestion
+8. `sen-rule-telemetry-parity` — live-rule count only from qualifying evidence
+
+All remain `draft` until a human practitioner marks them.
+
+### Case matrix
+
+Distinguish synthetic/lab from permissioned real environments. Not every cell
+needs its own tenant.
+
+| Case | Purpose |
+|---|---|
+| Business Premium | entitlement floor; CA available, many Defender add-ons not |
+| E3 + add-ons | mixed ownership without a single SKU story |
+| E5 with mixed assignment | owned SKU ≠ every user holds the plan |
+| Missing Graph/ARM permissions | unknown/error, never not-licensed or OK |
+| Partial collection / truncated inventory | unresolved, never 100% |
+| Overlapping device inventories | legitimate positive control |
+| Entirely disjoint device inventories | matched coverage 0 of N, never OK |
+
+### Reviewer criteria
+
+Challenge the claim, do not approve a checklist. Produce a counterexample or a
+legitimate positive control. Derive expected status from the claim, the case,
+and a primary Microsoft source — not from the tool's current wording.
+
+### Recruitment draft (do not send without authorization)
+
+Subject: Request for a 45-minute LicenseLens paired assessment
+
+I am looking for Microsoft security consultants/architects (or MSP security
+leads) willing to spend about 45 minutes on a paired assessment of a
+permissioned lab or customer tenant you already operate.
+
+Procedure: you assess the tenant with the tools you normally use and write down
+your top three decisions. I then show LicenseLens on the same scope. We record
+what changed, why, and whether the incremental decision was meaningful, faster,
+disputed, or harmful.
+
+No production consent on my hardware. Outputs stay with you unless you
+explicitly approve a sanitized excerpt. Flagships remain draft; this is
+falsification, not a product endorsement.
+
+### Paired-assessment protocol
+
+1. Record the operator's top three decisions using their normal tools
+   (Secure Score / CIPP / Maester / portals / spreadsheet) *before* revealing
+   LicenseLens.
+2. Run LicenseLens on a comparable, consented scope.
+3. Record: useful / unchanged / disputed / harmful recommendations; time to a
+   usable work package; permission friction; time spent investigating a false
+   finding; support needed.
+4. At the next genuine assessment / change / QBR occasion, record whether they
+   reuse it without the maintainer operating it. No compulsory weekly usage.
+
+Target samples (pilot gates, not population inference): four independent
+specialists for paired decisions; two independent reviewers seeking flagship
+counterexamples; three intended operators for unassisted installation; three
+technical leads and three business decision-makers for first-screen
+comprehension (what does the number measure, what is unknown, what would you
+authorize next — do not explain first). Report actual unique participants.
+
+### Evidence record fields
+
+run/build identity · case/scope · observed conclusion · reviewer adjudication ·
+rationale · corrective action · permitted publication status. Sensitive
+artifacts only in approved locations. Public fixtures synthetic or specifically
+approved.
+
+### Calendar review
+
+Proposed review date: **2026-10-20** (six weeks from this session, allowing
+recruitment). If recruitment stalls, that is distribution evidence — not a
+reason to start WS7 or add workloads.
