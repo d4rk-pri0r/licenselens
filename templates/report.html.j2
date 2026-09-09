@@ -109,16 +109,48 @@
    ========================================================================== */
 
 /* Masthead content */
-.logo { display: flex; align-items: center; gap: 12px; padding-block: 16px 8px; }
-.logo-mark { width: 24px; height: 24px; color: var(--accent); flex-shrink: 0; display: block; }
-.tagline { margin: 4px 0 0; color: var(--text-2); font-size: 0.875rem; }
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-block: 28px 8px;
+  text-align: start;
+}
+.logo__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.logo h1 {
+  font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.tagline { margin: 0; color: var(--text-2); font-size: 0.9375rem; font-weight: 400; }
+.lens-mark {
+  width: 40px;
+  height: 45px;
+  overflow: visible;
+  flex-shrink: 0;
+  color: var(--accent);
+  display: block;
+}
+.lens-mark__body { fill: var(--surface-1); }
+.lens-mark__band { fill: var(--canvas); }
+.lens-mark__stroke,
+.lens-mark__glass,
+.lens-mark__hashes { fill: none; }
 .meta {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 0;
-  padding-block: 8px 12px;
-  border-block-start: 1px solid var(--border);
+  padding-block: 8px 0;
   font-size: 0.8125rem;
   color: var(--text-2);
 }
@@ -222,31 +254,12 @@ body.revealed .reveal-target.is-revealed {
 <body>
   <header>
     <div class="logo">
-      <svg class="logo-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
-        <circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
-        <circle cx="10" cy="10" r="2.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M15.2 15.2 21 21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-      </svg>
-      <div>
+      {{ prim.lens_mark() }}
+      <div class="logo__text">
         <h1>Security License Lens</h1>
         <p class="tagline">{{ tagline }}</p>
       </div>
     </div>
-    <p class="meta">
-      <span class="meta-row">Version {{ result.version }}</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Scanned <time class="mono" datetime="{{ opening.scanned_at }}">{{ result.display_scanned_at }}</time></span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Mode {{ mode_str }}</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Organization {{ opening.tenant_name }}</span>
-      {%- if result.packs_scanned -%}
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">{{ result.packs_scanned | join(', ') }} priority packs</span>
-      {%- endif -%}
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Activation assessment: {{ _tier_counts.activation }} · Hygiene {{ _tier_counts.hygiene }}</span>
-    </p>
     {% if result.warnings %}
     <div class="intro">
       <strong>Notes</strong>
@@ -267,35 +280,18 @@ body.revealed .reveal-target.is-revealed {
 
   <main>
     {# ======================================================================
-       A - Where you stand: DESIGN_V2 §5A. Masthead already named the product
-       and carried scan meta. This section is kicker + h2, tenant line,
-       ONE number, a stat strip, the distribution bar, one sentence, one link.
+       A - Where you stand: DESIGN_V2 §5A. Masthead named the product.
+       This section is ONE number, the distribution bar, one sentence,
+       one link. Accounting lives behind "How we got here".
        ====================================================================== #}
     <section id="section-a" class="hero">
-      <p class="micro-label section-kicker">Posture</p>
-      <h2>Where you stand</h2>
+      <h2 class="sr-only">Where you stand</h2>
 
       <div class="opening" data-opening>
-        <p class="opening-identity opening-stage">{{ opening.tenant_name }}{% if opening.tenant_id and opening.tenant_id != opening.tenant_name %} <span class="mono opening-tenant-id">{{ opening.tenant_id }}</span>{% endif %}</p>
-
         <div class="posture">
           <div class="posture-figure">
             <span class="posture-digits" data-count-up="{{ _posture.realized_percent }}">{{ _posture.realized_percent }}</span><span class="posture-unit">% realized</span>
           </div>
-          <div class="posture-stat-strip">
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.you_own }}</span><span class="label">You own</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.fully_working }}</span><span class="label">Met assessed criteria</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.needs_attention }}</span><span class="label">Action required</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.partly_set_up }}</span><span class="label">Partly set up</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.assessment_incomplete }}</span><span class="label">Assessment incomplete</span><span class="caption">not in the %</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.not_licensed }}</span><span class="label">Not licensed</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.entitlement_unknown }}</span><span class="label">Entitlement unknown</span></span>
-          </div>
-          <p class="caption posture-sentence">
-            <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
-            <span aria-hidden="true">&middot;</span>
-            <strong>{{ _rollup.you_own }}</strong> evaluated capabilities
-          </p>
         </div>
 
         {# Operational distribution over OWNED, EVALUATED capabilities only.
@@ -305,7 +301,7 @@ body.revealed .reveal-target.is-revealed {
            only non-interactive spans; cross-filter buttons are sibling
            overlays (§9). #}
         <figure class="dist-figure">
-          <figcaption id="dist-caption" class="micro-label">Operational distribution</figcaption>
+          <figcaption id="dist-caption" class="sr-only">Operational distribution</figcaption>
           <div class="dist-layer">
             <div class="dist-bar" role="img" aria-labelledby="dist-caption" aria-describedby="dist-desc">
               {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('assessment_incomplete', 'skipped'), ('fully_working', 'ok')] -%}
@@ -325,15 +321,6 @@ body.revealed .reveal-target.is-revealed {
             </div>
           </div>
           <p id="dist-desc" class="sr-only">Distribution of the {{ _rollup.you_own }} owned, evaluated capabilities: {{ _rollup.needs_attention }} action required, {{ _rollup.partly_set_up }} partly set up, {{ _rollup.assessment_incomplete }} assessment incomplete, {{ _rollup.fully_working }} met assessed criteria.</p>
-          {%- if _rollup.not_licensed or _rollup.entitlement_unknown -%}
-          <p class="caption dist-outside">
-            Outside the bar and the %:
-            {%- if _rollup.not_licensed -%} {{ _rollup.not_licensed }} not licensed{% if _rollup.not_licensed != 1 %}s{% endif %}{%- endif -%}
-            {%- if _rollup.not_licensed and _rollup.entitlement_unknown %} ·{% endif -%}
-            {%- if _rollup.entitlement_unknown -%} {{ _rollup.entitlement_unknown }} entitlement unknown{% if _rollup.entitlement_unknown != 1 %}s{% endif %}{%- endif -%}
-            .
-          </p>
-          {%- endif -%}
           <table class="chart-table">
             <caption>Operational distribution</caption>
             <tbody>
@@ -347,22 +334,53 @@ body.revealed .reveal-target.is-revealed {
           </table>
         </figure>
 
-        <ul class="dist-items">
-          {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('assessment_incomplete', 'skipped'), ('fully_working', 'ok'), ('not_licensed', 'not_licensed')] -%}
-          {%- if _key != 'not_licensed' or _rollup[_key] -%}
-          <li class="dist-item opening-stage">
-            {{ prim.status_marker(_variant) }}
-            <span class="num">{{ _rollup[_key] }}</span>
-          </li>
-          {%- endif -%}
-          {%- endfor -%}
-        </ul>
-
         <p class="implication opening-stage">{{ _posture.realized_sentence }}</p>
 
         <p class="hero-action opening-stage">
           <a href="#section-c">View prioritized actions</a>
         </p>
+
+        <details class="tech how-we-got-here">
+          <summary>
+            <span class="caret" aria-hidden="true">▸</span>
+            How we got here
+          </summary>
+          <div class="tech-body">
+            <ul class="dist-items">
+              {%- for _key, _variant in [('needs_attention', 'gap'), ('partly_set_up', 'partial'), ('assessment_incomplete', 'skipped'), ('fully_working', 'ok'), ('not_licensed', 'not_licensed')] -%}
+              {%- if _key != 'not_licensed' or _rollup[_key] -%}
+              <li class="dist-item opening-stage">
+                {{ prim.status_marker(_variant) }}
+                <span class="num">{{ _rollup[_key] }}</span>
+              </li>
+              {%- endif -%}
+              {%- endfor -%}
+            </ul>
+            {%- if _rollup.not_licensed or _rollup.entitlement_unknown -%}
+            <p class="caption dist-outside">
+              Outside the bar and the %:
+              {%- if _rollup.not_licensed -%} {{ _rollup.not_licensed }} not licensed{% if _rollup.not_licensed != 1 %}s{% endif %}{%- endif -%}
+              {%- if _rollup.not_licensed and _rollup.entitlement_unknown %} ·{% endif -%}
+              {%- if _rollup.entitlement_unknown -%} {{ _rollup.entitlement_unknown }} entitlement unknown{% if _rollup.entitlement_unknown != 1 %}s{% endif %}{%- endif -%}
+              .
+            </p>
+            {%- endif -%}
+            <div class="posture-stat-strip">
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.you_own }}</span><span class="label">You own</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.fully_working }}</span><span class="label">Met assessed criteria</span><span class="caption">of {{ _rollup.you_own }} prioritized</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.needs_attention }}</span><span class="label">Action required</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.partly_set_up }}</span><span class="label">Partly set up</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.assessment_incomplete }}</span><span class="label">Assessment incomplete</span><span class="caption">not in the %</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.not_licensed }}</span><span class="label">Not licensed</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">{{ _rollup.entitlement_unknown }}</span><span class="label">Entitlement unknown</span></span>
+            </div>
+            <p class="caption posture-sentence">
+              <strong>{{ result.owned_capabilities | length }}</strong> licensed capabilities detected
+              <span aria-hidden="true">&middot;</span>
+              <strong>{{ _rollup.you_own }}</strong> evaluated capabilities
+            </p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -724,6 +742,23 @@ body.revealed .reveal-target.is-revealed {
       {%- endif %}
     </div>
     <p class="report-footer__identity"><span class="report-footer__name">{{ provenance.identity.name }}</span> <span aria-hidden="true">&mdash;</span> generated <time datetime="{{ provenance.identity.scanned_at }}">{{ provenance.identity.display_scanned_at }}</time></p>
+    <p class="meta">
+      <span class="meta-row">Version {{ result.version }}</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Scanned <time class="mono" datetime="{{ opening.scanned_at }}">{{ result.display_scanned_at }}</time></span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Mode {{ mode_str }}</span>
+      {%- if result.tenant_display_name -%}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Organization {{ opening.tenant_name }}</span>
+      {%- endif -%}
+      {%- if result.packs_scanned -%}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">{{ result.packs_scanned | join(', ') }} priority packs</span>
+      {%- endif -%}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Activation assessment: {{ _tier_counts.activation }} · Hygiene {{ _tier_counts.hygiene }}</span>
+    </p>
     <p class="report-footer__tagline">{{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.</p>
   </footer>
   <script>

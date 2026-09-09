@@ -40,7 +40,7 @@ audit; the patched rules below replace the clauses that produced the mess.
 
 | Failure | What shipped | What the contract had promised / now promises |
 | --- | --- | --- |
-| Three titles before the number | Masthead h1 + kicker POSTURE + h2 + 2rem display line `{tenant} — Security License Lens assessment` + `38% realized` as one run of display type | Masthead is the only product title. Section A is kicker + h2, then a *secondary* tenant line, then **one** hero number |
+| Three titles before the number | Masthead h1 + kicker POSTURE + h2 + 2rem display line `{tenant} — Security License Lens assessment` + `38% realized` as one run of display type | Masthead is the only product title (centered lockup: camera-lens mark + serif wordmark). Section A is the number, then the bar, then one sentence |
 | Duplicate implication | Hardcoded "Of the security controls…" plus `realized_sentence` (the same sentence) | Bind `realized_sentence` **once**. Never emit both |
 | Accent painted on the metric | `--accent` on the logo square, the 38%, links, *and* the radial arc | Accent = identity + interaction only. Hero number is `--text-1` |
 | Carded hero | `.hero` used `--grad-hero`, `--shadow-3`, 16px radius — a giant rounded card | Hero is open typographic layout on the canvas: rules + whitespace, not a card |
@@ -285,11 +285,12 @@ Findings — Priorities sit directly under Posture. Section labels:
 
 ### A. "Where you stand" — the signature opening sequence
 
-**Masthead (above `<main>`, not inside section A).** Mark (24px monochrome lens) +
-product name (`<h1>`) + one quiet tagline. Scan meta — version, scanned time, mode,
-organization — lives **only here**, as a single compact meta row. Never repeat it in
-the hero. Meta is title-case sans; the timestamp may use `.mono`. Never `<code>` for
-mode or organization.
+**Masthead (above `<main>`, not inside section A).** Centered lockup: the camera-lens
+mark (`prim.lens_mark()`, 40×47, `--accent` stroke) beside the serif `<h1>` and one
+quiet tagline. The mark is identity, not a second hero — it sits at wordmark height,
+never at the 3.375rem posture figure. Scan meta — version, scanned time, mode,
+organization, packs, activation/hygiene counts — lives in the **footer**, not on the
+first screen. Never `<code>` for mode or organization. No magnifying-glass mark.
 
 **Hierarchy-first: ONE dominant metric.** Section A is dominated by the posture figure
 (`capability_rollup.realized_percent`). Digits render at hero-figure size in `--text-1`;
@@ -304,27 +305,24 @@ A has violated this contract.
 
 **Desired hero stack, top to bottom (binding):**
 
-1. Section kicker (`Posture`) + `<h2>` "Where you stand" only.
-2. Tenant line — secondary text (`1rem / 500 / --text-2`): `{tenant_display_name}`.
-   Do **not** append "— Security License Lens assessment". Do **not** restyle this as a
-   display heading.
-3. ONE dominant metric: digits at hero size + "realized" as the unit label. Count-up
+1. `<h2>` "Where you stand" is present for heading order but visually hidden.
+   No `POSTURE` kicker. No tenant line on the first screen.
+2. ONE dominant metric: digits at hero size + "realized" as the unit label. Count-up
    0 → N (section 11) updates the digits only.
-4. Compact stat strip (You own / Fully working / Action required / Incomplete / Not
-   licensed). Optional caption under Fully working: "of N prioritized".
-5. Operational distribution — one muted track; segments proportional to counts; every
-   color paired with glyph + word + count. No toy-progress saturation.
-6. Implication sentence **once**, bound to `capability_rollup.realized_sentence`. Never
+3. Operational distribution — one muted track; segments proportional to counts.
+   Glyph + word + count for the bar live behind "How we got here", not on the first
+   look. No toy-progress saturation.
+4. Implication sentence **once**, bound to `capability_rollup.realized_sentence`. Never
    also emit a hardcoded "Of the security controls…" paragraph. Empty second paragraph
    is a defect.
-7. One "View prioritized actions" text link into section C (accent color, underlined,
+5. One "View prioritized actions" text link into section C (accent color, underlined,
    44px target — not a filled pill).
+6. Optional closed `<details>` "How we got here" holding the stat strip, licensed vs
+   evaluated caption, and labeled distribution counts. Closed on first load.
 
 The hero is **not a card**: no `--grad-hero`, no `--shadow-3`, no 16px radius. Canvas +
 a hairline rule + whitespace. The radial / donut gauge is **withdrawn** — it restated
-the number. Keep the distribution bar. A compact "licensed capabilities detected ·
-evaluated capabilities" line may sit under the stat strip as caption, not as a second
-implication.
+the number. Keep the distribution bar.
 
 The v1 exposed/gap rail stays retired from the hero: exposure/gap awareness lives in the
 distribution, the findings surface, and the prioritized moves in section C.
@@ -772,8 +770,11 @@ status conveyed by color alone.
 - One `<h1>`, one `<h2>` per section A–C + Findings, no skipped levels; all charts carry
   role/label/description + sr-only data tables; print expands disclosures and shows
   textual chart fallbacks.
-- First screen at 1280×900 is: who this is (masthead), one number, four-to-five stats,
-  one sentence, one next action. No second title, no duplicate implication, no donut.
+- First screen at 1280×900 is: who this is (centered lockup: lens mark + wordmark),
+  section nav, one number, the distribution bar, one sentence, one next action. No
+  magnifying-glass, no scan metadata, no POSTURE kicker, no second title, no
+  duplicate implication, no donut. The lens mark is identity only — never larger
+  than the wordmark, never competing with the posture figure.
 - Screen is dark, print is light; both pass the section 2.3 contrast floors; status is
   never color-only.
 - The templates contain no external URL except the Microsoft admin deep links, no emoji,

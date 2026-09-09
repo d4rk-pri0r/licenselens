@@ -421,11 +421,12 @@ def test_exec_area_renders_human_enum_copy(tmp_path: Path) -> None:
     assert "Value impact: high" not in plain, "raw lowercase impact value leaked"
 
     # Posture sentence: data-driven reword, no awkward fragment.
+    assert result.capability_rollup.realized_sentence in plain
+    assert "still not fully working" not in plain, "awkward posture fragment still rendered"
     assert (
         "Of the security controls associated with the entitlements and "
-        "assessment scope that could be evaluated, " in plain
+        "assessment scope that could be evaluated" not in plain
     )
-    assert "still not fully working" not in plain, "awkward posture fragment still rendered"
 
     # The bundle entry masthead uses the same copy mapping.
     bundle = build_report_bundle(result, tmp_path / "bundle")

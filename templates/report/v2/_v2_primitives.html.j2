@@ -65,6 +65,35 @@
 {%- endif -%}
 {%- endmacro -%}
 
+
+{%- macro lens_mark() -%}
+{# Camera-lens identity mark. Decorative. currentColor = --accent on screen,
+   --accent-print on paper. No xmlns (single-file forbids http://). Front rim
+   is ~30% wider than the barrel so the silhouette reads as a lens, not a cup. #}
+<svg class="lens-mark" viewBox="0 0 64 72" width="40" height="45" aria-hidden="true" focusable="false" fill="none">
+  <path class="lens-mark__body" d="M11 26 L11 58 C11 64 53 64 53 58 L53 26 Z"/>
+  <path class="lens-mark__band" d="M11.5 34 H52.5 V46 H11.5 Z"/>
+  <g class="lens-mark__hashes" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <line x1="18.2" y1="36.2" x2="18.2" y2="43.8"/>
+    <line x1="22.0" y1="36.2" x2="22.0" y2="43.8"/>
+    <line x1="25.8" y1="36.2" x2="25.8" y2="43.8"/>
+    <line x1="29.6" y1="36.2" x2="29.6" y2="43.8"/>
+    <line x1="33.4" y1="36.2" x2="33.4" y2="43.8"/>
+    <line x1="37.2" y1="36.2" x2="37.2" y2="43.8"/>
+    <line x1="41.0" y1="36.2" x2="41.0" y2="43.8"/>
+    <line x1="44.8" y1="36.2" x2="44.8" y2="43.8"/>
+  </g>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M11 26 L11 58 C11 64 53 64 53 58 L53 26"/>
+  <ellipse class="lens-mark__stroke" cx="32" cy="58" rx="21" ry="6.2" stroke="currentColor" stroke-width="2.5"/>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M11 34 H53"/>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M11 46 H53"/>
+  <ellipse class="lens-mark__body" cx="32" cy="18" rx="28" ry="11"/>
+  <ellipse class="lens-mark__stroke" cx="32" cy="18" rx="28" ry="11" stroke="currentColor" stroke-width="2.5"/>
+  <ellipse class="lens-mark__glass" cx="32" cy="18" rx="16" ry="6" stroke="currentColor" stroke-width="1.9"/>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M20 16 C24 13.2 40 13.2 44 16"/>
+</svg>
+{%- endmacro -%}
+
 {%- macro status_marker(status) -%}
   {%- if status in PRESENTATION -%}
     {%- set variant = status -%}

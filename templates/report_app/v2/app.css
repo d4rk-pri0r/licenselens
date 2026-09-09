@@ -151,23 +151,48 @@ header.app-header {
   padding-block: 20px 12px;
 }
 
-.logo { display: flex; align-items: center; gap: 12px; padding-block: 4px; }
-.logo-mark {
-  width: 24px;
-  height: 24px;
-  color: var(--accent);
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-block: 8px 4px;
+  text-align: start;
+}
+.logo__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.logo h1 {
+  font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.tagline { margin: 0; color: var(--text-2); font-size: 0.9375rem; font-weight: 400; }
+.lens-mark {
+  width: 40px;
+  height: 45px;
+  overflow: visible;
   flex-shrink: 0;
+  color: var(--accent);
   display: block;
 }
-.tagline { margin: 4px 0 0; color: var(--text-2); font-size: 0.875rem; }
+.lens-mark__body { fill: var(--surface-1); }
+.lens-mark__band { fill: var(--canvas); }
+.lens-mark__stroke,
+.lens-mark__glass,
+.lens-mark__hashes { fill: none; }
 .meta {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 0;
   padding-block: 8px 0;
-  border-block-start: 1px solid var(--border);
-  margin-block-start: 8px;
   font-size: 0.8125rem;
   color: var(--text-2);
 }
@@ -1373,6 +1398,10 @@ main section.is-revealed {
     background: var(--print-paper) !important;
     box-shadow: none !important;
   }
+
+  .lens-mark { color: var(--accent-print) !important; }
+  .lens-mark__body { fill: var(--print-paper) !important; }
+  .lens-mark__band { fill: var(--print-hero) !important; }
 
   /* Segments and brand marks keep their colors on paper. */
   .dist-seg,

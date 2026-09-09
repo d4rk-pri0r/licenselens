@@ -74,8 +74,8 @@ def test_hero_renders_clean_demo_label(tmp_path: Path) -> None:
     )
     html_path = write_html_report(result, tmp_path / "report.html")
     html = html_path.read_text(encoding="utf-8")
-    # The hero opening line and the masthead Organization row carry the clean
-    # label; the legacy demo string never appears as org identity.
+    # Org identity lives in the footer meta row; the legacy demo string never
+    # appears as org identity.
     assert "Demo (synthetic data)" in html
     assert f"{LEGACY_DEMO_NAME} &mdash;" not in html
     assert "Organization Demo (synthetic data)" in html
@@ -85,7 +85,7 @@ def test_hero_renders_clean_demo_label(tmp_path: Path) -> None:
 
     bundle = build_report_bundle(result, tmp_path / "bundle")
     entry_html = bundle.entry_path.read_text(encoding="utf-8")
-    assert '<span class="opening-identity__tenant">Demo (synthetic data)</span>' in entry_html
+    assert "Organization Demo (synthetic data)" in entry_html
     assert "opening-identity__id" not in entry_html, "zero-GUID rendered as hero tenant id"
 
 

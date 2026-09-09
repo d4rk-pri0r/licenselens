@@ -133,13 +133,17 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
     result = run_scan(auth, dry_run=True)
     html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
 
-    # Hero opening renders the dominant posture figure, the supporting stat
-    # strip, and the detected-vs-evaluated distinction.
+    # Hero opening renders the dominant posture figure. Accounting copy lives
+    # behind "How we got here", not on the first look.
     assert "Where you stand" in html
+    assert "How we got here" in html
     assert "licensed capabilities detected" in html
     assert "evaluated capabilities" in html
     assert "Met assessed criteria" in html
     assert "Fully working" not in html
+    assert "logo-mark" not in html
+    assert "lens-mark" in html
+    assert "POSTURE" not in html
     assert str(result.capability_rollup.you_own) in html
     assert result.capability_rollup.realized_sentence in html
     assert "Action required" in html
@@ -149,6 +153,30 @@ def test_html_top_card_shows_rollup_and_moves(tmp_path: Path):
     for move in result.moves:
         assert move.title in html
         assert move.effort_label.lower() in html.lower()
+
+
+def test_html_first_screen_is_the_story(tmp_path: Path):
+    """First look: wordmark, nav, one number, one sentence, one next click."""
+    auth = build_auth_context(mode=AuthMode.DRY_RUN)
+    result = run_scan(auth, dry_run=True)
+    html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
+    header, _, rest = html.partition("<main")
+    hero, _, after = rest.partition("id=\"section-c\"")
+    first = header + hero
+    assert "<h1>Security License Lens</h1>" in first
+    assert "logo-mark" not in first
+    assert "lens-mark" in first
+    assert "POSTURE" not in first
+    assert "Activation assessment:" not in first
+    assert "Organization " not in first
+    assert "View prioritized actions" in first
+    assert result.capability_rollup.realized_sentence in first
+    assert "How we got here" in first
+    # Accounting copy exists, but only inside the closed details.
+    details_start = html.index("How we got here")
+    assert "licensed capabilities detected" in html[details_start:]
+    assert "Activation assessment:" in html
+    assert "Organization " in html
 
 
 def test_markdown_report_leads_with_executive_summary(tmp_path: Path):

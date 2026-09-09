@@ -45,29 +45,12 @@
   <header class="app-header">
     <div class="app-header__bar">
       <div class="logo">
-        <svg class="logo-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
-          <circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
-          <circle cx="10" cy="10" r="2.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M15.2 15.2 21 21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-        </svg>
-        <div>
+        {{ prim.lens_mark() }}
+        <div class="logo__text">
           <h1>Security License Lens</h1>
           <p class="tagline">{{ tagline }}</p>
         </div>
       </div>
-      <p class="meta">
-        <span class="meta-row">Version {{ result.version }}</span>
-        <span class="sep" aria-hidden="true">·</span>
-        <span class="meta-row">Scanned <time class="mono" datetime="{{ opening.get('scanned_at') or result.scanned_at }}">{{ o_scanned }}</time></span>
-        <span class="sep" aria-hidden="true">·</span>
-        <span class="meta-row">Mode {{ mode_str }}</span>
-        <span class="sep" aria-hidden="true">·</span>
-        <span class="meta-row">Organization {{ o_tenant }}</span>
-        {% if packs %}
-        <span class="sep" aria-hidden="true">·</span>
-        <span class="meta-row">{{ packs }} priority packs</span>
-        {% endif %}
-      </p>
     </div>
     {% if result.warnings %}
     <div class="intro">
@@ -101,52 +84,18 @@
     <div class="app-main__content">
       {# A - Where you stand: the signature opening sequence, hierarchy-first. #}
       <section id="section-a" class="hero" aria-labelledby="a-title">
-        <p class="micro-label section-kicker">Posture</p>
-        <h2 id="a-title">Where you stand</h2>
+        <h2 id="a-title" class="sr-only">Where you stand</h2>
         <div class="opening">
-          <p class="opening-identity" data-opening-stage="identity">
-            <span class="opening-identity__tenant">{{ o_tenant }}</span>
-            {% if o_tenant_id and o_tenant_id != o_tenant %}
-            <span class="opening-identity__id mono">{{ o_tenant_id }}</span>
-            {% endif %}
-          </p>
-
           <div class="posture-figure" data-realized="{{ o_pct }}">
             <span class="posture-digits">{{ o_pct }}</span><span class="posture-unit">% realized</span>
           </div>
 
-          <div class="posture-stat-strip stat-strip" data-opening-stage="stats">
-            <span class="stat-item">
-              <span class="metric-figure-secondary stat__num">{{ rollup.you_own }}</span>
-              <span class="label stat__label">You own</span>
-            </span>
-            <span class="stat-item">
-              <span class="metric-figure-secondary stat__num">{{ rollup.fully_working }}</span>
-              <span class="label stat__label">Fully working</span>
-            </span>
-            <span class="stat-item">
-              <span class="metric-figure-secondary stat__num">{{ rollup.needs_attention }}</span>
-              <span class="label stat__label">Action required</span>
-            </span>
-            <span class="stat-item">
-              <span class="metric-figure-secondary stat__num">{{ rollup.partly_set_up }}</span>
-              <span class="label stat__label">Incomplete</span>
-            </span>
-            <span class="stat-item">
-              <span class="metric-figure-secondary stat__num">{{ rollup.not_licensed }}</span>
-              <span class="label stat__label">Not licensed</span>
-            </span>
-          </div>
-
           <figure class="dist-figure" data-opening-stage="dist">
-            <figcaption id="dist-title" class="micro-label">Operational distribution</figcaption>
+            <figcaption id="dist-title" class="sr-only">Operational distribution</figcaption>
             <div class="dist-bar" role="img" aria-labelledby="dist-title" aria-describedby="dist-desc">
               <span class="dist-segment dist-seg dist-seg--gap status-gap" style="flex-grow: {{ rollup.needs_attention }}; animation-delay: 160ms"></span>
               <span class="dist-segment dist-seg dist-seg--partial status-partial" style="flex-grow: {{ rollup.partly_set_up }}; animation-delay: 200ms"></span>
               <span class="dist-segment dist-seg dist-seg--ok status-ok" style="flex-grow: {{ rollup.fully_working }}; animation-delay: 240ms"></span>
-              {% if rollup.not_licensed > 0 %}
-              <span class="dist-segment dist-seg dist-seg--not_licensed status-not_licensed" style="flex-grow: {{ rollup.not_licensed }}; animation-delay: 280ms"></span>
-              {% endif %}
               {% if rollup.you_own == 0 %}
               <span class="dist-seg dist-seg--empty" style="flex-grow: 1"></span>
               {% endif %}
@@ -168,32 +117,62 @@
             </table>
           </figure>
 
-          <ul class="dist-items" data-opening-stage="dist-items">
-            <li class="dist-item status-gap opening-stage">
-              {{ prim.status_marker('gap') }}
-              <span class="num dist-item__count">{{ rollup.needs_attention }}</span>
-            </li>
-            <li class="dist-item status-partial opening-stage">
-              {{ prim.status_marker('partial') }}
-              <span class="num dist-item__count">{{ rollup.partly_set_up }}</span>
-            </li>
-            <li class="dist-item status-ok opening-stage">
-              {{ prim.status_marker('ok') }}
-              <span class="num dist-item__count">{{ rollup.fully_working }}</span>
-            </li>
-            {% if rollup.not_licensed > 0 %}
-            <li class="dist-item status-not_licensed opening-stage">
-              {{ prim.status_marker('not_licensed') }}
-              <span class="num dist-item__count">{{ rollup.not_licensed }}</span>
-            </li>
-            {% endif %}
-          </ul>
-
           <p class="implication opening-implication" data-opening-stage="implication">{{ o_sentence.rstrip('.') }}.</p>
 
           <p class="hero-action" data-opening-stage="actions">
             <a href="#section-c">View prioritized actions</a>
           </p>
+
+          <details class="tech how-we-got-here">
+            <summary>
+              <span class="caret" aria-hidden="true">▸</span>
+              How we got here
+            </summary>
+            <div class="tech-body">
+              <div class="posture-stat-strip stat-strip">
+                <span class="stat-item">
+                  <span class="metric-figure-secondary stat__num">{{ rollup.you_own }}</span>
+                  <span class="label stat__label">You own</span>
+                </span>
+                <span class="stat-item">
+                  <span class="metric-figure-secondary stat__num">{{ rollup.fully_working }}</span>
+                  <span class="label stat__label">Met assessed criteria</span>
+                </span>
+                <span class="stat-item">
+                  <span class="metric-figure-secondary stat__num">{{ rollup.needs_attention }}</span>
+                  <span class="label stat__label">Action required</span>
+                </span>
+                <span class="stat-item">
+                  <span class="metric-figure-secondary stat__num">{{ rollup.partly_set_up }}</span>
+                  <span class="label stat__label">Partly set up</span>
+                </span>
+                <span class="stat-item">
+                  <span class="metric-figure-secondary stat__num">{{ rollup.not_licensed }}</span>
+                  <span class="label stat__label">Not licensed</span>
+                </span>
+              </div>
+              <ul class="dist-items">
+                <li class="dist-item status-gap">
+                  {{ prim.status_marker('gap') }}
+                  <span class="num dist-item__count">{{ rollup.needs_attention }}</span>
+                </li>
+                <li class="dist-item status-partial">
+                  {{ prim.status_marker('partial') }}
+                  <span class="num dist-item__count">{{ rollup.partly_set_up }}</span>
+                </li>
+                <li class="dist-item status-ok">
+                  {{ prim.status_marker('ok') }}
+                  <span class="num dist-item__count">{{ rollup.fully_working }}</span>
+                </li>
+                {% if rollup.not_licensed > 0 %}
+                <li class="dist-item status-not_licensed">
+                  {{ prim.status_marker('not_licensed') }}
+                  <span class="num dist-item__count">{{ rollup.not_licensed }}</span>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -465,6 +444,21 @@
       </div>
     </div>
     <p class="report-footer__identity"><span class="report-footer__name">{{ provenance.identity.name }}</span> <span aria-hidden="true">&mdash;</span> generated <time datetime="{{ provenance.identity.scanned_at }}">{{ provenance.identity.display_scanned_at }}</time></p>
+    <p class="meta">
+      <span class="meta-row">Version {{ result.version }}</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Scanned <time class="mono" datetime="{{ opening.get('scanned_at') or result.scanned_at }}">{{ o_scanned }}</time></span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Mode {{ mode_str }}</span>
+      {% if result.tenant_display_name %}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Organization {{ o_tenant }}</span>
+      {% endif %}
+      {% if packs %}
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">{{ packs }} priority packs</span>
+      {% endif %}
+    </p>
     <p class="report-footer__tagline">{{ tagline }} &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.</p>
   </footer>
 

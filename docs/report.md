@@ -134,13 +134,12 @@ The HTML report may also embed report JSON for offline interactivity
 The report is a self-contained HTML file. It reads top to bottom in five
 sections:
 
-- **Where you stand** — the opening sequence: org / tenant identity,
-  assessment meta, a count-up posture figure (`<percent>% realized`, bound to
-  `capability_rollup.realized_percent` — never hardcoded), a radial realization
-  gauge with an operational-distribution bar, the most important implication
-  sentence, and the top actions. Section A is hierarchy-first: **one** dominant
-  3.5rem posture figure with a supporting stat strip, not a grid of equal metric
-  cards.
+- **Where you stand** — the first screen: lens mark + product name, section nav, one
+  posture figure (`<percent>% realized`, bound to
+  `capability_rollup.realized_percent` — never hardcoded), a distribution bar,
+  one sentence, and a link to the next actions. Scan metadata lives in the
+  footer. The accounting strip (owned / met criteria / licensed vs evaluated)
+  sits behind "How we got here".
 - **What you're paying for** — your owned SKUs and a capability
   **constellation**: a deterministic, labeled field of every owned capability
   grouped by workload and colored by status. Group captions are buttons that

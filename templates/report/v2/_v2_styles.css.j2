@@ -1202,6 +1202,10 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   a,
   .constellation-caption { color: LinkText; }
 
+  .lens-mark { color: CanvasText; }
+  .lens-mark__body,
+  .lens-mark__band { fill: Canvas; }
+
   .status-gap,
   .status-error,
   .status-partial,
@@ -1268,6 +1272,10 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   }
 
   header { background: var(--print-hero) !important; }
+
+  .lens-mark { color: var(--accent-print) !important; }
+  .lens-mark__body { fill: var(--print-paper) !important; }
+  .lens-mark__band { fill: var(--print-hero) !important; }
 
   body {
     -webkit-print-color-adjust: exact;
