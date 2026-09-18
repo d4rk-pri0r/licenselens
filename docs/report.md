@@ -131,6 +131,9 @@ The HTML report may also embed report JSON for offline interactivity
 
 ## The HTML report
 
+Start with [Reading a LicenseLens report](report-guide.md) if you are interpreting an assessment for the first time. This page documents renderer and export contracts; the guide documents the reader path.
+
+
 The report is a self-contained HTML file. It reads top to bottom in five
 sections:
 
@@ -140,16 +143,17 @@ sections:
   one sentence, and a link to the next actions. Scan metadata lives in the
   footer. The accounting strip (owned / met criteria / licensed vs evaluated)
   sits behind "How we got here".
-- **What you're paying for** — your owned SKUs and a capability
-  **constellation**: a deterministic, labeled field of every owned capability
-  grouped by workload and colored by status. Group captions are buttons that
-  cross-filter the page, and every caption and capability row carries the
-  workload's branded Microsoft icon next to its always-visible text label.
+- **What you already own** — the entitlement context behind the headline. The capability
+  constellation stays glanceable, while the capability inventory is grouped by status so
+  Action required and Incomplete are the useful starting points. Individual capability
+  context is progressive disclosure, not a flat wall of equal cards.
 - **What matters most** — the top ranked moves: title, effort, why it matters,
   and the concrete next step with a link to the admin page.
-- **Why LicenseLens believes this** — every finding as a six-slot "belief block"
-  (Expected, Observed, Why it matters, Recommended action, Evidence, Admin
-  destination) with a technical evidence drawer.
+- **Findings** — every assessed control as a collapsed triage row. Expand a finding for
+  the six-slot belief block (Expected, Observed, Why it matters, Recommended action,
+  Evidence, Admin destination).
+- **Evidence detail** — detection realization and technical reference after the decision
+  path, for reviewers who need telemetry, SKUs, check IDs, or evaluator fields.
 - **Explore everything** — search, multi-facet filters, sort, pagination, the
   data-visualization figures, and CSV/JSON export over every assessed control
   (interactive view).

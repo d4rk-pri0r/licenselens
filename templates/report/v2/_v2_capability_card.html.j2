@@ -141,20 +141,7 @@
 {%- endmacro -%}
 
 
-{%- macro capability_cards(capabilities, constellation) -%}
-{%- if capabilities -%}
-{%- set workload_by_id = {} -%}
-{%- set svg_by_workload = {} -%}
-{%- for entry in constellation -%}
-  {%- set _ = workload_by_id.update({entry.id: entry.workload or 'general'}) -%}
-  {%- if entry.svg is defined and entry.svg -%}
-  {%- set _ = svg_by_workload.update({entry.workload or 'general': entry.svg}) -%}
-  {%- endif -%}
-{%- endfor -%}
-<div class="cards">
-  {%- for card in capabilities -%}
-  {%- set status = card.status or 'not_licensed' -%}
-  {%- set wl = workload_by_id.get(card.id, 'general') -%}
+{%- macro capability_card(card, status, wl, svg_by_workload) -%}
   <article class="card" data-variant="{{ status }}" data-status="{{ status }}" data-workload="{{ wl }}" data-capability-id="{{ card.id }}">
     <div class="card-summary">
       {%- if svg_by_workload.get(wl) -%}{{ svg_by_workload[wl] }}{%- endif -%}
@@ -188,6 +175,52 @@
       </div>
     </details>
   </article>
+{%- endmacro -%}
+
+{%- macro capability_cards(capabilities, constellation) -%}
+{%- if capabilities -%}
+{%- set workload_by_id = {} -%}
+{%- set svg_by_workload = {} -%}
+{%- for entry in constellation -%}
+  {%- set _ = workload_by_id.update({entry.id: entry.workload or 'general'}) -%}
+  {%- if entry.svg is defined and entry.svg -%}
+  {%- set _ = svg_by_workload.update({entry.workload or 'general': entry.svg}) -%}
+  {%- endif -%}
+{%- endfor -%}
+{# Grouping is the information architecture: status groups are the reader's
+   useful units; individual capabilities remain available inside each group. #}
+{%- set groups = [
+  ('needs_attention', 'gap', 'Action required', 'Start here: owned capabilities with an assessed gap.', true),
+  ('partly_set_up', 'partial', 'Incomplete', 'Evidence or implementation is partial; resolve uncertainty before calling it complete.', true),
+  ('fully_working', 'ok', 'Operational', 'Owned capabilities that met the assessed criteria.', false),
+  ('assessment_incomplete', 'skipped', 'Not assessed', 'The scan could not establish a conclusion for these capabilities.', false),
+  ('not_licensed', 'not_licensed', 'Not licensed', 'Outside the owned entitlement; not an activation gap.', false)
+] -%}
+<div class="capability-groups">
+  {%- for status, variant, label, note, open_group in groups -%}
+  {%- set group_cards = [] -%}
+  {%- for candidate in capabilities -%}
+    {%- if (candidate.status or 'not_licensed') == status -%}
+      {%- set _ = group_cards.append(candidate) -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- if group_cards -%}
+  <details class="capability-group tech"{% if open_group %} open{% endif %}>
+    <summary>
+      <span class="caret" aria-hidden="true">▸</span>
+      <span class="capability-group__status status-marker {{ variant }}">{{ prim.status_glyph(variant) }}{{ label }}</span>
+      <strong class="capability-group__count">{{ group_cards | length }}</strong>
+      <span class="capability-group__note">{{ note }}</span>
+    </summary>
+    <div class="tech-body">
+      <div class="cards">
+      {%- for card in group_cards -%}
+        {{ capability_card(card, status, workload_by_id.get(card.id, 'general'), svg_by_workload) }}
+      {%- endfor -%}
+      </div>
+    </div>
+  </details>
+  {%- endif -%}
   {%- endfor -%}
 </div>
 {%- else -%}

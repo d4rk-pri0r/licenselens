@@ -74,7 +74,7 @@ LINK_WITH_QUERY = "https://admin.microsoft.com/#/Security?foo=1&bar=2"
 SECTION_HEADINGS = [
     "Where you stand",
     "What matters most",
-    "What you're paying for",
+    "What you already own",
     "Findings",
 ]
 

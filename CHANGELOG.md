@@ -61,8 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   from neutral; workload group captions cross-filter), branded Microsoft
   workload icons (inline SVG in the single-file report, hashed `<img>` assets
   in the bundle, always paired with a visible text label), five sections (Where
-  you stand → What you're paying for → What matters most → Why LicenseLens
-  believes this → Explore everything), a six-slot per-finding "belief block"
+  you stand → What matters most → What you already own → Findings → Evidence detail), a six-slot per-finding "belief block"
   (Expected / Observed / Why it matters / Recommended action / Evidence /
   Admin destination), and native `<details>` progressive disclosure (summary →
   explanation → evidence); fully readable with JavaScript disabled and

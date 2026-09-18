@@ -497,6 +497,18 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
   background: currentColor;
 }
 
+/* Capability inventory: status groups are the reader's units; cards are
+   supporting context inside a group, not 25 equal priorities. */
+.capability-groups { display: flex; flex-direction: column; gap: 12px; margin-block: 16px 0; }
+.capability-group { padding-inline: 16px; }
+.capability-group[open] { background: var(--surface-2); }
+.capability-group > summary { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr); align-items: baseline; gap: 8px 12px; }
+.capability-group__status { font-size: 0.9375rem; }
+.capability-group__count { font-size: 1.125rem; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.capability-group__note { color: var(--text-2); font-size: 0.8125rem; font-weight: 400; }
+.capability-group .cards { margin-block-start: 12px; }
+.capability-group .card { padding: 14px 16px; }
+
 /* --------------------------------------------------------------------------
    §5B. Capability summary rows — summary first, context on demand.
    -------------------------------------------------------------------------- */
@@ -1210,6 +1222,10 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   a,
   .constellation-caption { color: LinkText; }
 
+  .lens-mark { color: CanvasText; }
+  .lens-mark__body,
+  .lens-mark__band { fill: Canvas; }
+
   .status-gap,
   .status-error,
   .status-partial,
@@ -1276,6 +1292,10 @@ body.instant .constellation-point { color: var(--resolve-to, var(--state-neutral
   }
 
   header { background: var(--print-hero) !important; }
+
+  .lens-mark { color: var(--accent-print) !important; }
+  .lens-mark__body { fill: var(--print-paper) !important; }
+  .lens-mark__band { fill: var(--print-hero) !important; }
 
   body {
     -webkit-print-color-adjust: exact;
@@ -1525,16 +1545,48 @@ footer {
    ========================================================================== */
 
 /* Masthead content */
-.logo { display: flex; align-items: center; gap: 12px; padding-block: 16px 8px; }
-.logo-mark { width: 24px; height: 24px; color: var(--accent); flex-shrink: 0; display: block; }
-.tagline { margin: 4px 0 0; color: var(--text-2); font-size: 0.875rem; }
+.logo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-block: 28px 8px;
+  text-align: start;
+}
+.logo__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.logo h1 {
+  font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.tagline { margin: 0; color: var(--text-2); font-size: 0.9375rem; font-weight: 400; }
+.lens-mark {
+  width: 40px;
+  height: 45px;
+  overflow: visible;
+  flex-shrink: 0;
+  color: var(--accent);
+  display: block;
+}
+.lens-mark__body { fill: var(--surface-1); }
+.lens-mark__band { fill: var(--canvas); }
+.lens-mark__stroke,
+.lens-mark__glass,
+.lens-mark__hashes { fill: none; }
 .meta {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   gap: 4px 0;
-  padding-block: 8px 12px;
-  border-block-start: 1px solid var(--border);
+  padding-block: 8px 0;
   font-size: 0.8125rem;
   color: var(--text-2);
 }
@@ -1627,6 +1679,8 @@ body.revealed .reveal-target.is-revealed {
 .chart-hit.is-related,
 .dist-hit.is-related { box-shadow: inset 0 0 0 1px var(--accent); }
 .dist-bar .dist-segment { cursor: default; }
+.dist-segment.status-skipped { background: var(--state-neutral); }
+.dist-outside { margin-block-start: 6px; }
 @media print {
   .chart-hits,
   .dist-hits { display: none !important; }
@@ -1636,101 +1690,121 @@ body.revealed .reveal-target.is-revealed {
 <body>
   <header>
     <div class="logo">
-      <svg class="logo-mark" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
-        <circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" stroke-width="1.75"/>
-        <circle cx="10" cy="10" r="2.25" fill="none" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M15.2 15.2 21 21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
-      </svg>
-      <div>
+<svg class="lens-mark" viewBox="0 0 64 72" width="40" height="45" aria-hidden="true" focusable="false" fill="none">
+  <path class="lens-mark__body" d="M11 26 L11 58 C11 64 53 64 53 58 L53 26 Z"/>
+  <path class="lens-mark__band" d="M11.5 34 H52.5 V46 H11.5 Z"/>
+  <g class="lens-mark__hashes" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+    <line x1="18.2" y1="36.2" x2="18.2" y2="43.8"/>
+    <line x1="22.0" y1="36.2" x2="22.0" y2="43.8"/>
+    <line x1="25.8" y1="36.2" x2="25.8" y2="43.8"/>
+    <line x1="29.6" y1="36.2" x2="29.6" y2="43.8"/>
+    <line x1="33.4" y1="36.2" x2="33.4" y2="43.8"/>
+    <line x1="37.2" y1="36.2" x2="37.2" y2="43.8"/>
+    <line x1="41.0" y1="36.2" x2="41.0" y2="43.8"/>
+    <line x1="44.8" y1="36.2" x2="44.8" y2="43.8"/>
+  </g>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M11 26 L11 58 C11 64 53 64 53 58 L53 26"/>
+  <ellipse class="lens-mark__stroke" cx="32" cy="58" rx="21" ry="6.2" stroke="currentColor" stroke-width="2.5"/>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M11 34 H53"/>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M11 46 H53"/>
+  <ellipse class="lens-mark__body" cx="32" cy="18" rx="28" ry="11"/>
+  <ellipse class="lens-mark__stroke" cx="32" cy="18" rx="28" ry="11" stroke="currentColor" stroke-width="2.5"/>
+  <ellipse class="lens-mark__glass" cx="32" cy="18" rx="16" ry="6" stroke="currentColor" stroke-width="1.9"/>
+  <path class="lens-mark__stroke" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M20 16 C24 13.2 40 13.2 44 16"/>
+</svg>
+      <div class="logo__text">
         <h1>Security License Lens</h1>
         <p class="tagline">Entitlements, controls, and configuration gaps.</p>
       </div>
     </div>
-    <p class="meta">
-      <span class="meta-row">Version 0.4.0</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Scanned <time class="mono" datetime="2026-08-13T00:00:00+00:00">August 13, 2026 at 12:00 AM UTC</time></span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Mode Demo scan (synthetic data)</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Organization Demo (synthetic data)</span><span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">identity, endpoint priority packs</span><span class="sep" aria-hidden="true">·</span>
-      <span class="meta-row">Activation assessment: 109 · Hygiene 61</span>
-    </p>
     
     <nav class="toc" aria-label="Sections">
       <a href="#section-a" aria-current="true">Where you stand</a>
       <a href="#section-c">What matters most</a>
-      <a href="#section-b">What you're paying for</a>
+      <a href="#section-b">What you already own</a>
       <a href="#section-findings">Findings</a>
+      <a href="#section-detection-realization">Evidence detail</a>
     </nav>
   </header>
 
   <main>
     
     <section id="section-a" class="hero">
-      <p class="micro-label section-kicker">Posture</p>
-      <h2>Where you stand</h2>
+      <h2 class="sr-only">Where you stand</h2>
 
       <div class="opening" data-opening>
-        <p class="opening-identity opening-stage">Demo (synthetic data)</p>
-
         <div class="posture">
           <div class="posture-figure">
             <span class="posture-digits" data-count-up="38">38</span><span class="posture-unit">% realized</span>
           </div>
-          <div class="posture-stat-strip">
-            <span class="stat-item"><span class="metric-figure-secondary">8</span><span class="label">You own</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">3</span><span class="label">Fully working</span><span class="caption">of 8 prioritized</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">4</span><span class="label">Action required</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">1</span><span class="label">Incomplete</span></span>
-            <span class="stat-item"><span class="metric-figure-secondary">3</span><span class="label">Not licensed</span></span>
-          </div>
-          <p class="caption posture-sentence">
-            <strong>25</strong> licensed capabilities detected
-            <span aria-hidden="true">&middot;</span>
-            <strong>8</strong> evaluated capabilities
-          </p>
         </div>
 
         
         <figure class="dist-figure">
-          <figcaption id="dist-caption" class="micro-label">Operational distribution</figcaption>
+          <figcaption id="dist-caption" class="sr-only">Operational distribution</figcaption>
           <div class="dist-layer">
-            <div class="dist-bar" role="img" aria-labelledby="dist-caption" aria-describedby="dist-desc"><span class="dist-segment status-gap" style="flex-grow: 4"></span><span class="dist-segment status-partial" style="flex-grow: 1"></span><span class="dist-segment status-ok" style="flex-grow: 3"></span><span class="dist-segment status-not_licensed" style="flex-grow: 3"></span></div>
-            <div class="dist-hits" hidden><button type="button" class="dist-hit" aria-label="Filter findings: Action required (4)" aria-pressed="false" data-chart-toggle="status:gap"></button><button type="button" class="dist-hit" aria-label="Filter findings: Incomplete (1)" aria-pressed="false" data-chart-toggle="status:partial"></button><button type="button" class="dist-hit" aria-label="Filter findings: Operational (3)" aria-pressed="false" data-chart-toggle="status:ok"></button><button type="button" class="dist-hit" aria-label="Filter findings: Not licensed (3)" aria-pressed="false" data-chart-toggle="status:not_licensed"></button></div>
+            <div class="dist-bar" role="img" aria-labelledby="dist-caption" aria-describedby="dist-desc"><span class="dist-segment status-gap" style="flex-grow: 4"></span><span class="dist-segment status-partial" style="flex-grow: 1"></span><span class="dist-segment status-ok" style="flex-grow: 3"></span></div>
+            <div class="dist-hits" hidden><button type="button" class="dist-hit" aria-label="Filter findings: Action required (4)" aria-pressed="false" data-chart-toggle="status:gap"></button><button type="button" class="dist-hit" aria-label="Filter findings: Incomplete (1)" aria-pressed="false" data-chart-toggle="status:partial"></button><button type="button" class="dist-hit" aria-label="Filter findings: Operational (3)" aria-pressed="false" data-chart-toggle="status:ok"></button></div>
           </div>
-          <p id="dist-desc" class="sr-only">Distribution of the 8 owned, evaluated capabilities: 4 action required, 1 incomplete, 3 operational, 3 not licensed.</p>
+          <p id="dist-desc" class="sr-only">Distribution of the 8 owned, evaluated capabilities: 4 action required, 1 partly set up, 0 assessment incomplete, 3 met assessed criteria.</p>
           <table class="chart-table">
             <caption>Operational distribution</caption>
             <tbody>
               <tr><th scope="row">Action required</th><td class="num">4</td></tr>
-              <tr><th scope="row">Incomplete</th><td class="num">1</td></tr>
-              <tr><th scope="row">Operational</th><td class="num">3</td></tr>
-              <tr><th scope="row">Not licensed</th><td class="num">3</td></tr>
+              <tr><th scope="row">Partly set up</th><td class="num">1</td></tr>
+              <tr><th scope="row">Assessment incomplete (not in the %)</th><td class="num">0</td></tr>
+              <tr><th scope="row">Met assessed criteria</th><td class="num">3</td></tr>
+              <tr><th scope="row">Not licensed (outside the bar)</th><td class="num">3</td></tr>
+              <tr><th scope="row">Entitlement unknown (outside the bar)</th><td class="num">0</td></tr>
             </tbody>
           </table>
         </figure>
 
-        <ul class="dist-items"><li class="dist-item opening-stage">
-            <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
-            <span class="num">4</span>
-          </li><li class="dist-item opening-stage">
-            <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-            <span class="num">1</span>
-          </li><li class="dist-item opening-stage">
-            <span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
-            <span class="num">3</span>
-          </li><li class="dist-item opening-stage">
-            <span class="status-marker not_licensed"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M8 8l8 8"/></svg>Not licensed</span>
-            <span class="num">3</span>
-          </li></ul>
-
-        <p class="implication opening-stage">Of the security controls associated with the entitlements and assessment scope that could be evaluated, 38% met the defined activation criteria.</p>
+        <p class="implication opening-stage">3 of 8 in-scope capabilities met all assessed criteria (38%).</p>
 
         <p class="hero-action opening-stage">
           <a href="#section-c">View prioritized actions</a>
         </p>
+
+        <details class="tech how-we-got-here">
+          <summary>
+            <span class="caret" aria-hidden="true">▸</span>
+            How we got here
+          </summary>
+          <div class="tech-body">
+            <ul class="dist-items"><li class="dist-item opening-stage">
+                <span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
+                <span class="num">4</span>
+              </li><li class="dist-item opening-stage">
+                <span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+                <span class="num">1</span>
+              </li><li class="dist-item opening-stage">
+                <span class="status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
+                <span class="num">0</span>
+              </li><li class="dist-item opening-stage">
+                <span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
+                <span class="num">3</span>
+              </li><li class="dist-item opening-stage">
+                <span class="status-marker not_licensed"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M8 8l8 8"/></svg>Not licensed</span>
+                <span class="num">3</span>
+              </li></ul><p class="caption dist-outside">
+              Outside the bar and the %:3 not licenseds.
+            </p><div class="posture-stat-strip">
+              <span class="stat-item"><span class="metric-figure-secondary">8</span><span class="label">You own</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">3</span><span class="label">Met assessed criteria</span><span class="caption">of 8 prioritized</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">4</span><span class="label">Action required</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">1</span><span class="label">Partly set up</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">0</span><span class="label">Assessment incomplete</span><span class="caption">not in the %</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">3</span><span class="label">Not licensed</span></span>
+              <span class="stat-item"><span class="metric-figure-secondary">0</span><span class="label">Entitlement unknown</span></span>
+            </div>
+            <p class="caption posture-sentence">
+              <strong>25</strong> licensed capabilities detected
+              <span aria-hidden="true">&middot;</span>
+              <strong>8</strong> evaluated capabilities
+            </p>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -1793,214 +1867,12 @@ body.revealed .reveal-target.is-revealed {
     </section>
     
 
-    <section id="section-detection-realization" class="reveal-target detection-realization">
-  <p class="micro-label section-kicker">Detection realization</p>
-  <h2>Are detections watching the logs you pay for?</h2>
-  <p class="section-help">
-    Core tables expected for owned protections, whether they arrived in the last
-    seven days, and whether a live analytics rule queries them. This does not
-    measure detection quality or tuning.
-  </p>
-  <div class="table-scroll" data-table-scroll>
-    <table class="detection-realization-table">
-      <caption class="sr-only">Telemetry tables for owned capabilities</caption>
-      <thead>
-        <tr>
-          <th scope="col">Capability</th>
-          <th scope="col">Table</th>
-          <th scope="col">Tier</th>
-          <th scope="col">Arriving?</th>
-          <th scope="col" class="num">Live rules</th>
-          <th scope="col">Connector hint</th>
-        </tr>
-      </thead>
-      <tbody><tr>
-          <td>Smarter sign-in rules</td>
-          <td class="mono">SigninLogs</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">1</td>
-          <td>Entra diagnostic setting: SignInLogs</td>
-        </tr><tr>
-          <td>Smarter sign-in rules</td>
-          <td class="mono">AADNonInteractiveUserSignInLogs</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Entra diagnostic setting: NonInteractiveUserSignInLogs</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceEvents</td>
-          <td>core</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceLogonEvents</td>
-          <td>core</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceNetworkEvents</td>
-          <td>core</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceProcessEvents</td>
-          <td>core</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceFileEvents</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceImageLoadEvents</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceInfo</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Deep protection and visibility on PCs and devices</td>
-          <td class="mono">DeviceRegistryEvents</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Watchdogs on your on-site directory (if you still have one)</td>
-          <td class="mono">IdentityDirectoryEvents</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Identity connector</td>
-        </tr><tr>
-          <td>Watchdogs on your on-site directory (if you still have one)</td>
-          <td class="mono">IdentityLogonEvents</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Identity connector</td>
-        </tr><tr>
-          <td>Watchdogs on your on-site directory (if you still have one)</td>
-          <td class="mono">IdentityQueryEvents</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Identity connector</td>
-        </tr><tr>
-          <td>Stronger email and file threat protection</td>
-          <td class="mono">EmailAttachmentInfo</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Office 365 connector</td>
-        </tr><tr>
-          <td>Stronger email and file threat protection</td>
-          <td class="mono">EmailEvents</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Office 365 connector</td>
-        </tr><tr>
-          <td>Stronger email and file threat protection</td>
-          <td class="mono">EmailUrlInfo</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Office 365 connector</td>
-        </tr><tr>
-          <td>Stronger email and file threat protection</td>
-          <td class="mono">EmailPostDeliveryEvents</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Office 365 connector</td>
-        </tr><tr>
-          <td>Stronger email and file threat protection</td>
-          <td class="mono">UrlClickEvents</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender for Office 365 connector</td>
-        </tr><tr>
-          <td>Cross-product incident correlation</td>
-          <td class="mono">SecurityAlert</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Cross-product incident correlation</td>
-          <td class="mono">SecurityIncident</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Cross-product incident correlation</td>
-          <td class="mono">AlertEvidence</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Cross-product incident correlation</td>
-          <td class="mono">AlertInfo</td>
-          <td>extended</td>
-          <td><span class="status-word status-gap">No</span></td>
-          <td class="num">0</td>
-          <td>Microsoft Defender XDR connector</td>
-        </tr><tr>
-          <td>Alerts when a sign-in looks suspicious</td>
-          <td class="mono">AADRiskyUsers</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Entra diagnostic setting: RiskyUsers</td>
-        </tr><tr>
-          <td>Alerts when a sign-in looks suspicious</td>
-          <td class="mono">AADUserRiskEvents</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Entra diagnostic setting: UserRiskEvents</td>
-        </tr><tr>
-          <td>A searchable record of important activity</td>
-          <td class="mono">OfficeActivity</td>
-          <td>core</td>
-          <td><span class="status-word">Yes</span></td>
-          <td class="num">0</td>
-          <td>Office 365 connector</td>
-        </tr></tbody>
-    </table>
-  </div><p class="caption">
-    Dead rules (query tables that are not arriving): Demo rare process.
-  </p></section>
-
     
     <section id="section-b" class="reveal-target" style="--reveal-delay: 40ms">
-      <p class="micro-label section-kicker">Entitlements</p>
-      <h2>What you're paying for</h2>
+      <p class="micro-label section-kicker">Context</p>
+      <h2>What you already own</h2>
       <p class="section-help">
-        Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
+        The capabilities behind the headline. Start with Action required and Incomplete; open the other groups only when you need their context.
       </p><details class="tech sku-details sku-strip">
         <summary>
           <span class="caret" aria-hidden="true">▸</span>
@@ -2038,7 +1910,7 @@ body.revealed .reveal-target.is-revealed {
     </button><button type="button" class="constellation-point status-gap" data-capability-id="identity_protection" data-status="needs_attention" data-workload="identity" aria-pressed="false" aria-label="Alerts when a sign-in looks suspicious: Needs attention" style="animation-delay: 0ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Alerts when a sign-in looks suspicious</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_dlp" data-status="fully_working" data-workload="identity" aria-pressed="false" aria-label="Guardrails so sensitive data is harder to leak: Fully working" style="animation-delay: 0ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_dlp" data-status="fully_working" data-workload="identity" aria-pressed="false" aria-label="Guardrails so sensitive data is harder to leak: Met assessed criteria" style="animation-delay: 0ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Guardrails so sensitive data is harder to leak</span>
     </button><button type="button" class="constellation-point status-gap" data-capability-id="conditional_access" data-status="needs_attention" data-workload="identity" aria-pressed="false" aria-label="Smarter sign-in rules: Needs attention" style="animation-delay: 0ms">
@@ -2047,7 +1919,7 @@ body.revealed .reveal-target.is-revealed {
     </button><button type="button" class="constellation-point status-gap" data-capability-id="entra_id_p2" data-status="needs_attention" data-workload="identity" aria-pressed="false" aria-label="Stronger control over admin accounts: Needs attention" style="animation-delay: 0ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Stronger control over admin accounts</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="defender_office_p2" data-status="fully_working" data-workload="identity" aria-pressed="false" aria-label="Stronger email and file threat protection: Fully working" style="animation-delay: 0ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="defender_office_p2" data-status="fully_working" data-workload="identity" aria-pressed="false" aria-label="Stronger email and file threat protection: Met assessed criteria" style="animation-delay: 0ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Stronger email and file threat protection</span>
     </button></div><div class="constellation-group" data-workload="endpoint">
@@ -2060,16 +1932,16 @@ body.revealed .reveal-target.is-revealed {
       <span class="constellation-label">Manage and protect company devices and apps</span>
     </button></div><div class="constellation-group" data-workload="defender">
     <button type="button" class="constellation-caption" data-workload="defender" aria-pressed="false"><span class="constellation-caption-label">Defender</span>
-    </button><button type="button" class="constellation-point status-partial" data-capability-id="purview_audit" data-status="partly_set_up" data-workload="defender" aria-pressed="false" aria-label="A searchable record of important activity: Partly set up" style="animation-delay: 100ms">
+    </button><button type="button" class="constellation-point status-skipped" data-capability-id="purview_audit" data-status="assessment_incomplete" data-workload="defender" aria-pressed="false" aria-label="A searchable record of important activity: Assessment incomplete" style="animation-delay: 100ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">A searchable record of important activity</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="exchange_online_protection" data-status="fully_working" data-workload="defender" aria-pressed="false" aria-label="Baseline spam and malware filtering for email: Fully working" style="animation-delay: 100ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="exchange_online_protection" data-status="fully_working" data-workload="defender" aria-pressed="false" aria-label="Baseline spam and malware filtering for email: Met assessed criteria" style="animation-delay: 100ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Baseline spam and malware filtering for email</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="defender_xdr" data-status="fully_working" data-workload="defender" aria-pressed="false" aria-label="Cross-product incident correlation: Fully working" style="animation-delay: 100ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="defender_xdr" data-status="fully_working" data-workload="defender" aria-pressed="false" aria-label="Cross-product incident correlation: Met assessed criteria" style="animation-delay: 100ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Cross-product incident correlation</span>
-    </button><button type="button" class="constellation-point status-partial" data-capability-id="defender_office_p1" data-status="partly_set_up" data-workload="defender" aria-pressed="false" aria-label="Safe Attachments and Safe Links essentials: Partly set up" style="animation-delay: 100ms">
+    </button><button type="button" class="constellation-point status-skipped" data-capability-id="defender_office_p1" data-status="assessment_incomplete" data-workload="defender" aria-pressed="false" aria-label="Safe Attachments and Safe Links essentials: Assessment incomplete" style="animation-delay: 100ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Safe Attachments and Safe Links essentials</span>
     </button><button type="button" class="constellation-point status-partial" data-capability-id="defender_identity" data-status="partly_set_up" data-workload="defender" aria-pressed="false" aria-label="Watchdogs on your on-site directory (if you still have one): Partly set up" style="animation-delay: 100ms">
@@ -2132,24 +2004,24 @@ body.revealed .reveal-target.is-revealed {
 	C490.32,233.67,489.96,233.31,489.59,232.96z"/>
 </svg>
 <span class="constellation-caption-label">Purview</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_insider_risk" data-status="fully_working" data-workload="purview" aria-pressed="false" aria-label="Early warning for risky insider activity: Fully working" style="animation-delay: 200ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_insider_risk" data-status="fully_working" data-workload="purview" aria-pressed="false" aria-label="Early warning for risky insider activity: Met assessed criteria" style="animation-delay: 200ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Early warning for risky insider activity</span>
     </button><button type="button" class="constellation-point status-gap" data-capability-id="purview_sensitivity_labels" data-status="needs_attention" data-workload="purview" aria-pressed="false" aria-label="Labels that classify and protect files and mail: Needs attention" style="animation-delay: 200ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Labels that classify and protect files and mail</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_ediscovery" data-status="fully_working" data-workload="purview" aria-pressed="false" aria-label="Legal hold and investigation search: Fully working" style="animation-delay: 200ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_ediscovery" data-status="fully_working" data-workload="purview" aria-pressed="false" aria-label="Legal hold and investigation search: Met assessed criteria" style="animation-delay: 200ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Legal hold and investigation search</span>
-    </button><button type="button" class="constellation-point status-partial" data-capability-id="purview_communication_compliance" data-status="partly_set_up" data-workload="purview" aria-pressed="false" aria-label="Oversight for risky business communications: Partly set up" style="animation-delay: 200ms">
+    </button><button type="button" class="constellation-point status-skipped" data-capability-id="purview_communication_compliance" data-status="assessment_incomplete" data-workload="purview" aria-pressed="false" aria-label="Oversight for risky business communications: Assessment incomplete" style="animation-delay: 200ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Oversight for risky business communications</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_retention" data-status="fully_working" data-workload="purview" aria-pressed="false" aria-label="Retention rules that keep or remove content on schedule: Fully working" style="animation-delay: 200ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="purview_retention" data-status="fully_working" data-workload="purview" aria-pressed="false" aria-label="Retention rules that keep or remove content on schedule: Met assessed criteria" style="animation-delay: 200ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Retention rules that keep or remove content on schedule</span>
     </button></div><div class="constellation-group" data-workload="exchange">
     <button type="button" class="constellation-caption" data-workload="exchange" aria-pressed="false"><span class="constellation-caption-label">Exchange</span>
-    </button><button type="button" class="constellation-point status-partial" data-capability-id="exchange_online" data-status="partly_set_up" data-workload="exchange" aria-pressed="false" aria-label="Business email and calendar in the cloud: Partly set up" style="animation-delay: 250ms">
+    </button><button type="button" class="constellation-point status-skipped" data-capability-id="exchange_online" data-status="assessment_incomplete" data-workload="exchange" aria-pressed="false" aria-label="Business email and calendar in the cloud: Assessment incomplete" style="animation-delay: 250ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Business email and calendar in the cloud</span>
     </button></div><div class="constellation-group" data-workload="collaboration">
@@ -2157,10 +2029,10 @@ body.revealed .reveal-target.is-revealed {
     </button><button type="button" class="constellation-point status-gap" data-capability-id="teams" data-status="needs_attention" data-workload="collaboration" aria-pressed="false" aria-label="Chat, meetings, and teamwork hub: Needs attention" style="animation-delay: 300ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Chat, meetings, and teamwork hub</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="onedrive_for_business" data-status="fully_working" data-workload="collaboration" aria-pressed="false" aria-label="Personal work files in the cloud: Fully working" style="animation-delay: 300ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="onedrive_for_business" data-status="fully_working" data-workload="collaboration" aria-pressed="false" aria-label="Personal work files in the cloud: Met assessed criteria" style="animation-delay: 300ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Personal work files in the cloud</span>
-    </button><button type="button" class="constellation-point status-partial" data-capability-id="sharepoint_online" data-status="partly_set_up" data-workload="collaboration" aria-pressed="false" aria-label="Team sites and shared file libraries: Partly set up" style="animation-delay: 300ms">
+    </button><button type="button" class="constellation-point status-skipped" data-capability-id="sharepoint_online" data-status="assessment_incomplete" data-workload="collaboration" aria-pressed="false" aria-label="Team sites and shared file libraries: Assessment incomplete" style="animation-delay: 300ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Team sites and shared file libraries</span>
     </button></div><div class="constellation-group" data-workload="power_platform">
@@ -2213,7 +2085,7 @@ body.revealed .reveal-target.is-revealed {
 </defs>
 </svg>
 <span class="constellation-caption-label">Power Platform</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="power_platform" data-status="fully_working" data-workload="power_platform" aria-pressed="false" aria-label="Low-code apps, flows, and environments: Fully working" style="animation-delay: 350ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="power_platform" data-status="fully_working" data-workload="power_platform" aria-pressed="false" aria-label="Low-code apps, flows, and environments: Met assessed criteria" style="animation-delay: 350ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Low-code apps, flows, and environments</span>
     </button></div><div class="constellation-group" data-workload="power_bi">
@@ -2263,11 +2135,19 @@ body.revealed .reveal-target.is-revealed {
 </g>
 </svg>
 <span class="constellation-caption-label">Power BI</span>
-    </button><button type="button" class="constellation-point status-ok" data-capability-id="power_bi_pro" data-status="fully_working" data-workload="power_bi" aria-pressed="false" aria-label="Shared interactive business reports: Fully working" style="animation-delay: 400ms">
+    </button><button type="button" class="constellation-point status-ok" data-capability-id="power_bi_pro" data-status="fully_working" data-workload="power_bi" aria-pressed="false" aria-label="Shared interactive business reports: Met assessed criteria" style="animation-delay: 400ms">
       <span class="constellation-core" aria-hidden="true"></span>
       <span class="constellation-label">Shared interactive business reports</span>
     </button></div></div>
 <div class="constellation-legend" aria-label="Capability status legend"><span class="constellation-legend-chip status-gap"><span class="constellation-legend-swatch" aria-hidden="true"></span>Action required</span><span class="constellation-legend-chip status-partial"><span class="constellation-legend-swatch" aria-hidden="true"></span>Incomplete</span><span class="constellation-legend-chip status-ok"><span class="constellation-legend-swatch" aria-hidden="true"></span>Operational</span><span class="constellation-legend-chip status-not_licensed"><span class="constellation-legend-swatch" aria-hidden="true"></span>Not licensed</span><span class="constellation-legend-chip status-skipped"><span class="constellation-legend-swatch" aria-hidden="true"></span>Not assessed</span><span class="constellation-legend-chip status-error"><span class="constellation-legend-swatch" aria-hidden="true"></span>Verification failed</span></div>
+      <div class="capability-groups"><details class="capability-group tech" open>
+    <summary>
+      <span class="caret" aria-hidden="true">▸</span>
+      <span class="capability-group__status status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
+      <strong class="capability-group__count">8</strong>
+      <span class="capability-group__note">Start here: owned capabilities with an assessed gap.</span>
+    </summary>
+    <div class="tech-body">
       <div class="cards"><article class="card" data-variant="needs_attention" data-status="needs_attention" data-workload="identity" data-capability-id="conditional_access">
     <div class="card-summary">
 <svg viewBox="0 0 18 18" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
@@ -2286,64 +2166,6 @@ body.revealed .reveal-target.is-revealed {
         </div>
       </div>
     </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="endpoint" data-capability-id="defender_endpoint_p2">
-    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-      <h3 class="card-title">Deep protection and visibility on PCs and devices</h3>
-    </div><p><span class="label">What it does</span> See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.</p><p><span class="label">If left off</span> You may be paying for advanced device protection on seats that are not fully enrolled.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Endpoint P2</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="DEFENDER_ENDPOINT_P2">Microsoft Defender for Endpoint P2</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="defender" data-capability-id="defender_identity">
-    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-      <h3 class="card-title">Watchdogs on your on-site directory (if you still have one)</h3>
-    </div><p><span class="label">What it does</span> Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Many organizations still rely on on-site domain controllers. Cloud-only tools cannot see every attack path there.</p><p><span class="label">If left off</span> Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Identity</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="defender" data-capability-id="defender_office_p1">
-    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-      <h3 class="card-title">Safe Attachments and Safe Links essentials</h3>
-    </div><p><span class="label">What it does</span> Detonate risky attachments and rewrite dangerous links for licensed users even when the full P2 investigation pack is not present.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Many tenants own P1-level email protections that never leave default off states.</p><p><span class="label">If left off</span> Safe content policies may be missing, scoped to pilots, or left in evaluation mode.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Office 365 P1</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="fully_working" data-status="fully_working" data-workload="identity" data-capability-id="defender_office_p2">
-    <div class="card-summary">
-<svg viewBox="0 0 18 18" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
-  <path d="m3.802,14.032c.388.242,1.033.511,1.715.511.621,0,1.198-.18,1.676-.487,0,0,.001,0,.002-.001l1.805-1.128v4.073c-.286,0-.574-.078-.824-.234l-4.374-2.734Z" fill="#225086"/>
-  <path d="m7.853,1.507L.353,9.967c-.579.654-.428,1.642.323,2.111,0,0,2.776,1.735,3.126,1.954.388.242,1.033.511,1.715.511.621,0,1.198-.18,1.676-.487,0,0,.001,0,.002-.001l1.805-1.128-4.364-2.728,4.365-4.924V1s0,0,0,0c-.424,0-.847.169-1.147.507Z" fill="#6df"/>
-  <polygon points="4.636 10.199 4.688 10.231 9 12.927 9.001 12.927 9.001 12.927 9.001 5.276 9 5.275 4.636 10.199" fill="#cbf8ff"/>
-  <path d="m17.324,12.078c.751-.469.902-1.457.323-2.111l-4.921-5.551c-.397-.185-.842-.291-1.313-.291-.925,0-1.752.399-2.302,1.026l-.109.123h0s4.364,4.924,4.364,4.924h0s0,0,0,0l-4.365,2.728v4.073c.287,0,.573-.078.823-.234l7.5-4.688Z" fill="#074793"/>
-  <path d="m9.001,1v4.275s.109-.123.109-.123c.55-.627,1.377-1.026,2.302-1.026.472,0,.916.107,1.313.291l-2.579-2.909c-.299-.338-.723-.507-1.146-.507Z" fill="#0294e4"/>
-  <polygon points="13.365 10.199 13.365 10.199 13.365 10.199 9.001 5.276 9.001 12.926 13.365 10.199" fill="#96bcc2"/>
-</svg><span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
-      <h3 class="card-title">Stronger email and file threat protection</h3>
-    </div><p><span class="label">What it does</span> Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.</p><p><span class="label">If left off</span> Extra email protections in your license may still be off, in test mode, or only covering a few people.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Office 365 P2</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="THREAT_INTELLIGENCE">Microsoft Defender for Office 365 (Plan 2)</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="fully_working" data-status="fully_working" data-workload="defender" data-capability-id="defender_xdr">
-    <div class="card-summary"><span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
-      <h3 class="card-title">Cross-product incident correlation</h3>
-    </div><p><span class="label">What it does</span> Connect identity, email, endpoint, and cloud signals into incidents that show the full attack story instead of isolated alerts.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Attackers hop products. Siloed alerts hide the path from phishing to privilege.</p><p><span class="label">If left off</span> XDR correlation may be licensed while automated investigation and response stay idle.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender XDR</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="DEFENDER_ENDPOINT_P2, THREAT_INTELLIGENCE">Microsoft Defender for Endpoint P2, Microsoft Defender for Office 365 (Plan 2)</span></div>
-        </div>
-      </div>
-    </details>
   </article><article class="card" data-variant="needs_attention" data-status="needs_attention" data-workload="identity" data-capability-id="entra_id_p2">
     <div class="card-summary">
 <svg viewBox="0 0 18 18" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
@@ -2359,26 +2181,6 @@ body.revealed .reveal-target.is-revealed {
       <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
       <div class="tech-body"><p><span class="label">Why it matters</span> Admin accounts are the keys to your email, files, and business apps. If one is stolen, an attacker can look like a trusted employee.</p><p><span class="label">If left off</span> You are paying for stronger admin protections that are not fully turned on yet.</p><div class="card-provenance">
           <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Entra ID P2</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="AAD_PREMIUM_P2">Microsoft Entra ID P2</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="exchange" data-capability-id="exchange_online">
-    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-      <h3 class="card-title">Business email and calendar in the cloud</h3>
-    </div><p><span class="label">What it does</span> Host mailboxes in Microsoft 365 and apply tenant email security and sharing controls that protect everyday business communication.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Email remains a primary business channel and a primary attack path. Weak tenant defaults leave phishing and data exposure wide open.</p><p><span class="label">If left off</span> Mailboxes may be licensed while core protection and audit settings stay at weak defaults.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Exchange Online</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="fully_working" data-status="fully_working" data-workload="defender" data-capability-id="exchange_online_protection">
-    <div class="card-summary"><span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
-      <h3 class="card-title">Baseline spam and malware filtering for email</h3>
-    </div><p><span class="label">What it does</span> Filter obvious junk and malware before it reaches inboxes, as the foundation under optional Defender for Office 365 controls.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Without baseline filtering, every advanced email control sits on a weak floor.</p><p><span class="label">If left off</span> Core anti-spam or anti-malware policies may be off, overly permissive, or unmonitored.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Exchange Online Protection</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
         </div>
       </div>
     </details>
@@ -2427,6 +2229,151 @@ body.revealed .reveal-target.is-revealed {
       <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
       <div class="tech-body"><p><span class="label">Why it matters</span> Without a place that correlates events, teams drown in alerts from many products and miss the story that ties them together.</p><p><span class="label">If left off</span> A security workspace may exist, but few detections or smart analytics are turned on.</p><div class="card-provenance">
           <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Sentinel</span></div><div><span class="label">Observed in Azure</span> <span class="mono">/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.OperationalInsights/workspaces/demo-sentinel</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="needs_attention" data-status="needs_attention" data-workload="purview" data-capability-id="purview_sensitivity_labels">
+    <div class="card-summary">
+<!-- Generator: Adobe Illustrator 27.9.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg viewBox="0 0 500 500" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
+<style type="text/css">
+	.st0{fill:url(#SVGID_1_);}
+	.st1{fill:url(#SVGID_00000078752512887004802280000005689619808096703373_);}
+	.st2{fill:url(#SVGID_00000000938455338878114860000005090300476476082311_);}
+	.st3{fill:url(#SVGID_00000062888845095373847610000015670046095858653342_);}
+</style>
+<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="249.37" y1="308.6733" x2="249.37" y2="200.05">
+	<stop  offset="0" style="stop-color:#29BADE"/>
+	<stop  offset="1" style="stop-color:#50E6FF"/>
+</linearGradient>
+<path class="st0" d="M293.28,244.51c-24.56,0-44.48-19.9-44.51-44.46c-29.99,0.33-54.04,24.92-53.71,54.91
+	c0.33,29.99,24.92,54.04,54.91,53.71c29.99-0.33,54.04-24.92,53.71-54.91c-0.04-3.45-0.4-6.88-1.09-10.26
+	C299.53,244.16,296.41,244.5,293.28,244.51z"/>
+<linearGradient id="SVGID_00000075854636923193000240000013142184365114077320_" gradientUnits="userSpaceOnUse" x1="179.9192" y1="404.2232" x2="179.9192" y2="95.4182">
+	<stop  offset="0.041" style="stop-color:#32BEDD"/>
+	<stop  offset="0.495" style="stop-color:#50E6FF"/>
+	<stop  offset="0.92" style="stop-color:#C3F1FF"/>
+</linearGradient>
+<path style="fill:url(#SVGID_00000075854636923193000240000013142184365114077320_);" d="M355.99,311.23
+	c-1.99-19.58-8.13-38.52-18-55.55c-2.87,46.51-41.38,82.8-87.99,82.88c-2.11,0-4.09-0.47-6.15-0.63
+	c-46.65-0.61-91.35-18.85-125.12-51.05c-29.03-27.89-50.56-62.66-62.6-101.08c-15.89,14.44-30.93,29.78-45.06,45.94
+	c-10.12,9.37-10.74,25.17-1.37,35.29c0.44,0.48,0.9,0.93,1.37,1.37c30.37,36.42,66.16,67.97,106.1,93.53
+	c40.17,27.53,87.73,42.27,136.43,42.29c31.65,0.18,62.88-7.25,91.06-21.65c1.78-0.82,3.32-1.92,5.08-2.74
+	C355.98,357.54,358.1,334.28,355.99,311.23z"/>
+<linearGradient id="SVGID_00000118398247856370114850000009538093576200672444_" gradientUnits="userSpaceOnUse" x1="207.845" y1="278.7343" x2="207.845" y2="9.9709">
+	<stop  offset="0.244" style="stop-color:#0078D4"/>
+	<stop  offset="0.6" style="stop-color:#2E8CE1"/>
+	<stop  offset="0.933" style="stop-color:#589EED"/>
+</linearGradient>
+<path style="fill:url(#SVGID_00000118398247856370114850000009538093576200672444_);" d="M172,291.17
+	c-18.74-34.51-12.1-77.28,16.22-104.48c22.25-29.95,53.43-52.05,89.06-63.12c19.42-5.93,39.58-9.11,59.88-9.44
+	c-16.34-7.08-33.44-12.24-50.96-15.37c-47.99-8.08-97.31,0.06-140.16,23.14c-23.97,12.44-46.6,27.32-67.51,44.41
+	c9.87,37.68,29.79,71.97,57.63,99.21C146.9,275.63,158.96,284.26,172,291.17z"/>
+<linearGradient id="SVGID_00000142887456421092235290000000266993271742146961_" gradientUnits="userSpaceOnUse" x1="377.0232" y1="404.4025" x2="377.0232" y2="118.0746">
+	<stop  offset="0" style="stop-color:#005BA1"/>
+	<stop  offset="0.399" style="stop-color:#0078D4"/>
+	<stop  offset="0.857" style="stop-color:#5EA0EF"/>
+</linearGradient>
+<path style="fill:url(#SVGID_00000142887456421092235290000000266993271742146961_);" d="M489.59,232.96
+	c-26.82-32.13-57.79-60.54-92.1-84.5c-35.88-9.8-73.75-9.61-109.53,0.55c-10.74,3.28-21.13,7.68-30.93,13.17
+	c15.33,1.08,30.11,6.15,42.87,14.71c1.14,0.33,2.24,0.82,3.24,1.45c42.69,28.67,71.46,73.89,79.34,124.71
+	c2.51,19.72,2.2,39.68-0.91,59.31c40.67-25.85,77.07-57.85,107.91-94.88c9.56-8.9,10.1-23.87,1.19-33.43
+	C490.32,233.67,489.96,233.31,489.59,232.96z"/>
+</svg>
+<span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
+      <h3 class="card-title">Labels that classify and protect files and mail</h3>
+    </div><p><span class="label">What it does</span> Mark sensitive content and apply encryption or access limits that travel with the file.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Classification without enforcement is a sticker; labels with protection change outcomes.</p><p><span class="label">If left off</span> Labels may exist but remain unpublished, unused, or never auto-applied.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Purview Sensitivity Labels</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="MIP_S_CLP2">Microsoft Purview Information Protection P2</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="needs_attention" data-status="needs_attention" data-workload="collaboration" data-capability-id="teams">
+    <div class="card-summary"><span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
+      <h3 class="card-title">Chat, meetings, and teamwork hub</h3>
+    </div><p><span class="label">What it does</span> Keep collaboration fast while controlling guests, anonymous join, apps, and recording exposure.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Teams is where decisions and files move quickly — weak meeting or guest defaults become an easy side door.</p><p><span class="label">If left off</span> External access, lobby, or app policies may still favor convenience over control.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Teams</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
+        </div>
+      </div>
+    </details>
+  </article></div>
+    </div>
+  </details><details class="capability-group tech" open>
+    <summary>
+      <span class="caret" aria-hidden="true">▸</span>
+      <span class="capability-group__status status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+      <strong class="capability-group__count">2</strong>
+      <span class="capability-group__note">Evidence or implementation is partial; resolve uncertainty before calling it complete.</span>
+    </summary>
+    <div class="tech-body">
+      <div class="cards"><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="endpoint" data-capability-id="defender_endpoint_p2">
+    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+      <h3 class="card-title">Deep protection and visibility on PCs and devices</h3>
+    </div><p><span class="label">What it does</span> See attacks on laptops and servers in more detail, find weak software, and respond before a single infected PC becomes a company-wide problem.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Devices are where people work. If they are not enrolled in advanced protection, you are flying partly blind.</p><p><span class="label">If left off</span> You may be paying for advanced device protection on seats that are not fully enrolled.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Endpoint P2</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="DEFENDER_ENDPOINT_P2">Microsoft Defender for Endpoint P2</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="defender" data-capability-id="defender_identity">
+    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+      <h3 class="card-title">Watchdogs on your on-site directory (if you still have one)</h3>
+    </div><p><span class="label">What it does</span> Spot attackers moving through traditional office servers and Active Directory, not only cloud sign-ins.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Many organizations still rely on on-site domain controllers. Cloud-only tools cannot see every attack path there.</p><p><span class="label">If left off</span> Identity threat sensors may be missing or unhealthy, so on-site directory attacks stay invisible.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Identity</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
+        </div>
+      </div>
+    </details>
+  </article></div>
+    </div>
+  </details><details class="capability-group tech">
+    <summary>
+      <span class="caret" aria-hidden="true">▸</span>
+      <span class="capability-group__status status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
+      <strong class="capability-group__count">10</strong>
+      <span class="capability-group__note">Owned capabilities that met the assessed criteria.</span>
+    </summary>
+    <div class="tech-body">
+      <div class="cards"><article class="card" data-variant="fully_working" data-status="fully_working" data-workload="identity" data-capability-id="defender_office_p2">
+    <div class="card-summary">
+<svg viewBox="0 0 18 18" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
+  <path d="m3.802,14.032c.388.242,1.033.511,1.715.511.621,0,1.198-.18,1.676-.487,0,0,.001,0,.002-.001l1.805-1.128v4.073c-.286,0-.574-.078-.824-.234l-4.374-2.734Z" fill="#225086"/>
+  <path d="m7.853,1.507L.353,9.967c-.579.654-.428,1.642.323,2.111,0,0,2.776,1.735,3.126,1.954.388.242,1.033.511,1.715.511.621,0,1.198-.18,1.676-.487,0,0,.001,0,.002-.001l1.805-1.128-4.364-2.728,4.365-4.924V1s0,0,0,0c-.424,0-.847.169-1.147.507Z" fill="#6df"/>
+  <polygon points="4.636 10.199 4.688 10.231 9 12.927 9.001 12.927 9.001 12.927 9.001 5.276 9 5.275 4.636 10.199" fill="#cbf8ff"/>
+  <path d="m17.324,12.078c.751-.469.902-1.457.323-2.111l-4.921-5.551c-.397-.185-.842-.291-1.313-.291-.925,0-1.752.399-2.302,1.026l-.109.123h0s4.364,4.924,4.364,4.924h0s0,0,0,0l-4.365,2.728v4.073c.287,0,.573-.078.823-.234l7.5-4.688Z" fill="#074793"/>
+  <path d="m9.001,1v4.275s.109-.123.109-.123c.55-.627,1.377-1.026,2.302-1.026.472,0,.916.107,1.313.291l-2.579-2.909c-.299-.338-.723-.507-1.146-.507Z" fill="#0294e4"/>
+  <polygon points="13.365 10.199 13.365 10.199 13.365 10.199 9.001 5.276 9.001 12.926 13.365 10.199" fill="#96bcc2"/>
+</svg><span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
+      <h3 class="card-title">Stronger email and file threat protection</h3>
+    </div><p><span class="label">What it does</span> Open risky attachments and links in a safe way, catch advanced phishing, and investigate email threats faster when something slips through.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Most business breaches still start with email. Better email protection reduces ransomware and invoice fraud.</p><p><span class="label">If left off</span> Extra email protections in your license may still be off, in test mode, or only covering a few people.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Office 365 P2</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="THREAT_INTELLIGENCE">Microsoft Defender for Office 365 (Plan 2)</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="fully_working" data-status="fully_working" data-workload="defender" data-capability-id="defender_xdr">
+    <div class="card-summary"><span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
+      <h3 class="card-title">Cross-product incident correlation</h3>
+    </div><p><span class="label">What it does</span> Connect identity, email, endpoint, and cloud signals into incidents that show the full attack story instead of isolated alerts.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Attackers hop products. Siloed alerts hide the path from phishing to privilege.</p><p><span class="label">If left off</span> XDR correlation may be licensed while automated investigation and response stay idle.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender XDR</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="DEFENDER_ENDPOINT_P2, THREAT_INTELLIGENCE">Microsoft Defender for Endpoint P2, Microsoft Defender for Office 365 (Plan 2)</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="fully_working" data-status="fully_working" data-workload="defender" data-capability-id="exchange_online_protection">
+    <div class="card-summary"><span class="status-marker ok"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M7.5 12.5 10.5 15.5 16.5 9"/></svg>Operational</span>
+      <h3 class="card-title">Baseline spam and malware filtering for email</h3>
+    </div><p><span class="label">What it does</span> Filter obvious junk and malware before it reaches inboxes, as the foundation under optional Defender for Office 365 controls.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Without baseline filtering, every advanced email control sits on a weak floor.</p><p><span class="label">If left off</span> Core anti-spam or anti-malware policies may be off, overly permissive, or unmonitored.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Exchange Online Protection</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
         </div>
       </div>
     </details>
@@ -2550,73 +2497,6 @@ body.revealed .reveal-target.is-revealed {
       <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
       <div class="tech-body"><p><span class="label">Why it matters</span> Ungoverned makers can connect business data to personal connectors overnight.</p><p><span class="label">If left off</span> Environment creation, connector policies, or tenant isolation may still be wide open.</p><div class="card-provenance">
           <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Power Platform</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="defender" data-capability-id="purview_audit">
-    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-      <h3 class="card-title">A searchable record of important activity</h3>
-    </div><p><span class="label">What it does</span> Reconstruct who did what across mail, files, and admin actions when something goes wrong.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Without audit history, investigations stall and compliance questions go unanswered.</p><p><span class="label">If left off</span> Audit logging may be off, truncated, or never queried after an incident.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Purview Audit</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="EQUIVIO_ANALYTICS">Microsoft 365 Advanced eDiscovery</span></div>
-        </div>
-      </div>
-    </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="purview" data-capability-id="purview_communication_compliance">
-    <div class="card-summary">
-<!-- Generator: Adobe Illustrator 27.9.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg viewBox="0 0 500 500" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
-<style type="text/css">
-	.st0{fill:url(#SVGID_1_);}
-	.st1{fill:url(#SVGID_00000078752512887004802280000005689619808096703373_);}
-	.st2{fill:url(#SVGID_00000000938455338878114860000005090300476476082311_);}
-	.st3{fill:url(#SVGID_00000062888845095373847610000015670046095858653342_);}
-</style>
-<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="249.37" y1="308.6733" x2="249.37" y2="200.05">
-	<stop  offset="0" style="stop-color:#29BADE"/>
-	<stop  offset="1" style="stop-color:#50E6FF"/>
-</linearGradient>
-<path class="st0" d="M293.28,244.51c-24.56,0-44.48-19.9-44.51-44.46c-29.99,0.33-54.04,24.92-53.71,54.91
-	c0.33,29.99,24.92,54.04,54.91,53.71c29.99-0.33,54.04-24.92,53.71-54.91c-0.04-3.45-0.4-6.88-1.09-10.26
-	C299.53,244.16,296.41,244.5,293.28,244.51z"/>
-<linearGradient id="SVGID_00000075854636923193000240000013142184365114077320_" gradientUnits="userSpaceOnUse" x1="179.9192" y1="404.2232" x2="179.9192" y2="95.4182">
-	<stop  offset="0.041" style="stop-color:#32BEDD"/>
-	<stop  offset="0.495" style="stop-color:#50E6FF"/>
-	<stop  offset="0.92" style="stop-color:#C3F1FF"/>
-</linearGradient>
-<path style="fill:url(#SVGID_00000075854636923193000240000013142184365114077320_);" d="M355.99,311.23
-	c-1.99-19.58-8.13-38.52-18-55.55c-2.87,46.51-41.38,82.8-87.99,82.88c-2.11,0-4.09-0.47-6.15-0.63
-	c-46.65-0.61-91.35-18.85-125.12-51.05c-29.03-27.89-50.56-62.66-62.6-101.08c-15.89,14.44-30.93,29.78-45.06,45.94
-	c-10.12,9.37-10.74,25.17-1.37,35.29c0.44,0.48,0.9,0.93,1.37,1.37c30.37,36.42,66.16,67.97,106.1,93.53
-	c40.17,27.53,87.73,42.27,136.43,42.29c31.65,0.18,62.88-7.25,91.06-21.65c1.78-0.82,3.32-1.92,5.08-2.74
-	C355.98,357.54,358.1,334.28,355.99,311.23z"/>
-<linearGradient id="SVGID_00000118398247856370114850000009538093576200672444_" gradientUnits="userSpaceOnUse" x1="207.845" y1="278.7343" x2="207.845" y2="9.9709">
-	<stop  offset="0.244" style="stop-color:#0078D4"/>
-	<stop  offset="0.6" style="stop-color:#2E8CE1"/>
-	<stop  offset="0.933" style="stop-color:#589EED"/>
-</linearGradient>
-<path style="fill:url(#SVGID_00000118398247856370114850000009538093576200672444_);" d="M172,291.17
-	c-18.74-34.51-12.1-77.28,16.22-104.48c22.25-29.95,53.43-52.05,89.06-63.12c19.42-5.93,39.58-9.11,59.88-9.44
-	c-16.34-7.08-33.44-12.24-50.96-15.37c-47.99-8.08-97.31,0.06-140.16,23.14c-23.97,12.44-46.6,27.32-67.51,44.41
-	c9.87,37.68,29.79,71.97,57.63,99.21C146.9,275.63,158.96,284.26,172,291.17z"/>
-<linearGradient id="SVGID_00000142887456421092235290000000266993271742146961_" gradientUnits="userSpaceOnUse" x1="377.0232" y1="404.4025" x2="377.0232" y2="118.0746">
-	<stop  offset="0" style="stop-color:#005BA1"/>
-	<stop  offset="0.399" style="stop-color:#0078D4"/>
-	<stop  offset="0.857" style="stop-color:#5EA0EF"/>
-</linearGradient>
-<path style="fill:url(#SVGID_00000142887456421092235290000000266993271742146961_);" d="M489.59,232.96
-	c-26.82-32.13-57.79-60.54-92.1-84.5c-35.88-9.8-73.75-9.61-109.53,0.55c-10.74,3.28-21.13,7.68-30.93,13.17
-	c15.33,1.08,30.11,6.15,42.87,14.71c1.14,0.33,2.24,0.82,3.24,1.45c42.69,28.67,71.46,73.89,79.34,124.71
-	c2.51,19.72,2.2,39.68-0.91,59.31c40.67-25.85,77.07-57.85,107.91-94.88c9.56-8.9,10.1-23.87,1.19-33.43
-	C490.32,233.67,489.96,233.31,489.59,232.96z"/>
-</svg>
-<span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
-      <h3 class="card-title">Oversight for risky business communications</h3>
-    </div><p><span class="label">What it does</span> Detect harassment, threats, or sensitive-data sharing patterns in business conversations.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Toxic or noncompliant communication creates legal and cultural risk that identity tools miss.</p><p><span class="label">If left off</span> Communication compliance may be entitled but never scoped to the channels that matter.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Purview Communication Compliance</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
         </div>
       </div>
     </details>
@@ -2809,7 +2689,47 @@ body.revealed .reveal-target.is-revealed {
         </div>
       </div>
     </details>
-  </article><article class="card" data-variant="needs_attention" data-status="needs_attention" data-workload="purview" data-capability-id="purview_sensitivity_labels">
+  </article></div>
+    </div>
+  </details><details class="capability-group tech">
+    <summary>
+      <span class="caret" aria-hidden="true">▸</span>
+      <span class="capability-group__status status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
+      <strong class="capability-group__count">5</strong>
+      <span class="capability-group__note">The scan could not establish a conclusion for these capabilities.</span>
+    </summary>
+    <div class="tech-body">
+      <div class="cards"><article class="card" data-variant="assessment_incomplete" data-status="assessment_incomplete" data-workload="defender" data-capability-id="defender_office_p1">
+    <div class="card-summary"><span class="status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
+      <h3 class="card-title">Safe Attachments and Safe Links essentials</h3>
+    </div><p><span class="label">What it does</span> Detonate risky attachments and rewrite dangerous links for licensed users even when the full P2 investigation pack is not present.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Many tenants own P1-level email protections that never leave default off states.</p><p><span class="label">If left off</span> Safe content policies may be missing, scoped to pilots, or left in evaluation mode.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Defender for Office 365 P1</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="assessment_incomplete" data-status="assessment_incomplete" data-workload="exchange" data-capability-id="exchange_online">
+    <div class="card-summary"><span class="status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
+      <h3 class="card-title">Business email and calendar in the cloud</h3>
+    </div><p><span class="label">What it does</span> Host mailboxes in Microsoft 365 and apply tenant email security and sharing controls that protect everyday business communication.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Email remains a primary business channel and a primary attack path. Weak tenant defaults leave phishing and data exposure wide open.</p><p><span class="label">If left off</span> Mailboxes may be licensed while core protection and audit settings stay at weak defaults.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Exchange Online</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="assessment_incomplete" data-status="assessment_incomplete" data-workload="defender" data-capability-id="purview_audit">
+    <div class="card-summary"><span class="status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
+      <h3 class="card-title">A searchable record of important activity</h3>
+    </div><p><span class="label">What it does</span> Reconstruct who did what across mail, files, and admin actions when something goes wrong.</p><details class="tech card-details">
+      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Without audit history, investigations stall and compliance questions go unanswered.</p><p><span class="label">If left off</span> Audit logging may be off, truncated, or never queried after an incident.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Purview Audit</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="EQUIVIO_ANALYTICS">Microsoft 365 Advanced eDiscovery</span></div>
+        </div>
+      </div>
+    </details>
+  </article><article class="card" data-variant="assessment_incomplete" data-status="assessment_incomplete" data-workload="purview" data-capability-id="purview_communication_compliance">
     <div class="card-summary">
 <!-- Generator: Adobe Illustrator 27.9.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg viewBox="0 0 500 500" class="workload-icon" width="16" height="16" aria-hidden="true" focusable="false">
@@ -2857,17 +2777,17 @@ body.revealed .reveal-target.is-revealed {
 	c2.51,19.72,2.2,39.68-0.91,59.31c40.67-25.85,77.07-57.85,107.91-94.88c9.56-8.9,10.1-23.87,1.19-33.43
 	C490.32,233.67,489.96,233.31,489.59,232.96z"/>
 </svg>
-<span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
-      <h3 class="card-title">Labels that classify and protect files and mail</h3>
-    </div><p><span class="label">What it does</span> Mark sensitive content and apply encryption or access limits that travel with the file.</p><details class="tech card-details">
+<span class="status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
+      <h3 class="card-title">Oversight for risky business communications</h3>
+    </div><p><span class="label">What it does</span> Detect harassment, threats, or sensitive-data sharing patterns in business conversations.</p><details class="tech card-details">
       <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Classification without enforcement is a sticker; labels with protection change outcomes.</p><p><span class="label">If left off</span> Labels may exist but remain unpublished, unused, or never auto-applied.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Purview Sensitivity Labels</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="MIP_S_CLP2">Microsoft Purview Information Protection P2</span></div>
+      <div class="tech-body"><p><span class="label">Why it matters</span> Toxic or noncompliant communication creates legal and cultural risk that identity tools miss.</p><p><span class="label">If left off</span> Communication compliance may be entitled but never scoped to the channels that matter.</p><div class="card-provenance">
+          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Purview Communication Compliance</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
         </div>
       </div>
     </details>
-  </article><article class="card" data-variant="partly_set_up" data-status="partly_set_up" data-workload="collaboration" data-capability-id="sharepoint_online">
-    <div class="card-summary"><span class="status-marker partial"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h16v16H4V4zm3 3v10h5V7H7z"/><path fill="none" stroke="currentColor" stroke-width="2" d="M4 4h16v16H4z"/></svg>Incomplete</span>
+  </article><article class="card" data-variant="assessment_incomplete" data-status="assessment_incomplete" data-workload="collaboration" data-capability-id="sharepoint_online">
+    <div class="card-summary"><span class="status-marker skipped"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" d="M6 12h12"/></svg>Not assessed</span>
       <h3 class="card-title">Team sites and shared file libraries</h3>
     </div><p><span class="label">What it does</span> Host shared libraries with clear external sharing boundaries and default link permissions that match how the business actually works.</p><details class="tech card-details">
       <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
@@ -2876,17 +2796,9 @@ body.revealed .reveal-target.is-revealed {
         </div>
       </div>
     </details>
-  </article><article class="card" data-variant="needs_attention" data-status="needs_attention" data-workload="collaboration" data-capability-id="teams">
-    <div class="card-summary"><span class="status-marker gap"><svg class="status-glyph" viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 4h7v3H7v10h4v3H4V4zm9 0 7 8-7 8v-5h-4v-6h4V4z"/></svg>Action required</span>
-      <h3 class="card-title">Chat, meetings, and teamwork hub</h3>
-    </div><p><span class="label">What it does</span> Keep collaboration fast while controlling guests, anonymous join, apps, and recording exposure.</p><details class="tech card-details">
-      <summary><span class="caret" aria-hidden="true">▸</span> Why it matters and what's covered</summary>
-      <div class="tech-body"><p><span class="label">Why it matters</span> Teams is where decisions and files move quickly — weak meeting or guest defaults become an easy side door.</p><p><span class="label">If left off</span> External access, lobby, or app policies may still favor convenience over control.</p><div class="card-provenance">
-          <div><span class="label">Microsoft control</span> <span class="mono">Microsoft Teams</span></div><div><span class="label">License</span> <span title="SPE_E5">Microsoft 365 E5</span></div><div><span class="label">Service plan</span> <span title="">No matching service plan reported</span></div>
-        </div>
-      </div>
-    </details>
   </article></div>
+    </div>
+  </details></div>
     </section>
 
     
@@ -23315,7 +23227,208 @@ Purview</span>
       </div>
     </details>
     </section>
-  </main>
+
+    <section id="section-detection-realization" class="reveal-target detection-realization">
+  <p class="micro-label section-kicker">Detection realization</p>
+  <h2>Are detections watching the logs you pay for?</h2>
+  <p class="section-help">
+    Core tables expected for owned protections, whether they arrived in the last
+    seven days, and whether a live analytics rule queries them. This does not
+    measure detection quality or tuning.
+  </p>
+  <div class="table-scroll" data-table-scroll>
+    <table class="detection-realization-table">
+      <caption class="sr-only">Telemetry tables for owned capabilities</caption>
+      <thead>
+        <tr>
+          <th scope="col">Capability</th>
+          <th scope="col">Table</th>
+          <th scope="col">Tier</th>
+          <th scope="col">Arriving?</th>
+          <th scope="col" class="num">Live rules (when assessed)</th>
+          <th scope="col">Connector hint</th>
+        </tr>
+      </thead>
+      <tbody><tr>
+          <td>Smarter sign-in rules</td>
+          <td class="mono">SigninLogs</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">1 <span class="caption">(parity-not-unwatched)</span></td>
+          <td>Entra diagnostic setting: SignInLogs</td>
+        </tr><tr>
+          <td>Smarter sign-in rules</td>
+          <td class="mono">AADNonInteractiveUserSignInLogs</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Entra diagnostic setting: NonInteractiveUserSignInLogs</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceLogonEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceNetworkEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceProcessEvents</td>
+          <td>core</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceFileEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceImageLoadEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceInfo</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Deep protection and visibility on PCs and devices</td>
+          <td class="mono">DeviceRegistryEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Watchdogs on your on-site directory (if you still have one)</td>
+          <td class="mono">IdentityDirectoryEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Identity connector</td>
+        </tr><tr>
+          <td>Watchdogs on your on-site directory (if you still have one)</td>
+          <td class="mono">IdentityLogonEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Identity connector</td>
+        </tr><tr>
+          <td>Watchdogs on your on-site directory (if you still have one)</td>
+          <td class="mono">IdentityQueryEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Identity connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailAttachmentInfo</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailUrlInfo</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">EmailPostDeliveryEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Stronger email and file threat protection</td>
+          <td class="mono">UrlClickEvents</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender for Office 365 connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">SecurityAlert</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">SecurityIncident</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">AlertEvidence</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Cross-product incident correlation</td>
+          <td class="mono">AlertInfo</td>
+          <td>extended</td>
+          <td><span class="status-word status-gap">No</span></td>
+          <td class="num"><span class="status-word">Not assessed</span></td>
+          <td>Microsoft Defender XDR connector</td>
+        </tr><tr>
+          <td>Alerts when a sign-in looks suspicious</td>
+          <td class="mono">AADRiskyUsers</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Entra diagnostic setting: RiskyUsers</td>
+        </tr><tr>
+          <td>Alerts when a sign-in looks suspicious</td>
+          <td class="mono">AADUserRiskEvents</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Entra diagnostic setting: UserRiskEvents</td>
+        </tr><tr>
+          <td>A searchable record of important activity</td>
+          <td class="mono">OfficeActivity</td>
+          <td>core</td>
+          <td><span class="status-word">Yes</span></td>
+          <td class="num">0</td>
+          <td>Office 365 connector</td>
+        </tr></tbody>
+    </table>
+  </div><p class="caption">
+    Dead rules (query tables that are not arriving): Demo rare process.
+  </p></section></main>
 
   <footer class="report-footer">
     <div class="report-footer__grid">
@@ -23334,6 +23447,16 @@ Purview</span>
       </div>
     </div>
     <p class="report-footer__identity"><span class="report-footer__name">Demo (synthetic data)</span> <span aria-hidden="true">&mdash;</span> generated <time datetime="2026-08-13T00:00:00+00:00">August 13, 2026 at 12:00 AM UTC</time></p>
+    <p class="meta">
+      <span class="meta-row">Version 0.4.0</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Scanned <time class="mono" datetime="2026-08-13T00:00:00+00:00">August 13, 2026 at 12:00 AM UTC</time></span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Mode Demo scan (synthetic data)</span><span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Organization Demo (synthetic data)</span><span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">identity, endpoint priority packs</span><span class="sep" aria-hidden="true">·</span>
+      <span class="meta-row">Activation assessment: 109 · Hygiene 61</span>
+    </p>
     <p class="report-footer__tagline">Entitlements, controls, and configuration gaps. &mdash; read-only advisory, review before acting. Not affiliated with Microsoft.</p>
   </footer>
   <script>

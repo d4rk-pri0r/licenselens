@@ -1,5 +1,5 @@
 {%- import "report/v2/_v2_primitives.html.j2" as prim -%}
-{%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation -%}
+{%- from "report/v2/_v2_capability_card.html.j2" import capability_constellation, capability_cards -%}
 {#
   Bundle entry (report app v2) — the JS-rich renderer per DESIGN_V2.md.
 
@@ -69,9 +69,9 @@
       <div class="app-nav__sections" data-section-nav>
         <a class="app-nav__link" href="#section-a" data-section-link="a" aria-current="true">Where you stand</a>
         <a class="app-nav__link" href="#section-c" data-section-link="c">What matters most</a>
-        <a class="app-nav__link" href="#section-detection-realization" data-section-link="detection">Detection realization</a>
-        <a class="app-nav__link" href="#section-b" data-section-link="b">What you're paying for</a>
+        <a class="app-nav__link" href="#section-b" data-section-link="b">What you already own</a>
         <a class="app-nav__link" href="#section-findings" data-section-link="findings">Findings</a>
+        <a class="app-nav__link" href="#section-detection-realization" data-section-link="detection">Evidence detail</a>
       </div>
       <div class="app-nav__workloads" data-workload-nav role="group" aria-label="Workload navigation">
         <a class="workload-tab is-active" href="#findings" data-nav="all" aria-current="page">All</a>
@@ -208,14 +208,12 @@
         {% endif %}
       </section>
 
-      {% include "report/v2/_v2_detection_realization.html.j2" %}
-
-      {# B - What you're paying for #}
+      {# B - What you already own #}
       <section id="section-b" data-reveal data-reveal-index="2" aria-labelledby="b-title">
-        <p class="kicker">Entitlements</p>
-        <h2 id="b-title">What you're paying for</h2>
+        <p class="kicker">Context</p>
+        <h2 id="b-title">What you already own</h2>
         <p class="section-help">
-          Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
+          The capabilities behind the headline. Start with Action required and Incomplete; open the other groups only when you need their context.
         </p>
         {% if sku_strip %}
         <details class="tech sku-details sku-strip">
@@ -250,42 +248,7 @@
         {% endif %}
         <h3 class="tech-title">Your security capabilities</h3>
         {{ capability_constellation(constellation, workload_icon_urls=workload_icon_urls) }}
-        {% if capabilities %}
-        <div class="capability-list" data-capability-list>
-          {% for card in capabilities %}
-          {% set status = card.status or 'not_licensed' %}
-          {% set wl = cwl.get(card.id, 'general') %}
-          <article class="capability-row" data-capability="{{ card.id }}" data-status="{{ status }}" data-workload="{{ wl }}">
-            <button type="button" class="capability-row__select" data-capability-select="{{ card.id }}" aria-pressed="false">
-              {% if workload_icon_urls.get(wl) %}
-              <img class="workload-icon" src="{{ workload_icon_urls[wl] }}" width="18" height="18" alt="" decoding="async" aria-hidden="true" />
-              {% endif %}
-              <span class="capability-row__name">{{ card.plain_name }}</span>
-              {{ prim.status_marker(status) }}
-            </button>
-            {% if card.outcome %}
-            {% set sentences = card.outcome.split('. ') %}
-            <p class="capability-row__outcome">{{ sentences[0] }}{% if sentences | length > 1 and not sentences[0].endswith('.') %}.{% endif %}</p>
-            {% endif %}
-            <details class="tech">
-              <summary>Why this capability matters</summary>
-              <p><span class="label">Why it matters</span> {{ card.why_it_matters or 'Not reported' }}</p>
-              {% if card.if_unused %}<p><span class="label">If left off</span> {{ card.if_unused }}</p>{% endif %}
-              <div class="capability-row__provenance">
-                {% if card.entitlement_kind == 'consumption' %}
-                <div><span class="label">Observed in Azure</span> <span class="mono">{{ card.observed_resources | join(', ') or 'Azure resource' }}</span></div>
-                {% else %}
-                <div><span class="label">License</span> <span title="{{ card.matched_skus | join(', ') }}">{{ card.friendly_skus | join(', ') or 'Not reported' }}</span></div>
-                {% endif %}
-                <div><span class="label">Service plan</span> <span title="{{ card.matched_service_plans | join(', ') }}">{{ card.friendly_plans | join(', ') or 'No matching service plan reported' }}</span></div>
-              </div>
-            </details>
-          </article>
-          {% endfor %}
-        </div>
-        {% else %}
-        <p class="caption">No licensed capabilities were resolved from entitlements.</p>
-        {% endif %}
+        {{ capability_cards(capabilities, constellation) }}
       </section>
 
       {# Findings — the merged D+E section: charts at a glance (collapsed),
@@ -422,6 +385,8 @@
           </div>
         </details>
       </section>
+
+      {% include "report/v2/_v2_detection_realization.html.j2" %}
     </div>
   </main>
 

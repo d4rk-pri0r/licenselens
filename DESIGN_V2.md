@@ -272,14 +272,15 @@ so the tree stays `h1 → h2 → h3`. The retired `.display-line` role must not 
   - *cards* only where a bounded unit earns it (capability row, move item, chart frame);
   - *elevated surfaces* only for the currently selected/focused element.
 
-## 5. Information architecture (A–C + Findings, in this order)
+## 5. Information architecture (decision → evidence → reference)
 
-The report is a single bounded `<main>` containing four sections, exactly in order A, C, B,
-Findings — Priorities sit directly under Posture. Section labels:
+The report is a single bounded `<main>` whose reader path is decision → context → evidence →
+reference. Priorities sit directly under Posture. The sections are ordered A, C, B, Findings,
+then the optional detection-realization evidence detail:
 
 - **A — "Where you stand"** (signature opening; hierarchy-first)
 - **C — "What matters most"** (prioritized recommendations)
-- **B — "What you're paying for"** (entitlements → capabilities; signature constellation)
+- **B — "What you already own"** (the entitlement/capability context behind the headline)
 - **Findings — the merged findings surface** (charts at a glance, search, filters, sort,
   one collapsed row per finding; expanding a row reveals the full belief block)
 
@@ -327,9 +328,11 @@ the number. Keep the distribution bar.
 The v1 exposed/gap rail stays retired from the hero: exposure/gap awareness lives in the
 distribution, the findings surface, and the prioritized moves in section C.
 
-### B. "What you're paying for"
+### B. "What you already own"
 
-**Purpose.** Show the entitlements the tenant already pays for and what each maps to.
+**Purpose.** Show the entitlement and capability context behind the headline without making
+every capability look like an equally urgent recommendation. Status groups are the reader's
+units; individual capability cards are supporting context inside a group.
 
 - **Owned SKUs strip:** one row per `subscribed_skus` entry — SKU name and part number in
   mono, license count right-aligned `tabular-nums`. A compact table, not cards. Collapsed
@@ -339,11 +342,12 @@ distribution, the findings surface, and the prioritized moves in section C.
   It is the section's centerpiece. The capability part carries its own friendly heading,
   "Your security capabilities" (`<h3>`), so "what you own" and "the colored
   recommendations" read as two clearly separate things.
-- **Capability detail list:** summary rows first, context on demand (section 8). Each row
+- **Capability detail list:** grouped by status, context on demand (section 8). Each row
   shows the workload brand icon (section 12), `plain_name`, status marker, and the first
   sentence of "What it does". The expansion reveals "Why it matters" (`why_it_matters`),
   "If left off" (`if_unused`), and provenance (matched SKUs and service plans, mono).
-  Explicitly **not** a giant expandable card containing everything up front.
+  Action-required and incomplete groups open first; operational, not-assessed, and not-licensed
+  groups stay closed. Explicitly **not** a giant flat card/list containing everything up front.
 
 ### C. "What matters most"
 

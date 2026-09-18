@@ -1,6 +1,4 @@
 ---
-hide:
-  - navigation
   - toc
 ---
 
@@ -12,19 +10,19 @@ LicenseLens looks at the SKUs in the tenant, maps them to the controls those SKU
 
 <div class="grid cards" markdown>
 
--   :material-rocket-launch-outline: **Quick start**
+-   :material-rocket-launch-outline: **Start here**
 
     ---
 
-    Install it, run the offline demo, open the HTML report.
+    Install it, run the offline demo, and learn how to read the result.
 
-    [:octicons-arrow-right-24: Get started](getting-started.md)
+    [:octicons-arrow-right-24: Open the operator guide](operator-guide.md)
 
 -   :material-security: **How it works**
 
     ---
 
-    Entitlements, capabilities, checks, findings, and exit codes.
+    Entitlements, capabilities, checks, findings, and evidence boundaries.
 
     [:octicons-arrow-right-24: Read the concepts](concepts.md)
 
@@ -54,8 +52,11 @@ LicenseLens looks at the SKUs in the tenant, maps them to the controls those SKU
 
 ```bash
 pipx install licenselens
-licenselens demo
+licenselens demo --open
 ```
+
+For the full install matrix, live-scan path, report-reading guide, and component
+map, start with the [Operator guide](operator-guide.md).
 
 [![PyPI version](https://img.shields.io/pypi/v/licenselens)](https://pypi.org/project/licenselens/)
 [![CI](https://img.shields.io/github/actions/workflow/status/d4rk-pri0r/licenselens/ci.yml?branch=main)](https://github.com/d4rk-pri0r/licenselens/actions/workflows/ci.yml)

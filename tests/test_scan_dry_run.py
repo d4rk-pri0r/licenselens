@@ -57,7 +57,7 @@ def test_dry_run_scan_produces_findings(tmp_path: Path):
     html_text = html.read_text(encoding="utf-8")
     md_text = md.read_text(encoding="utf-8")
     assert "Security License Lens" in html_text
-    assert "What you're paying for" in html_text
+    assert "What you already own" in html_text
     assert "What it does" in html_text or "Why it matters" in html_text
     # Section C heading appears twice: the section h2 and its table-of-contents
     # link under the masthead (DESIGN_V2 §6, same anchors, same labels).

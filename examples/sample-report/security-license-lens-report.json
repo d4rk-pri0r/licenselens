@@ -11214,7 +11214,9 @@
     "fully_working": 3,
     "needs_attention": 4,
     "partly_set_up": 1,
+    "assessment_incomplete": 0,
     "not_licensed": 3,
+    "entitlement_unknown": 0,
     "realized_percent": 38
   },
   "capability_outcomes": [
@@ -11381,11 +11383,35 @@
       ]
     },
     {
+      "id": "defender_endpoint_p2",
+      "name": "Microsoft Defender for Endpoint P2",
+      "plain_name": "Deep protection and visibility on PCs and devices",
+      "status": "partly_set_up",
+      "status_label": "Partly set up",
+      "related_check_ids": [
+        "mde-onboard-gap",
+        "ep-asr-rules",
+        "mde-sensor-health",
+        "ep-tamper-protection",
+        "id-protective-plan-assignment"
+      ]
+    },
+    {
+      "id": "defender_identity",
+      "name": "Microsoft Defender for Identity",
+      "plain_name": "Watchdogs on your on-site directory (if you still have one)",
+      "status": "partly_set_up",
+      "status_label": "Partly set up",
+      "related_check_ids": [
+        "mdi-sensors-missing"
+      ]
+    },
+    {
       "id": "purview_audit",
       "name": "Microsoft Purview Audit",
       "plain_name": "A searchable record of important activity",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
+      "status": "assessment_incomplete",
+      "status_label": "Assessment incomplete",
       "related_check_ids": [
         "mdo-audit-retention",
         "mdo-unified-audit-enabled"
@@ -11395,8 +11421,8 @@
       "id": "exchange_online",
       "name": "Exchange Online",
       "plain_name": "Business email and calendar in the cloud",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
+      "status": "assessment_incomplete",
+      "status_label": "Assessment incomplete",
       "related_check_ids": [
         "exo-dkim-enabled",
         "exo-dmarc-agency-contact",
@@ -11413,25 +11439,11 @@
       ]
     },
     {
-      "id": "defender_endpoint_p2",
-      "name": "Microsoft Defender for Endpoint P2",
-      "plain_name": "Deep protection and visibility on PCs and devices",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
-      "related_check_ids": [
-        "mde-onboard-gap",
-        "ep-asr-rules",
-        "mde-sensor-health",
-        "ep-tamper-protection",
-        "id-protective-plan-assignment"
-      ]
-    },
-    {
       "id": "purview_communication_compliance",
       "name": "Microsoft Purview Communication Compliance",
       "plain_name": "Oversight for risky business communications",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
+      "status": "assessment_incomplete",
+      "status_label": "Assessment incomplete",
       "related_check_ids": [
         "pur-communication-compliance-readiness"
       ]
@@ -11440,8 +11452,8 @@
       "id": "defender_office_p1",
       "name": "Microsoft Defender for Office 365 P1",
       "plain_name": "Safe Attachments and Safe Links essentials",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
+      "status": "assessment_incomplete",
+      "status_label": "Assessment incomplete",
       "related_check_ids": [
         "mdo-alert-policies-enabled",
         "mdo-malware-file-filter",
@@ -11452,8 +11464,8 @@
       "id": "sharepoint_online",
       "name": "SharePoint Online",
       "plain_name": "Team sites and shared file libraries",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
+      "status": "assessment_incomplete",
+      "status_label": "Assessment incomplete",
       "related_check_ids": [
         "spo-anyone-link-expiration",
         "spo-anyone-link-view",
@@ -11466,21 +11478,11 @@
       ]
     },
     {
-      "id": "defender_identity",
-      "name": "Microsoft Defender for Identity",
-      "plain_name": "Watchdogs on your on-site directory (if you still have one)",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
-      "related_check_ids": [
-        "mdi-sensors-missing"
-      ]
-    },
-    {
       "id": "exchange_online_protection",
       "name": "Exchange Online Protection",
       "plain_name": "Baseline spam and malware filtering for email",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "mdo-anti-spam-no-allowed-domains",
         "mdo-connection-filter-no-ip-allow",
@@ -11496,7 +11498,7 @@
       "name": "Microsoft Defender XDR",
       "plain_name": "Cross-product incident correlation",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "xdr-incident-readiness"
       ]
@@ -11506,7 +11508,7 @@
       "name": "Microsoft Purview Insider Risk Management",
       "plain_name": "Early warning for risky insider activity",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "pur-insider-risk-readiness"
       ]
@@ -11516,7 +11518,7 @@
       "name": "Microsoft Purview Data Loss Prevention",
       "plain_name": "Guardrails so sensitive data is harder to leak",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "id-protective-plan-assignment"
       ]
@@ -11526,7 +11528,7 @@
       "name": "Microsoft Purview eDiscovery",
       "plain_name": "Legal hold and investigation search",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "pur-ediscovery-readiness"
       ]
@@ -11536,7 +11538,7 @@
       "name": "Microsoft Power Platform",
       "plain_name": "Low-code apps, flows, and environments",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "pp-dlp-all-environments",
         "pp-dlp-nondefault-envs",
@@ -11553,7 +11555,7 @@
       "name": "OneDrive for Business",
       "plain_name": "Personal work files in the cloud",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "spo-onedrive-sharing-limited"
       ]
@@ -11563,7 +11565,7 @@
       "name": "Microsoft Purview Data Lifecycle Management",
       "plain_name": "Retention rules that keep or remove content on schedule",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "pur-retention-policy-coverage"
       ]
@@ -11573,7 +11575,7 @@
       "name": "Power BI Pro",
       "plain_name": "Shared interactive business reports",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "pbi-export-controls",
         "pbi-external-invite-disabled",
@@ -11591,7 +11593,7 @@
       "name": "Microsoft Defender for Office 365 P2",
       "plain_name": "Stronger email and file threat protection",
       "status": "fully_working",
-      "status_label": "Fully working",
+      "status_label": "Met assessed criteria",
       "related_check_ids": [
         "id-protective-plan-assignment"
       ]
@@ -11608,6 +11610,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 1,
+        "watched_by_basis": "parity-not-unwatched",
         "connector_hint": "Entra diagnostic setting: SignInLogs"
       },
       {
@@ -11616,7 +11619,8 @@
         "table": "AADNonInteractiveUserSignInLogs",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Entra diagnostic setting: NonInteractiveUserSignInLogs"
       },
       {
@@ -11625,7 +11629,8 @@
         "table": "DeviceEvents",
         "tier": "core",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11634,7 +11639,8 @@
         "table": "DeviceLogonEvents",
         "tier": "core",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11643,7 +11649,8 @@
         "table": "DeviceNetworkEvents",
         "tier": "core",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11652,7 +11659,8 @@
         "table": "DeviceProcessEvents",
         "tier": "core",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11661,7 +11669,8 @@
         "table": "DeviceFileEvents",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11670,7 +11679,8 @@
         "table": "DeviceImageLoadEvents",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11679,7 +11689,8 @@
         "table": "DeviceInfo",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11688,7 +11699,8 @@
         "table": "DeviceRegistryEvents",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11698,6 +11710,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Identity connector"
       },
       {
@@ -11707,6 +11720,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Identity connector"
       },
       {
@@ -11716,6 +11730,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Identity connector"
       },
       {
@@ -11725,6 +11740,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Office 365 connector"
       },
       {
@@ -11734,6 +11750,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Office 365 connector"
       },
       {
@@ -11743,6 +11760,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Office 365 connector"
       },
       {
@@ -11751,7 +11769,8 @@
         "table": "EmailPostDeliveryEvents",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Office 365 connector"
       },
       {
@@ -11760,7 +11779,8 @@
         "table": "UrlClickEvents",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender for Office 365 connector"
       },
       {
@@ -11770,6 +11790,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11779,6 +11800,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11787,7 +11809,8 @@
         "table": "AlertEvidence",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11796,7 +11819,8 @@
         "table": "AlertInfo",
         "tier": "extended",
         "ingesting": false,
-        "watched_by": 0,
+        "watched_by": null,
+        "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
       },
       {
@@ -11806,6 +11830,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Entra diagnostic setting: RiskyUsers"
       },
       {
@@ -11815,6 +11840,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Entra diagnostic setting: UserRiskEvents"
       },
       {
@@ -11824,6 +11850,7 @@
         "tier": "core",
         "ingesting": true,
         "watched_by": 0,
+        "watched_by_basis": null,
         "connector_hint": "Office 365 connector"
       }
     ],

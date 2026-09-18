@@ -497,8 +497,20 @@ section.hero {
 }
 .hero-action a:hover { color: var(--accent-hover); }
 
+/* Capability inventory: status groups are the reader's units; cards are
+   supporting context inside a group, not 25 equal priorities. */
+.capability-groups { display: flex; flex-direction: column; gap: 12px; margin-block: 16px 0; }
+.capability-group { padding-inline: 16px; }
+.capability-group[open] { background: var(--surface-2); }
+.capability-group > summary { display: grid; grid-template-columns: auto auto auto minmax(0, 1fr); align-items: baseline; gap: 8px 12px; }
+.capability-group__status { font-size: 0.9375rem; }
+.capability-group__count { font-size: 1.125rem; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.capability-group__note { color: var(--text-2); font-size: 0.8125rem; font-weight: 400; }
+.capability-group .cards { margin-block-start: 12px; }
+.capability-group .card { padding: 14px 16px; }
+
 /* --------------------------------------------------------------------------
-   B — "What you're paying for": SKU strip, capability constellation,
+   B — "What you already own": SKU strip, capability constellation,
    capability detail list (progressive disclosure, not one giant card).
    -------------------------------------------------------------------------- */
 .sku-strip { margin-block-end: 20px; }

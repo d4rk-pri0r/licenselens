@@ -329,7 +329,7 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                     # card-summary icon row is also in frame. Pan the
                     # horizontally scrollable .constellation so four caption
                     # icons are visible — five 18px workload icons in total.
-                    heading = page.locator("h2", has_text="What you're paying for").first
+                    heading = page.locator("h2", has_text="What you already own").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.evaluate("() => window.scrollBy(0, 100)")
                     page.locator(".constellation").first.evaluate("el => { el.scrollLeft = 500; }")
@@ -337,7 +337,7 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                 elif kind == "mobile":
                     # Same section at full viewport height: the constellation
                     # caption row (identity mark) plus the first card icon.
-                    heading = page.locator("h2", has_text="What you're paying for").first
+                    heading = page.locator("h2", has_text="What you already own").first
                     heading.evaluate("el => el.scrollIntoView({block: 'start'})")
                     page.wait_for_timeout(SETTLE_MS)
                 target = IMAGES_DIR / name

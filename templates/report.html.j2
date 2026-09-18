@@ -253,8 +253,7 @@ body.revealed .reveal-target.is-revealed {
 </head>
 <body>
   <header>
-    <div class="logo">
-      {{ prim.lens_mark() }}
+    <div class="logo">{{ prim.lens_mark() }}
       <div class="logo__text">
         <h1>Security License Lens</h1>
         <p class="tagline">{{ tagline }}</p>
@@ -273,8 +272,9 @@ body.revealed .reveal-target.is-revealed {
     <nav class="toc" aria-label="Sections">
       <a href="#section-a" aria-current="true">Where you stand</a>
       <a href="#section-c">What matters most</a>
-      <a href="#section-b">What you're paying for</a>
+      <a href="#section-b">What you already own</a>
       <a href="#section-findings">Findings</a>
+      <a href="#section-detection-realization">Evidence detail</a>
     </nav>
   </header>
 
@@ -389,17 +389,16 @@ body.revealed .reveal-target.is-revealed {
        ====================================================================== #}
     {% include "report/v2/_v2_moves.html.j2" %}
 
-    {% include "report/v2/_v2_detection_realization.html.j2" %}
-
     {# ======================================================================
-       B - What you're paying for: owned SKUs, the signature constellation,
-       and capability summary rows with on-demand context.
+       B - What you already own: the denominator behind the headline.
+       Technical telemetry evidence comes after Findings, not between the
+       decision and its entitlement context.
        ====================================================================== #}
     <section id="section-b" class="reveal-target" style="--reveal-delay: 40ms">
-      <p class="micro-label section-kicker">Entitlements</p>
-      <h2>What you're paying for</h2>
+      <p class="micro-label section-kicker">Context</p>
+      <h2>What you already own</h2>
       <p class="section-help">
-        Licensed controls mapped to detected Microsoft entitlements, grouped by workload.
+        The capabilities behind the headline. Start with Action required and Incomplete; open the other groups only when you need their context.
       </p>
       {%- if sku_strip -%}
       <details class="tech sku-details sku-strip">
@@ -699,6 +698,9 @@ body.revealed .reveal-target.is-revealed {
 
       {% include "report/v2/_v2_technical.html.j2" %}
     </section>
+
+    {# Evidence detail follows the decision and finding narrative. #}
+{%- include "report/v2/_v2_detection_realization.html.j2" -%}
   </main>
 
   <footer class="report-footer">
