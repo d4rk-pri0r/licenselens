@@ -1,6 +1,6 @@
 # Security License Lens
 
-**Know which security controls you already pay for — and which of them are actually on.**
+**Know which security controls you already pay for, and which of them are actually on.**
 
 You pay for E5, Entra ID P2, Defender, and related SKUs. A lot of the useful
 controls in those SKUs never get turned on. LicenseLens maps what you own to
