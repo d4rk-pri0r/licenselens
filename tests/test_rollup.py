@@ -126,8 +126,7 @@ def test_realized_percent_is_rounded_fraction():
     assert rollup.fully_working == 2
     assert rollup.realized_percent == 50
     assert (
-        rollup.realized_sentence
-        == "2 of 4 in-scope capabilities met all assessed criteria (50%)."
+        rollup.realized_sentence == "2 of 4 in-scope capabilities met all assessed criteria (50%)."
     )
 
 

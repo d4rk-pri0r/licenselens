@@ -780,9 +780,10 @@ def build_detection_realization(result: ScanResult) -> dict[str, object]:
     findings_by_id = {f.check_id: f for f in result.findings}
     ingestion = findings_by_id.get("sen-telemetry-ingestion-coverage")
     parity = findings_by_id.get("sen-rule-telemetry-parity")
-    ingestion_assessed = (
-        ingestion is not None and ingestion.status.value not in {"error", "skipped"}
-    )
+    ingestion_assessed = ingestion is not None and ingestion.status.value not in {
+        "error",
+        "skipped",
+    }
     ingestion_caps = (
         (ingestion.evidence or {}).get("capabilities") if ingestion is not None else None
     )
@@ -812,9 +813,8 @@ def build_detection_realization(result: ScanResult) -> dict[str, object]:
         cap_ev = ingestion_caps.get(cap_id) if isinstance(ingestion_caps.get(cap_id), dict) else {}
         core_seen = {str(n) for n in (cap_ev.get("core_seen") or [])}
         extended_seen = {str(n) for n in (cap_ev.get("extended_seen") or [])}
-        has_evidence = (
-            ingestion_assessed
-            and bool(core_seen or extended_seen or cap_ev.get("missing_core") is not None)
+        has_evidence = ingestion_assessed and bool(
+            core_seen or extended_seen or cap_ev.get("missing_core") is not None
         )
         for table in row.get("tables") or []:
             if not isinstance(table, dict) or not table.get("name"):

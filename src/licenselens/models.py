@@ -432,9 +432,7 @@ class CapabilityRollup(BaseModel):
         if self.you_own <= 0:
             return "No in-scope capabilities could be evaluated."
         if self.fully_working >= self.you_own:
-            return (
-                f"All {self.you_own} in-scope capabilities met all assessed criteria (100%)."
-            )
+            return f"All {self.you_own} in-scope capabilities met all assessed criteria (100%)."
         return (
             f"{self.fully_working} of {self.you_own} in-scope capabilities met all "
             f"assessed criteria ({self.realized_percent}%)."

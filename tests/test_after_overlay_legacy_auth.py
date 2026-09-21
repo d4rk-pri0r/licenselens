@@ -12,9 +12,7 @@ def _finding(result, check_id: str):
 
 
 def test_after_overlay_turns_security_defaults_off_with_legacy_block() -> None:
-    after = run_scan(
-        AuthContext(mode=AuthMode.DRY_RUN), dry_run=True, demo_scenario="after"
-    )
+    after = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True, demo_scenario="after")
     sd = _finding(after, "id-security-defaults-on")
     legacy = _finding(after, "id-ca-legacy-auth-block")
     assert sd.status is FindingStatus.OK
@@ -25,9 +23,7 @@ def test_after_overlay_turns_security_defaults_off_with_legacy_block() -> None:
 
 def test_after_overlay_does_not_add_legacy_auth_as_new_gap() -> None:
     before = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
-    after = run_scan(
-        AuthContext(mode=AuthMode.DRY_RUN), dry_run=True, demo_scenario="after"
-    )
+    after = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True, demo_scenario="after")
     before_legacy = _finding(before, "id-ca-legacy-auth-block")
     after_legacy = _finding(after, "id-ca-legacy-auth-block")
     assert after_legacy.status is not FindingStatus.GAP

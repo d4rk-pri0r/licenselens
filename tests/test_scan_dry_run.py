@@ -161,7 +161,7 @@ def test_html_first_screen_is_the_story(tmp_path: Path):
     result = run_scan(auth, dry_run=True)
     html = write_html_report(result, tmp_path / "r.html").read_text(encoding="utf-8")
     header, _, rest = html.partition("<main")
-    hero, _, after = rest.partition("id=\"section-c\"")
+    hero, _, after = rest.partition('id="section-c"')
     first = header + hero
     assert "<h1>Security License Lens</h1>" in first
     assert "logo-mark" not in first
