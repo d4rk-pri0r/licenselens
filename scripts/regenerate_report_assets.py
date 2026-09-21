@@ -45,7 +45,7 @@ MD_PATH = SAMPLE_DIR / "security-license-lens-report.md"
 
 # (filename, width, height, capture kind)
 SCREENSHOTS: tuple[tuple[str, int, int, str], ...] = (
-    ("report-hero.png", 1280, 900, "hero"),
+    ("report-hero.png", 1280, 1066, "hero"),
     ("report-findings.png", 1280, 900, "findings"),
     ("report-mobile.png", 375, 1280, "mobile"),
 )
@@ -324,15 +324,11 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                     page.locator("details.explore-row").first.locator("> summary").click()
                     page.wait_for_timeout(SETTLE_MS)
                 elif kind == "hero":
-                    # Land on the constellation region: "What you're paying
-                    # for" h2 to viewport top, then 100px deeper so the first
-                    # card-summary icon row is also in frame. Pan the
-                    # horizontally scrollable .constellation so four caption
-                    # icons are visible — five 18px workload icons in total.
-                    heading = page.locator("h2", has_text="What you already own").first
-                    heading.evaluate("el => el.scrollIntoView({block: 'start'})")
-                    page.evaluate("() => window.scrollBy(0, 100)")
-                    page.locator(".constellation").first.evaluate("el => { el.scrollLeft = 500; }")
+                    # The report's opening, ending cleanly after the first
+                    # two ranked-move cards (second card bottom edge at
+                    # document y≈1066): scroll to top, then clip to the
+                    # measured boundary so no card is cut mid-content.
+                    page.evaluate("() => window.scrollTo(0, 0)")
                     page.wait_for_timeout(SETTLE_MS)
                 elif kind == "mobile":
                     # Same section at full viewport height: the constellation
@@ -342,7 +338,14 @@ def capture_screenshots(html_path: Path) -> dict[str, dict[str, object]]:
                     page.wait_for_timeout(SETTLE_MS)
                 target = IMAGES_DIR / name
                 target.parent.mkdir(parents=True, exist_ok=True)
-                page.screenshot(path=str(target), scale="css")
+                if kind == "hero":
+                    page.screenshot(
+                        path=str(target),
+                        scale="css",
+                        clip={"x": 0, "y": 0, "width": 1280, "height": 1066},
+                    )
+                else:
+                    page.screenshot(path=str(target), scale="css")
                 shots[name] = {
                     "http_requests": [
                         u for u in http_requests if u.startswith(("http://", "https://"))
